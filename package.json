@@ -1,0 +1,35 @@
+{
+  "author": {
+    "name": "Kirov Ilya",
+    "email": "kirovilya@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/kirovilya/ioBroker.zigbee/issues"
+  },
+  "contributors": [
+    {
+      "name": "Kirov Ilya",
+      "email": "kirovilya@gmail.com"
+    }
+  ],
+  "dependencies": {},
+  "description": "Zigbee for Xiaomi devices",
+  "devDependencies": {},
+  "homepage": "https://github.com/kirovilya/ioBroker.zigbee",
+  "keywords": [
+    "ioBroker",
+    "zigbee",
+    "xiaomi"
+  ],
+  "license": "MIT",
+  "main": "main.js",
+  "name": "iobroker.zigbee",
+  "optionalDependencies": {},
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kirovilya/ioBroker.zigbee.git"
+  },
+  "scripts": {},
+  "version": "0.0.1"
+}

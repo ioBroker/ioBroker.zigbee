@@ -1,0 +1,28 @@
+{
+    "common": {
+        "name": "zigbee",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial adapter",
+                "ru": "Первоначальный адаптер"
+            }
+        },
+        "title": "Xiaomi zigbee",
+        "desc": {
+            "en": "Xiaomi zigbee",
+            "ru": "Xiaomi zigbee"
+        },
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "icon": "zigbee.png",
+        "enabled": true,
+        "keywords": ["zigbee", "xiaomi"],
+        "readme": "https://github.com/kirovilya/ioBroker.zigbee/blob/master/README.md",
+        "loglevel": "info",
+        "type": "communication",
+        "messagebox": true
+    },
+    "native": {
+    }
+}
