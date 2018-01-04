@@ -12,14 +12,19 @@
       "email": "kirovilya@gmail.com"
     }
   ],
-  "dependencies": {},
-  "description": "Zigbee for Xiaomi devices",
+  "dependencies": {
+    "zigbee-shepherd": "git+https://github.com/zigbeer/zigbee-shepherd.git",
+    "perfy": "^1.1.2"
+  },
   "devDependencies": {},
+  "description": "Zigbee for Xiaomi devices",
   "homepage": "https://github.com/kirovilya/ioBroker.zigbee",
   "keywords": [
     "ioBroker",
     "zigbee",
-    "xiaomi"
+    "xiaomi",
+    "cc2531",
+    "zigbee-shepherd"
   ],
   "license": "MIT",
   "main": "main.js",
