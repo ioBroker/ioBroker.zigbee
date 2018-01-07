@@ -93,6 +93,38 @@ adapter.on('message', function (obj) {
 });
 
 
+function updateState(id, name, value, common) {
+    let new_common = {
+            name: name, 
+            role: 'value',
+            read: true,
+            write: (common != undefined && common.write == undefined) ? false : true
+        };
+    if (common != undefined) {
+        if (common.type != undefined) {
+            new_common.type = common.type;
+        }
+        if (common.unit != undefined) {
+            new_common.unit = common.unit;
+        }
+        if (common.states != undefined) {
+            new_common.states = common.states;
+        }
+    }
+    adapter.extendObject(id, {type: 'state', common: new_common});
+    adapter.setState(id, value, true);
+}
+
+function updateDev(dev_id, dev_name) {
+    let id = '' + dev_id;
+    // create channel for dev
+    adapter.setObjectNotExists(id, {
+        type: 'channel',
+        common: {name: dev_name}
+    }, {});
+}
+
+
 // is called when databases are connected and adapter received configuration.
 // start here!
 adapter.on('ready', function () {
@@ -129,48 +161,53 @@ function main() {
     shepherd.on('ind', function(msg) {
         // debug('msg: ' + util.inspect(msg, false, null));
         var pl = null;
-        var topic = 'xiaomiZb/';
+        var topic;
+        var dev, dev_id;
 
         switch (msg.type) {
             case 'devIncoming':
                 adapter.log.info('Device: ' + msg.data + ' joining the network!');
                 break;
             case 'attReport':
+                dev = msg.endpoints[0].device;
                 adapter.log.info('attreport: ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + util.inspect(msg.data, false, null));
 
                 // defaults, will be extended or overridden based on device and message
-                topic += msg.endpoints[0].device.ieeeAddr.substr(2);
+                //topic += msg.endpoints[0].device.ieeeAddr.substr(2);
+                dev_id = msg.endpoints[0].device.ieeeAddr.substr(2);
                 pl=1;
 
                 switch (msg.data.cid) {
                     case 'genOnOff':  // various switches
-                        topic += '/' + msg.endpoints[0].epId;
+                        //topic += '/' + msg.endpoints[0].epId;
+                        topic = 'onOff';
                         pl = msg.data.data['onOff'];
                         break;
                     case 'msTemperatureMeasurement':  // Aqara Temperature/Humidity
-                        topic += "/temperature";
+                        topic = "temperature";
                         pl = parseFloat(msg.data.data['measuredValue']) / 100.0;
                         break;
                     case 'msRelativeHumidity':
-                        topic += "/humidity";
+                        topic = "humidity";
                         pl = parseFloat(msg.data.data['measuredValue']) / 100.0;
                         break;
                     case 'msPressureMeasurement':
-                        topic += "/pressure";
+                        topic = "pressure";
                         pl = parseFloat(msg.data.data['16']) / 10.0;
                         break;
                     case 'msOccupancySensing': // motion sensor
-                        topic += "/occupancy";
+                        topic = "occupancy";
                         pl = msg.data.data['occupancy'];
                         break;
                     case 'msIlluminanceMeasurement':
-                        topic += "/illuminance";
+                        topic = "illuminance";
                         pl = msg.data.data['measuredValue'];
                         break;
                 }
 
-                switch (msg.endpoints[0].devId) {
-                    case 260: // WXKG01LM switch
+                switch (true) {
+                    case (dev.modelId == 'lumi.sensor_switch.aq2'): // WXKG11LM switch
+                    case (msg.endpoints[0].devId == 260): // WXKG01LM switch
                         if (msg.data.data['onOff'] == 0) { // click down
                             perfy.start(msg.endpoints[0].device.ieeeAddr); // start timer
                             pl = null; // do not send mqtt message
@@ -194,8 +231,10 @@ function main() {
                 break;
         }
 
-        if (pl != null) { // only publish message if we have not set payload to null
-            adapter.log.info("MQTT Reporting to ", topic, " value ", pl)
+        if (pl != null && topic) { // only publish message if we have not set payload to null
+            adapter.log.info("dev model " + dev.modelId + " to " + topic + " value " + pl);
+            updateDev(dev_id, dev.modelId);
+            updateState(dev_id + '.' + topic, topic, pl);
             //client.publish(topic, pl.toString());
         }
     });
