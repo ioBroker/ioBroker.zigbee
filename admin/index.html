@@ -33,16 +33,19 @@
 
 <!-- you have to define 2 functions in the global scope: -->
 <script type="text/javascript">
+    var namespace = 'zigbee.' + instance,
+        namespaceLen = namespace.length;
+
     function letsPairing() {
         sendTo(null, 'letsPairing', {}, function (msg) {
             console.log(msg);
             if (msg) {
                 if (msg.error) {
                     showMessage(msg.error, _('Error'), 'alert');
-                } else {
-                    $('#pairing').addClass('pulse');
-                    showMessage(msg, _('Info'), 'alert');
                 }
+                // } else {
+                //     showMessage(msg, _('Info'), 'alert');
+                // }
             }
         });
     }
@@ -91,6 +94,32 @@
         });
         callback(obj);
     }
+
+    // subscribe to changes
+    socket.emit('subscribeStates', namespace + '.info.*');
+    // react to changes
+    socket.on('stateChange', function (id, state) {
+        // only watch our own states
+        if (id.substring(0, namespaceLen) !== namespace) return;
+        //console.log("State change announced: " + id + " and obj = " + JSON.stringify(state));
+        if (state) {
+            if (id.match(/\.info\.pairingMode$/)) {
+                if (state.val) {
+                    $('#pairing').addClass('pulse disabled');
+                } else {
+                    $('#pairing').removeClass('pulse disabled');
+                }
+            } else if (id.match(/\.info\.pairingCountdown$/)) {
+                var blank_btn = '<i class="material-icons">leak_add</i>';
+                if (state.val == 0) {
+                    $('#pairing').html(blank_btn);
+                } else {
+                    $('#pairing').addClass('pulse disabled');
+                    $('#pairing').html(state.val);
+                }
+            }
+        }
+    });
 </script>
 
 <!-- you have to put your config page in a div with id adapter-container -->
@@ -108,7 +137,7 @@
                 <label for="port">COM port name</label>
             </div>
             <div class="col s1">
-                <a id="pairing" class="btn-floating waves-effect waves-light red tooltipped" data-tooltip="Let's pairing!"><i class="material-icons">leak_add</i></a>
+                <a id="pairing" class="btn-floating waves-effect waves-light red tooltipped center-align" data-tooltip="Let's pairing!"><i class="material-icons">leak_add</i></a>
             </div>
         </div>
     </form>

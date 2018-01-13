@@ -48,6 +48,30 @@
                 "def":   false
             },
             "native": {}
+        },
+        {
+            "_id":  "info.pairingMode",
+            "type": "state",
+            "common": {
+                "name":  "Pairing mode",
+                "type":  "boolean",
+                "read":  true,
+                "write": false,
+                "def":   false
+            },
+            "native": {}
+        },
+        {
+            "_id":  "info.pairingCountdown",
+            "type": "state",
+            "common": {
+                "name":  "Pairing countdown",
+                "type":  "number",
+                "read":  true,
+                "write": false,
+                "def":   0
+            },
+            "native": {}
         }
     ]
 }

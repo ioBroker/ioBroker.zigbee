@@ -137,25 +137,26 @@ adapter.on('ready', function () {
     main();
 });
 
+
 function onPermitJoining(joinTimeLeft, from, command, callback){
-    //adapter.log.info(joinTimeLeft);
-    adapter.log.info(joinTimeLeft +' '+ from +' ' + command +' ' + JSON.stringify(callback));
-    adapter.sendTo(from, command, joinTimeLeft.toString(), callback);
-    // repeat until 1
-    if (joinTimeLeft != 1) {
-        shepherd.once('permitJoining', function(joinTimeLeft) {
-            onPermitJoining(joinTimeLeft, from, command, callback);
-        });
+    adapter.log.info(joinTimeLeft);
+    adapter.setState('info.pairingCountdown', joinTimeLeft);
+    // repeat until 0
+    if (joinTimeLeft == 0) {
+        // set pairing mode off
+        adapter.setState('info.pairingMode', false);
     }
 }
 
 function letsPairing(from, command, callback){
     if (shepherd) {
         // allow devices to join the network within 60 secs
-        onPermitJoining(60, from, command, callback);
         shepherd.permitJoin(60, function(err) {
             if (err) {
                 adapter.log.error(err);
+            } else {
+                // set pairing mode on
+                adapter.setState('info.pairingMode', true);
             }
         });
         adapter.sendTo(from, command, 'Start pairing!', callback);
@@ -172,6 +173,10 @@ function main() {
         net: {
             panId: 0x1a62
         }
+    });
+
+    shepherd.on('permitJoining', function(joinTimeLeft) {
+        onPermitJoining(joinTimeLeft);
     });
 
     shepherd.on('ready', function() {
