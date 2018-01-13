@@ -24,9 +24,28 @@
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 <script type="text/javascript" src="words.js"></script>
 
+<!-- Compiled and minified CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<!-- Compiled and minified JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
 
 <!-- you have to define 2 functions in the global scope: -->
 <script type="text/javascript">
+    function letsPairing() {
+        sendTo(null, 'letsPairing', {}, function (msg) {
+            console.log(msg);
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'), 'alert');
+                } else {
+                    $('#pairing').addClass('pulse');
+                    showMessage(msg, _('Info'), 'alert');
+                }
+            }
+        });
+    }
 
     // the function loadSettings has to exist ...
     function load(settings, onChange) {
@@ -49,10 +68,11 @@
         // Signal to admin, that no changes yet
         onChange(false);
 
-        $('#connect').button({
-            icons: {primary: 'ui-icon-refresh'}
-        }).click(function() {
-            tryToConnect($('#username').val(), $('#password').val());
+        $('#pairing').click(function() {
+            letsPairing();
+        });
+        $(document).ready(function() {
+            Materialize.updateTextFields();
         });
     }
 
@@ -81,7 +101,17 @@
             <td><h3 class="translate">Zigbee for Xiaomi devices</h3></td>
         </tr>
     </table>
-    
+    <form class="col s12">
+        <div class="row">
+            <div class="input-field col s11">
+                <input id="port" type="text" class="value validate">
+                <label for="port">COM port name</label>
+            </div>
+            <div class="col s1">
+                <a id="pairing" class="btn-floating waves-effect waves-light red tooltipped" data-tooltip="Let's pairing!"><i class="material-icons">leak_add</i></a>
+            </div>
+        </div>
+    </form>
 </div>
 
 </html>

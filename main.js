@@ -84,6 +84,11 @@ adapter.on('message', function (obj) {
                 // Send response in callback if required
                 if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
                 break;
+            case 'letsPairing':
+                if (obj && obj.message && typeof obj.message == 'object') {
+                    letsPairing(obj.from, obj.command, obj.callback);
+                }
+                break;
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                 break;
@@ -122,6 +127,7 @@ function updateDev(dev_id, dev_name) {
         type: 'channel',
         common: {name: dev_name}
     }, {});
+    //adapter.extendObject(id, {common: {name: dev_name}});
 }
 
 
@@ -131,9 +137,38 @@ adapter.on('ready', function () {
     main();
 });
 
+function onPermitJoining(joinTimeLeft, from, command, callback){
+    //adapter.log.info(joinTimeLeft);
+    adapter.log.info(joinTimeLeft +' '+ from +' ' + command +' ' + JSON.stringify(callback));
+    adapter.sendTo(from, command, joinTimeLeft.toString(), callback);
+    // repeat until 1
+    if (joinTimeLeft != 1) {
+        shepherd.once('permitJoining', function(joinTimeLeft) {
+            onPermitJoining(joinTimeLeft, from, command, callback);
+        });
+    }
+}
+
+function letsPairing(from, command, callback){
+    if (shepherd) {
+        // allow devices to join the network within 60 secs
+        onPermitJoining(60, from, command, callback);
+        shepherd.permitJoin(60, function(err) {
+            if (err) {
+                adapter.log.error(err);
+            }
+        });
+        adapter.sendTo(from, command, 'Start pairing!', callback);
+    } else {
+        adapter.sendTo(from, command, 'You need save and run adapter before pairing!', callback);
+    }
+}
+
 
 function main() {
-    shepherd = new ZShepherd('/dev/ttyACM0', {
+    var port = adapter.config.port || '/dev/ttyACM0';
+    adapter.log.info('Start on port: ' + adapter.config.port);
+    shepherd = new ZShepherd(port, {
         net: {
             panId: 0x1a62
         }
@@ -148,15 +183,6 @@ function main() {
             if (dev.manufId === 4151) // set all xiaomi devices to be online, so shepherd won't try to query info from devices (which would fail because they go tosleep)
                 shepherd.find(dev.ieeeAddr,1).getDevice().update({ status: 'online', joinTime: Math.floor(Date.now()/1000) });
         });
-        // allow devices to join the network within 60 secs
-        shepherd.permitJoin(60, function(err) {
-            if (err) {
-                adapter.log.error(err);
-            }
-        });
-    });
-    shepherd.on('permitJoining', function(joinTimeLeft) {
-        adapter.log.info(joinTimeLeft);
     });
     shepherd.on('ind', function(msg) {
         // debug('msg: ' + util.inspect(msg, false, null));
@@ -215,8 +241,10 @@ function main() {
                             if (perfy.exists(msg.endpoints[0].device.ieeeAddr)) { // do we have timer running
                                 var clicktime = perfy.end(msg.endpoints[0].device.ieeeAddr); // end timer
                                 if (clicktime.seconds > 0 || clicktime.milliseconds > 240) { // seems like a long press so ..
-                                    topic = topic.slice(0,-1) + '2'; //change topic to 2
-                                    pl = clicktime.seconds + Math.floor(clicktime.milliseconds) + ''; // and payload to elapsed seconds
+                                    //topic = topic.slice(0,-1) + '2'; //change topic to 2
+                                    topic = topic + '_elapsed';
+                                    //pl = clicktime.seconds + Math.floor(clicktime.milliseconds) + ''; // and payload to elapsed seconds
+                                    pl = clicktime.seconds;
                                 }
                             }
                         } else if (msg.data.data['32768']) { // multiple clicks
