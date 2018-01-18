@@ -6,18 +6,6 @@
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
 
-
-<!-- optional: use jqGrid
-<link rel="stylesheet" type="text/css" href="../../lib/css/jqGrid/ui.jqgrid-4.5.4.css"/>
-<script type="text/javascript" src="../../lib/js/jqGrid/jquery.jqGrid-4.5.4.min.js"></script>
-<script type="text/javascript" src="../../lib/js/jqGrid/i18n/grid.locale-all.js"></script>
--->
-
-<!-- optional: use multiselect
-<link rel="stylesheet" type="text/css" href="../../lib/css/jquery.multiselect-1.13.css"/>
-<script type="text/javascript" src="../../lib/js/jquery.multiselect-1.13.min.js"></script>
--->
-
 <!-- these two file always have to be included -->
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
 <script type="text/javascript" src="../../js/translate.js"></script>
@@ -29,12 +17,183 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <!-- Compiled and minified JavaScript -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js"></script>
 
 <!-- you have to define 2 functions in the global scope: -->
 <script type="text/javascript">
     var namespace = 'zigbee.' + instance,
-        namespaceLen = namespace.length;
+        namespaceLen = namespace.length,
+        devices = [],
+        dialog;
+
+    function getCard(dev) {
+        var title = dev.common.name,
+            id = dev._id,
+            type = dev.common.type,
+            img_src = '';
+
+        switch(type) {
+            case 'lumi.sensor_switch':
+                img_src = "img/xiaomi_wireless_switch.png";
+                break;
+            case 'lumi.weather':
+                img_src = "img/aqara_temperature_sensor.png";
+                break;
+            default:
+                img_src = "img/aqara_numan_body_sensor.png";
+        }
+            
+        var image = '<img src="' + img_src + '" width="64px">',
+            info = '<p>' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
+            buttons = '<a name="edit" class="btn-floating waves-effect waves-light left halfway-fab hoverable blue"><i class="material-icons small">mode_edit</i></a><a name="delete" class="btn-floating waves-effect waves-light right halfway-fab hoverable black"><i class="material-icons small">delete</i></a>',
+            card = '<div id="' + id + '" class="device col s6 m4 l3 xl2">'+
+                     '<div class="card hoverable">'+
+                       '<div class="card-title center">'+title+'</div>'+
+                       '<div class="card-content">'+
+                         '<div class="row">'+
+                           '<div class="col s4">'+image+'</div>'+
+                           '<div class="col s8">'+info+'</div>'+
+                          '</div>'+
+                        '</div>'+
+                        buttons+
+                        '<div class="card-reveal">'+
+                            '<div class="input-field col s12">'+
+                              '<input id="name" type="text" class="value validate">'+
+                              '<label for="name">Enter new name</label>'+
+                            '</div>'+
+                            '<div class="">'+
+                              '<a name="done" class="waves-effect waves-green btn green"><i class="material-icons small">done</i></a>'+
+                              '<a name="close" class="waves-effect waves-red btn-flat"><i class="material-icons small">close</i></a>'+
+                            '</div>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>';
+        return card;
+    }
+
+    function openReval(e, id, name){
+        var $card = $(e.target).closest('.card');
+        if ($card.data('initialOverflow') === undefined) {
+            $card.data(
+              'initialOverflow',
+              $card.css('overflow') === undefined ? '' : $card.css('overflow')
+            );
+        }
+        let $cardReveal = $card.find('.card-reveal');
+        $cardReveal.find("input").val(name);
+        Materialize.updateTextFields();
+        $card.css('overflow', 'hidden');
+        $cardReveal.css({ display: 'block'});
+        anime({
+          targets: $cardReveal[0],
+          translateY: '-100%',
+          duration: 300,
+          easing: 'easeInOutQuad'
+        });
+    }
+
+    function closeReval(e, id, name){
+        if (id) {
+            renameDevice(id, name);
+        }
+        var $card = $(e.target).closest('.card');
+        if ($card.data('initialOverflow') === undefined) {
+            $card.data(
+              'initialOverflow',
+              $card.css('overflow') === undefined ? '' : $card.css('overflow')
+            );
+        }
+        let $cardReveal = $card.find('.card-reveal');
+        anime({
+          targets: $cardReveal[0],
+          translateY: 0,
+          duration: 225,
+          easing: 'easeInOutQuad',
+          complete: function(anim) {
+            let el = anim.animatables[0].target;
+            $(el).css({ display: 'none'});
+            $card.css('overflow', $card.data('initialOverflow'));
+          }
+        });
+    }
+
+    function deleteConfirmation(id, name) {
+        var text = 'Do you really whant to delete device "'+name+'" ('+id+')?';
+        $('#modaldelete').find("h3").text("Delete confirmation");
+        $('#modaldelete').find("p").text(text);
+        $("#modaldelete a.btn[name='yes']").unbind("click");
+        $("#modaldelete a.btn[name='yes']").click(function(e) {
+            deleteDevice(id);
+        });
+        $('#modaldelete').modal('open');
+    }
+
+    function editName(id, name) {
+        var text = 'Enter new name for "'+name+'" ('+id+')?';
+        $('#modaledit').find("h3").text("Rename device");
+        $('#modaledit').find("input").val(name);
+        $('#modaledit').find("label").text(text);
+        $('#modaledit').modal('open');
+        Materialize.updateTextFields();
+    }
+
+    function deleteDevice(id) {
+        sendTo(null, 'deleteDevice', {id: id}, function (msg) {
+            console.log(msg);
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error.code, _('Error'), 'alert');
+                } else {
+                    getDevices();
+                }
+            }
+        });
+    }
+
+    function renameDevice(id, name) {
+        sendTo(null, 'renameDevice', {id: id, name: name}, function (msg) {
+            console.log(msg);
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'), 'alert');
+                } else {
+                    getDevices();
+                }
+            }
+        });
+    }
+
+    function showDevices() {
+        var html = '';
+        for (var i=0;i < devices.length; i++) {
+            var d = devices[i];
+            var card = getCard(d);
+            html += card;
+        }
+        $('#devices').html(html);
+        $("a.btn-floating[name='delete']").click(function() {
+            var dev_block = $(this).parents("div.device"),
+                id = dev_block.attr("id"),
+                name = dev_block.find(".card-title").text();
+            deleteConfirmation(id, name);
+        });
+        $("a.btn-floating[name='edit']").click(function(e) {
+            var dev_block = $(this).parents("div.device"),
+                id = dev_block.attr("id"),
+                name = dev_block.find(".card-title").text();
+            // editName(id, name);
+            openReval(e, id, name);
+        });
+        $("a.btn[name='done']").click(function(e) {
+            var dev_block = $(this).parents("div.device"),
+                id = dev_block.attr("id"),
+                name = dev_block.find("input").val();
+            closeReval(e, id, name);
+        });
+        $("a.btn-flat[name='close']").click(function(e) {
+            closeReval(e);
+        });
+    }
 
     function letsPairing() {
         sendTo(null, 'letsPairing', {}, function (msg) {
@@ -43,9 +202,20 @@
                 if (msg.error) {
                     showMessage(msg.error, _('Error'), 'alert');
                 }
-                // } else {
-                //     showMessage(msg, _('Info'), 'alert');
-                // }
+            }
+        });
+    }
+
+    function getDevices() {
+        sendTo(null, 'getDevices', {}, function (msg) {
+            console.log(msg);
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'), 'alert');
+                } else {
+                    devices = msg;
+                    showDevices();
+                }
             }
         });
     }
@@ -68,6 +238,10 @@
 				});
             }
         }
+        //dialog = new MatDialog({EndingTop: '50%'});
+        getDevices();
+        //addCard();
+
         // Signal to admin, that no changes yet
         onChange(false);
 
@@ -75,6 +249,10 @@
             letsPairing();
         });
         $(document).ready(function() {
+            $('.modal').modal({
+                startingTop: '30%',
+                endingTop: '30%'
+            });
             Materialize.updateTextFields();
         });
     }
@@ -97,6 +275,8 @@
 
     // subscribe to changes
     socket.emit('subscribeStates', namespace + '.info.*');
+    socket.emit('subscribeObjects', namespace + '.*');
+
     // react to changes
     socket.on('stateChange', function (id, state) {
         // only watch our own states
@@ -120,13 +300,21 @@
             }
         }
     });
+
+    socket.on('objectChange', function (id, obj) {
+        if (id.substring(0, namespaceLen) !== namespace) return;
+        console.log("Object change announced: " + id + " and obj = " + JSON.stringify(obj));
+        if (obj) {
+            
+        }
+    });
 </script>
 
 <!-- you have to put your config page in a div with id adapter-container -->
 <div id="adapter-container">
 
     <table><tr>
-            <td><img src="zigbee.png"/></td>
+            <td><img src="zigbee.png" height="64px"/></td>
             <td><h3 class="translate">Zigbee for Xiaomi devices</h3></td>
         </tr>
     </table>
@@ -137,10 +325,41 @@
                 <label for="port">COM port name</label>
             </div>
             <div class="col s1">
-                <a id="pairing" class="btn-floating waves-effect waves-light red tooltipped center-align" data-tooltip="Let's pairing!"><i class="material-icons">leak_add</i></a>
+                <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a>
             </div>
         </div>
     </form>
+    <div class="col s12">
+        <div id="devices" class="row">
+        </div>
+    </div>
 </div>
+
+ <div id="modaledit" class="modal">
+    <div class="modal-content">
+        <h3>Modal Header</h3>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="name" type="text" class="value validate">
+                <label for="name">Name</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-action modal-close waves-effect waves-green btn green">Save</a>
+      <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+    </div>
+  </div>
+
+ <div id="modaldelete" class="modal">
+    <div class="modal-content">
+      <h3>Modal Header</h3>
+      <p>A bunch of text</p>
+    </div>
+    <div class="modal-footer">
+      <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green">Yes</a>
+      <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+    </div>
+  </div>
 
 </html>

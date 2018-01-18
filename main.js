@@ -89,6 +89,21 @@ adapter.on('message', function (obj) {
                     letsPairing(obj.from, obj.command, obj.callback);
                 }
                 break;
+            case 'getDevices':
+                if (obj && obj.message && typeof obj.message == 'object') {
+                    getDevices(obj.from, obj.command, obj.callback);
+                }
+                break;
+            case 'renameDevice':
+                if (obj && obj.message && typeof obj.message == 'object') {
+                    renameDevice(obj.from, obj.command, obj.message, obj.callback);
+                }
+                break;
+            case 'deleteDevice':
+                if (obj && obj.message && typeof obj.message == 'object') {
+                    deleteDevice(obj.from, obj.command, obj.message, obj.callback);
+                }
+                break;
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                 break;
@@ -120,16 +135,46 @@ function updateState(id, name, value, common) {
     adapter.setState(id, value, true);
 }
 
-function updateDev(dev_id, dev_name) {
+function renameDevice(from, command, msg, callback) {
+    if (shepherd) {
+        var id = msg.id, newName = msg.name;
+        adapter.extendObject(id, {common: {name: newName}});
+        adapter.sendTo(from, command, {}, callback);
+    } else {
+        adapter.sendTo(from, command, {error: 'You need save and run adapter!'}, callback);
+    }
+}
+
+function deleteDevice(from, command, msg, callback) {
+    if (shepherd) {
+        adapter.log.info('deleteDevice message: ' + JSON.stringify(msg));
+        var id = msg.id, sysid = id.replace(adapter.namespace+'.', '0x');
+        adapter.log.info('deleteDevice sysid: ' + sysid);
+        //adapter.extendObject(id, {common: {name: newName}});
+        shepherd.remove(sysid, function (err) {
+            if (!err) {
+                console.log('Successfully removed!');
+                deleteDevice(id, function(){
+                    adapter.sendTo(from, command, {}, callback);
+                });
+            } else {
+                adapter.sendTo(from, command, {error: err}, callback);
+            }
+        });
+    } else {
+        adapter.sendTo(from, command, {error: 'You need save and run adapter!'}, callback);
+    }
+}
+
+function updateDev(dev_id, dev_name, dev_type) {
     let id = '' + dev_id;
     // create channel for dev
     adapter.setObjectNotExists(id, {
-        type: 'channel',
-        common: {name: dev_name}
+        type: 'device',
+        common: {name: dev_name, type: dev_type}
     }, {});
     //adapter.extendObject(id, {common: {name: dev_name}});
 }
-
 
 // is called when databases are connected and adapter received configuration.
 // start here!
@@ -161,14 +206,38 @@ function letsPairing(from, command, callback){
         });
         adapter.sendTo(from, command, 'Start pairing!', callback);
     } else {
-        adapter.sendTo(from, command, 'You need save and run adapter before pairing!', callback);
+        adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);
+    }
+}
+
+function getDevices(from, command, callback){
+    if (shepherd) {
+        adapter.getDevices((err, result) => {
+            if (result) {
+                adapter.log.info('getDevices result: ' + JSON.stringify(result));
+                var devices = [];
+                for (var item in result) {
+                    var id = result[item]._id.substr(adapter.namespace.length + 1);
+                    devices.push(result[item]);
+                }
+                adapter.sendTo(from, command, devices, callback);
+              }
+        });
+    } else {
+        adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);
     }
 }
 
 
+function newDevice(id){
+    var dev = shepherd.find(id,1).getDevice();
+    adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
+    updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
+}
+
 function main() {
     var port = adapter.config.port || '/dev/ttyACM0';
-    adapter.log.info('Start on port: ' + adapter.config.port);
+    adapter.log.info('Start on port: ' + port);
     shepherd = new ZShepherd(port, {
         net: {
             panId: 0x1a62
@@ -198,6 +267,7 @@ function main() {
         switch (msg.type) {
             case 'devIncoming':
                 adapter.log.info('Device: ' + msg.data + ' joining the network!');
+                newDevice(msg.data);
                 break;
             case 'attReport':
                 dev = msg.endpoints[0].device;
@@ -265,10 +335,16 @@ function main() {
         }
 
         if (pl != null && topic) { // only publish message if we have not set payload to null
-            adapter.log.info("dev model " + dev.modelId + " to " + topic + " value " + pl);
-            updateDev(dev_id, dev.modelId);
-            updateState(dev_id + '.' + topic, topic, pl);
-            //client.publish(topic, pl.toString());
+            adapter.log.info("dev "+dev_id+" model " + dev.modelId + " to " + topic + " value " + pl);
+            adapter.getObject(dev_id, function(err, obj) {
+                if (obj) {
+                    updateState(dev_id + '.' + topic, topic, pl);
+                } else {
+                    adapter.log.info('no device '+dev_id);
+                }
+            });
+            //updateDev(dev_id, dev.modelId, dev.modelId);
+            //updateState(dev_id + '.' + topic, topic, pl);
         }
     });
 
