@@ -39,32 +39,33 @@
             case 'lumi.weather':
                 img_src = "img/aqara_temperature_sensor.png";
                 break;
+            case 'lumi.sensor_switch.aq2':
+                img_src = "img/xiaomi_wireless_switch.png";
+                break;
             default:
                 img_src = "img/aqara_numan_body_sensor.png";
         }
             
         var image = '<img src="' + img_src + '" width="64px">',
-            info = '<p>' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
-            buttons = '<a name="edit" class="btn-floating waves-effect waves-light left halfway-fab hoverable blue"><i class="material-icons small">mode_edit</i></a><a name="delete" class="btn-floating waves-effect waves-light right halfway-fab hoverable black"><i class="material-icons small">delete</i></a>',
-            card = '<div id="' + id + '" class="device col s6 m4 l3 xl2">'+
+            info = '<p style="min-height:64px">' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
+            buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black"><i class="material-icons tiny">delete</i></a><a name="edit" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons small">mode_edit</i></a>',
+            card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                      '<div class="card hoverable">'+
-                       '<div class="card-title center">'+title+'</div>'+
                        '<div class="card-content">'+
-                         '<div class="row">'+
-                           '<div class="col s4">'+image+'</div>'+
-                           '<div class="col s8">'+info+'</div>'+
-                          '</div>'+
+                         '<span class="card-title">'+title+'</span>'+
+                         '<i class="left">'+image+'</i>'+
+                         info+
+                         buttons+
                         '</div>'+
-                        buttons+
                         '<div class="card-reveal">'+
-                            '<div class="input-field col s12">'+
+                            '<div class="input-field">'+
                               '<input id="name" type="text" class="value validate">'+
                               '<label for="name">Enter new name</label>'+
                             '</div>'+
-                            '<div class="">'+
-                              '<a name="done" class="waves-effect waves-green btn green"><i class="material-icons small">done</i></a>'+
-                              '<a name="close" class="waves-effect waves-red btn-flat"><i class="material-icons small">close</i></a>'+
-                            '</div>'+
+                            '<span class="right">'+
+                              '<a name="done" class="waves-effect waves-green btn green"><i class="material-icons">done</i></a>'+
+                              '<a name="close" class="waves-effect waves-red btn-flat"><i class="material-icons">close</i></a>'+
+                            '</span>'+
                         '</div>'+
                       '</div>'+
                     '</div>';
@@ -304,8 +305,8 @@
     socket.on('objectChange', function (id, obj) {
         if (id.substring(0, namespaceLen) !== namespace) return;
         console.log("Object change announced: " + id + " and obj = " + JSON.stringify(obj));
-        if (obj) {
-            
+        if (obj && obj.type == "device") {
+            getDevices();
         }
     });
 </script>
@@ -315,7 +316,7 @@
 
     <table><tr>
             <td><img src="zigbee.png" height="64px"/></td>
-            <td><h3 class="translate">Zigbee for Xiaomi devices</h3></td>
+            <td><h3 class="translate">Zigbee adapter</h3></td>
         </tr>
     </table>
     <form class="col s12">
