@@ -40,10 +40,16 @@
                 img_src = "img/aqara_temperature_sensor.png";
                 break;
             case 'lumi.sensor_switch.aq2':
-                img_src = "img/xiaomi_wireless_switch.png";
+                img_src = "img/aqara.switch.png";
+                break;
+            case 'lumi.sensor_magnet':
+                img_src = "img/magnet.png";
+                break;
+            case 'lumi.sensor_motion.aq2':
+                img_src = "img/aqara_numan_body_sensor.png";
                 break;
             default:
-                img_src = "img/aqara_numan_body_sensor.png";
+                img_src = "img/unknown.png";
         }
             
         var image = '<img src="' + img_src + '" width="64px">',
@@ -140,7 +146,7 @@
 
     function deleteDevice(id) {
         sendTo(null, 'deleteDevice', {id: id}, function (msg) {
-            console.log(msg);
+            //console.log(msg);
             if (msg) {
                 if (msg.error) {
                     showMessage(msg.error.code, _('Error'), 'alert');
@@ -153,7 +159,7 @@
 
     function renameDevice(id, name) {
         sendTo(null, 'renameDevice', {id: id, name: name}, function (msg) {
-            console.log(msg);
+            //console.log(msg);
             if (msg) {
                 if (msg.error) {
                     showMessage(msg.error, _('Error'), 'alert');
@@ -198,7 +204,7 @@
 
     function letsPairing() {
         sendTo(null, 'letsPairing', {}, function (msg) {
-            console.log(msg);
+            //console.log(msg);
             if (msg) {
                 if (msg.error) {
                     showMessage(msg.error, _('Error'), 'alert');
@@ -209,7 +215,7 @@
 
     function getDevices() {
         sendTo(null, 'getDevices', {}, function (msg) {
-            console.log(msg);
+            //console.log(msg);
             if (msg) {
                 if (msg.error) {
                     showMessage(msg.error, _('Error'), 'alert');
@@ -275,7 +281,7 @@
     }
 
     // subscribe to changes
-    socket.emit('subscribeStates', namespace + '.info.*');
+    socket.emit('subscribe', namespace + '.info.*');
     socket.emit('subscribeObjects', namespace + '.*');
 
     // react to changes
@@ -304,7 +310,7 @@
 
     socket.on('objectChange', function (id, obj) {
         if (id.substring(0, namespaceLen) !== namespace) return;
-        console.log("Object change announced: " + id + " and obj = " + JSON.stringify(obj));
+        //console.log("Object change announced: " + id + " and obj = " + JSON.stringify(obj));
         if (obj && obj.type == "device") {
             getDevices();
         }

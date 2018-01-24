@@ -185,10 +185,18 @@ adapter.on('ready', function () {
 
 function onPermitJoining(joinTimeLeft, from, command, callback){
     adapter.log.info(joinTimeLeft);
+    adapter.setObjectNotExists('info.pairingCountdown', {
+        type: 'state',
+        common: {name: 'Pairing countdown'}
+    }, {});
     adapter.setState('info.pairingCountdown', joinTimeLeft);
     // repeat until 0
     if (joinTimeLeft == 0) {
         // set pairing mode off
+        adapter.setObjectNotExists('info.pairingMode', {
+            type: 'state',
+            common: {name: 'Pairing mode'}
+        }, {});
         adapter.setState('info.pairingMode', false);
     }
 }
@@ -201,6 +209,10 @@ function letsPairing(from, command, callback){
                 adapter.log.error(err);
             } else {
                 // set pairing mode on
+                adapter.setObjectNotExists('info.pairingMode', {
+                    type: 'state',
+                    common: {name: 'Pairing mode'}
+                }, {});
                 adapter.setState('info.pairingMode', true);
             }
         });
@@ -250,6 +262,11 @@ function main() {
 
     shepherd.on('ready', function() {
         adapter.setState('info.connection', true);
+        adapter.setObjectNotExists('info.pairingMode', {
+            type: 'state',
+            common: {name: 'Pairing mode'}
+        }, {});
+        adapter.setState('info.pairingMode', false);
         adapter.log.info('Server is ready. Current devices:');
         shepherd.list().forEach(function(dev){
             if (dev.type === 'EndDevice')
