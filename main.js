@@ -13,6 +13,13 @@ var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 var util = require("util");
 var perfy = require('perfy');
 var ZShepherd = require('zigbee-shepherd');
+// need when error on remove
+ZShepherd.prototype.forceRemove = function(ieeeAddr, callback) {
+    var dev = this._findDevByAddr(ieeeAddr);
+    return this._unregisterDev(dev, function(err, result) {
+        return callback(err, result);
+    });
+};
 var shepherd;
 
 // you have to call the adapter function and pass a options object
@@ -148,17 +155,41 @@ function renameDevice(from, command, msg, callback) {
 function deleteDevice(from, command, msg, callback) {
     if (shepherd) {
         adapter.log.info('deleteDevice message: ' + JSON.stringify(msg));
-        var id = msg.id, sysid = id.replace(adapter.namespace+'.', '0x');
+        var id = msg.id, sysid = id.replace(adapter.namespace+'.', '0x'), 
+            dev_id = id.replace(adapter.namespace+'.', '');
         adapter.log.info('deleteDevice sysid: ' + sysid);
         //adapter.extendObject(id, {common: {name: newName}});
+        var dev = shepherd.find(sysid, 1);
+        if (!dev) {
+            adapter.log.info('Not found on shepherd!');
+            adapter.log.info('Try delete dev '+dev_id+'from iobroker.');
+            adapter.deleteDevice(dev_id, function(){
+                adapter.sendTo(from, command, {}, callback);
+            });
+            return;
+        } 
+        // try make dev online
+        dev.getDevice().update({status: 'online'});
         shepherd.remove(sysid, function (err) {
             if (!err) {
-                console.log('Successfully removed!');
-                deleteDevice(id, function(){
+                adapter.log.info('Successfully removed from shepherd!');
+                adapter.deleteDevice(dev_id, function(){
                     adapter.sendTo(from, command, {}, callback);
                 });
             } else {
-                adapter.sendTo(from, command, {error: err}, callback);
+                adapter.log.info('Error on remove!');
+                adapter.log.info('Try force remove!');
+                shepherd.forceRemove(sysid, function (err) {
+                    if (!err) {
+                        adapter.log.info('Force removed from shepherd!');
+                        adapter.log.info('Try delete dev '+dev_id+'from iobroker.');
+                        adapter.deleteDevice(dev_id, function(){
+                            adapter.sendTo(from, command, {}, callback);
+                        });
+                    } else {
+                        adapter.sendTo(from, command, {error: err}, callback);
+                    }
+                });
             }
         });
     } else {
