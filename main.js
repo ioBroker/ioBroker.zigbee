@@ -327,6 +327,12 @@ function main() {
                 pl=1;
 
                 switch (msg.data.cid) {
+                    case 'genBasic':
+                        if (msg.data.data['65281']) {
+                            var buf = new Buffer(msg.data.data['65281']);
+                            adapter.log.info('65281: '+buf.toString('hex'));
+                        }
+                        break;
                     case 'genOnOff':  // various switches
                         //topic += '/' + msg.endpoints[0].epId;
                         topic = 'onOff';

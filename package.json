@@ -1,40 +1,4 @@
 {
-  "_args": [
-    [
-      {
-        "raw": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-        "scope": null,
-        "escapedName": null,
-        "name": null,
-        "rawSpec": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-        "spec": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-        "type": "remote"
-      },
-      "/"
-    ]
-  ],
-  "_from": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-  "_id": "iobroker.zigbee@0.0.1",
-  "_inCache": true,
-  "_location": "/iobroker.zigbee",
-  "_phantomChildren": {},
-  "_requested": {
-    "raw": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-    "scope": null,
-    "escapedName": null,
-    "name": null,
-    "rawSpec": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-    "spec": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-    "type": "remote"
-  },
-  "_requiredBy": [
-    "#USER"
-  ],
-  "_resolved": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-  "_shasum": "6a003c37834aebc53c631cafb9b6dab3a234784a",
-  "_shrinkwrap": null,
-  "_spec": "https://github.com/kirovilya/ioBroker.zigbee/tarball/master",
-  "_where": "/",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -50,7 +14,7 @@
   ],
   "dependencies": {
     "perfy": "^1.1.2",
-    "zigbee-shepherd": "git+https://github.com/zigbeer/zigbee-shepherd.git",
+    "zigbee-shepherd": "git+https://github.com/kirovilya/zigbee-shepherd.git",
     "serialport": "^4.0.7"
   },
   "description": "Zigbee for Xiaomi devices",
@@ -67,7 +31,6 @@
   "main": "main.js",
   "name": "iobroker.zigbee",
   "optionalDependencies": {},
-  "readme": "![Logo](admin/zigbee.png)\n# ioBroker.zigbee\n\nioBroker Zigbee driver for Xiaomi devices\n\n\n=================\n\n## License\nThe MIT License (MIT)\n\nCopyright (c) 2018 Kirov Ilya <kirovilya@gmail.com>\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n",
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
