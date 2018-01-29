@@ -260,8 +260,10 @@ function getDevices(from, command, callback){
                 adapter.log.info('getDevices result: ' + JSON.stringify(result));
                 var devices = [];
                 for (var item in result) {
-                    var id = result[item]._id.substr(adapter.namespace.length + 1);
-                    devices.push(result[item]);
+                    if (result[item]._id) {
+                        var id = result[item]._id.substr(adapter.namespace.length + 1);
+                        devices.push(result[item]);
+                    }
                 }
                 adapter.sendTo(from, command, devices, callback);
               }
