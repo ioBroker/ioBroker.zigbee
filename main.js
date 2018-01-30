@@ -120,27 +120,33 @@ adapter.on('message', function (obj) {
     processMessages();
 });
 
-
-function updateState(id, name, value, common) {
-    let new_common = {
-            name: name, 
-            role: 'value',
-            read: true,
-            write: (common != undefined && common.write == undefined) ? false : true
-        };
-    if (common != undefined) {
-        if (common.type != undefined) {
-            new_common.type = common.type;
+function updateState(dev_id, name, value, common) {
+    let id = dev_id + '.' + name;
+    adapter.getObject(dev_id, function(err, obj) {
+        if (obj) {
+            let new_common = {
+                name: name, 
+                role: 'value',
+                read: true,
+                write: (common != undefined && common.write == undefined) ? false : true
+            };
+            if (common != undefined) {
+                if (common.type != undefined) {
+                    new_common.type = common.type;
+                }
+                if (common.unit != undefined) {
+                    new_common.unit = common.unit;
+                }
+                if (common.states != undefined) {
+                    new_common.states = common.states;
+                }
+            }
+            adapter.extendObject(id, {type: 'state', common: new_common});
+            adapter.setState(id, value, true);
+        } else {
+            adapter.log.info('no device '+dev_id);
         }
-        if (common.unit != undefined) {
-            new_common.unit = common.unit;
-        }
-        if (common.states != undefined) {
-            new_common.states = common.states;
-        }
-    }
-    adapter.extendObject(id, {type: 'state', common: new_common});
-    adapter.setState(id, value, true);
+    });
 }
 
 function renameDevice(from, command, msg, callback) {
@@ -311,18 +317,33 @@ function main() {
         });
     });
     shepherd.on('ind', function(msg) {
-        // debug('msg: ' + util.inspect(msg, false, null));
+        adapter.log.info('msg: ' + util.inspect(msg, false, null));
         var pl = null;
         var topic;
-        var dev, dev_id;
+        var dev, dev_id, devClassId;
 
         switch (msg.type) {
             case 'devIncoming':
                 adapter.log.info('Device: ' + msg.data + ' joining the network!');
                 newDevice(msg.data);
                 break;
+            case 'statusChange':
+                dev = msg.endpoints[0].device;
+                devClassId = msg.endpoints[0].devId;
+                adapter.log.info('statusChange: ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + util.inspect(msg.data, false, null));
+                dev_id = msg.endpoints[0].device.ieeeAddr.substr(2);
+                pl=1;
+
+                switch (msg.data.cid) {
+                    case 'ssIasZone':
+                        topic = "detect";  //wet detected
+                        pl = msg.data.zoneStatus;
+                        break;
+                }
+                break;
             case 'attReport':
                 dev = msg.endpoints[0].device;
+                devClassId = msg.endpoints[0].devId;
                 adapter.log.info('attreport: ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + util.inspect(msg.data, false, null));
 
                 // defaults, will be extended or overridden based on device and message
@@ -339,8 +360,21 @@ function main() {
                         break;
                     case 'genOnOff':  // various switches
                         //topic += '/' + msg.endpoints[0].epId;
-                        topic = 'onOff';
+                        topic = 'click';
                         pl = msg.data.data['onOff'];
+                        // WXKG02LM
+                        //if (dev.modelId == 'lumi.sensor_wleak.aq1') {
+                            if (devClassId === 24321) { // left
+                                topic = 'click';
+                                pl = 1;
+                            } else if (devClassId === 24322) { // right
+                                topic = 'clickRight';
+                                pl = 1;
+                            } else if (devClassId === 24323) { // both
+                                topic = 'clickBoth';
+                                pl = 1;
+                            }
+                        //}
                         break;
                     case 'msTemperatureMeasurement':  // Aqara Temperature/Humidity
                         topic = "temperature";
@@ -375,6 +409,7 @@ function main() {
                                 var clicktime = perfy.end(msg.endpoints[0].device.ieeeAddr); // end timer
                                 if (clicktime.seconds > 0 || clicktime.milliseconds > 240) { // seems like a long press so ..
                                     //topic = topic.slice(0,-1) + '2'; //change topic to 2
+                                    updateState(dev_id, topic, '128'); // long click
                                     topic = topic + '_elapsed';
                                     //pl = clicktime.seconds + Math.floor(clicktime.milliseconds) + ''; // and payload to elapsed seconds
                                     pl = clicktime.seconds;
@@ -387,20 +422,14 @@ function main() {
 
                 break;
             default:
-                // console.log(util.inspect(msg, false, null));
+                console.log(util.inspect(msg, false, null));
                 // Not deal with other msg.type in this example
                 break;
         }
 
         if (pl != null && topic) { // only publish message if we have not set payload to null
             adapter.log.info("dev "+dev_id+" model " + dev.modelId + " to " + topic + " value " + pl);
-            adapter.getObject(dev_id, function(err, obj) {
-                if (obj) {
-                    updateState(dev_id + '.' + topic, topic, pl);
-                } else {
-                    adapter.log.info('no device '+dev_id);
-                }
-            });
+            updateState(dev_id, topic, pl);
             //updateDev(dev_id, dev.modelId, dev.modelId);
             //updateState(dev_id + '.' + topic, topic, pl);
         }
