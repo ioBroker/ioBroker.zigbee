@@ -12,6 +12,7 @@
 var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 var util = require("util");
 var perfy = require('perfy');
+
 var ZShepherd = require('zigbee-shepherd');
 // need when error on remove
 ZShepherd.prototype.forceRemove = function(ieeeAddr, callback) {
@@ -260,8 +261,10 @@ function getDevices(from, command, callback){
                 adapter.log.info('getDevices result: ' + JSON.stringify(result));
                 var devices = [];
                 for (var item in result) {
-                    var id = result[item]._id.substr(adapter.namespace.length + 1);
-                    devices.push(result[item]);
+                    if (result[item]._id) {
+                        var id = result[item]._id.substr(adapter.namespace.length + 1);
+                        devices.push(result[item]);
+                    }
                 }
                 adapter.sendTo(from, command, devices, callback);
               }
@@ -276,6 +279,29 @@ function newDevice(id){
     var dev = shepherd.find(id,1).getDevice();
     adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
     updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
+}
+
+function hexEncode(str){
+    var hex, i;
+
+    var result = "";
+    for (i=0; i<str.length; i++) {
+        hex = str.charCodeAt(i).toString(16);
+        result += ("000"+hex).slice(-4)+' ';
+    }
+
+    return result
+}
+
+function hexDecode(str) {
+    var j;
+    var hexes = str.match(/.{1,4}/g) || [];
+    var back = "";
+    for(j = 0; j<hexes.length; j++) {
+        back += String.fromCharCode(parseInt(hexes[j], 16));
+    }
+
+    return back;
 }
 
 function main() {
@@ -329,8 +355,8 @@ function main() {
                 switch (msg.data.cid) {
                     case 'genBasic':
                         if (msg.data.data['65281']) {
-                            var buf = new Buffer(msg.data.data['65281']);
-                            adapter.log.info('65281: '+buf.toString('hex'));
+                            //var buf=msg.data.data['65281'];
+                            //adapter.log.info('xiaomiStruct: '+buf.toString('hex'));
                         }
                         break;
                     case 'genOnOff':  // various switches
