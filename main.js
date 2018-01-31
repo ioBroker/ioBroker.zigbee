@@ -9,6 +9,7 @@
 "use strict";
 
 // you have to require the utils module and call adapter function
+var fs = require("fs");
 var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 var util = require("util");
 var perfy = require('perfy');
@@ -22,11 +23,7 @@ ZShepherd.prototype.forceRemove = function(ieeeAddr, callback) {
     });
 };
 var shepherd;
-
-// you have to call the adapter function and pass a options object
-// name has to be set and has to be equal to adapters folder name and main file name excluding extension
-// adapter will be restarted automatically every time as the configuration changed, e.g system.adapter.zont.0
-var adapter = utils.adapter('zigbee');
+var adapter = utils.adapter({name: 'zigbee', systemConfig: true});
 
 
 function processMessages(ignore) {
@@ -211,7 +208,15 @@ function updateDev(dev_id, dev_name, dev_type) {
         type: 'device',
         common: {name: dev_name, type: dev_type}
     }, {});
-    //adapter.extendObject(id, {common: {name: dev_name}});
+    adapter.getObject(id, function(err, obj) {
+        if (!err && obj) {
+            // if repairing 
+            adapter.extendObject(id, {
+                type: 'device',
+                common: {type: dev_type}
+            });
+        }
+    });
 }
 
 // is called when databases are connected and adapter received configuration.
@@ -264,60 +269,107 @@ function getDevices(from, command, callback){
     if (shepherd) {
         adapter.getDevices((err, result) => {
             if (result) {
-                adapter.log.info('getDevices result: ' + JSON.stringify(result));
-                var devices = [];
+                var devices = [], cnt = 0, len = result.length;
                 for (var item in result) {
                     if (result[item]._id) {
                         var id = result[item]._id.substr(adapter.namespace.length + 1);
-                        devices.push(result[item]);
+                        let devInfo = result[item];
+                        adapter.getState(result[item]._id+'.paired', function(err, state){
+                            cnt++;
+                            devInfo.paired = state.val;
+                            devices.push(devInfo);
+                            if (cnt==len) {
+                                adapter.log.info('getDevices result: ' + JSON.stringify(devices));
+                                adapter.sendTo(from, command, devices, callback);
+                            }
+                        });
                     }
                 }
-                adapter.sendTo(from, command, devices, callback);
-              }
+                if (len == 0) {
+                    adapter.log.info('getDevices result: ' + JSON.stringify(devices));
+                    adapter.sendTo(from, command, devices, callback);
+                }
+            }
         });
     } else {
         adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);
     }
 }
 
-
 function newDevice(id){
     var dev = shepherd.find(id,1).getDevice();
     adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
     updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
+    updateState(dev.ieeeAddr.substr(2), 'paired', true, {type: 'boolean'});
 }
 
+function markConnected(devices){
+    var devInds = [];
+    for (var dev in devices) {
+        devInds.push(devices[dev].ieeeAddr.substr(2));
+    }
+    adapter.getDevices(function(err, result){
+        if (result) {
+            //adapter.log.info('getDevices result: ' + JSON.stringify(result));
+            var devices = [];
+            for (var item in result) {
+                if (result[item]._id) {
+                    var id = result[item]._id.substr(adapter.namespace.length + 1);
+                    // if found on connected list
+                    if (devInds.indexOf(id) >= 0) {
+                        updateState(result[item]._id, 'paired', true, {type: 'boolean'});
+                    } else {
+                        updateState(result[item]._id, 'paired', false, {type: 'boolean'});
+                    }
+                }
+            }
+        }
+    });
+}
+
+function onReady(){
+    adapter.setState('info.connection', true);
+    adapter.setObjectNotExists('info.pairingMode', {
+        type: 'state',
+        common: {name: 'Pairing mode'}
+    }, {});
+    adapter.setState('info.pairingMode', false);
+    adapter.log.info('Server is ready. Current devices:');
+    var itemsProcessed = 0,
+        devices = [];
+    shepherd.list().forEach(function(dev, index, array){
+        if (dev.type === 'EndDevice')
+            adapter.log.info(dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
+        if (dev.manufId === 4151) // set all xiaomi devices to be online, so shepherd won't try to query info from devices (which would fail because they go tosleep)
+            shepherd.find(dev.ieeeAddr,1).getDevice().update({ status: 'online', joinTime: Math.floor(Date.now()/1000) });
+        devices.push(dev);
+        itemsProcessed++;
+        if(itemsProcessed === array.length) {
+            markConnected(devices);
+        }
+    });
+}
 
 function main() {
+    // file path for ZShepherd
+    var dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
+    if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
     var port = adapter.config.port || '/dev/ttyACM0';
     adapter.log.info('Start on port: ' + port);
     shepherd = new ZShepherd(port, {
         net: {
             panId: 0x1a62
-        }
+        },
+        dbPath: dbDir+'/shepherd.db'
     });
 
     shepherd.on('permitJoining', function(joinTimeLeft) {
         onPermitJoining(joinTimeLeft);
     });
 
-    shepherd.on('ready', function() {
-        adapter.setState('info.connection', true);
-        adapter.setObjectNotExists('info.pairingMode', {
-            type: 'state',
-            common: {name: 'Pairing mode'}
-        }, {});
-        adapter.setState('info.pairingMode', false);
-        adapter.log.info('Server is ready. Current devices:');
-        shepherd.list().forEach(function(dev){
-            if (dev.type === 'EndDevice')
-                adapter.log.info(dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
-            if (dev.manufId === 4151) // set all xiaomi devices to be online, so shepherd won't try to query info from devices (which would fail because they go tosleep)
-                shepherd.find(dev.ieeeAddr,1).getDevice().update({ status: 'online', joinTime: Math.floor(Date.now()/1000) });
-        });
-    });
+    shepherd.on('ready', onReady);
     shepherd.on('ind', function(msg) {
-        adapter.log.info('msg: ' + util.inspect(msg, false, null));
+        //adapter.log.info('msg: ' + util.inspect(msg, false, null));
         var pl = null;
         var topic;
         var dev, dev_id, devClassId;
@@ -333,7 +385,6 @@ function main() {
                 adapter.log.info('statusChange: ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + util.inspect(msg.data, false, null));
                 dev_id = msg.endpoints[0].device.ieeeAddr.substr(2);
                 pl=1;
-
                 switch (msg.data.cid) {
                     case 'ssIasZone':
                         topic = "detected";  //wet detected
@@ -368,9 +419,9 @@ function main() {
                         topic = 'click';
                         pl = msg.data.data['onOff'];
                         // WXKG02LM
-                        //if (dev.modelId == 'lumi.sensor_wleak.aq1') {
+                        if (dev.modelId == 'lumi.sensor_86sw2\u0000Un') {
                             if (devClassId === 24321) { // left
-                                topic = 'click';
+                                topic = 'clickLeft';
                                 pl = 1;
                             } else if (devClassId === 24322) { // right
                                 topic = 'clickRight';
@@ -379,7 +430,7 @@ function main() {
                                 topic = 'clickBoth';
                                 pl = 1;
                             }
-                        //}
+                        }
                         break;
                     case 'msTemperatureMeasurement':  // Aqara Temperature/Humidity
                         topic = "temperature";

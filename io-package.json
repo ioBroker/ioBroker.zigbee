@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.0.1",
+        "version": "0.1.0",
         "news": {
+            "0.1.0": {
+                "en": "Alpha-version",
+                "ru": "Альфа-версия"
+            }
             "0.0.1": {
                 "en": "initial adapter",
                 "ru": "Первоначальный адаптер"
