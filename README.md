@@ -3,7 +3,7 @@
 
 ioBroker Zigbee driver for Xiaomi (and other) devices via cc2531/cc2530
 
-Look wiki for info https://github.com/kirovilya/ioBroker.zigbee/wiki.
+Look wiki for info, hardware and flash https://github.com/kirovilya/ioBroker.zigbee/wiki (russian lang).
 
 **It is alpha version of driver!!! Properties names may changing!!!**
 
