@@ -1,7 +1,18 @@
 ![Logo](admin/zigbee.png)
 # ioBroker.zigbee
 
-ioBroker Zigbee driver for Xiaomi devices
+ioBroker Zigbee driver for Xiaomi (and other) devices via cc2531/cc2530
+
+Look wiki for info https://github.com/kirovilya/ioBroker.zigbee/wiki.
+
+Tested with devices:
+* SJCGQ11LM Aqara Smart Water Sensor (detected, voltage)
+* WXKG02LM Aqara Smart Light Switch Wireless (click left, click right, both click, voltage)
+* WSDCGQ11LM Aqara Temperature Humidity Sensor (humidity, pressure, temperature, voltage)
+* Aqara Window Door Sensor (contact, voltage)
+* Aqara Smart Wireless Switch (click, double click, long click, voltage)
+* Xiaomi Smart Wireless Switch (click, double click, long click, voltage)
+* Aqara Human Body Sensor (illuminance, occupancy, voltage)
 
 
 =================
