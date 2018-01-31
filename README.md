@@ -11,10 +11,10 @@ Tested with devices:
 * SJCGQ11LM Aqara Smart Water Sensor (detected, voltage)
 * WXKG02LM Aqara Smart Light Switch Wireless (click left, click right, both click, voltage)
 * WSDCGQ11LM Aqara Temperature Humidity Sensor (humidity, pressure, temperature, voltage)
-* Aqara Window Door Sensor (contact, voltage)
-* Aqara Smart Wireless Switch (click, double click, long click, voltage)
-* Xiaomi Smart Wireless Switch (click, double click, long click, voltage)
-* Aqara Human Body Sensor (illuminance, occupancy, voltage)
+* MCCGQ11LM Aqara Window Door Sensor (contact, voltage)
+* WXKG11LM Aqara Smart Wireless Switch (click, double click, voltage)
+* WXKG01LM Xiaomi Smart Wireless Switch (click, double click, triple, long click, voltage)
+* RTCGQ11LM Aqara Human Body Sensor (illuminance, occupancy, voltage)
 
 
 =================
