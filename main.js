@@ -375,6 +375,12 @@ function main() {
         var dev, dev_id, devClassId;
 
         switch (msg.type) {
+            case 'devInterview':
+                adapter.log.info('msg: ' + util.inspect(msg, false, null));
+                break;
+            case 'genAnalogInput':
+                adapter.log.info('msg: ' + util.inspect(msg, false, null));
+                break;
             case 'devIncoming':
                 adapter.log.info('Device: ' + msg.data + ' joining the network!');
                 newDevice(msg.data);
@@ -451,6 +457,78 @@ function main() {
                     case 'msIlluminanceMeasurement':
                         topic = "illuminance";
                         pl = msg.data.data['measuredValue'];
+                        break;
+                    case 'genMultistateInput':
+                        /*
+                            +---+
+                            | 2 |
+                        +---+---+---+
+                        | 4 | 0 | 1 |
+                        +---+---+---+
+                            |M5I|
+                            +---+
+                            | 3 |
+                            +---+
+                        Side 5 is with the MI logo, side 3 contains the battery door.
+
+                        presentValue = 0 = shake
+                        presentValue = 2 = wakeup 
+                        presentValue = 3 = fly/fall
+                        presentValue = y + x * 8 + 64 = 90º Flip from side x on top to side y on top
+                        presentValue = x + 128 = 180º flip to side x on top
+                        presentValue = x + 256 = push/slide cube while side x is on top
+                        presentValue = x + 512 = double tap while side x is on top
+                        */
+                        var v = msg.data.data['presentValue'];
+                        switch (true) {
+                            case (v == 0):
+                                updateState(dev_id, 'shake', true, {type: 'boolean'});
+                                break;
+                            case (v == 2):
+                                updateState(dev_id, 'wakeup', true, {type: 'boolean'});
+                                break;
+                            case (v == 3):
+                                updateState(dev_id, 'fall', true, {type: 'boolean'});
+                                break;
+                            case (v >= 512): // double tap
+                                updateState(dev_id, 'tap', true, {type: 'boolean'});
+                                updateState(dev_id, 'tap_side', v-512, {type: 'number'});
+                                break;
+                            case (v >= 256): // slide
+                                updateState(dev_id, 'slide', true, {type: 'boolean'});
+                                updateState(dev_id, 'slide_side', v-256, {type: 'number'});
+                                break;
+                            case (v >= 128): // 180 flip
+                                updateState(dev_id, 'flip180', true, {type: 'boolean'});
+                                updateState(dev_id, 'flip180_side', v-128, {type: 'number'});
+                                break;
+                            case (v >= 64): // 90 flip
+                                updateState(dev_id, 'flip90', true, {type: 'boolean'});
+                                updateState(dev_id, 'flip90_from', Math.floor((v-64) / 8), {type: 'number'});
+                                updateState(dev_id, 'flip90_to', v % 8, {type: 'number'});
+                                break;
+                        }
+                        break;
+                    case 'genAnalogInput':
+                        /*
+                        xiaomiAttr: 500, presentValue = rotation angel left < 0, rigth > 0
+                        xiaomiAttr: 360, presentValue = ? angel
+                        xiaomiAttr: 110, presentValue = ? angel 
+                        xiaomiAttr: 420, presentValue = ? angel 
+                        xiaomiAttr: 320, presentValue = ? angel 
+                        xiaomiAttr: 330, presentValue = ? angel 
+                        */
+                        if (msg.data.data['xiaomiAttr'] == 500) {
+                            var v = msg.data.data['presentValue'];
+                            updateState(dev_id, 'rotate', true, {type: 'boolean'});
+                            updateState(dev_id, 'rotate_angel', v, {type: 'number', unit: 'º'});
+                            if (v < 0) {
+                                updateState(dev_id, 'rotate_dir', 'left');
+                                
+                            } else {
+                                updateState(dev_id, 'rotate_dir', 'right');
+                            }
+                        }
                         break;
                 }
 

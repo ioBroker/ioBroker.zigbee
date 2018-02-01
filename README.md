@@ -8,8 +8,10 @@ Look wiki for info, hardware and flash https://github.com/kirovilya/ioBroker.zig
 **It is alpha version of driver!!! Properties names may changing!!!**
 
 Tested with devices:
+
+* MFKZQ01LM Xiaomi Magic Cube Controller (shake, slide, flip90, flip180, tap, rotate, fall, wakeup, voltage)
 * SJCGQ11LM Aqara Smart Water Sensor (detected, voltage)
-* WXKG02LM Aqara Smart Light Switch Wireless (click left, click right, both click, voltage)
+* WXKG02LM Aqara Smart Light Switch Wireless (click left, click right, click both, voltage)
 * WSDCGQ11LM Aqara Temperature Humidity Sensor (humidity, pressure, temperature, voltage)
 * MCCGQ11LM Aqara Window Door Sensor (contact, voltage)
 * WXKG11LM Aqara Smart Wireless Switch (click, double click, voltage)
