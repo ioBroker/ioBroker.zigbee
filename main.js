@@ -75,6 +75,47 @@ adapter.on('stateChange', function (id, state) {
 
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
+        adapter.log.info('User stateChange ' + id + ' ' + JSON.stringify(state));
+        if (id.indexOf('onRight') > -1) {
+            adapter.log.info('Send right turn on/off');
+            var ep = shepherd.find('0x00158d0001f4d992', 3); // TODO: get real id
+            if (!ep) {
+                adapter.log.info('Not found ep');
+            } else {
+                //adapter.log.info('Found ep'+JSON.stringify(ep));
+                ep.functional('genOnOff', 'toggle', {}, function (err, rsp) {  //toggle, on ,off
+                    adapter.log.info(err);
+                    adapter.log.info(rsp);
+                    // if (!err)
+                    //         adapter.log.info(rsp);
+                    // This example receives a 'defaultRsp'
+                    // {
+                    //     cmdId: 2,
+                    //     statusCode: 0
+                    // }
+                });
+            }
+        }
+        if (id.indexOf('onLeft') > -1) {
+            adapter.log.info('Send left turn on/off');
+            var ep = shepherd.find('0x00158d0001f4d992', 2); // TODO: get real id
+            if (!ep) {
+                adapter.log.info('Not found ep');
+            } else {
+                //adapter.log.info('Found ep'+JSON.stringify(ep));
+                ep.functional('genOnOff', 'toggle', {}, function (err, rsp) { //toggle, on ,off
+                    adapter.log.info(err);
+                    adapter.log.info(rsp);
+                    // if (!err)
+                    //         adapter.log.info(rsp);
+                    // This example receives a 'defaultRsp'
+                    // {
+                    //     cmdId: 2,
+                    //     statusCode: 0
+                    // }
+                });
+            }
+        }
     }
 });
 
@@ -276,7 +317,9 @@ function getDevices(from, command, callback){
                         let devInfo = result[item];
                         adapter.getState(result[item]._id+'.paired', function(err, state){
                             cnt++;
-                            devInfo.paired = state.val;
+                            if (state) {
+                                devInfo.paired = state.val;
+                            }
                             devices.push(devInfo);
                             if (cnt==len) {
                                 adapter.log.info('getDevices result: ' + JSON.stringify(devices));
@@ -297,10 +340,13 @@ function getDevices(from, command, callback){
 }
 
 function newDevice(id){
-    var dev = shepherd.find(id,1).getDevice();
-    adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
-    updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
-    updateState(dev.ieeeAddr.substr(2), 'paired', true, {type: 'boolean'});
+    var dev = shepherd.find(id,1);
+    if (dev) {
+        dev = dev.getDevice();
+        adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
+        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
+        updateState(dev.ieeeAddr.substr(2), 'paired', true, {type: 'boolean'});
+    }
 }
 
 function markConnected(devices){
@@ -372,7 +418,7 @@ function main() {
         //adapter.log.info('msg: ' + util.inspect(msg, false, null));
         var pl = null;
         var topic;
-        var dev, dev_id, devClassId;
+        var dev, dev_id, devClassId, epId;
 
         switch (msg.type) {
             case 'devInterview':
@@ -401,6 +447,7 @@ function main() {
             case 'attReport':
                 dev = msg.endpoints[0].device;
                 devClassId = msg.endpoints[0].devId;
+                epId = msg.endpoints[0].epId;
                 adapter.log.info('attreport: ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + util.inspect(msg.data, false, null));
 
                 // defaults, will be extended or overridden based on device and message
@@ -435,6 +482,49 @@ function main() {
                             } else if (devClassId === 24323) { // both
                                 topic = 'clickBoth';
                                 pl = 1;
+                            }
+                        }
+                        // QBKG03LM
+                        if (dev.modelId == 'lumi.ctrl_neutral2') {
+                            topic = null;
+                            if (devClassId == 256 && (epId == 4 || epId == 2)) { // left
+                                if (pl == 0) { // left press with state on
+                                    updateState(dev_id, 'onLeft', false, {type: 'boolean', write: true});
+                                } else if (pl == 1) { // left press with state off
+                                    updateState(dev_id, 'onLeft', true, {type: 'boolean', write: true});
+                                }
+                            }
+                            if (devClassId == 256 && (epId == 5 || epId == 3)) { // right
+                                if (pl == 0) { // right press with state on
+                                    updateState(dev_id, 'onRight', false, {type: 'boolean', write: true});
+                                } else if (pl == 1) { // right press with state off
+                                    updateState(dev_id, 'onRight', true, {type: 'boolean', write: true});
+                                }
+                            }
+                            if (devClassId == 0 && epId == 4) { // left pressed
+                                if (pl == 0) { // down
+                                    updateState(dev_id, 'clickLeft', false, {type: 'boolean'});
+                                } else if (pl == 1) { // up
+                                    updateState(dev_id, 'clickLeft', true, {type: 'boolean'});
+                                } else if (pl == 2) { // double 
+                                    updateState(dev_id, 'doubleClickLeft', true, {type: 'boolean'});
+                                }
+                            } else if (devClassId == 0 && epId == 5) { // right pressed
+                                if (pl == 0) { // down
+                                    updateState(dev_id, 'clickRight', false, {type: 'boolean'});
+                                } else if (pl == 1) { // up
+                                    updateState(dev_id, 'clickRight', true, {type: 'boolean'});
+                                } else if (pl == 2) { // double 
+                                    updateState(dev_id, 'doubleRightLeft', true, {type: 'boolean'});
+                                }
+                            } else if (devClassId == 0 && epId == 6) { // both pressed
+                                if (pl == 0) { // down
+                                    updateState(dev_id, 'clickBoth', false, {type: 'boolean'});
+                                } else if (pl == 1) { // up
+                                    updateState(dev_id, 'clickBoth', true, {type: 'boolean'});
+                                } else if (pl == 2) { // double 
+                                    updateState(dev_id, 'doubleClickBoth', true, {type: 'boolean'});
+                                }
                             }
                         }
                         break;

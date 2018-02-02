@@ -9,6 +9,7 @@ Look wiki for info, hardware and flash https://github.com/kirovilya/ioBroker.zig
 
 Tested with devices:
 
+* QBKG03LM Aqara Smart Light Wall Switch ZigBee Version (left is on, right is on, click left, click right, click both)
 * MFKZQ01LM Xiaomi Magic Cube Controller (shake, slide, flip90, flip180, tap, rotate, fall, wakeup, voltage)
 * SJCGQ11LM Aqara Smart Water Sensor (detected, voltage)
 * WXKG02LM Aqara Smart Light Switch Wireless (click left, click right, click both, voltage)
