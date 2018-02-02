@@ -7,10 +7,6 @@
                 "en": "Alpha-version",
                 "ru": "Альфа-версия"
             }
-            "0.0.1": {
-                "en": "initial adapter",
-                "ru": "Первоначальный адаптер"
-            }
         },
         "title": "Xiaomi zigbee",
         "desc": {
