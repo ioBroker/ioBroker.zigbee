@@ -14,8 +14,7 @@
   ],
   "dependencies": {
     "perfy": "^1.1.2",
-    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd",
-    "serialport": "^4.0.7"
+    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd"
   },
   "description": "Zigbee for Xiaomi devices",
   "devDependencies": {},
