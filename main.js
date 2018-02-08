@@ -471,7 +471,7 @@ function main() {
                         //topic += '/' + msg.endpoints[0].epId;
                         topic = 'click';
                         pl = msg.data.data['onOff'];
-                        if (dev.modelId.indexOf('lumi.sensor_magnet') >= 0) {
+                        if (dev.modelId && dev.modelId.indexOf('lumi.sensor_magnet') >= 0) {
                             topic = 'contact';
                         }
                         // WXKG02LM
@@ -627,7 +627,7 @@ function main() {
 
                 switch (true) {
                     case (dev.modelId == 'lumi.sensor_switch.aq2'): // WXKG11LM switch
-                    case ((msg.endpoints[0].devId == 260) && (dev.modelId.indexOf('lumi.sensor_magnet') < 0)): // WXKG01LM switch
+                    case ((msg.endpoints[0].devId == 260) && (dev.modelId && dev.modelId.indexOf('lumi.sensor_magnet') < 0)): // WXKG01LM switch
                         if (msg.data.data['onOff'] == 0) { // click down
                             perfy.start(msg.endpoints[0].device.ieeeAddr); // start timer
                             pl = null; // do not send mqtt message
