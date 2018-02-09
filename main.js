@@ -308,31 +308,45 @@ function letsPairing(from, command, callback){
 
 function getDevices(from, command, callback){
     if (shepherd) {
-        adapter.getDevices((err, result) => {
-            if (result) {
-                var devices = [], cnt = 0, len = result.length;
-                for (var item in result) {
-                    if (result[item]._id) {
-                        var id = result[item]._id.substr(adapter.namespace.length + 1);
-                        let devInfo = result[item];
-                        adapter.getState(result[item]._id+'.paired', function(err, state){
-                            cnt++;
-                            if (state) {
-                                devInfo.paired = state.val;
+        var rooms;
+        adapter.getEnums('enum.rooms', function (err, list) {
+            if (!err){
+                rooms = list['enum.rooms'];
+            }
+            adapter.getDevices((err, result) => {
+                if (result) {
+                    var devices = [], cnt = 0, len = result.length;
+                    for (var item in result) {
+                        if (result[item]._id) {
+                            var id = result[item]._id.substr(adapter.namespace.length + 1);
+                            let devInfo = result[item];
+                            devInfo.rooms = [];
+                            for (var room in rooms) {
+                                if (!rooms[room] || !rooms[room].common || !rooms[room].common.members)
+                                    continue;
+                                if (rooms[room].common.members.indexOf(devInfo._id) !== -1) {
+                                    devInfo.rooms.push(rooms[room].common.name);
+                                }
                             }
-                            devices.push(devInfo);
-                            if (cnt==len) {
-                                adapter.log.info('getDevices result: ' + JSON.stringify(devices));
-                                adapter.sendTo(from, command, devices, callback);
-                            }
-                        });
+                            adapter.getState(result[item]._id+'.paired', function(err, state){
+                                cnt++;
+                                if (state) {
+                                    devInfo.paired = state.val;
+                                }
+                                devices.push(devInfo);
+                                if (cnt==len) {
+                                    adapter.log.info('getDevices result: ' + JSON.stringify(devices));
+                                    adapter.sendTo(from, command, devices, callback);
+                                }
+                            });
+                        }
+                    }
+                    if (len == 0) {
+                        adapter.log.info('getDevices result: ' + JSON.stringify(devices));
+                        adapter.sendTo(from, command, devices, callback);
                     }
                 }
-                if (len == 0) {
-                    adapter.log.info('getDevices result: ' + JSON.stringify(devices));
-                    adapter.sendTo(from, command, devices, callback);
-                }
-            }
+            });
         });
     } else {
         adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);

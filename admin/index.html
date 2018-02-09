@@ -24,13 +24,23 @@
     var namespace = 'zigbee.' + instance,
         namespaceLen = namespace.length,
         devices = [],
-        dialog;
+        dialog,
+        systemLang = 'en';
 
     function getCard(dev) {
         var title = dev.common.name,
             id = dev._id,
             type = dev.common.type,
-            img_src = '';
+            img_src = '',
+            rooms = [], room;
+        for (var r in dev.rooms) {
+            if (dev.rooms[r].hasOwnProperty(systemLang)) {
+                rooms.push(dev.rooms[r][systemLang]);
+            } else {
+                rooms.push(dev.rooms[r]);
+            }
+        }
+        room = rooms.join(',');
 
         switch(type) {
             case 'lumi.sensor_switch':
@@ -82,6 +92,7 @@
                          info+
                          buttons+
                         '</div>'+
+                        '<div class="card-action">'+room+'</div>'+
                         '<div class="card-reveal">'+
                             '<div class="input-field">'+
                               '<input id="name" type="text" class="value validate">'+
@@ -332,6 +343,12 @@
         //console.log("Object change announced: " + id + " and obj = " + JSON.stringify(obj));
         if (obj && obj.type == "device") {
             getDevices();
+        }
+    });
+    socket.emit('getObject', 'system.config', function (err, res) {
+        if (!err && res && res.common) {
+            systemLang = res.common.language || systemLang;
+            systemConfig = res;
         }
     });
 </script>
