@@ -13,6 +13,7 @@ var fs = require("fs");
 var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 var util = require("util");
 var perfy = require('perfy');
+var timers = {};
 
 var ZShepherd = require('zigbee-shepherd');
 // need when error on remove
@@ -496,12 +497,6 @@ function main() {
                         //topic += '/' + msg.endpoints[0].epId;
                         topic = 'click';
                         pl = msg.data.data['onOff'];
-                        if (dev.modelId && dev.modelId.indexOf('lumi.sensor_switch') !== -1) {
-                            pl = undefined;
-                            if (msg.data.data['onOff'] == 1) {
-                                updateStateWithTimeout(dev_id, 'click', true, {type: 'boolean'}, 300, false);
-                            }
-                        }
                         if (dev.modelId && dev.modelId.indexOf('lumi.sensor_magnet') >= 0) {
                             pl = undefined;
                             if (msg.data.data['onOff'] == 1) {
@@ -579,7 +574,33 @@ function main() {
                         break;
                     case 'msOccupancySensing': // motion sensor
                         if (msg.data.data['occupancy'] == 1) {
-                            updateStateWithTimeout(dev_id, "occupancy", true, {type: 'boolean'}, 300, false);
+                            updateState(dev_id, "occupancy", true, {type: 'boolean'});
+                            if (timers[dev_id+'no_motion']) {
+                                clearInterval(timers[dev_id+'no_motion']);
+                                delete timers[dev_id+'no_motion'];
+                            }
+                            updateState(dev_id, "no_motion", 0, {type: 'number', unit: 'sec'});
+                            if (!timers[dev_id+'in_motion']) {
+                                timers[dev_id+'in_motion'] = setTimeout(function() {
+                                    clearInterval(timers[dev_id+'in_motion']);
+                                    delete timers[dev_id+'in_motion'];
+                                    updateState(dev_id, "occupancy", false, {type: 'boolean'});
+                                    if (!timers[dev_id+'no_motion']) {
+                                        var counter = 1;
+                                        timers[dev_id+'no_motion'] = setInterval(function() {
+                                            updateState(dev_id, "no_motion", counter, {type: 'number', unit: 'sec'});
+                                            counter = counter + 1;
+                                            if (counter > 1800) {  // cancel after 1800 sec
+                                                clearInterval(timers[dev_id+'no_motion']);
+                                                delete timers[dev_id+'no_motion'];
+                                            }
+                                        }, 1000);
+                                    }
+                                }, 60000); // clear after 60 sec
+                            } else {
+                                clearInterval(timers[dev_id+'in_motion']);
+                                delete timers[dev_id+'in_motion'];
+                            }
                         }
                         break;
                     case 'msIlluminanceMeasurement':
@@ -693,9 +714,13 @@ function main() {
 
         if (pl != null && topic) { // only publish message if we have not set payload to null
             adapter.log.info("dev "+dev_id+" model " + dev.modelId + " to " + topic + " value " + pl);
-            updateState(dev_id, topic, pl);
-            //updateDev(dev_id, dev.modelId, dev.modelId);
-            //updateState(dev_id + '.' + topic, topic, pl);
+            if (dev.modelId && dev.modelId.indexOf('lumi.sensor_switch') !== -1 && topic == 'click') {
+                if (pl == 1) {
+                    updateStateWithTimeout(dev_id, topic, true, {type: 'boolean'}, 300, false);
+                }
+            } else {
+                updateState(dev_id, topic, pl);
+            }
         }
     });
 
