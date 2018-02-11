@@ -77,14 +77,15 @@ adapter.on('stateChange', function (id, state) {
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
         adapter.log.info('User stateChange ' + id + ' ' + JSON.stringify(state));
-        if (id.indexOf('onRight') > -1) {
+        var dev_id = id.replace(adapter.namespace+'.', '0x').split('.')[0];
+        if (id.indexOf('.right_state') !== -1) {
             adapter.log.info('Send right turn on/off');
-            var ep = shepherd.find('0x00158d0001f4d992', 3); // TODO: get real id
+            var ep = shepherd.find(dev_id, 3); // TODO: get real id
             if (!ep) {
                 adapter.log.info('Not found ep');
             } else {
                 //adapter.log.info('Found ep'+JSON.stringify(ep));
-                ep.functional('genOnOff', 'toggle', {}, function (err, rsp) {  //toggle, on ,off
+                ep.functional('genOnOff', (state.val) ? 'on' : 'off', {}, function (err, rsp) {  //toggle, on ,off
                     adapter.log.info(err);
                     adapter.log.info(rsp);
                     // if (!err)
@@ -97,23 +98,29 @@ adapter.on('stateChange', function (id, state) {
                 });
             }
         }
-        if (id.indexOf('onLeft') > -1) {
+        if (id.indexOf('.left_state') !== -1) {
             adapter.log.info('Send left turn on/off');
-            var ep = shepherd.find('0x00158d0001f4d992', 2); // TODO: get real id
+            var ep = shepherd.find(dev_id, 2); // TODO: get real id
             if (!ep) {
                 adapter.log.info('Not found ep');
             } else {
                 //adapter.log.info('Found ep'+JSON.stringify(ep));
-                ep.functional('genOnOff', 'toggle', {}, function (err, rsp) { //toggle, on ,off
+                ep.functional('genOnOff', (state.val) ? 'on' : 'off', {}, function (err, rsp) { //toggle, on ,off
                     adapter.log.info(err);
                     adapter.log.info(rsp);
-                    // if (!err)
-                    //         adapter.log.info(rsp);
-                    // This example receives a 'defaultRsp'
-                    // {
-                    //     cmdId: 2,
-                    //     statusCode: 0
-                    // }
+                });
+            }
+        }
+        if (id.indexOf('.state') !== -1) {
+            adapter.log.info('Send turn on/off');
+            var ep = shepherd.find(dev_id, 1); // TODO: get real id
+            if (!ep) {
+                adapter.log.info('Not found ep');
+            } else {
+                //adapter.log.info('Found ep'+JSON.stringify(ep));
+                ep.functional('genOnOff', (state.val) ? 'on' : 'off', {}, function (err, rsp) {  //toggle, on ,off
+                    adapter.log.info(err);
+                    adapter.log.info(rsp);
                 });
             }
         }
@@ -446,9 +453,6 @@ function main() {
             case 'devInterview':
                 adapter.log.info('msg: ' + util.inspect(msg, false, null));
                 break;
-            case 'genAnalogInput':
-                adapter.log.info('msg: ' + util.inspect(msg, false, null));
-                break;
             case 'devIncoming':
                 adapter.log.info('Device: ' + msg.data + ' joining the network!');
                 newDevice(msg.data);
@@ -503,6 +507,14 @@ function main() {
                                 updateState(dev_id, 'contact', true, {type: 'boolean'});
                             } else {
                                 updateState(dev_id, 'contact', false, {type: 'boolean'});
+                            }
+                        }
+                        if (dev.modelId && dev.modelId.indexOf('lumi.plug') !== -1) {
+                            pl = undefined;
+                            if (msg.data.data['onOff'] == 1) {
+                                updateState(dev_id, 'state', true, {type: 'boolean', write: true});
+                            } else {
+                                updateState(dev_id, 'state', false, {type: 'boolean', write: true});
                             }
                         }
                         // WXKG02LM
@@ -677,6 +689,11 @@ function main() {
                             } else {
                                 updateState(dev_id, 'rotate_dir', 'right');
                             }
+                        }
+                        var val = msg.data.data['presentValue'];
+                        if (val && dev.modelId && dev.modelId.indexOf('lumi.plug') !== -1) {
+                            updateState(dev_id, "load_power", val, {type: 'number', unit: 'W'});
+                            updateState(dev_id, 'in_use', (val > 0) ? true : false, {type: 'boolean'});
                         }
                         break;
                 }
