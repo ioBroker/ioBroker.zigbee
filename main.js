@@ -158,6 +158,13 @@ adapter.on('message', function (obj) {
     processMessages();
 });
 
+function updateStateWithTimeout(dev_id, name, value, common, timeout, outValue) {
+    updateState(dev_id, name, value, common);
+    setTimeout(function () {
+        updateState(dev_id, name, outValue, common);
+    }, timeout);
+}
+
 function updateState(dev_id, name, value, common) {
     let id = dev_id + '.' + name;
     adapter.getObject(dev_id, function(err, obj) {
@@ -414,7 +421,7 @@ function main() {
     // file path for ZShepherd
     var dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
     if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
-    var port = adapter.config.port || '/dev/ttyACM0';
+    var port = adapter.config.port;
     adapter.log.info('Start on port: ' + port);
     shepherd = new ZShepherd(port, {
         net: {
@@ -453,8 +460,12 @@ function main() {
                 pl=1;
                 switch (msg.data.cid) {
                     case 'ssIasZone':
-                        topic = "detected";  //wet detected
-                        pl = msg.data.zoneStatus;
+                        // wet/gas detected
+                        if (msg.data.zoneStatus == 1) {
+                            updateState(dev_id, 'detected', true, {type: 'boolean'});
+                        } else {
+                            updateState(dev_id, 'detected', false, {type: 'boolean'});
+                        }
                         break;
                 }
                 break;
@@ -485,69 +496,78 @@ function main() {
                         //topic += '/' + msg.endpoints[0].epId;
                         topic = 'click';
                         pl = msg.data.data['onOff'];
+                        if (dev.modelId && dev.modelId.indexOf('lumi.sensor_switch') !== -1) {
+                            pl = undefined;
+                            if (msg.data.data['onOff'] == 1) {
+                                updateStateWithTimeout(dev_id, 'click', true, {type: 'boolean'}, 300, false);
+                            }
+                        }
                         if (dev.modelId && dev.modelId.indexOf('lumi.sensor_magnet') >= 0) {
-                            topic = 'contact';
+                            pl = undefined;
+                            if (msg.data.data['onOff'] == 1) {
+                                updateState(dev_id, 'contact', true, {type: 'boolean'});
+                            } else {
+                                updateState(dev_id, 'contact', false, {type: 'boolean'});
+                            }
                         }
                         // WXKG02LM
                         if (dev.modelId == 'lumi.sensor_86sw2\u0000Un') {
+                            pl = undefined;
                             if (devClassId === 24321) { // left
-                                topic = 'clickLeft';
-                                pl = 1;
+                                topic = 'left_click';                                
                             } else if (devClassId === 24322) { // right
-                                topic = 'clickRight';
-                                pl = 1;
+                                topic = 'right_click';
                             } else if (devClassId === 24323) { // both
-                                topic = 'clickBoth';
-                                pl = 1;
+                                topic = 'both_click';
                             }
+                            updateStateWithTimeout(dev_id, topic, true, {type: 'boolean'}, 300, false);
                         }
                         // QBKG03LM
                         if (dev.modelId == 'lumi.ctrl_neutral2') {
                             topic = null;
                             if (devClassId == 256 && (epId == 4 || epId == 2)) { // left
                                 if (pl == 0) { // left press with state on
-                                    updateState(dev_id, 'onLeft', false, {type: 'boolean', write: true});
+                                    updateState(dev_id, 'left_state', false, {type: 'boolean', write: true});
                                 } else if (pl == 1) { // left press with state off
-                                    updateState(dev_id, 'onLeft', true, {type: 'boolean', write: true});
+                                    updateState(dev_id, 'left_state', true, {type: 'boolean', write: true});
                                 }
                             }
                             if (devClassId == 256 && (epId == 5 || epId == 3)) { // right
                                 if (pl == 0) { // right press with state on
-                                    updateState(dev_id, 'onRight', false, {type: 'boolean', write: true});
+                                    updateState(dev_id, 'right_state', false, {type: 'boolean', write: true});
                                 } else if (pl == 1) { // right press with state off
-                                    updateState(dev_id, 'onRight', true, {type: 'boolean', write: true});
+                                    updateState(dev_id, 'right_state', true, {type: 'boolean', write: true});
                                 }
                             }
                             if (devClassId == 0 && epId == 4) { // left pressed
                                 if (pl == 0) { // down
-                                    updateState(dev_id, 'clickLeft', false, {type: 'boolean'});
+                                    updateState(dev_id, 'left_click', false, {type: 'boolean'});
                                 } else if (pl == 1) { // up
-                                    updateState(dev_id, 'clickLeft', true, {type: 'boolean'});
+                                    updateState(dev_id, 'left_click', true, {type: 'boolean'});
                                 } else if (pl == 2) { // double 
-                                    updateState(dev_id, 'doubleClickLeft', true, {type: 'boolean'});
+                                    updateState(dev_id, 'left_double_click', true, {type: 'boolean'});
                                 }
                             } else if (devClassId == 0 && epId == 5) { // right pressed
                                 if (pl == 0) { // down
-                                    updateState(dev_id, 'clickRight', false, {type: 'boolean'});
+                                    updateState(dev_id, 'right_click', false, {type: 'boolean'});
                                 } else if (pl == 1) { // up
-                                    updateState(dev_id, 'clickRight', true, {type: 'boolean'});
+                                    updateState(dev_id, 'right_click', true, {type: 'boolean'});
                                 } else if (pl == 2) { // double 
-                                    updateState(dev_id, 'doubleRightLeft', true, {type: 'boolean'});
+                                    updateState(dev_id, 'right_double_click', true, {type: 'boolean'});
                                 }
                             } else if (devClassId == 0 && epId == 6) { // both pressed
                                 if (pl == 0) { // down
-                                    updateState(dev_id, 'clickBoth', false, {type: 'boolean'});
+                                    updateState(dev_id, 'both_click', false, {type: 'boolean'});
                                 } else if (pl == 1) { // up
-                                    updateState(dev_id, 'clickBoth', true, {type: 'boolean'});
+                                    updateState(dev_id, 'both_click', true, {type: 'boolean'});
                                 } else if (pl == 2) { // double 
-                                    updateState(dev_id, 'doubleClickBoth', true, {type: 'boolean'});
+                                    updateState(dev_id, 'both_double_click', true, {type: 'boolean'});
                                 }
                             }
                         }
                         break;
                     case 'msTemperatureMeasurement':  // Aqara Temperature/Humidity
-                        topic = "temperature";
-                        pl = parseFloat(msg.data.data['measuredValue']) / 100.0;
+                        updateState(dev_id, "temperature", parseFloat(msg.data.data['measuredValue']) / 100.0, {type: 'number', unit: 'º'});
                         break;
                     case 'msRelativeHumidity':
                         topic = "humidity";
@@ -558,8 +578,9 @@ function main() {
                         pl = parseFloat(msg.data.data['16']) / 10.0;
                         break;
                     case 'msOccupancySensing': // motion sensor
-                        topic = "occupancy";
-                        pl = msg.data.data['occupancy'];
+                        if (msg.data.data['occupancy'] == 1) {
+                            updateStateWithTimeout(dev_id, "occupancy", true, {type: 'boolean'}, 300, false);
+                        }
                         break;
                     case 'msIlluminanceMeasurement':
                         topic = "illuminance";
@@ -589,28 +610,28 @@ function main() {
                         var v = msg.data.data['presentValue'];
                         switch (true) {
                             case (v == 0):
-                                updateState(dev_id, 'shake', true, {type: 'boolean'});
+                                updateStateWithTimeout(dev_id, 'shake', true, {type: 'boolean'}, 300, false);
                                 break;
                             case (v == 2):
-                                updateState(dev_id, 'wakeup', true, {type: 'boolean'});
+                                updateStateWithTimeout(dev_id, 'wakeup', true, {type: 'boolean'}, 300, false);
                                 break;
                             case (v == 3):
-                                updateState(dev_id, 'fall', true, {type: 'boolean'});
+                                updateStateWithTimeout(dev_id, 'fall', true, {type: 'boolean'}, 300, false);
                                 break;
                             case (v >= 512): // double tap
-                                updateState(dev_id, 'tap', true, {type: 'boolean'});
+                                updateStateWithTimeout(dev_id, 'tap', true, {type: 'boolean'}, 300, false);
                                 updateState(dev_id, 'tap_side', v-512, {type: 'number'});
                                 break;
                             case (v >= 256): // slide
-                                updateState(dev_id, 'slide', true, {type: 'boolean'});
+                                updateStateWithTimeout(dev_id, 'slide', true, {type: 'boolean'}, 300, false);
                                 updateState(dev_id, 'slide_side', v-256, {type: 'number'});
                                 break;
                             case (v >= 128): // 180 flip
-                                updateState(dev_id, 'flip180', true, {type: 'boolean'});
+                                updateStateWithTimeout(dev_id, 'flip180', true, {type: 'boolean'}, 300, false);
                                 updateState(dev_id, 'flip180_side', v-128, {type: 'number'});
                                 break;
                             case (v >= 64): // 90 flip
-                                updateState(dev_id, 'flip90', true, {type: 'boolean'});
+                                updateStateWithTimeout(dev_id, 'flip90', true, {type: 'boolean'}, 300, false);
                                 updateState(dev_id, 'flip90_from', Math.floor((v-64) / 8), {type: 'number'});
                                 updateState(dev_id, 'flip90_to', v % 8, {type: 'number'});
                                 break;
@@ -627,7 +648,7 @@ function main() {
                         */
                         if (msg.data.data['xiaomiAttr'] == 500) {
                             var v = msg.data.data['presentValue'];
-                            updateState(dev_id, 'rotate', true, {type: 'boolean'});
+                            updateStateWithTimeout(dev_id, 'rotate', true, {type: 'boolean'}, 300, false);
                             updateState(dev_id, 'rotate_angel', v, {type: 'number', unit: 'º'});
                             if (v < 0) {
                                 updateState(dev_id, 'rotate_dir', 'left');
@@ -650,14 +671,16 @@ function main() {
                                 var clicktime = perfy.end(msg.endpoints[0].device.ieeeAddr); // end timer
                                 if (clicktime.seconds > 0 || clicktime.milliseconds > 240) { // seems like a long press so ..
                                     //topic = topic.slice(0,-1) + '2'; //change topic to 2
-                                    updateState(dev_id, topic, '128'); // long click
+                                    updateStateWithTimeout(dev_id, 'long_click', true, {type: 'boolean'}, 300, false);
                                     topic = topic + '_elapsed';
                                     //pl = clicktime.seconds + Math.floor(clicktime.milliseconds) + ''; // and payload to elapsed seconds
                                     pl = clicktime.seconds;
                                 }
                             }
                         } else if (msg.data.data['32768']) { // multiple clicks
-                            pl = msg.data.data['32768'];
+                            if (msg.data.data['32768'] == 2) {
+                                updateStateWithTimeout(dev_id, 'double_click', true, {type: 'boolean'}, 300, false);
+                            }
                         }
                 }
 
