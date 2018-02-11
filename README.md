@@ -9,6 +9,8 @@ Look wiki for info, hardware and flash https://github.com/kirovilya/ioBroker.zig
 
 Tested with devices:
 
+* JTYJ-GD-01LM/BW Xiaomi Smoke Alarm (detected, voltage)
+* ZNCZ02LM Xiaomi Smart Power Plug (state, load power, in use)
 * QBKG03LM Xiaomi Aqara Light Switch (left is on, right is on, click left, click right, click both)
 * MFKZQ01LM Xiaomi Magic Cube Controller (shake, slide, flip90, flip180, tap, rotate, fall, wakeup, voltage)
 * SJCGQ11LM Aqara Smart Water Sensor (detected, voltage)
