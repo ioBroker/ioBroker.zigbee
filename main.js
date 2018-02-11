@@ -702,6 +702,12 @@ function main() {
                             if (msg.data.data['32768'] == 2) {
                                 updateStateWithTimeout(dev_id, 'double_click', true, {type: 'boolean'}, 300, false);
                             }
+                            if (msg.data.data['32768'] == 3) {
+                                updateStateWithTimeout(dev_id, 'triple_click', true, {type: 'boolean'}, 300, false);
+                            }
+                            if (msg.data.data['32768'] == 4) {
+                                updateStateWithTimeout(dev_id, 'quad_click', true, {type: 'boolean'}, 300, false);
+                            }
                         }
                 }
 
