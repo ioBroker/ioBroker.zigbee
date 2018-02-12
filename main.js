@@ -381,7 +381,9 @@ function newDevice(id){
 function markConnected(devices){
     var devInds = [];
     for (var dev in devices) {
-        devInds.push(devices[dev].ieeeAddr.substr(2));
+        if (devices[dev].ieeeAddr) {
+            devInds.push(devices[dev].ieeeAddr.substr(2));
+        }
     }
     adapter.getDevices(function(err, result){
         if (result) {
