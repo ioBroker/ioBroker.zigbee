@@ -381,7 +381,9 @@ function newDevice(id){
 function markConnected(devices){
     var devInds = [];
     for (var dev in devices) {
-        devInds.push(devices[dev].ieeeAddr.substr(2));
+        if (devices[dev].ieeeAddr) {
+            devInds.push(devices[dev].ieeeAddr.substr(2));
+        }
     }
     adapter.getDevices(function(err, result){
         if (result) {
@@ -511,6 +513,13 @@ function main() {
                         }
                         if (dev.modelId && dev.modelId.indexOf('lumi.plug') !== -1) {
                             pl = undefined;
+                            if (msg.data.data['onOff'] == 1) {
+                                updateState(dev_id, 'state', true, {type: 'boolean', write: true});
+                            } else {
+                                updateState(dev_id, 'state', false, {type: 'boolean', write: true});
+                            }
+                        }
+                        if (dev.modelId && dev.modelId.indexOf('lumi.ctrl_ln1') !== -1) {
                             if (msg.data.data['onOff'] == 1) {
                                 updateState(dev_id, 'state', true, {type: 'boolean', write: true});
                             } else {
@@ -672,14 +681,14 @@ function main() {
                         break;
                     case 'genAnalogInput':
                         /*
-                        xiaomiAttr: 500, presentValue = rotation angel left < 0, rigth > 0
-                        xiaomiAttr: 360, presentValue = ? angel
-                        xiaomiAttr: 110, presentValue = ? angel 
-                        xiaomiAttr: 420, presentValue = ? angel 
-                        xiaomiAttr: 320, presentValue = ? angel 
-                        xiaomiAttr: 330, presentValue = ? angel 
+                        65285: 500, presentValue = rotation angel left < 0, rigth > 0
+                        65285: 360, presentValue = ? angel
+                        65285: 110, presentValue = ? angel 
+                        65285: 420, presentValue = ? angel 
+                        65285: 320, presentValue = ? angel 
+                        65285: 330, presentValue = ? angel 
                         */
-                        if (msg.data.data['xiaomiAttr'] == 500) {
+                        if (msg.data.data['65285'] == 500) {
                             var v = msg.data.data['presentValue'];
                             updateStateWithTimeout(dev_id, 'rotate', true, {type: 'boolean'}, 300, false);
                             updateState(dev_id, 'rotate_angel', v, {type: 'number', unit: 'º'});
@@ -694,6 +703,9 @@ function main() {
                         if (val && dev.modelId && dev.modelId.indexOf('lumi.plug') !== -1) {
                             updateState(dev_id, "load_power", val, {type: 'number', unit: 'W'});
                             updateState(dev_id, 'in_use', (val > 0) ? true : false, {type: 'boolean'});
+                        }
+                        if (val && dev.modelId && dev.modelId.indexOf('lumi.ctrl_ln') !== -1) {
+                            updateState(dev_id, "load_power", val, {type: 'number', unit: 'W'});
                         }
                         break;
                 }
