@@ -493,7 +493,7 @@ function main() {
                             //var buf=msg.data.data['65281'];
                             //adapter.log.info('xiaomiStruct: '+buf.toString('hex'));
                             var batteryData = msg.data.data['65281']['1'];
-                            if (batteryData) {
+                            if (batteryData != undefined) {
                                 updateState(dev_id, 'voltage', batteryData / 1000, {type: 'number', unit: 'v'});  // voltage
                                 updateState(dev_id, 'battery', (batteryData - 2700) / 5, {type: 'number', unit: '%'});  // percent
                             }
@@ -700,11 +700,11 @@ function main() {
                             }
                         }
                         var val = msg.data.data['presentValue'];
-                        if (val && dev.modelId && dev.modelId.indexOf('lumi.plug') !== -1) {
+                        if (val != undefined && dev.modelId && dev.modelId.indexOf('lumi.plug') !== -1) {
                             updateState(dev_id, "load_power", val, {type: 'number', unit: 'W'});
                             updateState(dev_id, 'in_use', (val > 0) ? true : false, {type: 'boolean'});
                         }
-                        if (val && dev.modelId && dev.modelId.indexOf('lumi.ctrl_ln') !== -1) {
+                        if (val != undefined && dev.modelId && dev.modelId.indexOf('lumi.ctrl_ln') !== -1) {
                             updateState(dev_id, "load_power", val, {type: 'number', unit: 'W'});
                         }
                         break;
