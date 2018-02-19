@@ -452,6 +452,7 @@ function main() {
         var dev, dev_id, devClassId, epId;
 
         switch (msg.type) {
+            case 'devChange':
             case 'devInterview':
                 adapter.log.info('msg: ' + util.inspect(msg, false, null));
                 break;
