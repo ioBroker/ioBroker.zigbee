@@ -10,6 +10,7 @@ Look wiki for info, hardware and flash https://github.com/kirovilya/ioBroker.zig
 Tested with devices:
 
 * QBCZ11LM Aqara Smart Socket ZiGBee (state, load power, in use)
+* QBKG11LM Xiaomi Aqara Smart Wall Switch Line-Neutral Single-Button (click, state, load power)
 * JTYJ-GD-01LM/BW Xiaomi Smoke Alarm (detected, voltage)
 * ZNCZ02LM Xiaomi Smart Power Plug (state, load power, in use)
 * QBKG03LM Xiaomi Aqara Light Switch (left is on, right is on, click left, click right, click both)
