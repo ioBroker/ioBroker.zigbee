@@ -490,14 +490,18 @@ function main() {
 
                 switch (msg.data.cid) {
                     case 'genBasic':
+                        var batteryData;
+                        // for new Aqara sensor
                         if (msg.data.data['65281']) {
-                            //var buf=msg.data.data['65281'];
-                            //adapter.log.info('xiaomiStruct: '+buf.toString('hex'));
-                            var batteryData = msg.data.data['65281']['1'];
-                            if (batteryData != undefined) {
-                                updateState(dev_id, 'voltage', batteryData / 1000, {type: 'number', unit: 'v'});  // voltage
-                                updateState(dev_id, 'battery', (batteryData - 2700) / 5, {type: 'number', unit: '%'});  // percent
-                            }
+                            batteryData = msg.data.data['65281']['1'];
+                        }
+                        // for old Mijia sensor
+                        if (msg.data.data['65282']) {
+                            batteryData = msg.data.data['65282']['1'].elmVal;
+                        }
+                        if (batteryData != undefined) {
+                            updateState(dev_id, 'voltage', batteryData / 1000, {type: 'number', unit: 'v'});  // voltage
+                            updateState(dev_id, 'battery', (batteryData - 2700) / 5, {type: 'number', unit: '%'});  // percent
                         }
                         break;
                     case 'genOnOff':  // various switches
