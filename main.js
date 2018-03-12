@@ -437,6 +437,7 @@ function main() {
         net: {
             panId: 0x1a62
         },
+        sp: { baudrate: 115200, rtscts: false },
         dbPath: dbDir+'/shepherd.db'
     });
 
