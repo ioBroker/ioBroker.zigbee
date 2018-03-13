@@ -124,6 +124,30 @@ adapter.on('stateChange', function (id, state) {
                 });
             }
         }
+        if (id.indexOf('.level') !== -1) {
+            adapter.log.info('Send level control');
+            var ep = shepherd.find(dev_id, 1); // TODO: get real id
+            if (!ep) {
+                adapter.log.info('Not found ep');
+            } else {
+                ep.functional('genLevelCtrl', 'moveToLevel', {"level": state.val, 'transtime': 10}, function (err, rsp) {
+                    adapter.log.info(err);
+                    adapter.log.info(rsp);
+                });
+            }
+        }
+        if (id.indexOf('.colortemp') !== -1) {
+            adapter.log.info('Send color temp');
+            var ep = shepherd.find(dev_id, 1); // TODO: get real id
+            if (!ep) {
+                adapter.log.info('Not found ep');
+            } else {
+                ep.functional('lightingColorCtrl', 'moveToColorTemp', {"colortemp": state.val, 'transtime': 10}, function (err, rsp) {
+                    adapter.log.info(err);
+                    adapter.log.info(rsp);
+                });
+            }
+        }
     }
 });
 
@@ -374,6 +398,12 @@ function newDevice(id){
         dev = dev.getDevice();
         adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
         updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
+        // TRADFRI bulb
+        if (dev.modelId && dev.modelId.indexOf('TRADFRI bulb') !== -1) {
+            updateState(dev.ieeeAddr.substr(2), 'state', true, {type: 'boolean', write: true});
+            updateState(dev.ieeeAddr.substr(2), 'level', 0, {type: 'number', write: true});
+            updateState(dev.ieeeAddr.substr(2), 'colortemp', 0, {type: 'number', write: true});
+        }
         updateState(dev.ieeeAddr.substr(2), 'paired', true, {type: 'boolean'});
     }
 }
@@ -453,7 +483,6 @@ function main() {
         var dev, dev_id, devClassId, epId;
 
         switch (msg.type) {
-            case 'devChange':
             case 'devInterview':
                 adapter.log.info('msg: ' + util.inspect(msg, false, null));
                 break;
@@ -478,6 +507,7 @@ function main() {
                         break;
                 }
                 break;
+            case 'devChange':
             case 'attReport':
                 dev = msg.endpoints[0].device;
                 devClassId = msg.endpoints[0].devId;
@@ -509,6 +539,15 @@ function main() {
                         //topic += '/' + msg.endpoints[0].epId;
                         topic = 'click';
                         pl = msg.data.data['onOff'];
+                        // TRADFRI bulb
+                        if (dev.modelId && dev.modelId.indexOf('TRADFRI bulb') !== -1) {
+                            pl = undefined;
+                            if (msg.data.data['onOff'] == 1) {
+                                updateState(dev_id, 'state', true, {type: 'boolean', write: true});
+                            } else {
+                                updateState(dev_id, 'state', false, {type: 'boolean', write: true});
+                            }
+                        }
                         if (dev.modelId && dev.modelId.indexOf('lumi.sensor_magnet') >= 0) {
                             pl = undefined;
                             if (msg.data.data['onOff'] == 1) {
