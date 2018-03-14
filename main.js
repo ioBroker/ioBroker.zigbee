@@ -8,6 +8,8 @@
 /*jslint node: true */
 "use strict";
 
+const safeJsonStringify = require(__dirname + '/lib/json');
+
 // you have to require the utils module and call adapter function
 var fs = require("fs");
 var utils = require(__dirname + '/lib/utils'); // Get common adapter utils
@@ -53,7 +55,7 @@ function processMessage(message) {
 // is called when adapter shuts down - callback has to be called under any circumstances!
 adapter.on('unload', function (callback) {
     try {
-        adapter.log.info('cleaned everything up...');
+        adapter.log.debug('cleaned everything up...');
         shepherd = undefined;
         callback();
     } catch (e) {
@@ -76,18 +78,18 @@ adapter.on('stateChange', function (id, state) {
 
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
-        adapter.log.info('User stateChange ' + id + ' ' + JSON.stringify(state));
+        adapter.log.debug('User stateChange ' + id + ' ' + JSON.stringify(state));
         var dev_id = id.replace(adapter.namespace+'.', '0x').split('.')[0];
         if (id.indexOf('.right_state') !== -1) {
-            adapter.log.info('Send right turn on/off');
+            adapter.log.debug('Send right turn on/off');
             var ep = shepherd.find(dev_id, 3); // TODO: get real id
             if (!ep) {
-                adapter.log.info('Not found ep');
+                adapter.log.debug('Not found ep');
             } else {
                 //adapter.log.info('Found ep'+JSON.stringify(ep));
                 ep.functional('genOnOff', (state.val) ? 'on' : 'off', {}, function (err, rsp) {  //toggle, on ,off
-                    adapter.log.info(err);
-                    adapter.log.info(rsp);
+                    adapter.log.debug(err);
+                    adapter.log.debug(rsp);
                     // if (!err)
                     //         adapter.log.info(rsp);
                     // This example receives a 'defaultRsp'
@@ -99,52 +101,52 @@ adapter.on('stateChange', function (id, state) {
             }
         }
         if (id.indexOf('.left_state') !== -1) {
-            adapter.log.info('Send left turn on/off');
+            adapter.log.debug('Send left turn on/off');
             var ep = shepherd.find(dev_id, 2); // TODO: get real id
             if (!ep) {
-                adapter.log.info('Not found ep');
+                adapter.log.debug('Not found ep');
             } else {
                 //adapter.log.info('Found ep'+JSON.stringify(ep));
                 ep.functional('genOnOff', (state.val) ? 'on' : 'off', {}, function (err, rsp) { //toggle, on ,off
-                    adapter.log.info(err);
-                    adapter.log.info(rsp);
+                    adapter.log.debug(err);
+                    adapter.log.debug(rsp);
                 });
             }
         }
         if (id.indexOf('.state') !== -1) {
-            adapter.log.info('Send turn on/off');
+            adapter.log.debug('Send turn on/off');
             var ep = shepherd.find(dev_id, 1); // TODO: get real id
             if (!ep) {
-                adapter.log.info('Not found ep');
+                adapter.log.debug('Not found ep');
             } else {
                 //adapter.log.info('Found ep'+JSON.stringify(ep));
                 ep.functional('genOnOff', (state.val) ? 'on' : 'off', {}, function (err, rsp) {  //toggle, on ,off
-                    adapter.log.info(err);
-                    adapter.log.info(rsp);
+                    adapter.log.debug(err);
+                    adapter.log.debug(rsp);
                 });
             }
         }
         if (id.indexOf('.level') !== -1) {
-            adapter.log.info('Send level control');
+            adapter.log.debug('Send level control');
             var ep = shepherd.find(dev_id, 1); // TODO: get real id
             if (!ep) {
-                adapter.log.info('Not found ep');
+                adapter.log.debug('Not found ep');
             } else {
                 ep.functional('genLevelCtrl', 'moveToLevel', {"level": state.val, 'transtime': 10}, function (err, rsp) {
-                    adapter.log.info(err);
-                    adapter.log.info(rsp);
+                    adapter.log.debug(err);
+                    adapter.log.debug(rsp);
                 });
             }
         }
         if (id.indexOf('.colortemp') !== -1) {
-            adapter.log.info('Send color temp');
+            adapter.log.debug('Send color temp');
             var ep = shepherd.find(dev_id, 1); // TODO: get real id
             if (!ep) {
-                adapter.log.info('Not found ep');
+                adapter.log.debug('Not found ep');
             } else {
                 ep.functional('lightingColorCtrl', 'moveToColorTemp', {"colortemp": state.val, 'transtime': 10}, function (err, rsp) {
-                    adapter.log.info(err);
-                    adapter.log.info(rsp);
+                    adapter.log.debug(err);
+                    adapter.log.debug(rsp);
                 });
             }
         }
@@ -158,7 +160,7 @@ adapter.on('message', function (obj) {
         switch (obj.command) {
             case 'send':
                 // e.g. send email or pushover or whatever
-                adapter.log.info('send command');
+                adapter.log.debug('send command');
                 // Send response in callback if required
                 if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
                 break;
@@ -221,7 +223,7 @@ function updateState(dev_id, name, value, common) {
             adapter.extendObject(id, {type: 'state', common: new_common});
             adapter.setState(id, value, true);
         } else {
-            adapter.log.info('no device '+dev_id);
+            adapter.log.debug('no device '+dev_id);
         }
     });
 }
@@ -238,15 +240,15 @@ function renameDevice(from, command, msg, callback) {
 
 function deleteDevice(from, command, msg, callback) {
     if (shepherd) {
-        adapter.log.info('deleteDevice message: ' + JSON.stringify(msg));
+        adapter.log.debug('deleteDevice message: ' + JSON.stringify(msg));
         var id = msg.id, sysid = id.replace(adapter.namespace+'.', '0x'), 
             dev_id = id.replace(adapter.namespace+'.', '');
-        adapter.log.info('deleteDevice sysid: ' + sysid);
+        adapter.log.debug('deleteDevice sysid: ' + sysid);
         //adapter.extendObject(id, {common: {name: newName}});
         var dev = shepherd.find(sysid, 1);
         if (!dev) {
-            adapter.log.info('Not found on shepherd!');
-            adapter.log.info('Try delete dev '+dev_id+'from iobroker.');
+            adapter.log.debug('Not found on shepherd!');
+            adapter.log.debug('Try delete dev '+dev_id+'from iobroker.');
             adapter.deleteDevice(dev_id, function(){
                 adapter.sendTo(from, command, {}, callback);
             });
@@ -256,17 +258,17 @@ function deleteDevice(from, command, msg, callback) {
         dev.getDevice().update({status: 'online'});
         shepherd.remove(sysid, function (err) {
             if (!err) {
-                adapter.log.info('Successfully removed from shepherd!');
+                adapter.log.debug('Successfully removed from shepherd!');
                 adapter.deleteDevice(dev_id, function(){
                     adapter.sendTo(from, command, {}, callback);
                 });
             } else {
-                adapter.log.info('Error on remove!');
-                adapter.log.info('Try force remove!');
+                adapter.log.debug('Error on remove!');
+                adapter.log.debug('Try force remove!');
                 shepherd.forceRemove(sysid, function (err) {
                     if (!err) {
-                        adapter.log.info('Force removed from shepherd!');
-                        adapter.log.info('Try delete dev '+dev_id+'from iobroker.');
+                        adapter.log.debug('Force removed from shepherd!');
+                        adapter.log.debug('Try delete dev '+dev_id+'from iobroker.');
                         adapter.deleteDevice(dev_id, function(){
                             adapter.sendTo(from, command, {}, callback);
                         });
@@ -374,14 +376,14 @@ function getDevices(from, command, callback){
                                 }
                                 devices.push(devInfo);
                                 if (cnt==len) {
-                                    adapter.log.info('getDevices result: ' + JSON.stringify(devices));
+                                    adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
                                     adapter.sendTo(from, command, devices, callback);
                                 }
                             });
                         }
                     }
                     if (len == 0) {
-                        adapter.log.info('getDevices result: ' + JSON.stringify(devices));
+                        adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
                         adapter.sendTo(from, command, devices, callback);
                     }
                 }
@@ -445,8 +447,8 @@ function onReady(){
     var itemsProcessed = 0,
         devices = [];
     shepherd.list().forEach(function(dev, index, array){
-        if (dev.type === 'EndDevice')
-            adapter.log.info(dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
+        //if (dev.type === 'EndDevice')
+        adapter.log.info(dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId+ ' '+dev.type);
         if (dev.manufId === 4151) // set all xiaomi devices to be online, so shepherd won't try to query info from devices (which would fail because they go tosleep)
             shepherd.find(dev.ieeeAddr,1).getDevice().update({ status: 'online', joinTime: Math.floor(Date.now()/1000) });
         devices.push(dev);
@@ -455,6 +457,10 @@ function onReady(){
             markConnected(devices);
         }
     });
+}
+
+function onError(err) {
+    adapter.log.error('Error: ' + safeJsonStringify(err));
 }
 
 function main() {
@@ -476,24 +482,26 @@ function main() {
     });
 
     shepherd.on('ready', onReady);
+    shepherd.on('error', onError);
     shepherd.on('ind', function(msg) {
-        //adapter.log.info('msg: ' + util.inspect(msg, false, null));
+        adapter.log.debug('msg: ' + safeJsonStringify(msg));
         var pl = null;
         var topic;
         var dev, dev_id, devClassId, epId;
 
         switch (msg.type) {
+            case 'devStatus':
+
             case 'devInterview':
-                adapter.log.info('msg: ' + util.inspect(msg, false, null));
                 break;
             case 'devIncoming':
-                adapter.log.info('Device: ' + msg.data + ' joining the network!');
+                adapter.log.debug('Device: ' + msg.data + ' joining the network!');
                 newDevice(msg.data);
                 break;
             case 'statusChange':
                 dev = msg.endpoints[0].device;
                 devClassId = msg.endpoints[0].devId;
-                adapter.log.info('statusChange: ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + util.inspect(msg.data, false, null));
+                adapter.log.info('statusChange: ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + safeJsonStringify(msg.data));
                 dev_id = msg.endpoints[0].device.ieeeAddr.substr(2);
                 pl=1;
                 switch (msg.data.cid) {
@@ -512,7 +520,7 @@ function main() {
                 dev = msg.endpoints[0].device;
                 devClassId = msg.endpoints[0].devId;
                 epId = msg.endpoints[0].epId;
-                adapter.log.info('attreport: ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + util.inspect(msg.data, false, null));
+                adapter.log.debug(msg.type + ': ' + msg.endpoints[0].device.ieeeAddr + ' ' + msg.endpoints[0].devId + ' ' + msg.endpoints[0].epId + ' ' + safeJsonStringify(msg.data));
 
                 // defaults, will be extended or overridden based on device and message
                 //topic += msg.endpoints[0].device.ieeeAddr.substr(2);
@@ -799,13 +807,13 @@ function main() {
 
                 break;
             default:
-                console.log(util.inspect(msg, false, null));
+                console.log(safeJsonStringify(msg));
                 // Not deal with other msg.type in this example
                 break;
         }
 
         if (pl != null && topic) { // only publish message if we have not set payload to null
-            adapter.log.info("dev "+dev_id+" model " + dev.modelId + " to " + topic + " value " + pl);
+            adapter.log.debug("dev "+dev_id+" model " + dev.modelId + " to " + topic + " value " + pl);
             if (dev.modelId && dev.modelId.indexOf('lumi.sensor_switch') !== -1 && topic == 'click') {
                 if (pl == 1) {
                     updateStateWithTimeout(dev_id, topic, true, {type: 'boolean'}, 300, false);
