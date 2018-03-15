@@ -283,7 +283,7 @@ function deleteDevice(from, command, msg, callback) {
     }
 }
 
-function updateDev(dev_id, dev_name, dev_type) {
+function updateDev(dev_id, dev_name, dev_type, callback) {
     let id = '' + dev_id;
     // create channel for dev
     adapter.setObjectNotExists(id, {
@@ -296,7 +296,7 @@ function updateDev(dev_id, dev_name, dev_type) {
             adapter.extendObject(id, {
                 type: 'device',
                 common: {type: dev_type}
-            });
+            }, callback);
         }
     });
 }
@@ -399,14 +399,26 @@ function newDevice(id){
     if (dev) {
         dev = dev.getDevice();
         adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
-        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
-        // TRADFRI bulb
-        if (dev.modelId && dev.modelId.indexOf('TRADFRI bulb') !== -1) {
-            updateState(dev.ieeeAddr.substr(2), 'state', true, {type: 'boolean', write: true});
-            updateState(dev.ieeeAddr.substr(2), 'level', 0, {type: 'number', write: true});
-            updateState(dev.ieeeAddr.substr(2), 'colortemp', 0, {type: 'number', write: true});
-        }
-        updateState(dev.ieeeAddr.substr(2), 'paired', true, {type: 'boolean'});
+        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, function () {
+            // TRADFRI bulb
+            if (dev.modelId && dev.modelId.indexOf('TRADFRI bulb') !== -1) {
+                var ep = dev.getEndpoint(1);
+                if (ep) {
+                    updateState(dev.ieeeAddr.substr(2), 'state', ep.clusters.genOnOff.attrs.onOff == 1,
+                        {type: 'boolean', write: true});
+                    if (ep.clusters.genLevelCtrl) {
+                        updateState(dev.ieeeAddr.substr(2), 'level', ep.clusters.genLevelCtrl.attrs.currentLevel,
+                            {type: 'number', write: true});
+                    }
+                    if (ep.clusters.lightingColorCtrl) {
+                        updateState(dev.ieeeAddr.substr(2), 'colortemp',
+                            ep.clusters.lightingColorCtrl.attrs.colorTemperature,
+                            {type: 'number', write: true});
+                    }
+                }
+            }
+            updateState(dev.ieeeAddr.substr(2), 'paired', true, {type: 'boolean'});
+        });
     }
 }
 
@@ -460,7 +472,9 @@ function onReady(){
 }
 
 function onError(err) {
-    adapter.log.error('Error: ' + safeJsonStringify(err));
+    if (err) {
+        adapter.log.error('Error: ' + safeJsonStringify(err));
+    }
 }
 
 function main() {
@@ -528,6 +542,12 @@ function main() {
                 pl=1;
 
                 switch (msg.data.cid) {
+                    case 'lightingColorCtrl':
+                        updateState(dev_id, 'colortemp', msg.data.data['colorTemperature'], {type: 'number', write: true});
+                        break;
+                    case 'genLevelCtrl':
+                        updateState(dev_id, 'level', msg.data.data['currentLevel'], {type: 'number', write: true});
+                        break;
                     case 'genBasic':
                         var batteryData;
                         // for new Aqara sensor
