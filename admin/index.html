@@ -43,9 +43,6 @@
         room = rooms.join(',');
 
         switch(type) {
-            case 'TRADFRI bulb E27 WS opal 980lm':
-                img_src = "img/TRADFRI.bulb.E27.png";
-                break;
             case 'TRADFRI remote control':
                 img_src = "img/TRADFRI.remote.control.png";
                 break;
@@ -106,6 +103,14 @@
                 break;
             default:
                 img_src = "img/unknown.png";
+        }
+        switch (true) {
+            case (type.indexOf('TRADFRI bulb') !== -1):
+                img_src = "img/TRADFRI.bulb.E27.png";
+                break;
+            case (type.indexOf('FLOALT panel WS') !== -1):
+                img_src = "img/FLOALT.panel.WS.png";
+                break;
         }
         var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
         var image = '<img src="' + img_src + '" width="96px">',

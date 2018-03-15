@@ -400,8 +400,9 @@ function newDevice(id){
         dev = dev.getDevice();
         adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
         updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, function () {
-            // TRADFRI bulb
-            if (dev.modelId && dev.modelId.indexOf('TRADFRI bulb') !== -1) {
+            // TRADFRI bulb and FLOALT panel WS
+            if (dev.modelId && (dev.modelId.indexOf('TRADFRI bulb') !== -1 ||
+                                dev.modelId.indexOf('FLOALT panel WS') !== -1)) {
                 var ep = dev.getEndpoint(1);
                 if (ep) {
                     updateState(dev.ieeeAddr.substr(2), 'state', ep.clusters.genOnOff.attrs.onOff == 1,
@@ -567,8 +568,9 @@ function main() {
                         //topic += '/' + msg.endpoints[0].epId;
                         topic = 'click';
                         pl = msg.data.data['onOff'];
-                        // TRADFRI bulb
-                        if (dev.modelId && dev.modelId.indexOf('TRADFRI bulb') !== -1) {
+                        // TRADFRI bulb and FLOALT panel WS
+                        if (dev.modelId && (dev.modelId.indexOf('TRADFRI bulb') !== -1 ||
+                                            dev.modelId.indexOf('FLOALT panel WS') !== -1)) {
                             pl = undefined;
                             if (msg.data.data['onOff'] == 1) {
                                 updateState(dev_id, 'state', true, {type: 'boolean', write: true});
