@@ -9,6 +9,7 @@ Look wiki for info, hardware and flash https://github.com/kirovilya/ioBroker.zig
 
 Tested with devices:
 
+* TRÅDFRI bulb (state, level, colortemp)
 * QBCZ11LM Aqara Smart Socket ZiGBee (state, load power, in use)
 * QBKG11LM Xiaomi Aqara Smart Wall Switch Line-Neutral Single-Button (click, state, load power)
 * JTYJ-GD-01LM/BW Xiaomi Smoke Alarm (detected, voltage)
