@@ -26,7 +26,7 @@ ZShepherd.prototype.forceRemove = function(ieeeAddr, callback) {
     });
 };
 var shepherd;
-var adapter = utils.adapter({name: 'zigbee', systemConfig: true});
+var adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
 
 
 function processMessages(ignore) {
