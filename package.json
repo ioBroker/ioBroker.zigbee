@@ -13,10 +13,10 @@
     }
   ],
   "dependencies": {
-    "perfy": "^1.1.2",
-    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd"
+    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd",
+    "zigbee-shepherd-converters": "*" 
   },
-  "description": "Zigbee for Xiaomi devices",
+  "description": "Zigbee devices",
   "devDependencies": {},
   "homepage": "https://github.com/kirovilya/ioBroker.zigbee",
   "keywords": [
