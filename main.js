@@ -396,7 +396,15 @@ function publishToState(devId, modelID, model, payload) {
     const states = stateModel.states.filter((statedesc) => payload.hasOwnProperty(statedesc.prop || statedesc.id));
     for (const stateInd in states) {
         const statedesc = states[stateInd];
-        const value = payload[statedesc.prop || statedesc.id];
+        let value;
+        if (statedesc.getter) {
+            value = statedesc.getter(payload);
+        } else {
+            value = payload[statedesc.prop || statedesc.id]
+        }
+        // checking value
+        if (value == undefined)
+            continue;
         const common = {
             name: statedesc.name,
             type: statedesc.type,
