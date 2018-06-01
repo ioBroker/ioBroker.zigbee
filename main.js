@@ -14,7 +14,6 @@ const safeJsonStringify = require(__dirname + '/lib/json');
 const fs = require("fs");
 const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 const util = require("util");
-const perfy = require('perfy');
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require(__dirname + '/lib/zigbeecontroller');
 const adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
@@ -74,6 +73,49 @@ adapter.on('stateChange', function (id, state) {
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
         adapter.log.debug('User stateChange ' + id + ' ' + JSON.stringify(state));
+        const devId = adapter.namespace + '.' + id.split('.')[2];
+        const stateKey = id.split('.')[3];
+        adapter.getObject(devId, function(err, obj) {
+            if (obj) {
+                const deviceId = '0x'+id.split('.')[2];
+                const modelId = obj.common.type;
+                if (!modelId) return;
+                const mappedModel = deviceMapping[modelId];
+                if (!mappedModel) {
+                    adapter.log.error('Unknown device model ' + modelId);
+                    return;
+                }
+                const converter = mappedModel.toZigbee.find((c) => c.key === stateKey);
+                if (!converter) {
+                    adapter.log.error(
+                        `No converter available for '${mappedModel.model}' with key '${stateKey}'`
+                    );
+                    return;
+                }
+                const stateModel = statesMapping[modelId];
+                if (!stateModel) {
+                    adapter.log.error('Device ' + devId + ' "' + modelId +'" not described in statesMapping.');
+                    return;
+                }
+                // find state for set
+                const stateDesc = stateModel.states.find((statedesc) => stateKey == statedesc.id);
+                if (!stateDesc) {
+                    adapter.log.error(
+                        `No state available for '${mappedModel.model}' with key '${stateKey}'`
+                    );
+                    return;
+                }
+                const value = (stateDesc.setter) ? stateDesc.setter(state.val) : state.val;
+                const epName = (stateDesc.prop || stateDesc.id);
+                const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
+                const message = converter.convert(value.toString());
+                if (!message) {
+                    return;
+                }
+
+                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep);
+            }
+        });
     }
 });
 
@@ -225,19 +267,21 @@ function deleteDevice(from, command, msg, callback) {
     }
 }
 
-function updateDev(dev_id, dev_name, dev_type, callback) {
-    let id = '' + dev_id;
+function updateDev(dev_id, dev_name, model, callback) {
+    const id = '' + dev_id;
+    const modelDesc = statesMapping[model];
+    const icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
     // create channel for dev
     adapter.setObjectNotExists(id, {
         type: 'device',
-        common: {name: dev_name, type: dev_type}
+        common: {name: dev_name, type: model, icon: icon}
     }, {});
     adapter.getObject(id, function(err, obj) {
         if (!err && obj) {
             // if repairing 
             adapter.extendObject(id, {
                 type: 'device',
-                common: {type: dev_type}
+                common: {type: model, icon: icon}
             }, callback);
         }
     });
@@ -300,6 +344,8 @@ function getDevices(from, command, callback){
                         if (result[item]._id) {
                             var id = result[item]._id.substr(adapter.namespace.length + 1);
                             let devInfo = result[item];
+                            const modelDesc = statesMapping[devInfo.common.type];
+                            devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
                             devInfo.rooms = [];
                             for (var room in rooms) {
                                 if (!rooms[room] || !rooms[room].common || !rooms[room].common.members)
@@ -438,9 +484,13 @@ function onDevEvent(type, devId, message, data) {
             const mappedModel = deviceMapping[modelID];
             // Find a conveter for this message.
             const cid = data.cid;
+            if (!mappedModel) {
+                adapter.log.error('Unknown device model ' + modelID + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
+                return;
+            }
             const converters = mappedModel.fromZigbee.filter((c) => c.cid === cid && c.type === type);
             if (!converters.length) {
-                adapter.log.debug(
+                adapter.log.error(
                     `No converter available for '${mappedModel.model}' with cid '${cid}' and type '${type}'`
                 );
                 return;
