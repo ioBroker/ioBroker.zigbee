@@ -243,11 +243,11 @@ function deleteDevice(from, command, msg, callback) {
         zbControl.remove(sysid, (err) => {
             if (!err) {
                 adapter.log.debug('Successfully removed from shepherd!');
-                adapter.deleteDevice(sysid, function(){
+                adapter.deleteDevice(devId, function(){
                     adapter.sendTo(from, command, {}, callback);
                 });
             } else {
-                adapter.log.debug('Error on remove!');
+                adapter.log.debug('Error on remove! ' + err);
                 adapter.log.debug('Try force remove!');
                 zbControl.forceRemove(sysid, function (err) {
                     if (!err) {
@@ -342,7 +342,7 @@ function getDevices(from, command, callback){
                     var devices = [], cnt = 0, len = result.length;
                     for (var item in result) {
                         if (result[item]._id) {
-                            var id = result[item]._id.substr(adapter.namespace.length + 1);
+                            const id = result[item]._id.split('.')[2];
                             let devInfo = result[item];
                             const modelDesc = statesMapping[devInfo.common.type];
                             devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
@@ -354,17 +354,13 @@ function getDevices(from, command, callback){
                                     devInfo.rooms.push(rooms[room].common.name);
                                 }
                             }
-                            adapter.getState(result[item]._id+'.paired', function(err, state){
-                                cnt++;
-                                if (state) {
-                                    devInfo.paired = state.val;
-                                }
-                                devices.push(devInfo);
-                                if (cnt==len) {
-                                    adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
-                                    adapter.sendTo(from, command, devices, callback);
-                                }
-                            });
+                            devInfo.paired = zbControl.getDevice('0x' + id) != undefined;
+                            devices.push(devInfo);
+                            cnt++;
+                            if (cnt==len) {
+                                adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
+                                adapter.sendTo(from, command, devices, callback);
+                            }
                         }
                     }
                     if (len == 0) {
@@ -411,6 +407,8 @@ function onLog(level, msg, data) {
         switch (level) {
             case 'error':
                 logger = adapter.log.error;
+                if (data)
+                    data = data.toString();
                 break;
             case 'debug':
                 logger = adapter.log.debug;
