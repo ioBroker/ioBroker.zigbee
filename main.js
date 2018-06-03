@@ -238,20 +238,10 @@ function updateDev(dev_id, dev_name, model, callback) {
     const id = '' + dev_id;
     const modelDesc = statesMapping[model];
     const icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
-    // create channel for dev
     adapter.setObjectNotExists(id, {
         type: 'device',
         common: {name: dev_name, type: model, icon: icon}
-    }, {});
-    adapter.getObject(id, function(err, obj) {
-        if (!err && obj) {
-            // if repairing 
-            adapter.extendObject(id, {
-                type: 'device',
-                common: {type: model, icon: icon}
-            }, callback);
-        }
-    });
+    }, {}, callback);
 }
 
 // is called when databases are connected and adapter received configuration.
@@ -276,11 +266,17 @@ function onPermitJoining(joinTimeLeft){
         }, {});
         adapter.setState('info.pairingMode', false);
     }
+    logToPairing('Time left: '+joinTimeLeft, true);
 }
 
 function letsPairing(from, command, callback){
     if (zbControl) {
         // allow devices to join the network within 60 secs
+        adapter.setObjectNotExists('info.pairingMessage', {
+            type: 'state',
+            common: {name: 'Pairing message'}
+        }, {});
+        logToPairing('Pairing started');
         zbControl.permitJoin(60, function(err) {
             if (!err) {
                 // set pairing mode on
@@ -299,6 +295,7 @@ function letsPairing(from, command, callback){
 
 function getDevices(from, command, callback){
     if (zbControl) {
+        const pairedDevices = zbControl.getAllClients();
         var rooms;
         adapter.getEnums('enum.rooms', function (err, list) {
             if (!err){
@@ -325,12 +322,42 @@ function getDevices(from, command, callback){
                             devices.push(devInfo);
                             cnt++;
                             if (cnt==len) {
+                                // append devices that paired but not created
+                                pairedDevices.forEach((device) => {
+                                    const exists = devices.find((dev) => device.ieeeAddr == '0x' + dev._id.split('.')[2]);
+                                    if (!exists) {
+                                        devices.push({
+                                            _id: device.ieeeAddr,
+                                            icon: 'img/unknown.png',
+                                            paired: true,
+                                            common: {
+                                                name: undefined,
+                                                type: undefined,
+                                            },
+                                        });
+                                    }
+                                });
                                 adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
                                 adapter.sendTo(from, command, devices, callback);
                             }
                         }
                     }
                     if (len == 0) {
+                        // append devices that paired but not created
+                        pairedDevices.forEach((device) => {
+                            const exists = devices.find((dev) => device.ieeeAddr == '0x' + dev._id.split('.')[2]);
+                            if (!exists) {
+                                devices.push({
+                                    _id: device.ieeeAddr,
+                                    icon: 'img/unknown.png',
+                                    paired: true,
+                                    common: {
+                                        name: undefined,
+                                        type: undefined,
+                                    },
+                                });
+                            }
+                        });
                         adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
                         adapter.sendTo(from, command, devices, callback);
                     }
@@ -346,7 +373,11 @@ function newDevice(id, msg) {
     let dev = zbControl.getDevice(id);
     if (dev) {
         adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
-        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
+        logToPairing('New device joined '+dev.ieeeAddr + ' model ' + dev.modelId, true);
+        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, function () {
+            syncDevStates(dev.ieeeAddr.substr(2), dev.modelId);
+        });
+        
     }
 }
 
@@ -360,7 +391,7 @@ function onReady(){
     adapter.setState('info.pairingMode', false);
     // get and list all registered devices (not in ioBroker)
     let activeDevices = zbControl.getAllClients();
-    adapter.log.info('Current active devices:');
+    adapter.log.debug('Current active devices:');
     activeDevices.forEach((device) => {
         adapter.log.debug(safeJsonStringify(device));
     });
@@ -374,6 +405,7 @@ function onLog(level, msg, data) {
                 logger = adapter.log.error;
                 if (data)
                     data = data.toString();
+                logToPairing('Error: '+msg+'. '+data);
                 break;
             case 'debug':
                 logger = adapter.log.debug;
@@ -390,6 +422,15 @@ function onLog(level, msg, data) {
             }
         } else {
             logger(msg);
+        }
+    }
+}
+
+function logToPairing(message, ignoreJoin){
+    if (zbControl) {
+        const info = zbControl.getInfo();
+        if (ignoreJoin || info.joinTimeLeft > 0) {
+            adapter.setState('info.pairingMessage', message);
         }
     }
 }
@@ -413,7 +454,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
         );
         return;
     }
-    const converter = mappedModel.toZigbee.find((c) => c.key === stateDesc.prop || c.key === stateDesc.setattr);
+    const converter = mappedModel.toZigbee.find((c) => c.key === stateDesc.prop || c.key === stateDesc.setattr || c.key === stateDesc.id);
     if (!converter) {
         adapter.log.error(
             `No converter available for '${mappedModel.model}' with key '${stateKey}'`
@@ -423,7 +464,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
     const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
     const epName = (stateDesc.epname || stateDesc.prop || stateDesc.id);
     const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
-    const message = converter.convert(preparedValue.toString());
+    const message = converter.convert(preparedValue.toString(), {});
     if (!message) {
         return;
     }
@@ -470,11 +511,36 @@ function publishToState(devId, modelID, model, payload) {
     }
 }
 
+function syncDevStates(devId, modelId) {
+    // devId - iobroker device id
+    const stateModel = statesMapping[modelId];
+    if (!stateModel) {
+        adapter.log.debug('Device ' + devId + ' "' + modelId +'" not described in statesMapping.');
+        return;
+    }
+    for (const stateInd in stateModel.states) {
+        const statedesc = stateModel.states[stateInd];
+        const common = {
+            name: statedesc.name,
+            type: statedesc.type,
+            unit: statedesc.unit,
+            read: statedesc.read,
+            write: statedesc.write,
+            icon: statedesc.icon,
+            role: statedesc.role,
+            min: statedesc.min,
+            max: statedesc.max,
+        };
+        updateState(devId, statedesc.id, undefined, common);
+    }
+}
+
 
 function onDevEvent(type, devId, message, data) {
     switch (type) {
         case 'interview':
-            adapter.log.info('Device ' + devId + ' try to connect '+ safeJsonStringify(data));
+            adapter.log.debug('Device ' + devId + ' try to connect '+ safeJsonStringify(data));
+            logToPairing('Interview state: step '+data.currentEp+'/'+data.totalEp+'. progress: '+data.progress+'%', true);
             break;
         default:
             adapter.log.debug('Device ' + devId + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));

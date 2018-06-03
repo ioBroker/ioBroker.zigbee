@@ -36,5 +36,5 @@
     "url": "git+https://github.com/kirovilya/ioBroker.zigbee.git"
   },
   "scripts": {},
-  "version": "0.0.1"
+  "version": "0.5.0"
 }
