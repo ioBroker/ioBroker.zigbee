@@ -73,47 +73,14 @@ adapter.on('stateChange', function (id, state) {
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
         adapter.log.debug('User stateChange ' + id + ' ' + JSON.stringify(state));
-        const devId = adapter.namespace + '.' + id.split('.')[2];
+        const devId = adapter.namespace + '.' + id.split('.')[2]; // iobroker device id
+        const deviceId = '0x'+id.split('.')[2]; // zigbee device id
         const stateKey = id.split('.')[3];
         adapter.getObject(devId, function(err, obj) {
             if (obj) {
-                const deviceId = '0x'+id.split('.')[2];
                 const modelId = obj.common.type;
                 if (!modelId) return;
-                const mappedModel = deviceMapping[modelId];
-                if (!mappedModel) {
-                    adapter.log.error('Unknown device model ' + modelId);
-                    return;
-                }
-                const converter = mappedModel.toZigbee.find((c) => c.key === stateKey);
-                if (!converter) {
-                    adapter.log.error(
-                        `No converter available for '${mappedModel.model}' with key '${stateKey}'`
-                    );
-                    return;
-                }
-                const stateModel = statesMapping[modelId];
-                if (!stateModel) {
-                    adapter.log.error('Device ' + devId + ' "' + modelId +'" not described in statesMapping.');
-                    return;
-                }
-                // find state for set
-                const stateDesc = stateModel.states.find((statedesc) => stateKey == statedesc.id);
-                if (!stateDesc) {
-                    adapter.log.error(
-                        `No state available for '${mappedModel.model}' with key '${stateKey}'`
-                    );
-                    return;
-                }
-                const value = (stateDesc.setter) ? stateDesc.setter(state.val) : state.val;
-                const epName = (stateDesc.prop || stateDesc.id);
-                const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
-                const message = converter.convert(value.toString());
-                if (!message) {
-                    return;
-                }
-
-                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep);
+                publishFromState(deviceId, modelId, stateKey, state.val);
             }
         });
     }
@@ -379,9 +346,7 @@ function newDevice(id, msg) {
     let dev = zbControl.getDevice(id);
     if (dev) {
         adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
-        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, function () {
-            updateState(dev.ieeeAddr.substr(2), 'paired', true, {type: 'boolean'});
-        });
+        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId);
     }
 }
 
@@ -397,7 +362,7 @@ function onReady(){
     let activeDevices = zbControl.getAllClients();
     adapter.log.info('Current active devices:');
     activeDevices.forEach((device) => {
-        adapter.log.info(safeJsonStringify(device));
+        adapter.log.debug(safeJsonStringify(device));
     });
 }
 
@@ -429,6 +394,42 @@ function onLog(level, msg, data) {
     }
 }
 
+function publishFromState(deviceId, modelId, stateKey, value){
+    const mappedModel = deviceMapping[modelId];
+    if (!mappedModel) {
+        adapter.log.error('Unknown device model ' + modelId);
+        return;
+    }
+    const stateModel = statesMapping[modelId];
+    if (!stateModel) {
+        adapter.log.error('Device ' + deviceId + ' "' + modelId +'" not described in statesMapping.');
+        return;
+    }
+    // find state for set
+    const stateDesc = stateModel.states.find((statedesc) => stateKey == statedesc.id);
+    if (!stateDesc) {
+        adapter.log.error(
+            `No state available for '${mappedModel.model}' with key '${stateKey}'`
+        );
+        return;
+    }
+    const converter = mappedModel.toZigbee.find((c) => c.key === stateDesc.prop || c.key === stateDesc.setattr);
+    if (!converter) {
+        adapter.log.error(
+            `No converter available for '${mappedModel.model}' with key '${stateKey}'`
+        );
+        return;
+    }
+    const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
+    const epName = (stateDesc.epname || stateDesc.prop || stateDesc.id);
+    const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
+    const message = converter.convert(preparedValue.toString());
+    if (!message) {
+        return;
+    }
+
+    zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep);
+}
 
 function publishToState(devId, modelID, model, payload) {
     const stateModel = statesMapping[modelID];
@@ -524,7 +525,7 @@ function main() {
     var port = adapter.config.port;
     adapter.log.info('Start on port: ' + port);
     let shepherd = new ZShepherd(port, {
-        net: {panId: 0x1a62},
+        net: {panId: 0x1a62, channelList: [11]},
         sp: { baudrate: 115200, rtscts: false },
         dbPath: dbDir+'/shepherd.db'
     });
