@@ -17,7 +17,7 @@ const util = require("util");
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require(__dirname + '/lib/zigbeecontroller');
 const adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
-const deviceMapping = require('zigbee-shepherd-converters').devices;
+const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require(__dirname + '/lib/devstates');;
 
 let zbControl;
@@ -436,7 +436,7 @@ function logToPairing(message, ignoreJoin){
 }
 
 function publishFromState(deviceId, modelId, stateKey, value){
-    const mappedModel = deviceMapping[modelId];
+    const mappedModel = deviceMapping.findByZigbeeModel(modelId);
     if (!mappedModel) {
         adapter.log.error('Unknown device model ' + modelId);
         return;
@@ -546,7 +546,7 @@ function onDevEvent(type, devId, message, data) {
             adapter.log.debug('Device ' + devId + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
             // Map Zigbee modelID to vendor modelID.
             const modelID = data.modelId;
-            const mappedModel = deviceMapping[modelID];
+            const mappedModel = deviceMapping.findByZigbeeModel(modelID);
             // Find a conveter for this message.
             const cid = data.cid;
             if (!mappedModel) {
