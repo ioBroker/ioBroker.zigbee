@@ -25,13 +25,14 @@
         namespaceLen = namespace.length,
         devices = [],
         dialog,
-        systemLang = 'en';
+        systemLang = 'en',
+        messages = [];
 
     function getCard(dev) {
         var title = dev.common.name,
             id = dev._id,
             type = dev.common.type,
-            img_src = '',
+            img_src = dev.common.icon || dev.icon,
             rooms = [], room;
         for (var r in dev.rooms) {
             if (dev.rooms[r].hasOwnProperty(systemLang)) {
@@ -42,76 +43,6 @@
         }
         room = rooms.join(',');
 
-        switch(type) {
-            case 'TRADFRI remote control':
-                img_src = "img/TRADFRI.remote.control.png";
-                break;
-            case 'lumi.sensor_switch':
-                img_src = "img/xiaomi_wireless_switch.png";
-                break;
-            case 'lumi.weather':
-                img_src = "img/aqara_temperature_sensor.png";
-                break;
-            case 'lumi.sens':
-                img_src = "img/sensor_ht.png";
-                break;
-            case 'lumi.sensor_switch.aq2':
-                img_src = "img/aqara.switch.png";
-                break;
-            case 'lumi.sensor_magnet':
-                img_src = "img/magnet.png";
-                break;
-            case 'lumi.sensor_magnet.aq2':
-                img_src = "img/sensor_magnet_aq2.png";
-                break;
-            case 'lumi.sensor_motion':
-            case 'lumi.sensor_motion.aq2':
-                img_src = "img/aqara_numan_body_sensor.png";
-                break;
-            case 'lumi.sensor_86sw1\u0000Un':
-                img_src = "img/86sw1.png";
-                break;
-            case 'lumi.sensor_86sw2\u0000Un':
-                img_src = "img/86sw2.png";
-                break;
-            case 'lumi.sensor_wleak.aq1':
-                img_src = "img/sensor_wleak_aq1.png";
-                break;
-            case 'lumi.sensor_smoke':
-                img_src = "img/smoke.png";
-                break;
-            case 'lumi.sensor_cube':
-                img_src = "img/cube.png";
-                break;
-            case 'lumi.ctrl_neutral1':
-                img_src = "img/ctrl_neutral1.png";
-                break;
-            case 'lumi.ctrl_neutral2':
-                img_src = "img/ctrl_neutral2.png";
-                break;
-            case 'lumi.ctrl_ln1':
-                img_src = "img/ctrl_ln1.png";
-                break;
-            case 'lumi.ctrl_ln2':
-                img_src = "img/ctrl_ln2.png";
-                break;
-            case 'lumi.ctrl_86plug.aq1':
-                img_src = "img/86plug.png";
-                break;
-            case 'lumi.plug':
-                img_src = "img/plug.png";
-                break;
-            default:
-                img_src = "img/unknown.png";
-        }
-        switch (true) {
-            case (type.indexOf('TRADFRI bulb') !== -1):
-                img_src = "img/TRADFRI.bulb.E27.png";
-                break;
-            case (type.indexOf('FLOALT panel WS') !== -1):
-                img_src = "img/FLOALT.panel.WS.png";
-                break;
-        }
         var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
         var image = '<img src="' + img_src + '" width="96px">',
             info = '<p style="min-height:96px">' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
@@ -265,6 +196,7 @@
     }
 
     function letsPairing() {
+        messages = [];
         sendTo(null, 'letsPairing', {}, function (msg) {
             //console.log(msg);
             if (msg) {
@@ -315,7 +247,9 @@
         onChange(false);
 
         $('#pairing').click(function() {
-            letsPairing();
+            if (!$('#pairing').hasClass('pulse'))
+                letsPairing();
+            showPairingProcess();
         });
         $(document).ready(function() {
             $('.modal').modal({
@@ -324,6 +258,26 @@
             });
             Materialize.updateTextFields();
         });
+    }
+
+    function showMessages() {
+        var data = '';
+        for (var ind in messages) {
+            var mess = messages[ind];
+            data = mess + '\n' + data;
+        };
+        $('#stdout').text(data);
+    }
+
+    function showPairingProcess() {
+        $('#modalpairing').modal({
+            startingTop: '4%',
+            endingTop: '10%',
+            dismissible: false
+        });
+        
+        $('#modalpairing').modal('open');
+        Materialize.updateTextFields();
     }
 
     // ... and the function save has to exist.
@@ -354,18 +308,21 @@
         if (state) {
             if (id.match(/\.info\.pairingMode$/)) {
                 if (state.val) {
-                    $('#pairing').addClass('pulse disabled');
+                    $('#pairing').addClass('pulse');
                 } else {
-                    $('#pairing').removeClass('pulse disabled');
+                    $('#pairing').removeClass('pulse');
                 }
             } else if (id.match(/\.info\.pairingCountdown$/)) {
                 var blank_btn = '<i class="material-icons">leak_add</i>';
                 if (state.val == 0) {
                     $('#pairing').html(blank_btn);
                 } else {
-                    $('#pairing').addClass('pulse disabled');
+                    $('#pairing').addClass('pulse');
                     $('#pairing').html(state.val);
                 }
+            } else if (id.match(/\.info\.pairingMessage$/)) {
+                messages.push(state.val);
+                showMessages();
             }
         }
     });
@@ -388,19 +345,20 @@
 <!-- you have to put your config page in a div with id adapter-container -->
 <div id="adapter-container">
 
-    <table><tr>
-            <td><img src="zigbee.png" height="64px"/></td>
-            <td><h3 class="translate">Zigbee adapter</h3></td>
-        </tr>
-    </table>
     <form class="col s12">
         <div class="row">
-            <div class="input-field col s11">
+            <div class="col s1">
+                <h3><img src="zigbee.png" class="left" height="64px"/></h3>
+            </div>
+            <div class="col s6">
+                <h3 class="translate center-align">Zigbee adapter</h3>
+            </div>
+            <div class="input-field col s4">
                 <input id="port" type="text" class="value validate">
                 <label for="port">COM port name</label>
             </div>
             <div class="col s1">
-                <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a>
+                <h3> <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></h3>
             </div>
         </div>
     </form>
@@ -410,7 +368,7 @@
     </div>
 </div>
 
- <div id="modaledit" class="modal">
+<div id="modaledit" class="modal">
     <div class="modal-content">
         <h3>Modal Header</h3>
         <div class="row">
@@ -424,9 +382,9 @@
       <a href="#!" class="modal-action modal-close waves-effect waves-green btn green">Save</a>
       <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
     </div>
-  </div>
+</div>
 
- <div id="modaldelete" class="modal">
+<div id="modaldelete" class="modal">
     <div class="modal-content">
       <h3>Modal Header</h3>
       <p>A bunch of text</p>
@@ -435,6 +393,19 @@
       <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green">Yes</a>
       <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
     </div>
-  </div>
+</div>
+
+<div id="modalpairing" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <h3>Pairing process</h3>
+        <div class="row textarea">
+            <textarea id="stdout" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 100px)"></textarea>
+        </div>
+    </div>
+    <div class="modal-footer">
+      <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
+      <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green">Hide</a>
+    </div>
+</div>
 
 </html>
