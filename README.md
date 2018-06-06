@@ -26,7 +26,7 @@ Tested with devices:
 
 
 ## Changelog
-### 0.5.0 (2018-06-07)
+### 0.5.0 (2018-06-06)
 * (kirovilya) All refactored
 
 ### 0.0.1 (2018-02-07)
