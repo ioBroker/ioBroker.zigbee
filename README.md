@@ -1,15 +1,12 @@
 ![Logo](admin/zigbee.png)
 # ioBroker.zigbee
 
-ioBroker Zigbee driver for Xiaomi (and other) devices via cc2531/cc2530
+## ioBroker Zigbee driver for Xiaomi (and other) devices via cc2531/cc2530
 
 Look wiki for info, hardware and flash https://github.com/kirovilya/ioBroker.zigbee/wiki (russian lang).
 
-**It is alpha version of driver!!! Properties names may changing!!!**
-
 Tested with devices:
 
-* TRÅDFRI bulb (state, level, colortemp)
 * QBCZ11LM Aqara Smart Socket ZiGBee (state, load power, in use)
 * QBKG11LM Xiaomi Aqara Smart Wall Switch Line-Neutral Single-Button (click, state, load power)
 * JTYJ-GD-01LM/BW Xiaomi Smoke Alarm (detected, voltage)
@@ -28,7 +25,13 @@ Tested with devices:
 * RTCGQ01LM Xiaomi Mi Smart IR Human Body Sensor (illuminance, occupancy, voltage)
 
 
-=================
+## Changelog
+### 0.5.0 (2018-06-07)
+* (kirovilya) All refactored
+
+### 0.0.1 (2018-02-07)
+* (kirovilya) First version
+
 
 ## License
 The MIT License (MIT)
