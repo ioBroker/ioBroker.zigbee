@@ -395,6 +395,44 @@ function onReady(){
     activeDevices.forEach((device) => {
         adapter.log.debug(safeJsonStringify(device));
     });
+    activeDevices.forEach((device) => {
+        adapter.log.info(getDeviceStartupLogMessage(device));
+        configureDevice(device);
+    });
+}
+
+function getDeviceStartupLogMessage(device) {
+    let type = 'unknown';
+    let friendlyDevice = {model: 'unkown', description: 'unknown'};
+    const mappedModel = deviceMapping.findByZigbeeModel(device.modelId);
+    if (mappedModel) {
+        friendlyDevice = mappedModel;
+    }
+
+    if (device.type) {
+        type = device.type;
+    }
+
+    return `(${device.ieeeAddr}): ${friendlyDevice.model} - ` +
+        `${friendlyDevice.vendor} ${friendlyDevice.description} (${type})`;
+}
+
+function configureDevice(device) {
+    // Configure reporting for this device.
+    const ieeeAddr = device.ieeeAddr;
+    if (ieeeAddr && device.modelId) {
+        const mappedModel = deviceMapping.findByZigbeeModel(device.modelId);
+
+        if (mappedModel && mappedModel.configure) {
+            mappedModel.configure(ieeeAddr, zbControl.shepherd, zbControl.getCoordinator(), (ok, msg) => {
+                if (ok) {
+                    adapter.log.info(`Succesfully configured ${ieeeAddr}`);
+                } else {
+                    adapter.log.error(`Failed to configure ${ieeeAddr}`);
+                }
+            });
+        }
+    }
 }
 
 function onLog(level, msg, data) {
