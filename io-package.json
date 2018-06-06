@@ -12,10 +12,10 @@
                 "ru": "Альфа-версия"
             }
         },
-        "title": "Xiaomi zigbee",
+        "title": "Zigbee adapter",
         "desc": {
-            "en": "Xiaomi zigbee",
-            "ru": "Xiaomi zigbee"
+            "en": "Zigbee adapter",
+            "ru": "Zigbee adapter"
         },
         "platform": "Javascript/Node.js",
         "mode": "daemon",
