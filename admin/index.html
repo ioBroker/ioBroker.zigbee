@@ -345,19 +345,20 @@
 <!-- you have to put your config page in a div with id adapter-container -->
 <div id="adapter-container">
 
-    <table><tr>
-            <td><img src="zigbee.png" height="64px"/></td>
-            <td><h3 class="translate">Zigbee adapter</h3></td>
-        </tr>
-    </table>
     <form class="col s12">
         <div class="row">
-            <div class="input-field col s11">
+            <div class="col s1">
+                <h3><img src="zigbee.png" class="left" height="64px"/></h3>
+            </div>
+            <div class="col s6">
+                <h3 class="translate center-align">Zigbee adapter</h3>
+            </div>
+            <div class="input-field col s4">
                 <input id="port" type="text" class="value validate">
                 <label for="port">COM port name</label>
             </div>
             <div class="col s1">
-                <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a>
+                <h3> <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></h3>
             </div>
         </div>
     </form>
