@@ -506,7 +506,13 @@ function publishToState(devId, modelID, model, payload) {
         if (statedesc.isEvent) {
             updateStateWithTimeout(devId, statedesc.id, value, common, 300, !value);
         } else {
-            updateState(devId, statedesc.id, value, common);
+            if (statedesc.prepublish) {
+                statedesc.prepublish(devId, value, (newvalue) => {
+                    updateState(devId, statedesc.id, newvalue, common);
+                });
+            } else {
+                updateState(devId, statedesc.id, value, common);
+            }
         }
     }
 }
