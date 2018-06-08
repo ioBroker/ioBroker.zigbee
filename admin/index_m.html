@@ -1,30 +1,33 @@
 <html>
-
+<head>
 <!-- these 4 files always have to be included -->
-<link rel="stylesheet" type="text/css" href="../../lib/css/themes/jquery-ui/redmond/jquery-ui.min.css"/>
-<script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-<script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
-
-<!-- these two file always have to be included -->
+<link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+
+<script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+
+<!-- these files always have to be included -->
 <script type="text/javascript" src="../../js/translate.js"></script>
+<script type="text/javascript" src="../../lib/js/materialize.js"></script>
 <script type="text/javascript" src="../../js/adapter-settings.js"></script>
 <script type="text/javascript" src="words.js"></script>
 
-<!-- Compiled and minified CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<!-- Compiled and minified JavaScript -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js"></script>
-
 <script type="text/javascript" src="admin.js"></script>
 
+ <style>
+  .m .col .select-wrapper+label {
+   top: -26px;  
+  }
+     .m span{
+         font-size: 0.9em;
+     }
+ </style>
+</head>
 <body>
-    <div id="adapter-container">
-
-        <form class="col s12">
+    <!-- you have to put your config page in a div with id adapter-container -->
+    <div class="m adapter-container">
+        <div class="col s12">
             <div class="row">
                 <div class="col s1">
                     <h3><img src="zigbee.png" class="left" height="64px"/></h3>
@@ -34,32 +37,33 @@
                 </div>
                 <div class="input-field col s4">
                     <input id="port" type="text" class="value validate">
-                    <label for="port">COM port name</label>
+                    <label for="port" class="translate">COM port name</label>
                 </div>
                 <div class="col s1">
-                    <h3> <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></h3>
+                    <h3> <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></h3>
                 </div>
             </div>
-        </form>
+        </div>
         <div class="col s12">
             <div id="devices" class="row">
             </div>
         </div>
     </div>
-
+        
+    <div class="materialize-dialogs m">
     <div id="modaledit" class="modal">
         <div class="modal-content">
-            <h3>Modal Header</h3>
+            <h3 class="translate">Modal Header</h3>
             <div class="row">
                 <div class="input-field col s12">
                     <input id="name" type="text" class="value validate">
-                    <label for="name">Name</label>
+                    <label for="name" class="translate">Name</label>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn green">Save</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
 
@@ -69,22 +73,24 @@
         <p>A bunch of text</p>
         </div>
         <div class="modal-footer">
-        <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green">Yes</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+        <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
 
     <div id="modalpairing" class="modal modal-fixed-footer">
         <div class="modal-content">
-            <h3>Pairing process</h3>
+            <h3 class="translate">Pairing process</h3>
             <div class="row textarea">
                 <textarea id="stdout" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 100px)"></textarea>
             </div>
         </div>
         <div class="modal-footer">
         <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
-        <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green">Hide</a>
+        <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
         </div>
     </div>
+    </div>
 </body>
+
 </html>

@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.0",
+        "version": "0.5.1",
         "news": {
-            "0.5.0": {
+            "0.5.1": {
                 "en": "Refactoring version",
                 "ru": "Реструктурированная версия"
             },
@@ -13,19 +13,37 @@
             }
         },
         "title": "Zigbee adapter",
-        "desc": {
+        "titleLang": {
             "en": "Zigbee adapter",
-            "ru": "Zigbee adapter"
+            "ru": "Zigbee адаптер"
+        },
+        "desc": {
+            "en": "Zigbee adapter for Xiaomi (and other) devices via TI cc2531/cc2530",
+            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через TI cc2531/cc2530"
+        },
+        "authors": [
+            "Kirov Ilya<kirovilya@gmail.com>"
+        ],
+        "docs": {
+            "en": "docs/en/readme.md",
+            "ru": "docs/ru/readme.md",
+            "de": "docs/de/readme.md",
+            "es": "docs/es/readme.md",
+            "it": "docs/it/readme.md",
+            "fr": "docs/fr/readme.md",
+            "nl": "docs/nl/readme.md",
+            "pt": "docs/pt/readme.md"
         },
         "platform": "Javascript/Node.js",
         "mode": "daemon",
         "icon": "zigbee.png",
         "extIcon": "https://raw.githubusercontent.com/kirovilya/ioBroker.zigbee/master/admin/zigbee.png",
         "enabled": true,
-        "keywords": ["zigbee", "xiaomi"],
+        "keywords": ["zigbee", "xiaomi", "cc2531", "cc2530"],
         "readme": "https://github.com/kirovilya/ioBroker.zigbee/blob/master/README.md",
         "loglevel": "info",
-        "type": "communication",
+        "type": "hardware",
+        "materialize": true,
         "messagebox": true
     },
     "native": {

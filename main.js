@@ -181,13 +181,9 @@ function updateState(devId, name, value, common) {
 
 
 function renameDevice(from, command, msg, callback) {
-    if (shepherd) {
-        var id = msg.id, newName = msg.name;
-        adapter.extendObject(id, {common: {name: newName}});
-        adapter.sendTo(from, command, {}, callback);
-    } else {
-        adapter.sendTo(from, command, {error: 'You need save and run adapter!'}, callback);
-    }
+    var id = msg.id, newName = msg.name;
+    adapter.extendObject(id, {common: {name: newName}});
+    adapter.sendTo(from, command, {}, callback);
 }
 
 
