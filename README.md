@@ -1,6 +1,12 @@
 ![Logo](admin/zigbee.png)
 # ioBroker.zigbee
 
+[![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
+[![Tests](https://travis-ci.org/kirovilya/ioBroker.zigbee.svg?branch=master)](https://travis-ci.org/kirovilya/ioBroker.zigbee)
+
+[![NPM](https://nodei.co/npm/iobroker.zigbee.png?downloads=true)](https://nodei.co/npm/iobroker.zigbee/)
+
 ## ioBroker Zigbee driver for Xiaomi (and other) devices via cc2531/cc2530
 
 Look wiki for info, hardware and flash https://github.com/kirovilya/ioBroker.zigbee/wiki (russian lang).
