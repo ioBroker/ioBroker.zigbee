@@ -1,9 +1,15 @@
 {
-  "Auto": "Auto",
-  "Manual": "Manual",
-  "My select": "Mi seleccion",
-  "on save adapter restarts with new config immediately": "en el adaptador de guardar se reinicia con nueva configuración de inmediato",
-  "template adapter settings": "configuración del adaptador de plantilla",
-  "test1": "Prueba 1",
-  "test2": "Prueba 2"
+  "Zigbee adapter": "Zigbee adapter",
+  "COM port name": "COM port name",
+  "Let's pairing!": "Let's pairing!",
+  "Name": "Name",
+  "Save": "Save",
+  "Yes": "Yes",
+  "Cancel": "Cancel",
+  "Pairing process": "Pairing process",
+  "Hide": "Hide",
+  "Do you really whant to delete device": "Do you really whant to delete device",
+  "Rename device": "Rename device",
+  "Enter new name": "Enter new name",
+  "Delete confirmation": "Delete confirmation"
 }

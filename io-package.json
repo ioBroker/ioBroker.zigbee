@@ -1,9 +1,13 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.1",
+        "version": "0.5.2",
         "news": {
-            "0.5.1": {
+            "0.5.2": {
+                "en": "Public version",
+                "ru": "Реструктурированная версия"
+            },
+            "0.5.0": {
                 "en": "Refactoring version",
                 "ru": "Реструктурированная версия"
             },

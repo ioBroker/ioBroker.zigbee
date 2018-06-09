@@ -22,9 +22,9 @@
 <script type="text/javascript" src="admin.js"></script>
 
 <body>
-    <div id="adapter-container">
-
-        <form class="col s12">
+    <!-- you have to put your config page in a div with id adapter-container -->
+    <div class="adapter-container">
+        <div class="col s12">
             <div class="row">
                 <div class="col s1">
                     <h3><img src="zigbee.png" class="left" height="64px"/></h3>
@@ -34,57 +34,59 @@
                 </div>
                 <div class="input-field col s4">
                     <input id="port" type="text" class="value validate">
-                    <label for="port">COM port name</label>
+                    <label for="port" class="translate">COM port name</label>
                 </div>
                 <div class="col s1">
-                    <h3> <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></h3>
+                    <h3> <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></h3>
                 </div>
             </div>
-        </form>
+        </div>
         <div class="col s12">
             <div id="devices" class="row">
             </div>
         </div>
     </div>
-
+        
+    <div class="materialize-dialogs m">
     <div id="modaledit" class="modal">
         <div class="modal-content">
-            <h3>Modal Header</h3>
+            <h3 class="translate">Rename device</h3>
             <div class="row">
                 <div class="input-field col s12">
                     <input id="name" type="text" class="value validate">
-                    <label for="name">Name</label>
+                    <label for="name" class="translate">Name</label>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn green">Save</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
 
     <div id="modaldelete" class="modal">
         <div class="modal-content">
-        <h3>Modal Header</h3>
+        <h3 class="translate">Delete confirmation</h3>
         <p>A bunch of text</p>
         </div>
         <div class="modal-footer">
-        <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green">Yes</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+        <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
 
     <div id="modalpairing" class="modal modal-fixed-footer">
         <div class="modal-content">
-            <h3>Pairing process</h3>
+            <h3 class="translate">Pairing process</h3>
             <div class="row textarea">
                 <textarea id="stdout" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 100px)"></textarea>
             </div>
         </div>
         <div class="modal-footer">
         <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
-        <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green">Hide</a>
+        <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
         </div>
+    </div>
     </div>
 </body>
 </html>

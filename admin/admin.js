@@ -37,7 +37,7 @@ function getCard(dev) {
                     '<div class="card-reveal">'+
                         '<div class="input-field">'+
                             '<input id="name" type="text" class="value validate">'+
-                            '<label for="name">Enter new name</label>'+
+                            '<label for="name" class="translate">Enter new name</label>'+
                         '</div>'+
                         '<span class="right">'+
                             '<a name="done" class="waves-effect waves-green btn green"><i class="material-icons">done</i></a>'+
@@ -96,8 +96,7 @@ function closeReval(e, id, name){
 }
 
 function deleteConfirmation(id, name) {
-    var text = 'Do you really whant to delete device "'+name+'" ('+id+')?';
-    $('#modaldelete').find("h3").text("Delete confirmation");
+    var text = translateWord('Do you really whant to delete device') + ' "'+name+'" ('+id+')?';
     $('#modaldelete').find("p").text(text);
     $("#modaldelete a.btn[name='yes']").unbind("click");
     $("#modaldelete a.btn[name='yes']").click(function(e) {
@@ -108,7 +107,6 @@ function deleteConfirmation(id, name) {
 
 function editName(id, name) {
     var text = 'Enter new name for "'+name+'" ('+id+')?';
-    $('#modaledit').find("h3").text("Rename device");
     $('#modaledit').find("input").val(name);
     $('#modaledit').find("label").text(text);
     $('#modaledit').modal('open');
@@ -171,6 +169,7 @@ function showDevices() {
     $("a.btn-flat[name='close']").click(function(e) {
         closeReval(e);
     });
+    translateAll();
 }
 
 function letsPairing() {
@@ -236,6 +235,12 @@ function load(settings, onChange) {
         });
         Materialize.updateTextFields();
     });
+
+    var text = $('#pairing').attr('data-tooltip');
+    var transText = translateWord(text);
+    if (transText) {
+        $('#pairing').attr('data-tooltip', transText);
+    }
 }
 
 function showMessages() {

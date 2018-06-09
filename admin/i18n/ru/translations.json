@@ -4,7 +4,12 @@
   "Let's pairing!": "Давай спариваться!",
   "Name": "Наименование",
   "Save": "Сохранить",
+  "Yes": "Да",
   "Cancel": "Отменить",
   "Pairing process": "Процесс спаривания",
-  "Hide": "Скрыть"
+  "Hide": "Скрыть",
+  "Do you really whant to delete device": "Вы действительно хотите удалить устройство",
+  "Rename device": "Переименовать устройство",
+  "Enter new name": "Введите новое имя",
+  "Delete confirmation": "Подтвердите удаление"
 }

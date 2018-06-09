@@ -17,7 +17,11 @@
     "zigbee-shepherd-converters": "^1.0.3"
   },
   "description": "Zigbee devices",
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "mocha": "^4.1.0",
+    "chai": "^4.1.2"
+  },
   "homepage": "https://github.com/kirovilya/ioBroker.zigbee",
   "keywords": [
     "ioBroker",
@@ -36,5 +40,5 @@
     "url": "git+https://github.com/kirovilya/ioBroker.zigbee.git"
   },
   "scripts": {},
-  "version": "0.5.1"
+  "version": "0.5.2"
 }
