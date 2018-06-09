@@ -1,23 +1,32 @@
 os:
   - linux
   - osx
+sudo: required
 language: node_js
 node_js:
   - '4'
   - '6'
   - '8'
   - '10'
+before_install:
+  - sudo ln -s `which node` `which node`js
+  - which nodejs || which node
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CC=clang++; export CXX=clang++; export CXXFLAGS=-std=c++11; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew unlink pkg-config; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX=g++-4.8; CC=gcc-4.8; fi'
+  - npm install -g node-gyp
+install:
+  - npm install --unsafe-perm
 before_script:
   - export NPMVERSION=$(echo "$($(which npm) -v)"|cut -c1)
   - 'if [[ $NPMVERSION == 5 ]]; then npm install -g npm@5; fi'
   - npm -v
   - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
-env:
-  - CXX=g++-4.8
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
+      - gcc-4.8
       - g++-4.8
