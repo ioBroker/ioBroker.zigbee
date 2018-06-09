@@ -64,6 +64,10 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 
 ## Changelog
+
+### 0.5.2 (2018-06-09)
+* (kirovilya) Public version
+
 ### 0.5.0 (2018-06-06)
 * (kirovilya) All refactored
 
