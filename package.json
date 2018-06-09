@@ -13,6 +13,7 @@
     }
   ],
   "dependencies": {
+    "debug": "*",
     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd",
     "zigbee-shepherd-converters": "^1.0.3"
   },
