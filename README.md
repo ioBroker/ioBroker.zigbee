@@ -26,6 +26,8 @@ The devices connected to the Zigbee-network inform the coordinator of their stat
 
 ## Work with adapter
 
+![](https://raw.githubusercontent.com/kirovilya/files/master/config.PNG)
+
 To start the driver, you must specify the name of the port on which the cc253x device is connected.
 
 To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
