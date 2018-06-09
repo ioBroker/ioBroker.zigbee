@@ -39,6 +39,8 @@
     "type": "git",
     "url": "git+https://github.com/kirovilya/ioBroker.zigbee.git"
   },
-  "scripts": {},
-  "version": "0.5.2"
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha --exit"
+  },
+  "version": "0.5.3"
 }
