@@ -632,7 +632,7 @@ function main() {
     adapter.log.info('Start on port: ' + port);
     let shepherd = new ZShepherd(port, {
         net: {panId: 0x1a62, channelList: [11]},
-        sp: { baudrate: 115200, rtscts: false },
+        sp: { baudRate: 115200, rtscts: false },
         dbPath: dbDir+'/shepherd.db'
     });
     // create contoller and handlers
