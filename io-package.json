@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.4",
+        "version": "0.5.5",
         "news": {
+            "0.5.5": {
+                "en": "Return runing on NodeJS 4.x",
+                "ru": "Вернул работу в NodeJS 4.x"
+            },
             "0.5.4": {
                 "en": "Public version",
                 "ru": "Публичная версия"
