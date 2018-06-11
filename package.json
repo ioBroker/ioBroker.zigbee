@@ -15,7 +15,7 @@
   "dependencies": {
     "debug": "*",
     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd",
-    "zigbee-shepherd-converters": "^2.0.2"
+    "zigbee-shepherd-converters": "^2.0.4"
   },
   "description": "Zigbee devices",
   "devDependencies": {
