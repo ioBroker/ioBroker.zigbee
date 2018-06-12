@@ -65,6 +65,10 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Changelog
 
+
+### 0.5.5 (2018-06-11)
+* (kirovilya) Return runing on NodeJS 4.*
+
 ### 0.5.4 (2018-06-10)
 * (kirovilya) Public version
 
