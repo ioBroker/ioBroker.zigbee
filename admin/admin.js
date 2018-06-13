@@ -200,6 +200,8 @@ function getDevices() {
 
 // the function loadSettings has to exist ...
 function load(settings, onChange) {
+    if (settings.panID === undefined) settings.panID = 6754;
+
     // example: select elements with id=key and class=value and insert value
     for (var key in settings) {
         // example: select elements with id=key and class=value and insert value
@@ -216,6 +218,7 @@ function load(settings, onChange) {
             });
         }
     }
+    
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     //addCard();

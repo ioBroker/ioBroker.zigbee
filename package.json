@@ -4,7 +4,7 @@
     "email": "kirovilya@gmail.com"
   },
   "bugs": {
-    "url": "https://github.com/kirovilya/ioBroker.zigbee/issues"
+    "url": "https://github.com/ioBroker/ioBroker.zigbee/issues"
   },
   "contributors": [
     {
@@ -14,8 +14,8 @@
   ],
   "dependencies": {
     "debug": "*",
-    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd",
-    "zigbee-shepherd-converters": "^2.0.4"
+    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/master",
+    "zigbee-shepherd-converters": "^2.0.6"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -23,7 +23,7 @@
     "mocha": "^4.1.0",
     "chai": "^4.1.2"
   },
-  "homepage": "https://github.com/kirovilya/ioBroker.zigbee",
+  "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
     "ioBroker",
     "zigbee",
@@ -38,10 +38,10 @@
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kirovilya/ioBroker.zigbee.git"
+    "url": "git+https://github.com/ioBroker/ioBroker.zigbee.git"
   },
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --exit"
   },
-  "version": "0.5.5"
+  "version": "0.5.6"
 }

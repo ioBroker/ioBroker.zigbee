@@ -629,9 +629,10 @@ function main() {
     var dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
     if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
     var port = adapter.config.port;
-    adapter.log.info('Start on port: ' + port);
+    var panID = parseInt(adapter.config.panID ? adapter.config.panID : 0x1a62);
+    adapter.log.info('Start on port: ' + port + ' with panID ' + panID);
     let shepherd = new ZShepherd(port, {
-        net: {panId: 0x1a62, channelList: [11]},
+        net: {panId: panID, channelList: [11]},
         sp: { baudRate: 115200, rtscts: false },
         dbPath: dbDir+'/shepherd.db'
     });
