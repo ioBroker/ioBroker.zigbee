@@ -65,6 +65,9 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Changelog
 
+### 0.5.6 (2018-06-14)
+* (kirovilya) Configuration panID (zigbee network identifier)
+* (kirovilya) Moved to ioBroker organization
 
 ### 0.5.5 (2018-06-11)
 * (kirovilya) Return runing on NodeJS 4.*
