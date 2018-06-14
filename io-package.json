@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.5",
+        "version": "0.5.6",
         "news": {
             "0.5.6": {
                 "en": "PanID configuration",
