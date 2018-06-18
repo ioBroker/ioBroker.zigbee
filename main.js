@@ -171,8 +171,16 @@ function updateState(devId, name, value, common) {
                     new_common.icon = common.icon;
                 }
             }
-            adapter.extendObject(id, {type: 'state', common: new_common});
-            adapter.setState(id, value, true);
+            // check if state exist
+            adapter.getObject(id, function(err, stobj) {
+                if (stobj) {
+                    // update state - not change name and role (user can it changed)
+                    delete new_common.name;
+                    delete new_common.role;
+                }
+                adapter.extendObject(id, {type: 'state', common: new_common});
+                adapter.setState(id, value, true);
+            });
         } else {
             adapter.log.debug('Wrong device '+devId);
         }
@@ -215,7 +223,7 @@ function deleteDevice(from, command, msg, callback) {
                 zbControl.forceRemove(sysid, function (err) {
                     if (!err) {
                         adapter.log.debug('Force removed from shepherd!');
-                        adapter.log.debug('Try delete dev '+devId+'from iobroker.');
+                        adapter.log.debug('Try delete dev '+devId+' from iobroker.');
                         adapter.deleteDevice(devId, function(){
                             adapter.sendTo(from, command, {}, callback);
                         });
@@ -393,6 +401,10 @@ function onReady(){
     });
     activeDevices.forEach((device) => {
         adapter.log.info(getDeviceStartupLogMessage(device));
+        // update dev and states
+        updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, function () {
+            syncDevStates(device.ieeeAddr.substr(2), device.modelId);
+        });
         configureDevice(device);
     });
 }
