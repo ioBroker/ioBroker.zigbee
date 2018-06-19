@@ -45,6 +45,7 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Tested with devices:
 
+* IKEA TRÅDFRI bulb (state, level, colortemp)
 * QBCZ11LM Aqara Smart Socket ZiGBee (state, load power, in use)
 * QBKG11LM Xiaomi Aqara Smart Wall Switch Line-Neutral Single-Button (click, state, load power)
 * JTYJ-GD-01LM/BW Xiaomi Smoke Alarm (detected, voltage)
@@ -64,6 +65,10 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 
 ## Changelog
+
+### 0.5.7 (2018-06-19)
+* (kirovilya) Update states on adapter start (for restored shepherd.db)
+* (kirovilya) Brightness - not percent - range 0..255
 
 ### 0.5.6 (2018-06-14)
 * (kirovilya) Configuration panID (zigbee network identifier)

@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.6",
+        "version": "0.5.7",
         "news": {
+            "0.5.7": {
+                "en": "Update states on adapter start",
+                "ru": "Обновление состояний при старте адаптера"
+            },
             "0.5.6": {
                 "en": "PanID configuration",
                 "ru": "Настройка PanID для сети"
