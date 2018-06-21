@@ -21,7 +21,7 @@ Die mit dem Zigbee-Netz verbundenen Geräte übermitteln dem Koordinator ihren Z
 
 ![](https://raw.githubusercontent.com/kirovilya/files/master/config.PNG)
 
-Zu Beginn muss der USB-Port angegeben werden, an welchem der cc253x angeschlossen ist. Wie man diesen Erkennt ist hier beschrieben (Russisch)
+Zu Beginn muss der USB-Port angegeben werden, an welchem der cc253x angeschlossen ist. Wie man diesen Erkennt ist [hier beschrieben (Russisch)](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9D%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0-%D0%B0%D0%B4%D0%B0%D0%BF%D1%82%D0%B5%D1%80%D0%B0)
 
 Zum Verbinden der Geräte muss der Koordinator für Zigbee-Netz in den Pairingmodus versetzt werden, dazu auf den grünen Knopf im Adapter klicken. Pairingmodus ist ab jetzt für 60 Sekunden aktiv. Um die Geräte zu verbinden, reicht im Normallfall ein Betätigen des Knopfes auf dem zu verbindendem Gerät. Es gibt aber auch „besondere“ Geräte. Wie man diese verbindet ist [hier Englisch](https://github.com/Koenkk/zigbee2mqtt/wiki/Pairing-devices) [oder Russisch](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0) beschrieben.
 
@@ -30,4 +30,4 @@ Zigbee-Geräte die nicht in der Liste aufgeführt sind, können zwar gepairt wer
 
 ## Zusätzliche Informationen
 
-Es gibt noch ein Freundschaftprojekt mit gleichen Funktionen und gleicher Technologie, welcher mit denselben Geräten über ein MQTT Protokoll kommuniziert. Wenn irgendwelche Verbesserungen oder neu unterstütze Geräte im Projekt Zigbee2MQTT eingefügt werden, können jene auch in dieses Projekt hinzugefügt werden. Solltet Ihr unterschiede merken, schreibt bitte ein Issue, wir kümmern uns darum
+Es gibt noch ein [Freundschaftprojekt](https://github.com/koenkk/zigbee2mqtt) mit gleichen Funktionen und gleicher Technologie, welcher mit denselben Geräten über ein MQTT Protokoll kommuniziert. Wenn irgendwelche Verbesserungen oder neu unterstütze Geräte im Projekt Zigbee2MQTT eingefügt werden, können jene auch in dieses Projekt hinzugefügt werden. Solltet Ihr unterschiede merken, schreibt bitte ein Issue, wir kümmern uns darum
