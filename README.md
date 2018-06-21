@@ -45,6 +45,7 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Tested with devices:
 
+* Jiawen E27 RGBW bulb 9W (state, level, colortemp, rgb color)
 * IKEA TRÅDFRI bulb (state, level, colortemp)
 * QBCZ11LM Aqara Smart Socket ZiGBee (state, load power, in use)
 * QBKG11LM Xiaomi Aqara Smart Wall Switch Line-Neutral Single-Button (click, state, load power)
