@@ -510,7 +510,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
     const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
     const epName = (stateDesc.epname || stateDesc.prop || stateDesc.id);
     const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
-    const message = converter.convert(preparedValue.toString(), {});
+    const message = converter.convert(preparedValue, {});
     if (!message) {
         return;
     }
