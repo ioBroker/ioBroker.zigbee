@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.7",
+        "version": "0.5.8",
         "news": {
+            "0.5.8": {
+                "en": "backup/restore, new Jiawen bulb, remove device by setup key",
+                "ru": "backup/restore, новая лампа Jiawen, удаление устройства при покидании сети"
+            },
             "0.5.7": {
                 "en": "Update states on adapter start",
                 "ru": "Обновление состояний при старте адаптера"
@@ -61,7 +65,8 @@
         "loglevel": "info",
         "type": "hardware",
         "materialize": true,
-        "messagebox": true
+        "messagebox": true,
+        "dataFolder": "zigbee_%INSTANCE%"
     },
     "native": {
         "port": "",

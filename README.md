@@ -67,6 +67,12 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Changelog
 
+### 0.5.8 (2018-06-26)
+* (kirovilya) Allow backup/restore zigbee-database for js-controller 1.5.0
+* (kirovilya) New device - Jiawen bulb
+* (kirovilya) Allow remove device with setup key
+* (from zigbee-shepherd-converters) Change battery percent interval to 3000-2700
+
 ### 0.5.7 (2018-06-19)
 * (kirovilya) Update states on adapter start (for restored shepherd.db)
 * (kirovilya) Brightness - not percent - range 0..255

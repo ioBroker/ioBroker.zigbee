@@ -8,17 +8,19 @@
 /*jslint node: true */
 "use strict";
 
-const safeJsonStringify = require(__dirname + '/lib/json');
+process.env.DEBUG = 'zigbee*,cc-znp*';
 
+const safeJsonStringify = require(__dirname + '/lib/json');
 // you have to require the utils module and call adapter function
 const fs = require("fs");
 const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
-const util = require("util");
+const tools  = require(utils.controllerDir + '/lib/tools');
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require(__dirname + '/lib/zigbeecontroller');
 const adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
 const deviceMapping = require('zigbee-shepherd-converters');
-const statesMapping = require(__dirname + '/lib/devstates');;
+const statesMapping = require(__dirname + '/lib/devstates');
+const debug = require('debug');
 
 let zbControl;
 
@@ -205,7 +207,7 @@ function deleteDevice(from, command, msg, callback) {
         var dev = zbControl.getDevice(sysid);
         if (!dev) {
             adapter.log.debug('Not found on shepherd!');
-            adapter.log.debug('Try delete dev '+devId+'from iobroker.');
+            adapter.log.debug('Try delete dev '+devId+' from iobroker.');
             adapter.deleteDevice(devId, function(){
                 adapter.sendTo(from, command, {}, callback);
             });
@@ -384,6 +386,13 @@ function newDevice(id, msg) {
         
     }
 }
+
+function leaveDevice(id, msg) {
+    var devId = id.substr(2);
+    adapter.log.debug('Try delete dev '+devId+' from iobroker.');
+    adapter.deleteDevice(devId);
+}
+
 
 function onReady(){
     adapter.setState('info.connection', true);
@@ -636,6 +645,7 @@ function onDevEvent(type, devId, message, data) {
     }
 }
 
+
 function main() {
     // file path for ZShepherd
     var dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
@@ -653,8 +663,24 @@ function main() {
     zbControl.on('log', onLog);
     zbControl.on('ready', onReady);
     zbControl.on('new', newDevice);
+    zbControl.on('leave', leaveDevice);
     zbControl.on('join', onPermitJoining);
     zbControl.on('event', onDevEvent);
+
+    const oldStdOut = process.stdout.write.bind(process.stdout);
+    const oldErrOut = process.stderr.write.bind(process.stderr);
+    process.stdout.write = function (logs) {
+        if (adapter && adapter.log && adapter.log.debug) {
+            adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm,""));
+        }
+        oldStdOut(logs);
+    };
+    process.stderr.write = function (logs) {
+        if (adapter && adapter.log && adapter.log.debug) {
+            adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm,""));
+        }
+        oldErrOut(logs);
+    };
 
     // start the server
     zbControl.start((err) => {
