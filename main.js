@@ -509,22 +509,42 @@ function publishFromState(deviceId, modelId, stateKey, value){
         );
         return;
     }
-    const converter = mappedModel.toZigbee.find((c) => c.key === stateDesc.prop || c.key === stateDesc.setattr || c.key === stateDesc.id);
-    if (!converter) {
-        adapter.log.error(
-            `No converter available for '${mappedModel.model}' with key '${stateKey}'`
-        );
-        return;
-    }
-    const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
-    const epName = (stateDesc.epname || stateDesc.prop || stateDesc.id);
-    const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
-    const message = converter.convert(preparedValue, {});
-    if (!message) {
-        return;
+    let stateList = [{stateDesc: stateDesc, value: value, index: 0}];
+
+    if (stateModel.linkedStates) {
+        stateModel.linkedStates.forEach((linkedFunct)=>{
+            const res = linkedFunct(stateDesc, value);
+            if (res) {
+                stateList = stateList.concat(res);
+            }
+        });
+        // sort by index
+        stateList.sort((a, b)=>{
+            return a.index - b.index;
+        });
     }
 
-    zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep);
+    stateList.forEach((changedState) => {
+        const stateDesc = changedState.stateDesc;
+        const value = changedState.value;
+        const converter = mappedModel.toZigbee.find((c) => c.key === stateDesc.prop || c.key === stateDesc.setattr || c.key === stateDesc.id);
+        if (!converter) {
+            adapter.log.error(
+                `No converter available for '${mappedModel.model}' with key '${stateKey}'`
+            );
+            return;
+        }
+        const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
+        
+        const epName = (stateDesc.epname || stateDesc.prop || stateDesc.id);
+        const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
+        const message = converter.convert(preparedValue, {});
+        if (!message) {
+            return;
+        }
+
+        zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep);
+    });
 }
 
 function publishToState(devId, modelID, model, payload) {

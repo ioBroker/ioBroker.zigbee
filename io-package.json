@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.8",
+        "version": "0.5.9",
         "news": {
+            "0.5.9": {
+                "en": "Osram led, Philips Hue",
+                "ru": "Osram led, Philips Hue"
+            },
             "0.5.8": {
                 "en": "backup/restore, new Jiawen bulb, remove device by setup key",
                 "ru": "backup/restore, новая лампа Jiawen, удаление устройства при покидании сети"

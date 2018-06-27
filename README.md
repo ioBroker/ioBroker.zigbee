@@ -45,6 +45,9 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Tested with devices:
 
+* Osram LED PAR16 (state, level, colortemp)
+* Osram Smart+ plug (state, load power)
+* Philips Hue bulb (state, level)
 * Jiawen E27 RGBW bulb 9W (state, level, colortemp, rgb color)
 * IKEA TRÅDFRI bulb (state, level, colortemp)
 * QBCZ11LM Aqara Smart Socket ZiGBee (state, load power, in use)
@@ -66,6 +69,10 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 
 ## Changelog
+
+### 0.5.9 (2018-06-27)
+* (arteck) New devices: Osram LED PAR16, Osram Smart+ plug, Philips Hue bulb
+* (kirovilya) Turn on/off lights when change brightness > 0 and = 0
 
 ### 0.5.8 (2018-06-26)
 * (kirovilya) Allow backup/restore zigbee-database for js-controller 1.5.0
