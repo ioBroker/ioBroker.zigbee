@@ -70,6 +70,9 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Changelog
 
+### 0.6.0 (2018-06-28)
+* (kirovilya) More new devices from zigbee-shepherd-converters
+
 ### 0.5.9 (2018-06-27)
 * (arteck) New devices: Osram LED PAR16, Osram Smart+ plug, Philips Hue bulb
 * (kirovilya) Turn on/off lights when change brightness > 0 and = 0
