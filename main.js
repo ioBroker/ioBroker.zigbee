@@ -242,7 +242,7 @@ function deleteDevice(from, command, msg, callback) {
 
 function updateDev(dev_id, dev_name, model, callback) {
     const id = '' + dev_id;
-    const modelDesc = statesMapping[model];
+    const modelDesc = statesMapping.findModel(model);
     const icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
     adapter.setObjectNotExists(id, {
         type: 'device',
@@ -314,7 +314,7 @@ function getDevices(from, command, callback){
                         if (result[item]._id) {
                             const id = result[item]._id.split('.')[2];
                             let devInfo = result[item];
-                            const modelDesc = statesMapping[devInfo.common.type];
+                            const modelDesc = statesMapping.findModel(devInfo.common.type);
                             devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
                             devInfo.rooms = [];
                             for (var room in rooms) {
@@ -496,7 +496,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
         adapter.log.error('Unknown device model ' + modelId);
         return;
     }
-    const stateModel = statesMapping[modelId];
+    const stateModel = statesMapping.findModel(modelId);
     if (!stateModel) {
         adapter.log.error('Device ' + deviceId + ' "' + modelId +'" not described in statesMapping.');
         return;
@@ -548,7 +548,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
 }
 
 function publishToState(devId, modelID, model, payload) {
-    const stateModel = statesMapping[modelID];
+    const stateModel = statesMapping.findModel(modelID);
     if (!stateModel) {
         adapter.log.debug('Device ' + devId + ' "' + modelID +'" not described in statesMapping.');
         return;
@@ -594,7 +594,7 @@ function publishToState(devId, modelID, model, payload) {
 
 function syncDevStates(devId, modelId) {
     // devId - iobroker device id
-    const stateModel = statesMapping[modelId];
+    const stateModel = statesMapping.findModel(modelId);
     if (!stateModel) {
         adapter.log.debug('Device ' + devId + ' "' + modelId +'" not described in statesMapping.');
         return;
