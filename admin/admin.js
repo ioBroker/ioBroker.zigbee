@@ -11,15 +11,16 @@ function getCard(dev) {
         id = dev._id,
         type = dev.common.type,
         img_src = dev.common.icon || dev.icon,
-        rooms = [], room;
+        rooms = [], room,
+        lang = systemLang  || 'en';
     for (var r in dev.rooms) {
-        if (dev.rooms[r].hasOwnProperty('en')) {
-            rooms.push(dev.rooms[r]['en']);
+        if (dev.rooms[r].hasOwnProperty(lang)) {
+            rooms.push(dev.rooms[r][lang]);
         } else {
             rooms.push(dev.rooms[r]);
         }
     }
-    room = rooms.join(',');
+    room = rooms.join(',') || '&nbsp';
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
