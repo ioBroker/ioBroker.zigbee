@@ -141,7 +141,36 @@ function renameDevice(id, name) {
 }
 
 function showDevices() {
-    var html = '';
+    let html = '';
+    const lang = systemLang || 'en';
+    // sort by rooms
+    devices.sort((a, b)=>{
+        let roomsA = [], roomsB = [];
+        for (var r in a.rooms) {
+            if (a.rooms[r].hasOwnProperty(lang)) {
+                roomsA.push(a.rooms[r][lang]);
+            } else {
+                roomsA.push(a.rooms[r]);
+            }
+        }
+        var nameA = roomsA.join(',');
+        for (var r in b.rooms) {
+            if (b.rooms[r].hasOwnProperty(lang)) {
+                roomsB.push(b.rooms[r][lang]);
+            } else {
+                roomsB.push(b.rooms[r]);
+            }
+        }
+        var nameB = roomsB.join(',');
+
+        if (nameB < nameB) {
+            return -1;
+          }
+          if (nameA > nameB) {
+            return 1;
+          }
+          return 0;
+    });
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
         var card = getCard(d);
