@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.9",
+        "version": "0.6.0",
         "news": {
+            "0.6.0": {
+                "en": "More new devices",
+                "ru": "Много новых устройств"
+            },
             "0.5.9": {
                 "en": "Osram led, Philips Hue",
                 "ru": "Osram led, Philips Hue"
