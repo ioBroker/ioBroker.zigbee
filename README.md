@@ -70,8 +70,10 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Changelog
 
-### 0.6.0 (2018-06-28)
+### 0.6.0 (2018-07-05)
 * (kirovilya) More new devices from zigbee-shepherd-converters
+* (kirovilya) Some layout fixes in admin
+* (kirovilya) Fix battery for smoke sensor
 
 ### 0.5.9 (2018-06-27)
 * (arteck) New devices: Osram LED PAR16, Osram Smart+ plug, Philips Hue bulb
