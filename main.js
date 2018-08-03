@@ -299,75 +299,81 @@ function letsPairing(from, command, callback){
     }
 }
 
+function getNetworkInfo(devId, networkmap){
+    return networkmap.find((info) => info.ieeeAddr == devId);
+}
+
 function getDevices(from, command, callback){
     if (zbControl) {
-        const pairedDevices = zbControl.getAllClients();
-        var rooms;
-        adapter.getEnums('enum.rooms', function (err, list) {
-            if (!err){
-                rooms = list['enum.rooms'];
-            }
-            adapter.getDevices((err, result) => {
-                if (result) {
-                    var devices = [], cnt = 0, len = result.length;
-                    for (var item in result) {
-                        if (result[item]._id) {
-                            const id = result[item]._id.split('.')[2];
-                            let devInfo = result[item];
-                            const modelDesc = statesMapping.findModel(devInfo.common.type);
-                            devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
-                            devInfo.rooms = [];
-                            for (var room in rooms) {
-                                if (!rooms[room] || !rooms[room].common || !rooms[room].common.members)
-                                    continue;
-                                if (rooms[room].common.members.indexOf(devInfo._id) !== -1) {
-                                    devInfo.rooms.push(rooms[room].common.name);
+        zbControl.getMap((networkmap) => {
+            const pairedDevices = zbControl.getAllClients();
+            var rooms;
+            adapter.getEnums('enum.rooms', function (err, list) {
+                if (!err){
+                    rooms = list['enum.rooms'];
+                }
+                adapter.getDevices((err, result) => {
+                    if (result) {
+                        var devices = [], cnt = 0, len = result.length;
+                        result.forEach((devInfo)=>{
+                            if (devInfo._id) {
+                                const id = devInfo._id.split('.')[2];
+                                const modelDesc = statesMapping.findModel(devInfo.common.type);
+                                devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
+                                devInfo.rooms = [];
+                                for (var room in rooms) {
+                                    if (!rooms[room] || !rooms[room].common || !rooms[room].common.members)
+                                        continue;
+                                    if (rooms[room].common.members.indexOf(devInfo._id) !== -1) {
+                                        devInfo.rooms.push(rooms[room].common.name);
+                                    }
+                                }
+                                devInfo.paired = zbControl.getDevice('0x' + id) != undefined;
+                                devInfo.networkInfo = getNetworkInfo('0x' + id, networkmap);
+                                devices.push(devInfo);
+                                cnt++;
+                                if (cnt==len) {
+                                    // append devices that paired but not created
+                                    pairedDevices.forEach((device) => {
+                                        const exists = devices.find((dev) => device.ieeeAddr == '0x' + dev._id.split('.')[2]);
+                                        if (!exists) {
+                                            devices.push({
+                                                _id: device.ieeeAddr,
+                                                icon: 'img/unknown.png',
+                                                paired: true,
+                                                common: {
+                                                    name: undefined,
+                                                    type: undefined,
+                                                },
+                                            });
+                                        }
+                                    });
+                                    adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
+                                    adapter.sendTo(from, command, devices, callback);
                                 }
                             }
-                            devInfo.paired = zbControl.getDevice('0x' + id) != undefined;
-                            devices.push(devInfo);
-                            cnt++;
-                            if (cnt==len) {
-                                // append devices that paired but not created
-                                pairedDevices.forEach((device) => {
-                                    const exists = devices.find((dev) => device.ieeeAddr == '0x' + dev._id.split('.')[2]);
-                                    if (!exists) {
-                                        devices.push({
-                                            _id: device.ieeeAddr,
-                                            icon: 'img/unknown.png',
-                                            paired: true,
-                                            common: {
-                                                name: undefined,
-                                                type: undefined,
-                                            },
-                                        });
-                                    }
-                                });
-                                adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
-                                adapter.sendTo(from, command, devices, callback);
-                            }
+                        });
+                        if (len == 0) {
+                            // append devices that paired but not created
+                            pairedDevices.forEach((device) => {
+                                const exists = devices.find((dev) => device.ieeeAddr == '0x' + dev._id.split('.')[2]);
+                                if (!exists) {
+                                    devices.push({
+                                        _id: device.ieeeAddr,
+                                        icon: 'img/unknown.png',
+                                        paired: true,
+                                        common: {
+                                            name: undefined,
+                                            type: undefined,
+                                        },
+                                    });
+                                }
+                            });
+                            adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
+                            adapter.sendTo(from, command, devices, callback);
                         }
                     }
-                    if (len == 0) {
-                        // append devices that paired but not created
-                        pairedDevices.forEach((device) => {
-                            const exists = devices.find((dev) => device.ieeeAddr == '0x' + dev._id.split('.')[2]);
-                            if (!exists) {
-                                devices.push({
-                                    _id: device.ieeeAddr,
-                                    icon: 'img/unknown.png',
-                                    paired: true,
-                                    common: {
-                                        name: undefined,
-                                        type: undefined,
-                                    },
-                                });
-                            }
-                        });
-                        adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
-                        adapter.sendTo(from, command, devices, callback);
-                    }
-                }
+                });
             });
         });
     } else {
@@ -392,7 +398,6 @@ function leaveDevice(id, msg) {
     adapter.log.debug('Try delete dev '+devId+' from iobroker.');
     adapter.deleteDevice(devId);
 }
-
 
 function onReady(){
     adapter.setState('info.connection', true);
@@ -554,7 +559,9 @@ function publishToState(devId, modelID, model, payload) {
         return;
     }
     // find states for payload
-    const states = stateModel.states.filter((statedesc) => payload.hasOwnProperty(statedesc.prop || statedesc.id));
+    const states = statesMapping.commonStates.concat(
+        stateModel.states.filter((statedesc) => payload.hasOwnProperty(statedesc.prop || statedesc.id))
+    );
     for (const stateInd in states) {
         const statedesc = states[stateInd];
         let value;
@@ -658,6 +665,10 @@ function onDevEvent(type, devId, message, data) {
                 const payload = converter.convert(mappedModel, message, publish);
 
                 if (payload) {
+                    // Add device linkquality.
+                    if (message.linkquality) {
+                        payload.linkquality = message.linkquality;
+                    }
                     publish(payload);
                 }
             });
