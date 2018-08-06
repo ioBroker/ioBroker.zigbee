@@ -22,11 +22,15 @@ function getCard(dev) {
         }
     }
     room = rooms.join(',') || '&nbsp';
+    let routeBtn = '';
+    if (dev.info.type == 'Router') {
+        routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
+    }
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
         info = '<p style="min-height:96px">' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
-        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black"><i class="material-icons tiny">delete</i></a><a name="edit" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons small">mode_edit</i></a>',
+        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black"><i class="material-icons tiny">delete</i></a><a name="edit" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons small">mode_edit</i></a>'+routeBtn,
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
                     '<div class="card-content">'+
@@ -192,6 +196,14 @@ function showDevices() {
         // editName(id, name);
         openReval(e, id, name);
     });
+    $("a.btn-floating[name='join']").click(function() {
+        var dev_block = $(this).parents("div.device"),
+            id = dev_block.attr("id"),
+            name = dev_block.find(".card-title").text();
+        if (!$('#pairing').hasClass('pulse'))
+            joinProcess(id);
+        showPairingProcess();
+    });
     $("a.btn[name='done']").click(function(e) {
         var dev_block = $(this).parents("div.device"),
             id = dev_block.attr("id"),
@@ -210,6 +222,17 @@ function letsPairing() {
     messages = [];
     sendTo(null, 'letsPairing', {}, function (msg) {
         //console.log(msg);
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            }
+        }
+    });
+}
+
+function joinProcess(devId) {
+    messages = [];
+    sendTo(null, 'letsPairing', {id: devId}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -280,17 +303,13 @@ function load(settings, onChange) {
     }
 
     $('ul.tabs').on('click', 'a', function(e) {
-        //showNetworkMap();
         if (network != undefined) {
-            var width = $('#tab-map').width(),
-                height = $('#tab-map').height();
-            //console.log($('#tab-map').width(), $('#tab-map').height());
-            //network.setSize(width*1.2, height*1.2);
-            //network.redraw();
+            var width = $('#map').width(),
+                height = $('#map').height()-200;
+            network.setSize(width, height);
+            network.redraw();
             network.fit();
-            //network.once('initRedraw', function() {
             network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
-            //});
         }
     });
 }
@@ -379,7 +398,7 @@ socket.emit('getObject', 'system.config', function (err, res) {
 function showNetworkMap(devices){
 
     // create an array with nodes
-    var nodes =[];
+    var nodes = [];
 
     // create an array with edges
     var edges = [];
@@ -432,7 +451,7 @@ function showNetworkMap(devices){
         width: '100%',
         nodes: {
             shape: 'box'
-        }
+        },
     };
     network = new vis.Network(container, data, options);
 }
