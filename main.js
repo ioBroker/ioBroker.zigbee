@@ -306,7 +306,8 @@ function getNetworkInfo(devId, networkmap){
 function getDevices(from, command, callback){
     if (zbControl) {
         zbControl.getMap((networkmap) => {
-            const pairedDevices = zbControl.getAllClients();
+            //const pairedDevices = zbControl.getAllClients();
+            const pairedDevices = zbControl.getDevices();
             var rooms;
             adapter.getEnums('enum.rooms', function (err, list) {
                 if (!err){
@@ -328,7 +329,8 @@ function getDevices(from, command, callback){
                                         devInfo.rooms.push(rooms[room].common.name);
                                     }
                                 }
-                                devInfo.paired = zbControl.getDevice('0x' + id) != undefined;
+                                devInfo.info = zbControl.getDevice('0x' + id);
+                                devInfo.paired = devInfo.info != undefined;
                                 devInfo.networkInfo = getNetworkInfo('0x' + id, networkmap);
                                 devices.push(devInfo);
                                 cnt++;
@@ -341,6 +343,8 @@ function getDevices(from, command, callback){
                                                 _id: device.ieeeAddr,
                                                 icon: 'img/unknown.png',
                                                 paired: true,
+                                                info: device,
+                                                networkInfo: getNetworkInfo(device.ieeeAddr, networkmap),
                                                 common: {
                                                     name: undefined,
                                                     type: undefined,
@@ -362,6 +366,8 @@ function getDevices(from, command, callback){
                                         _id: device.ieeeAddr,
                                         icon: 'img/unknown.png',
                                         paired: true,
+                                        info: device,
+                                        networkInfo: getNetworkInfo(device.ieeeAddr, networkmap),
                                         common: {
                                             name: undefined,
                                             type: undefined,

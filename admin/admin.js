@@ -174,6 +174,7 @@ function showDevices() {
     });
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
+        if (d.info && d.info.type == "Coordinator") continue;
         var card = getCard(d);
         html += card;
     }
@@ -201,7 +202,7 @@ function showDevices() {
         closeReval(e);
     });
 
-    showNetworkMap();
+    showNetworkMap(devices);
     translateAll();
 }
 
@@ -375,25 +376,49 @@ socket.emit('getObject', 'system.config', function (err, res) {
     }
 });
 
-function showNetworkMap(){
+function showNetworkMap(devices){
+
     // create an array with nodes
-    var nodes =[
-        {id: 1, label: 'Координатор'},
-        {id: 2, label: 'Розетка на кухне'},
-        {id: 3, label: 'Температура в спальне'},
-        {id: 4, label: 'Node 4'},
-        {id: 5, label: 'Node 5'},
-        {id: 6, label: 'Node 6'}
-    ];
+    var nodes =[];
 
     // create an array with edges
-    var edges = [
-        {from: 1, to: 3, dashes:true},
-        {from: 1, to: 2, dashes:[5,5]},
-        {from: 2, to: 4, dashes:[5,5,3,3]},
-        {from: 2, to: 5, dashes:[2,2,10,10]},
-        {from: 2, to: 6, dashes:false},
-    ];
+    var edges = [];
+
+    
+    const keys = {};
+    devices.forEach((dev)=>{
+        if (dev.info) {
+            keys[dev.info.ieeeAddr] = dev;
+        }
+    });
+    const links = {};
+
+    devices.forEach((dev)=>{
+        const node = {
+            id: dev._id,
+            label: dev.common.name,
+            shape: 'image', 
+            image: dev.icon,
+        }
+        if (dev.info && dev.info.type == 'Coordinator') {
+            node.shape = 'star';
+            node.label = 'Coordinator';
+        }
+        nodes.push(node);
+        if (dev.networkInfo) {
+            const to = keys[dev.networkInfo.parent] ? keys[dev.networkInfo.parent]._id : undefined;
+            const from = dev._id;
+            if (to && from && ((links[to] == from) || (links[from] == to))) return;
+            const link = {
+                from: from,
+                to: to,
+                label: dev.networkInfo.lqi.toString(),
+                font: {align: 'middle'},
+            };
+            edges.push(link);
+            links[from] = to;
+        }
+    });
 
     // create a network
     var container = document.getElementById('map');
