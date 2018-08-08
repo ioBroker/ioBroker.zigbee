@@ -109,6 +109,11 @@ adapter.on('message', function (obj) {
                     getDevices(obj.from, obj.command, obj.callback);
                 }
                 break;
+            case 'getMap':
+                if (obj && obj.message && typeof obj.message == 'object') {
+                    getMap(obj.from, obj.command, obj.callback);
+                }
+                break;
             case 'renameDevice':
                 if (obj && obj.message && typeof obj.message == 'object') {
                     renameDevice(obj.from, obj.command, obj.message, obj.callback);
@@ -309,6 +314,12 @@ function getZBid(adapterDevId){
 
 function getNetworkInfo(devId, networkmap){
     return networkmap.find((info) => info.ieeeAddr == devId);
+}
+
+function getMap(from, command, callback){
+    if (zbControl) {
+        zbControl.getMap((networkmap) => {});
+    }
 }
 
 function getDevices(from, command, callback){
@@ -697,9 +708,10 @@ function main() {
     if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
     var port = adapter.config.port;
     var panID = parseInt(adapter.config.panID ? adapter.config.panID : 0x1a62);
-    adapter.log.info('Start on port: ' + port + ' with panID ' + panID);
+    const channel = parseInt(adapter.config.channel ? adapter.config.channel : 11);
+    adapter.log.info('Start on port: ' + port + ' with panID ' + panID+' channel ' + channel);
     let shepherd = new ZShepherd(port, {
-        net: {panId: panID, channelList: [11]},
+        net: {panId: panID, channelList: [channel]},
         sp: { baudRate: 115200, rtscts: false },
         dbPath: dbDir+'/shepherd.db'
     });

@@ -258,6 +258,7 @@ function getDevices() {
 // the function loadSettings has to exist ...
 function load(settings, onChange) {
     if (settings.panID === undefined) settings.panID = 6754;
+    if (settings.channel === undefined) settings.channel = 11;
 
     // example: select elements with id=key and class=value and insert value
     for (var key in settings) {
@@ -288,6 +289,11 @@ function load(settings, onChange) {
             letsPairing();
         showPairingProcess();
     });
+
+    $('#refresh').click(function() {
+        getDevices();
+    });
+
     $(document).ready(function() {
         $('.modal').modal({
             startingTop: '30%',
@@ -304,8 +310,8 @@ function load(settings, onChange) {
 
     $('ul.tabs').on('click', 'a', function(e) {
         if (network != undefined) {
-            var width = $('#map').width(),
-                height = $('#map').height()-200;
+            var width = $('#tab-map').width(),
+                height = $('#tab-map').height()-150;
             network.setSize(width, height);
             network.redraw();
             network.fit();

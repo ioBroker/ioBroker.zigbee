@@ -78,7 +78,8 @@
     },
     "native": {
         "port": "",
-        "panID": 6754
+        "panID": 6754,
+        "channel": 11
     },
     "instanceObjects": [
         {
