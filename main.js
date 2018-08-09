@@ -419,6 +419,11 @@ function leaveDevice(id, msg) {
 
 function onReady(){
     adapter.setState('info.connection', true);
+
+    if (adapter.config.disableLed) {
+        zbControl.disableLed();
+    }
+
     // create and update pairing State
     adapter.setObjectNotExists('info.pairingMode', {
         type: 'state',
