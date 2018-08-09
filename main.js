@@ -282,7 +282,7 @@ function onPermitJoining(joinTimeLeft){
 
 function letsPairing(from, command, message, callback){
     if (zbControl) {
-        let devId;
+        let devId = 'all';
         if (message && message.id) {
             devId = getZBid(message.id);
         }
