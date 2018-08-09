@@ -5,6 +5,7 @@ var Materialize = M ? M : Materialize,
     devices = [],
     dialog,
     messages = [],
+    map = [],
     network;
 
 function getCard(dev) {
@@ -214,7 +215,7 @@ function showDevices() {
         closeReval(e);
     });
 
-    showNetworkMap(devices);
+    showNetworkMap(devices, map);
     translateAll();
 }
 
@@ -255,6 +256,21 @@ function getDevices() {
     });
 }
 
+function getMap() {
+    $('#refresh').addClass('disabled');
+    sendTo(null, 'getMap', {}, function (msg) {
+        $('#refresh').removeClass('disabled');
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            } else {
+                map = msg;
+                showNetworkMap(devices, map);
+            }
+        }
+    });
+}
+
 // the function loadSettings has to exist ...
 function load(settings, onChange) {
     if (settings.panID === undefined) settings.panID = 6754;
@@ -279,6 +295,7 @@ function load(settings, onChange) {
     
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
+    getMap();
     //addCard();
 
     // Signal to admin, that no changes yet
@@ -291,8 +308,7 @@ function load(settings, onChange) {
     });
 
     $('#refresh').click(function() {
-        
-        getDevices();
+        getMap();
     });
 
     $(document).ready(function() {
@@ -402,7 +418,12 @@ socket.emit('getObject', 'system.config', function (err, res) {
     }
 });
 
-function showNetworkMap(devices){
+
+function getNetworkInfo(devId, networkmap){
+    return networkmap.find((info) => info.ieeeAddr == devId);
+}
+
+function showNetworkMap(devices, map){
 
     // create an array with nodes
     var nodes = [];
@@ -431,18 +452,21 @@ function showNetworkMap(devices){
             node.label = 'Coordinator';
         }
         nodes.push(node);
-        if (dev.networkInfo) {
-            const to = keys[dev.networkInfo.parent] ? keys[dev.networkInfo.parent]._id : undefined;
-            const from = dev._id;
-            if (to && from && ((links[to] == from) || (links[from] == to))) return;
-            const link = {
-                from: from,
-                to: to,
-                label: dev.networkInfo.lqi.toString(),
-                font: {align: 'middle'},
-            };
-            edges.push(link);
-            links[from] = to;
+        if (dev.info) {
+            const networkInfo = getNetworkInfo(dev.info.ieeeAddr, map);
+            if (networkInfo) {
+                const to = keys[networkInfo.parent] ? keys[networkInfo.parent]._id : undefined;
+                const from = dev._id;
+                if (to && from && ((links[to] == from) || (links[from] == to))) return;
+                const link = {
+                    from: from,
+                    to: to,
+                    label: networkInfo.lqi.toString(),
+                    font: {align: 'middle'},
+                };
+                edges.push(link);
+                links[from] = to;
+            }
         }
     });
 
