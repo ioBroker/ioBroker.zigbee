@@ -35,7 +35,7 @@ function getCard(dev) {
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
                     '<div class="card-content">'+
-                        '<span class="card-title">'+title+'</span>'+paired+
+                        '<span class="card-title truncate">'+title+'</span>'+paired+
                         '<i class="left">'+image+'</i>'+
                         info+
                         buttons+
