@@ -23,7 +23,7 @@ function getCard(dev) {
     }
     room = rooms.join(',') || '&nbsp';
     let routeBtn = '';
-    if (dev.info.type == 'Router') {
+    if (dev.info && dev.info.type == 'Router') {
         routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
     }
 
@@ -291,6 +291,7 @@ function load(settings, onChange) {
     });
 
     $('#refresh').click(function() {
+        
         getDevices();
     });
 
