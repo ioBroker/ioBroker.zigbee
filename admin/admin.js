@@ -4,7 +4,9 @@ var Materialize = M ? M : Materialize,
     namespaceLen = namespace.length,
     devices = [],
     dialog,
-    messages = [];
+    messages = [],
+    map = [],
+    network;
 
 function getCard(dev) {
     var title = dev.common.name,
@@ -21,15 +23,19 @@ function getCard(dev) {
         }
     }
     room = rooms.join(',') || '&nbsp';
+    let routeBtn = '';
+    if (dev.info && dev.info.type == 'Router') {
+        routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
+    }
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
         info = '<p style="min-height:96px">' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
-        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black"><i class="material-icons tiny">delete</i></a><a name="edit" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons small">mode_edit</i></a>',
+        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black"><i class="material-icons tiny">delete</i></a><a name="edit" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons small">mode_edit</i></a>'+routeBtn,
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
                     '<div class="card-content">'+
-                        '<span class="card-title">'+title+'</span>'+paired+
+                        '<span class="card-title truncate">'+title+'</span>'+paired+
                         '<i class="left">'+image+'</i>'+
                         info+
                         buttons+
@@ -173,6 +179,7 @@ function showDevices() {
     });
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
+        if (d.info && d.info.type == "Coordinator") continue;
         var card = getCard(d);
         html += card;
     }
@@ -190,6 +197,14 @@ function showDevices() {
         // editName(id, name);
         openReval(e, id, name);
     });
+    $("a.btn-floating[name='join']").click(function() {
+        var dev_block = $(this).parents("div.device"),
+            id = dev_block.attr("id"),
+            name = dev_block.find(".card-title").text();
+        if (!$('#pairing').hasClass('pulse'))
+            joinProcess(id);
+        showPairingProcess();
+    });
     $("a.btn[name='done']").click(function(e) {
         var dev_block = $(this).parents("div.device"),
             id = dev_block.attr("id"),
@@ -199,6 +214,8 @@ function showDevices() {
     $("a.btn-flat[name='close']").click(function(e) {
         closeReval(e);
     });
+
+    showNetworkMap(devices, map);
     translateAll();
 }
 
@@ -206,6 +223,17 @@ function letsPairing() {
     messages = [];
     sendTo(null, 'letsPairing', {}, function (msg) {
         //console.log(msg);
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            }
+        }
+    });
+}
+
+function joinProcess(devId) {
+    messages = [];
+    sendTo(null, 'letsPairing', {id: devId}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -228,9 +256,25 @@ function getDevices() {
     });
 }
 
+function getMap() {
+    $('#refresh').addClass('disabled');
+    sendTo(null, 'getMap', {}, function (msg) {
+        $('#refresh').removeClass('disabled');
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            } else {
+                map = msg;
+                showNetworkMap(devices, map);
+            }
+        }
+    });
+}
+
 // the function loadSettings has to exist ...
 function load(settings, onChange) {
     if (settings.panID === undefined) settings.panID = 6754;
+    if (settings.channel === undefined) settings.channel = 11;
 
     // example: select elements with id=key and class=value and insert value
     for (var key in settings) {
@@ -251,6 +295,7 @@ function load(settings, onChange) {
     
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
+    getMap();
     //addCard();
 
     // Signal to admin, that no changes yet
@@ -261,6 +306,11 @@ function load(settings, onChange) {
             letsPairing();
         showPairingProcess();
     });
+
+    $('#refresh').click(function() {
+        getMap();
+    });
+
     $(document).ready(function() {
         $('.modal').modal({
             startingTop: '30%',
@@ -274,6 +324,17 @@ function load(settings, onChange) {
     if (transText) {
         $('#pairing').attr('data-tooltip', transText);
     }
+
+    $('ul.tabs').on('click', 'a', function(e) {
+        if (network != undefined) {
+            var width = $('#tab-map').width(),
+                height = $('#tab-map').height()-150;
+            network.setSize(width, height);
+            network.redraw();
+            network.fit();
+            network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
+        }
+    });
 }
 
 function showMessages() {
@@ -356,3 +417,72 @@ socket.emit('getObject', 'system.config', function (err, res) {
         systemConfig = res;
     }
 });
+
+
+function getNetworkInfo(devId, networkmap){
+    return networkmap.find((info) => info.ieeeAddr == devId);
+}
+
+function showNetworkMap(devices, map){
+
+    // create an array with nodes
+    var nodes = [];
+
+    // create an array with edges
+    var edges = [];
+
+    
+    const keys = {};
+    devices.forEach((dev)=>{
+        if (dev.info) {
+            keys[dev.info.ieeeAddr] = dev;
+        }
+    });
+    const links = {};
+
+    devices.forEach((dev)=>{
+        const node = {
+            id: dev._id,
+            label: dev.common.name,
+            shape: 'image', 
+            image: dev.icon,
+        }
+        if (dev.info && dev.info.type == 'Coordinator') {
+            node.shape = 'star';
+            node.label = 'Coordinator';
+        }
+        nodes.push(node);
+        if (dev.info) {
+            const networkInfo = getNetworkInfo(dev.info.ieeeAddr, map);
+            if (networkInfo) {
+                const to = keys[networkInfo.parent] ? keys[networkInfo.parent]._id : undefined;
+                const from = dev._id;
+                if (to && from && ((links[to] == from) || (links[from] == to))) return;
+                const link = {
+                    from: from,
+                    to: to,
+                    label: networkInfo.lqi.toString(),
+                    font: {align: 'middle'},
+                };
+                edges.push(link);
+                links[from] = to;
+            }
+        }
+    });
+
+    // create a network
+    var container = document.getElementById('map');
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {
+        autoResize: true,
+        height: '100%',
+        width: '100%',
+        nodes: {
+            shape: 'box'
+        },
+    };
+    network = new vis.Network(container, data, options);
+}

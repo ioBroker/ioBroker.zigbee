@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.6.0",
+        "version": "0.7.0",
         "news": {
             "0.6.0": {
                 "en": "More new devices",
@@ -78,7 +78,9 @@
     },
     "native": {
         "port": "",
-        "panID": 6754
+        "panID": 6754,
+        "channel": 11,
+        "disableLed": false
     },
     "instanceObjects": [
         {

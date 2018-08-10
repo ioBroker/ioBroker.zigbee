@@ -5,6 +5,9 @@
 <script type="text/javascript" src="../../lib/js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 <script type="text/javascript" src="../../lib/js/jquery-ui-1.10.3.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"/>
+
 
 <!-- these two file always have to be included -->
 <link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
@@ -45,8 +48,23 @@
                 </div>
             </div>
         </div>
-        <div class="col s12">
-            <div id="devices" class="row">
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs">
+                    <li class="tab col s3"><a href="#tab-main" class="translate active">Devices</a></li>
+                    <li class="tab col s3"><a href="#map" class="translate active">Network map</a></li>
+                    <li class="tab col s3"><a href="#tab-sett" class="translate active">Settings</a></li>
+                </ul>
+            </div>
+            <div id="tab-main" class="col s12 page">
+                <div id="devices" class="row">
+                </div>
+            </div>
+            <div id="map" class="col s12 page" height="100%">
+            </div>
+            <div id="tab-sett" class="col s12 page">
+                <div id="sett" class="row">
+                </div>
             </div>
         </div>
     </div>
