@@ -14,7 +14,7 @@
   ],
   "dependencies": {
     "debug": "*",
-    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/dev",
+    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/master",
     "zigbee-shepherd-converters": "2.0.41"
   },
   "description": "Zigbee devices",
