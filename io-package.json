@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.6.0",
+        "version": "0.7.0",
         "news": {
+            "0.7.0": {
+                "en": "Network map feature",
+                "ru": "Карта сети и другие улучшения"
+            },
             "0.6.0": {
                 "en": "More new devices",
                 "ru": "Много новых устройств"
@@ -78,7 +82,9 @@
     },
     "native": {
         "port": "",
-        "panID": 6754
+        "panID": 6754,
+        "channel": 11,
+        "disableLed": false
     },
     "instanceObjects": [
         {

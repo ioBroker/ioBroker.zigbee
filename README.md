@@ -43,32 +43,20 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 * in English https://github.com/koenkk/zigbee2mqtt/wiki
 * in Russian https://github.com/kirovilya/ioBroker.zigbee/wiki
 
-## Tested with devices:
+## Supported devices
 
-* Osram LED PAR16 (state, level, colortemp)
-* Osram Smart+ plug (state, load power)
-* Philips Hue bulb (state, level)
-* Jiawen E27 RGBW bulb 9W (state, level, colortemp, rgb color)
-* IKEA TRÅDFRI bulb (state, level, colortemp)
-* QBCZ11LM Aqara Smart Socket ZiGBee (state, load power, in use)
-* QBKG11LM Xiaomi Aqara Smart Wall Switch Line-Neutral Single-Button (click, state, load power)
-* JTYJ-GD-01LM/BW Xiaomi Smoke Alarm (detected, voltage)
-* ZNCZ02LM Xiaomi Smart Power Plug (state, load power, in use)
-* QBKG03LM Xiaomi Aqara Light Switch (left is on, right is on, click left, click right, click both)
-* MFKZQ01LM Xiaomi Magic Cube Controller (shake, slide, flip90, flip180, tap, rotate, fall, wakeup, voltage)
-* SJCGQ11LM Aqara Smart Water Sensor (detected, voltage)
-* WXKG02LM Aqara Smart Light Switch Wireless (click left, click right, click both, voltage)
-* WSDCGQ11LM Aqara Temperature Humidity Sensor (humidity, pressure, temperature, voltage)
-* WSDCGQ01LM Aqara Temperature Humidity Sensor (humidity, temperature, voltage)
-* MCCGQ11LM Aqara Window Door Sensor (contact, voltage)
-* MCCGQ01LM Xiaomi Mi Smart Door/Window Sensor (contact, voltage)
-* WXKG11LM Aqara Smart Wireless Switch (click, double click, voltage)
-* WXKG01LM Xiaomi Smart Wireless Switch (click, double click, triple, long click, voltage)
-* RTCGQ11LM Aqara Human Body Sensor (illuminance, occupancy, voltage)
-* RTCGQ01LM Xiaomi Mi Smart IR Human Body Sensor (illuminance, occupancy, voltage)
-
+Works with most devices from this list https://github.com/Koenkk/zigbee2mqtt/wiki/Supported-devices
 
 ## Changelog
+
+### 0.7.0 (2018-08-14)
+* (kirovilya) Network map feature
+* (kirovilya) Allow pairing through router
+* (kirovilya) Change battery percent interval to 2700..3200
+* (arteck) New devices: Hue LTW010, Osram Flex RGBW
+* (kirovilya) Triple and quadruple clicks for WXKG11LM
+* (kirovilya) isopen - magnet state, in contrast to contact
+* (kirovilya) Option "Disable LED for cc2531"
 
 ### 0.6.0 (2018-07-05)
 * (kirovilya) More new devices from zigbee-shepherd-converters

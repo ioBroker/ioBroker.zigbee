@@ -101,12 +101,17 @@ adapter.on('message', function (obj) {
                 break;
             case 'letsPairing':
                 if (obj && obj.message && typeof obj.message == 'object') {
-                    letsPairing(obj.from, obj.command, obj.callback);
+                    letsPairing(obj.from, obj.command, obj.message, obj.callback);
                 }
                 break;
             case 'getDevices':
                 if (obj && obj.message && typeof obj.message == 'object') {
                     getDevices(obj.from, obj.command, obj.callback);
+                }
+                break;
+            case 'getMap':
+                if (obj && obj.message && typeof obj.message == 'object') {
+                    getMap(obj.from, obj.command, obj.callback);
                 }
                 break;
             case 'renameDevice':
@@ -247,7 +252,10 @@ function updateDev(dev_id, dev_name, model, callback) {
     adapter.setObjectNotExists(id, {
         type: 'device',
         common: {name: dev_name, type: model, icon: icon}
-    }, {}, callback);
+    }, {}, () => {
+        // update type and icon
+        adapter.extendObject(id, {common: {type: model, icon: icon}}, {}, callback);
+    });
 }
 
 // is called when databases are connected and adapter received configuration.
@@ -275,15 +283,19 @@ function onPermitJoining(joinTimeLeft){
     logToPairing('Time left: '+joinTimeLeft, true);
 }
 
-function letsPairing(from, command, callback){
+function letsPairing(from, command, message, callback){
     if (zbControl) {
+        let devId = 'all';
+        if (message && message.id) {
+            devId = getZBid(message.id);
+        }
         // allow devices to join the network within 60 secs
         adapter.setObjectNotExists('info.pairingMessage', {
             type: 'state',
             common: {name: 'Pairing message'}
         }, {});
-        logToPairing('Pairing started');
-        zbControl.permitJoin(60, function(err) {
+        logToPairing('Pairing started ' + devId);
+        zbControl.permitJoin(60, devId, function(err) {
             if (!err) {
                 // set pairing mode on
                 adapter.setObjectNotExists('info.pairingMode', {
@@ -299,9 +311,22 @@ function letsPairing(from, command, callback){
     }
 }
 
+function getZBid(adapterDevId){
+    return '0x'+adapterDevId.split('.')[2];
+}
+
+function getMap(from, command, callback){
+    if (zbControl && zbControl.enabled()) {
+        zbControl.getMap((networkmap) => {
+            adapter.log.debug('getMap result: ' + JSON.stringify(networkmap));
+            adapter.sendTo(from, command, networkmap, callback);
+        });
+    }
+}
+
 function getDevices(from, command, callback){
-    if (zbControl) {
-        const pairedDevices = zbControl.getAllClients();
+    if (zbControl && zbControl.enabled()) {
+        const pairedDevices = zbControl.getDevices();
         var rooms;
         adapter.getEnums('enum.rooms', function (err, list) {
             if (!err){
@@ -310,10 +335,9 @@ function getDevices(from, command, callback){
             adapter.getDevices((err, result) => {
                 if (result) {
                     var devices = [], cnt = 0, len = result.length;
-                    for (var item in result) {
-                        if (result[item]._id) {
-                            const id = result[item]._id.split('.')[2];
-                            let devInfo = result[item];
+                    result.forEach((devInfo)=>{
+                        if (devInfo._id) {
+                            const id = getZBid(devInfo._id);
                             const modelDesc = statesMapping.findModel(devInfo.common.type);
                             devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
                             devInfo.rooms = [];
@@ -324,18 +348,20 @@ function getDevices(from, command, callback){
                                     devInfo.rooms.push(rooms[room].common.name);
                                 }
                             }
-                            devInfo.paired = zbControl.getDevice('0x' + id) != undefined;
+                            devInfo.info = zbControl.getDevice(id);
+                            devInfo.paired = devInfo.info != undefined;
                             devices.push(devInfo);
                             cnt++;
                             if (cnt==len) {
                                 // append devices that paired but not created
                                 pairedDevices.forEach((device) => {
-                                    const exists = devices.find((dev) => device.ieeeAddr == '0x' + dev._id.split('.')[2]);
+                                    const exists = devices.find((dev) => device.ieeeAddr ==  getZBid(dev._id));
                                     if (!exists) {
                                         devices.push({
                                             _id: device.ieeeAddr,
                                             icon: 'img/unknown.png',
                                             paired: true,
+                                            info: device,
                                             common: {
                                                 name: undefined,
                                                 type: undefined,
@@ -347,7 +373,7 @@ function getDevices(from, command, callback){
                                 adapter.sendTo(from, command, devices, callback);
                             }
                         }
-                    }
+                    });
                     if (len == 0) {
                         // append devices that paired but not created
                         pairedDevices.forEach((device) => {
@@ -357,6 +383,7 @@ function getDevices(from, command, callback){
                                     _id: device.ieeeAddr,
                                     icon: 'img/unknown.png',
                                     paired: true,
+                                    info: device,
                                     common: {
                                         name: undefined,
                                         type: undefined,
@@ -393,9 +420,13 @@ function leaveDevice(id, msg) {
     adapter.deleteDevice(devId);
 }
 
-
 function onReady(){
     adapter.setState('info.connection', true);
+
+    if (adapter.config.disableLed) {
+        zbControl.disableLed();
+    }
+
     // create and update pairing State
     adapter.setObjectNotExists('info.pairingMode', {
         type: 'state',
@@ -405,7 +436,7 @@ function onReady(){
     // get and list all registered devices (not in ioBroker)
     let activeDevices = zbControl.getAllClients();
     adapter.log.debug('Current active devices:');
-    activeDevices.forEach((device) => {
+    zbControl.getDevices().forEach((device) => {
         adapter.log.debug(safeJsonStringify(device));
     });
     activeDevices.forEach((device) => {
@@ -536,7 +567,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
         }
         const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
         
-        const epName = (stateDesc.epname || stateDesc.prop || stateDesc.id);
+        const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
         const message = converter.convert(preparedValue, {});
         if (!message) {
@@ -554,7 +585,9 @@ function publishToState(devId, modelID, model, payload) {
         return;
     }
     // find states for payload
-    const states = stateModel.states.filter((statedesc) => payload.hasOwnProperty(statedesc.prop || statedesc.id));
+    const states = statesMapping.commonStates.concat(
+        stateModel.states.filter((statedesc) => payload.hasOwnProperty(statedesc.prop || statedesc.id))
+    );
     for (const stateInd in states) {
         const statedesc = states[stateInd];
         let value;
@@ -658,6 +691,10 @@ function onDevEvent(type, devId, message, data) {
                 const payload = converter.convert(mappedModel, message, publish);
 
                 if (payload) {
+                    // Add device linkquality.
+                    if (message.linkquality) {
+                        payload.linkquality = message.linkquality;
+                    }
                     publish(payload);
                 }
             });
@@ -672,9 +709,10 @@ function main() {
     if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
     var port = adapter.config.port;
     var panID = parseInt(adapter.config.panID ? adapter.config.panID : 0x1a62);
-    adapter.log.info('Start on port: ' + port + ' with panID ' + panID);
+    const channel = parseInt(adapter.config.channel ? adapter.config.channel : 11);
+    adapter.log.info('Start on port: ' + port + ' with panID ' + panID+' channel ' + channel);
     let shepherd = new ZShepherd(port, {
-        net: {panId: panID, channelList: [11]},
+        net: {panId: panID, channelList: [channel]},
         sp: { baudRate: 115200, rtscts: false },
         dbPath: dbDir+'/shepherd.db'
     });
