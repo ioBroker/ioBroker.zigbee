@@ -252,7 +252,10 @@ function updateDev(dev_id, dev_name, model, callback) {
     adapter.setObjectNotExists(id, {
         type: 'device',
         common: {name: dev_name, type: model, icon: icon}
-    }, {}, callback);
+    }, {}, () => {
+        // update type and icon
+        adapter.extendObject(id, {common: {type: model, icon: icon}}, {}, callback);
+    });
 }
 
 // is called when databases are connected and adapter received configuration.
@@ -564,7 +567,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
         }
         const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
         
-        const epName = (stateDesc.epname || stateDesc.prop || stateDesc.id);
+        const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
         const message = converter.convert(preparedValue, {});
         if (!message) {
