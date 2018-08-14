@@ -12,7 +12,7 @@ function getCard(dev) {
     var title = dev.common.name,
         id = dev._id,
         type = dev.common.type,
-        img_src = dev.common.icon || dev.icon,
+        img_src = dev.icon || dev.common.icon,
         rooms = [], room,
         lang = systemLang  || 'en';
     for (var r in dev.rooms) {
