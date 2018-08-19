@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.7.0",
+        "version": "0.7.1",
         "news": {
-            "0.7.0": {
+            "0.7.1": {
                 "en": "Network map feature",
                 "ru": "Карта сети и другие улучшения"
             },

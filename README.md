@@ -49,7 +49,7 @@ Works with most devices from this list https://github.com/Koenkk/zigbee2mqtt/wik
 
 ## Changelog
 
-### 0.7.0 (2018-08-14)
+### 0.7.1 (2018-08-14)
 * (kirovilya) Network map feature
 * (kirovilya) Allow pairing through router
 * (kirovilya) Change battery percent interval to 2700..3200
