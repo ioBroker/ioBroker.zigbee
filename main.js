@@ -187,9 +187,8 @@ function updateState(devId, name, value, common) {
                     delete new_common.role;
                 }
                 adapter.extendObject(id, {type: 'state', common: new_common});
-                adapter.setState(id, value, true);
-                
-                wait(500);
+                adapter.setState(id, value, true);              
+                wait(300);
                 
             });
         } else {
