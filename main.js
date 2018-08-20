@@ -487,7 +487,7 @@ function configureDevice(device) {
                 if (ok) {
                     adapter.log.info(`Succesfully configured ${ieeeAddr}`);
                 } else {
-                    adapter.log.error(`Failed to configure ${ieeeAddr}`);
+                    adapter.log.error(`Failed to configure ${ieeeAddr} ` + device.modelId );
                 }
             });
         }
