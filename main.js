@@ -179,6 +179,7 @@ function updateState(devId, name, value, common) {
                 }
             }
             // check if state exist
+                        
             adapter.getObject(id, function(err, stobj) {
                 if (stobj) {
                     // update state - not change name and role (user can it changed)
@@ -186,12 +187,22 @@ function updateState(devId, name, value, common) {
                     delete new_common.role;
                 }
                 adapter.extendObject(id, {type: 'state', common: new_common});
-                adapter.setState(id, value, true);
+                adapter.setState(id, value, true);              
+                wait(300);
+                
             });
         } else {
             adapter.log.debug('Wrong device '+devId);
         }
     });
+}
+
+function wait(ms){
+   var start = new Date().getTime();
+   var end = start;
+   while(end < start + ms) {
+     end = new Date().getTime();
+  }
 }
 
 
