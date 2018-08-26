@@ -186,7 +186,7 @@ function updateState(devId, name, value, common) {
                     delete new_common.name;
                     delete new_common.role;
                 }
-                
+   // arteck             
                 if (value != undefined) {
                    adapter.extendObject(id, {type: 'state', common: new_common});
                    adapter.setState(id, value, true);
