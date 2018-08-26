@@ -186,25 +186,17 @@ function updateState(devId, name, value, common) {
                     delete new_common.name;
                     delete new_common.role;
                 }
-                adapter.extendObject(id, {type: 'state', common: new_common});
-                adapter.setState(id, value, true);              
-                wait(300);
                 
+                if (value != undefined) {
+                   adapter.extendObject(id, {type: 'state', common: new_common});
+                   adapter.setState(id, value, true);
+                }
             });
         } else {
             adapter.log.debug('Wrong device '+devId);
         }
     });
 }
-
-function wait(ms){
-   var start = new Date().getTime();
-   var end = start;
-   while(end < start + ms) {
-     end = new Date().getTime();
-  }
-}
-
 
 function renameDevice(from, command, msg, callback) {
     var id = msg.id, newName = msg.name;
