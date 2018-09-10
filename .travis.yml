@@ -23,6 +23,8 @@ before_script:
   - npm -v
   - npm install winston@2.3.1
   - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
+script:
+  - ".travis/wiki.sh"
 addons:
   apt:
     sources:
