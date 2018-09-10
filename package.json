@@ -14,8 +14,8 @@
   ],
   "dependencies": {
     "debug": "*",
-    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/master",
-    "zigbee-shepherd-converters": "2.0.41"
+     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/master",
+     "zigbee-shepherd-converters": "https://github.com/arteck/zigbee-shepherd-converters/tarball/master"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -43,5 +43,5 @@
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --exit"
   },
-  "version": "0.7.1"
+  "version": "0.7.3"
 }
