@@ -18,11 +18,11 @@ update_wiki() {
 }
 
 # Only update wiki if on master branch and not pull request
-#if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]
-#then
+if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]
+then
   echo "Updating wiki!"
   setup_git
   update_wiki
-#else
-#  echo "Not updating wiki, triggered by pull request or not on master branch"
-#fi
+else
+  echo "Not updating wiki, triggered by pull request or not on master branch"
+fi
