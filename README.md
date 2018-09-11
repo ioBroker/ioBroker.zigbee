@@ -45,7 +45,7 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Supported devices
 
-Works with most devices from this list https://github.com/Koenkk/zigbee2mqtt/wiki/Supported-devices
+Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
 ## Changelog
 
