@@ -49,6 +49,10 @@ Works with most devices from this list https://github.com/Koenkk/zigbee2mqtt/wik
 
 ## Changelog
 
+### 0.7.3 (2018-09-11)
+* (arteck) Bugfix and new device: Classic A60 W clear - LIGHTIFY
+* (kirovilya) Occupancy timeout state for motion sensor
+
 ### 0.7.1 (2018-08-14)
 * (kirovilya) Network map feature
 * (kirovilya) Allow pairing through router

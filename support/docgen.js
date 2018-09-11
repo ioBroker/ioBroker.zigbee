@@ -25,8 +25,8 @@ const logDevices = (devices) => {
         device.models.forEach((modelId) => {
             const mappedModel = findByZigbeeModel(modelId);
             const desc = mappedModel ? `${mappedModel.description} (${mappedModel.supports})` : `${modelId}`;
-            const brand = mappedModel ? `**${device.vendor}** <br> ${mappedModel.model}` : `**${device.vendor}**`;
-            result += `| ${brand} <br> (${modelId}) | ${desc} |  ![${pathImg}]` + '(https://github.com/ioBroker/ioBroker.zigbee/blob/master/admin/' + `${device.icon}) |\n`;
+            const brand = mappedModel ? `**${mappedModel.model}**<br>` : ``;
+            result += `| ${brand} (${modelId}) | ${desc} |  ![${pathImg}]` + '(https://github.com/ioBroker/ioBroker.zigbee/blob/master/admin/' + `${device.icon}) |\n`;
         });
     });
 

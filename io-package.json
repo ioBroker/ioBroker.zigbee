@@ -4,8 +4,8 @@
         "version": "0.7.3",
         "news": {
             "0.7.3": {
-                "en": "",
-                "ru": ""
+                "en": "OSRAM A60 W clear and Occupancy timeout",
+                "ru": "OSRAM A60 W clear и таймаут детектора движения"
             },
             "0.7.1": {
                 "en": "Network map feature",

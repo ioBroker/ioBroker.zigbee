@@ -559,6 +559,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
 
     stateList.forEach((changedState) => {
         const stateDesc = changedState.stateDesc;
+        if (stateDesc.isOption) return;
         const value = changedState.value;
         const converter = mappedModel.toZigbee.find((c) => c.key === stateDesc.prop || c.key === stateDesc.setattr || c.key === stateDesc.id);
         if (!converter) {
@@ -617,8 +618,10 @@ function publishToState(devId, modelID, model, payload) {
             updateStateWithTimeout(devId, statedesc.id, value, common, 300, !value);
         } else {
             if (statedesc.prepublish) {
-                statedesc.prepublish(devId, value, (newvalue) => {
-                    updateState(devId, statedesc.id, newvalue, common);
+                collectOptions(devId, modelID, (options) => {
+                    statedesc.prepublish(devId, value, (newvalue) => {
+                        updateState(devId, statedesc.id, newvalue, common);
+                    }, options);
                 });
             } else {
                 updateState(devId, statedesc.id, value, common);
@@ -651,6 +654,42 @@ function syncDevStates(devId, modelId) {
     }
 }
 
+function collectOptions(devId, modelId, callback) {
+    // find model states for options and get it values
+    const mappedModel = deviceMapping.findByZigbeeModel(modelId);
+    if (!mappedModel) {
+        adapter.log.error('Unknown device model ' + modelId);
+        callback();
+        return;
+    }
+    const stateModel = statesMapping.findModel(modelId);
+    if (!stateModel) {
+        adapter.log.error('Device ' + deviceId + ' "' + modelId +'" not described in statesMapping.');
+        callback();
+        return;
+    }
+    const states = stateModel.states.filter((statedesc) => statedesc.isOption);
+    if (!states) {
+        callback();
+        return;
+    }
+    let result = {};
+    let cnt = 0, len = states.length;
+    states.forEach((statedesc)=>{
+        const id = adapter.namespace + '.' + devId + '.' + statedesc.id;
+        adapter.getState(id, (err, state) => {
+            cnt = cnt+1;
+            if (!err && state) {
+                result[statedesc.id] = state.val;
+            }
+            if (cnt == len) {
+                callback(result);
+            }
+        });
+    });
+    if (len == 0) callback();
+    return;
+}
 
 function onDevEvent(type, devId, message, data) {
     switch (type) {
@@ -676,29 +715,23 @@ function onDevEvent(type, devId, message, data) {
                 );
                 return;
             }
-            // Convert this Zigbee message to a MQTT message.
-            // Get payload for the message.
-            // - If a payload is returned publish it to the MQTT broker
-            // - If NO payload is returned do nothing. This is for non-standard behaviour
-            //   for e.g. click switches where we need to count number of clicks and detect long presses.
             converters.forEach((converter) => {
                 const publish = (payload) => {
                     // Don't cache messages with click and action.
                     const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
-                    //this.mqttPublishDeviceState(device.ieeeAddr, payload, cache);
                     adapter.log.debug('Publish '+safeJsonStringify(payload));
                     publishToState(devId.substr(2), modelID, mappedModel, payload);
                 };
-
-                const payload = converter.convert(mappedModel, message, publish);
-
-                if (payload) {
-                    // Add device linkquality.
-                    if (message.linkquality) {
-                        payload.linkquality = message.linkquality;
+                collectOptions(devId.substr(2), modelID, (options) => {
+                    const payload = converter.convert(mappedModel, message, publish, options);
+                    if (payload) {
+                        // Add device linkquality.
+                        if (message.linkquality) {
+                            payload.linkquality = message.linkquality;
+                        }
+                        publish(payload);
                     }
-                    publish(payload);
-                }
+                });
             });
             break;
     }
