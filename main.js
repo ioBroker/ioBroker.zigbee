@@ -21,6 +21,7 @@ const adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
 const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require(__dirname + '/lib/devstates');
 const debug = require('debug');
+var SerialPort = require('serialport');
 
 let zbControl;
 
@@ -91,7 +92,7 @@ adapter.on('stateChange', function (id, state) {
 
 // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
 adapter.on('message', function (obj) {
-    if (typeof obj == 'object' && obj.message) {
+    if (typeof obj == 'object' && obj.command) {
         switch (obj.command) {
             case 'send':
                 // e.g. send email or pushover or whatever
@@ -124,6 +125,15 @@ adapter.on('message', function (obj) {
                     deleteDevice(obj.from, obj.command, obj.message, obj.callback);
                 }
                 break;
+            case 'listUart':
+                if (obj.callback) {
+                    listSerial()
+                        .then((ports) => {
+                            adapter.log.info('List of ports: ' + JSON.stringify(ports));
+                            adapter.sendTo(obj.from, obj.command, ports, obj.callback);
+                        });
+                }
+                break;
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                 break;
@@ -131,6 +141,22 @@ adapter.on('message', function (obj) {
     }
     processMessages();
 });
+
+
+function listSerial() {
+    const result = SerialPort.list()
+        .then((ports) => {
+            const res = ports.map(function (port) {
+                return {comName: port.comName};
+            });
+            return res;
+        })
+        .catch((err) => {
+            adapter.log.error(err);
+            return [];
+        });
+    return result;
+}
 
 
 function updateStateWithTimeout(dev_id, name, value, common, timeout, outValue) {

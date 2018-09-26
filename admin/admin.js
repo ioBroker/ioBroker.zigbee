@@ -292,6 +292,16 @@ function load(settings, onChange) {
             });
         }
     }
+
+    getIsAdapterAlive(function (_isAlive) {
+        isAlive = _isAlive;
+        if (isAlive || common.enabled) {
+            getComPorts(settings.port);
+        } else {
+            $('#_port').prepend('<input id="port" type="text" class="value validate" value="' + settings.port + '"/>');
+            $('#port').change(onChange).keyup(onChange);
+        }
+    });
     
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
@@ -485,4 +495,28 @@ function showNetworkMap(devices, map){
         },
     };
     network = new vis.Network(container, data, options);
+}
+
+function getComPorts(actualValue) {
+    timeout = setTimeout(function () {
+        getComPorts(actualValue);
+    }, 2000);
+    sendTo(null, 'listUart', null, function (list) {
+        console.log(list);
+        if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+        }
+        if (!list || !list.length) {
+            setTimeout(function () {
+                getComPorts(actualValue);
+            }, 1000);
+            return;
+        }
+        var element = $('#port');
+        for (var j = 0; j < list.length; j++) {
+            element.append('<option value="' + list[j].comName + '">' + list[j].comName  + '</option>');
+        }
+        $('#port.value').val(actualValue).select();
+    });
 }
