@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.7.3",
+        "version": "0.7.4",
         "news": {
+        	"0.7.4": {
+                "en": "Allow enter port without selector",
+                "ru": "Ввод порта без выбора из списка"
+            },
             "0.7.3": {
                 "en": "OSRAM A60 W clear and Occupancy timeout",
                 "ru": "OSRAM A60 W clear и таймаут детектора движения"
