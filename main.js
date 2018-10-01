@@ -603,7 +603,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
             return;
         }
 
-        zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep);
+        zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.type);
     });
 }
 
