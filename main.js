@@ -771,6 +771,10 @@ function main() {
     var port = adapter.config.port;
     var panID = parseInt(adapter.config.panID ? adapter.config.panID : 0x1a62);
     const channel = parseInt(adapter.config.channel ? adapter.config.channel : 11);
+    if (!port){
+        adapter.log.error('Serial port not selected! Go to settings page.');
+        return;
+    }
     adapter.log.info('Start on port: ' + port + ' with panID ' + panID+' channel ' + channel);
     let shepherd = new ZShepherd(port, {
         net: {panId: panID, channelList: [channel]},

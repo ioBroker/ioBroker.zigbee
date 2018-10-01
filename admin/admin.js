@@ -122,7 +122,6 @@ function editName(id, name) {
 
 function deleteDevice(id) {
     sendTo(null, 'deleteDevice', {id: id}, function (msg) {
-        //console.log(msg);
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error.code, _('Error'), 'alert');
@@ -135,7 +134,6 @@ function deleteDevice(id) {
 
 function renameDevice(id, name) {
     sendTo(null, 'renameDevice', {id: id, name: name}, function (msg) {
-        //console.log(msg);
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -222,7 +220,6 @@ function showDevices() {
 function letsPairing() {
     messages = [];
     sendTo(null, 'letsPairing', {}, function (msg) {
-        //console.log(msg);
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -244,7 +241,6 @@ function joinProcess(devId) {
 
 function getDevices() {
     sendTo(null, 'getDevices', {}, function (msg) {
-        //console.log(msg);
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -293,15 +289,7 @@ function load(settings, onChange) {
         }
     }
 
-    getIsAdapterAlive(function (_isAlive) {
-        isAlive = _isAlive;
-        if (isAlive || common.enabled) {
-            getComPorts(settings.port);
-        } else {
-            $('#_port').prepend('<input id="port" type="text" class="value validate" value="' + settings.port + '"/>');
-            $('#port').change(onChange).keyup(onChange);
-        }
-    });
+    getComPorts(onChange);
     
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
@@ -326,6 +314,7 @@ function load(settings, onChange) {
             startingTop: '30%',
             endingTop: '30%',
         });
+        $('.dropdown-trigger').dropdown();
         Materialize.updateTextFields();
     });
 
@@ -391,7 +380,6 @@ socket.emit('subscribeObjects', namespace + '.*');
 socket.on('stateChange', function (id, state) {
     // only watch our own states
     if (id.substring(0, namespaceLen) !== namespace) return;
-    //console.log("State change announced: " + id + " and obj = " + JSON.stringify(state));
     if (state) {
         if (id.match(/\.info\.pairingMode$/)) {
             if (state.val) {
@@ -416,7 +404,6 @@ socket.on('stateChange', function (id, state) {
 
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
-    //console.log("Object change announced: " + id + " and obj = " + JSON.stringify(obj));
     if (obj && obj.type == "device") {
         getDevices();
     }
@@ -497,26 +484,29 @@ function showNetworkMap(devices, map){
     network = new vis.Network(container, data, options);
 }
 
-function getComPorts(actualValue) {
+function getComPorts(onChange) {
     timeout = setTimeout(function () {
-        getComPorts(actualValue);
+        getComPorts(onChange);
     }, 2000);
     sendTo(null, 'listUart', null, function (list) {
-        console.log(list);
         if (timeout) {
             clearTimeout(timeout);
             timeout = null;
         }
         if (!list || !list.length) {
             setTimeout(function () {
-                getComPorts(actualValue);
+                getComPorts(onChange);
             }, 1000);
             return;
         }
-        var element = $('#port');
+        var element = $('#ports');
         for (var j = 0; j < list.length; j++) {
-            element.append('<option value="' + list[j].comName + '">' + list[j].comName  + '</option>');
+            element.append('<li><a href="#!">' + list[j].comName +'</a></li>');
         }
-        $('#port.value').val(actualValue).select();
+        $("#ports a").click(function() {
+            $("#port").val($(this).text());
+            Materialize.updateTextFields();
+            onChange();
+        });
     });
 }
