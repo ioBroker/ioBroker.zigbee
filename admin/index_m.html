@@ -27,6 +27,17 @@
         padding: 0.5rem;
         width: 64px;
     }
+    .input-group {
+    display: table;
+    }
+
+    .input-group input, .suffix {
+        display: table-cell;
+    }
+
+    .suffix {
+        width:1%;
+    }
 </style>
 </head>
 <body>
@@ -70,9 +81,15 @@
             </div>
             <div id="tab-sett" class="col s12 page">
                 <div id="sett" class="row">
-                    <div id="_port" class="input-field col s3 m3 l3">
-                        <select class="value" id="port" type="text" ></select>
+                    <div class="input-field input-group col s3 m3 l3">
+                        <input id="port" type="text" class="value validate"/>
                         <label for="port" class="translate">COM port name</label>                            
+                        <span class="suffix">
+                            <a id="selector" class='dropdown-trigger btn' href='#' data-target='ports'><i class="material-icons">arrow_drop_down</i></a>
+                            <!-- Dropdown Structure -->
+                            <ul id='ports' class='dropdown-content'>
+                            </ul>
+                        </span>
                     </div>
                     <div class="input-field col s2 m2 l2">
                         <input id="panID" type="number" min="1" max="65565" class="value" />
