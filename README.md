@@ -49,6 +49,9 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
+### 0.7.5 (2018-10-02)
+* (kirovilya) Support zigbee-shepherd-converters 4.*
+
 ### 0.7.4 (2018-10-01)
 * (kirovilya) Allow enter port without selector
 
