@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.7.4",
+        "version": "0.7.5",
         "news": {
+        	"0.7.5": {
+                "en": "Support zigbee-shepherd-converters 4.*",
+                "ru": "Поддержка zigbee-shepherd-converters 4.*"
+            },
         	"0.7.4": {
                 "en": "Allow enter port without selector",
                 "ru": "Ввод порта без выбора из списка"
