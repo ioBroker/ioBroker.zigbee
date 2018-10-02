@@ -314,7 +314,7 @@ function load(settings, onChange) {
             startingTop: '30%',
             endingTop: '30%',
         });
-        $('.dropdown-trigger').dropdown();
+        $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
     });
 
