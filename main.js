@@ -690,7 +690,7 @@ function collectOptions(devId, modelId, callback) {
     }
     const stateModel = statesMapping.findModel(modelId);
     if (!stateModel) {
-        adapter.log.error('Device ' + deviceId + ' "' + modelId +'" not described in statesMapping.');
+        adapter.log.error('Device ' + devId + ' "' + modelId +'" not described in statesMapping.');
         callback();
         return;
     }
