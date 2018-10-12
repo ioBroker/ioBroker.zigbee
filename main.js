@@ -6,22 +6,21 @@
 
 /* jshint -W097 */// jshint strict:false
 /*jslint node: true */
-"use strict";
+'use strict';
 
 process.env.DEBUG = 'zigbee*,cc-znp*';
 
 const safeJsonStringify = require(__dirname + '/lib/json');
 // you have to require the utils module and call adapter function
-const fs = require("fs");
+const fs = require('fs');
 const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
-const tools  = require(utils.controllerDir + '/lib/tools');
+const tools = require(utils.controllerDir + '/lib/tools');
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require(__dirname + '/lib/zigbeecontroller');
 const adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
 const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require(__dirname + '/lib/devstates');
-const debug = require('debug');
-var SerialPort = require('serialport');
+const SerialPort = require('serialport');
 
 let zbControl;
 
@@ -29,7 +28,7 @@ let zbControl;
 function processMessages(ignore) {
     adapter.getMessage(function (err, obj) {
         if (obj) {
-            if (!ignore && obj && obj.command == 'send') processMessage(obj.message);
+            if (!ignore && obj && obj.command === 'send') processMessage(obj.message);
             processMessages();
         }
     });
@@ -43,7 +42,6 @@ function processMessage(message) {
             message = JSON.parse(message);
         } catch (err) {
             adapter.log.error('Cannot parse: ' + message);
-            return;
         }
     }
 }
@@ -77,9 +75,9 @@ adapter.on('stateChange', function (id, state) {
     if (state && !state.ack) {
         adapter.log.debug('User stateChange ' + id + ' ' + JSON.stringify(state));
         const devId = adapter.namespace + '.' + id.split('.')[2]; // iobroker device id
-        const deviceId = '0x'+id.split('.')[2]; // zigbee device id
+        const deviceId = '0x' + id.split('.')[2]; // zigbee device id
         const stateKey = id.split('.')[3];
-        adapter.getObject(devId, function(err, obj) {
+        adapter.getObject(devId, function (err, obj) {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
@@ -92,7 +90,7 @@ adapter.on('stateChange', function (id, state) {
 
 // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
 adapter.on('message', function (obj) {
-    if (typeof obj == 'object' && obj.command) {
+    if (typeof obj === 'object' && obj.command) {
         switch (obj.command) {
             case 'send':
                 // e.g. send email or pushover or whatever
@@ -101,27 +99,27 @@ adapter.on('message', function (obj) {
                 if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
                 break;
             case 'letsPairing':
-                if (obj && obj.message && typeof obj.message == 'object') {
+                if (obj && obj.message && typeof obj.message === 'object') {
                     letsPairing(obj.from, obj.command, obj.message, obj.callback);
                 }
                 break;
             case 'getDevices':
-                if (obj && obj.message && typeof obj.message == 'object') {
+                if (obj && obj.message && typeof obj.message === 'object') {
                     getDevices(obj.from, obj.command, obj.callback);
                 }
                 break;
             case 'getMap':
-                if (obj && obj.message && typeof obj.message == 'object') {
+                if (obj && obj.message && typeof obj.message === 'object') {
                     getMap(obj.from, obj.command, obj.callback);
                 }
                 break;
             case 'renameDevice':
-                if (obj && obj.message && typeof obj.message == 'object') {
+                if (obj && obj.message && typeof obj.message === 'object') {
                     renameDevice(obj.from, obj.command, obj.message, obj.callback);
                 }
                 break;
             case 'deleteDevice':
-                if (obj && obj.message && typeof obj.message == 'object') {
+                if (obj && obj.message && typeof obj.message === 'object') {
                     deleteDevice(obj.from, obj.command, obj.message, obj.callback);
                 }
                 break;
@@ -144,18 +142,16 @@ adapter.on('message', function (obj) {
 
 
 function listSerial() {
-    const result = SerialPort.list()
-        .then((ports) => {
-            const res = ports.map(function (port) {
+    return SerialPort.list()
+        .then((ports) =>
+            ports.map(port => {
                 return {comName: port.comName};
-            });
-            return res;
-        })
+            })
+        )
         .catch((err) => {
             adapter.log.error(err);
             return [];
         });
-    return result;
 }
 
 
@@ -168,63 +164,63 @@ function updateStateWithTimeout(dev_id, name, value, common, timeout, outValue) 
 
 
 function updateState(devId, name, value, common) {
-    adapter.getObject(devId, function(err, obj) {
+    adapter.getObject(devId, function (err, obj) {
         if (obj) {
             let new_common = {name: name};
             let id = devId + '.' + name;
-            if (common != undefined) {
-                if (common.name != undefined) {
+            if (common) {
+                if (common.name !== undefined) {
                     new_common.name = common.name;
                 }
-                if (common.type != undefined) {
+                if (common.type !== undefined) {
                     new_common.type = common.type;
                 }
-                if (common.unit != undefined) {
+                if (common.unit !== undefined) {
                     new_common.unit = common.unit;
                 }
-                if (common.states != undefined) {
+                if (common.states !== undefined) {
                     new_common.states = common.states;
                 }
-                if (common.read != undefined) {
+                if (common.read !== undefined) {
                     new_common.read = common.read;
                 }
-                if (common.write != undefined) {
+                if (common.write !== undefined) {
                     new_common.write = common.write;
                 }
-                if (common.role != undefined) {
+                if (common.role !== undefined) {
                     new_common.role = common.role;
                 }
-                if (common.min != undefined) {
+                if (common.min !== undefined) {
                     new_common.min = common.min;
                 }
-                if (common.max != undefined) {
+                if (common.max !== undefined) {
                     new_common.max = common.max;
                 }
-                if (common.icon != undefined) {
+                if (common.icon !== undefined) {
                     new_common.icon = common.icon;
                 }
             }
             // check if state exist
-                        
-            adapter.getObject(id, function(err, stobj) {
+
+            adapter.getObject(id, (err, stobj) => {
                 if (stobj) {
                     // update state - not change name and role (user can it changed)
                     delete new_common.name;
                     delete new_common.role;
                 }
                 adapter.extendObject(id, {type: 'state', common: new_common});
-                if (value != undefined) {
-                   adapter.setState(id, value, true);
+                if (value !== undefined) {
+                    adapter.setState(id, value, true);
                 }
             });
         } else {
-            adapter.log.debug('Wrong device '+devId);
+            adapter.log.debug('Wrong device ' + devId);
         }
     });
 }
 
 function renameDevice(from, command, msg, callback) {
-    var id = msg.id, newName = msg.name;
+    const id = msg.id, newName = msg.name;
     adapter.extendObject(id, {common: {name: newName}});
     adapter.sendTo(from, command, {}, callback);
 }
@@ -233,35 +229,31 @@ function renameDevice(from, command, msg, callback) {
 function deleteDevice(from, command, msg, callback) {
     if (zbControl) {
         adapter.log.debug('deleteDevice message: ' + JSON.stringify(msg));
-        var id = msg.id, sysid = id.replace(adapter.namespace+'.', '0x'), 
-            devId = id.replace(adapter.namespace+'.', '');
+        const id = msg.id, sysid = id.replace(adapter.namespace + '.', '0x'),
+            devId = id.replace(adapter.namespace + '.', '');
         adapter.log.debug('deleteDevice sysid: ' + sysid);
         //adapter.extendObject(id, {common: {name: newName}});
-        var dev = zbControl.getDevice(sysid);
+        const dev = zbControl.getDevice(sysid);
         if (!dev) {
             adapter.log.debug('Not found on shepherd!');
-            adapter.log.debug('Try delete dev '+devId+' from iobroker.');
-            adapter.deleteDevice(devId, function(){
+            adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
+            adapter.deleteDevice(devId, function () {
                 adapter.sendTo(from, command, {}, callback);
             });
             return;
-        } 
+        }
         zbControl.remove(sysid, (err) => {
             if (!err) {
                 adapter.log.debug('Successfully removed from shepherd!');
-                adapter.deleteDevice(devId, function(){
-                    adapter.sendTo(from, command, {}, callback);
-                });
+                adapter.deleteDevice(devId, () => adapter.sendTo(from, command, {}, callback));
             } else {
                 adapter.log.debug('Error on remove! ' + err);
                 adapter.log.debug('Try force remove!');
                 zbControl.forceRemove(sysid, function (err) {
                     if (!err) {
                         adapter.log.debug('Force removed from shepherd!');
-                        adapter.log.debug('Try delete dev '+devId+' from iobroker.');
-                        adapter.deleteDevice(devId, function(){
-                            adapter.sendTo(from, command, {}, callback);
-                        });
+                        adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
+                        adapter.deleteDevice(devId, () => adapter.sendTo(from, command, {}, callback));
                     } else {
                         adapter.sendTo(from, command, {error: err}, callback);
                     }
@@ -293,14 +285,14 @@ adapter.on('ready', function () {
 });
 
 
-function onPermitJoining(joinTimeLeft){
+function onPermitJoining(joinTimeLeft) {
     adapter.setObjectNotExists('info.pairingCountdown', {
         type: 'state',
         common: {name: 'Pairing countdown'}
     }, {});
     adapter.setState('info.pairingCountdown', joinTimeLeft);
     // repeat until 0
-    if (joinTimeLeft == 0) {
+    if (!joinTimeLeft) {
         // set pairing mode off
         adapter.setObjectNotExists('info.pairingMode', {
             type: 'state',
@@ -308,10 +300,10 @@ function onPermitJoining(joinTimeLeft){
         }, {});
         adapter.setState('info.pairingMode', false);
     }
-    logToPairing('Time left: '+joinTimeLeft, true);
+    logToPairing('Time left: ' + joinTimeLeft, true);
 }
 
-function letsPairing(from, command, message, callback){
+function letsPairing(from, command, message, callback) {
     if (zbControl) {
         let devId = 'all';
         if (message && message.id) {
@@ -323,7 +315,7 @@ function letsPairing(from, command, message, callback){
             common: {name: 'Pairing message'}
         }, {});
         logToPairing('Pairing started ' + devId);
-        zbControl.permitJoin(60, devId, function(err) {
+        zbControl.permitJoin(60, devId, err => {
             if (!err) {
                 // set pairing mode on
                 adapter.setObjectNotExists('info.pairingMode', {
@@ -339,11 +331,11 @@ function letsPairing(from, command, message, callback){
     }
 }
 
-function getZBid(adapterDevId){
-    return '0x'+adapterDevId.split('.')[2];
+function getZBid(adapterDevId) {
+    return '0x' + adapterDevId.split('.')[2];
 }
 
-function getMap(from, command, callback){
+function getMap(from, command, callback) {
     if (zbControl && zbControl.enabled()) {
         zbControl.getMap((networkmap) => {
             adapter.log.debug('getMap result: ' + JSON.stringify(networkmap));
@@ -352,38 +344,45 @@ function getMap(from, command, callback){
     }
 }
 
-function getDevices(from, command, callback){
+function getDevices(from, command, callback) {
     if (zbControl && zbControl.enabled()) {
         const pairedDevices = zbControl.getDevices();
-        var rooms;
+        let rooms;
         adapter.getEnums('enum.rooms', function (err, list) {
-            if (!err){
+            if (!err) {
                 rooms = list['enum.rooms'];
             }
             adapter.getDevices((err, result) => {
                 if (result) {
-                    var devices = [], cnt = 0, len = result.length;
-                    result.forEach((devInfo)=>{
+                    const devices = [];
+                    let cnt = 0;
+                    const len = result.length;
+
+                    result.forEach((devInfo) => {
                         if (devInfo._id) {
                             const id = getZBid(devInfo._id);
                             const modelDesc = statesMapping.findModel(devInfo.common.type);
                             devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
                             devInfo.rooms = [];
-                            for (var room in rooms) {
-                                if (!rooms[room] || !rooms[room].common || !rooms[room].common.members)
+                            for (const room in rooms) {
+                                if (!rooms.hasOwnProperty(room) ||
+                                    !rooms[room] ||
+                                    !rooms[room].common ||
+                                    !rooms[room].common.members) {
                                     continue;
+                                }
                                 if (rooms[room].common.members.indexOf(devInfo._id) !== -1) {
                                     devInfo.rooms.push(rooms[room].common.name);
                                 }
                             }
                             devInfo.info = zbControl.getDevice(id);
-                            devInfo.paired = devInfo.info != undefined;
+                            devInfo.paired = !!devInfo.info;
                             devices.push(devInfo);
                             cnt++;
-                            if (cnt==len) {
+                            if (cnt === len) {
                                 // append devices that paired but not created
                                 pairedDevices.forEach((device) => {
-                                    const exists = devices.find((dev) => device.ieeeAddr ==  getZBid(dev._id));
+                                    const exists = devices.find((dev) => device.ieeeAddr === getZBid(dev._id));
                                     if (!exists) {
                                         devices.push({
                                             _id: device.ieeeAddr,
@@ -402,10 +401,10 @@ function getDevices(from, command, callback){
                             }
                         }
                     });
-                    if (len == 0) {
+                    if (!len) {
                         // append devices that paired but not created
                         pairedDevices.forEach((device) => {
-                            const exists = devices.find((dev) => device.ieeeAddr == '0x' + dev._id.split('.')[2]);
+                            const exists = devices.find((dev) => device.ieeeAddr === '0x' + dev._id.split('.')[2]);
                             if (!exists) {
                                 devices.push({
                                     _id: device.ieeeAddr,
@@ -433,22 +432,21 @@ function getDevices(from, command, callback){
 function newDevice(id, msg) {
     let dev = zbControl.getDevice(id);
     if (dev) {
-        adapter.log.info('new dev '+dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
-        logToPairing('New device joined '+dev.ieeeAddr + ' model ' + dev.modelId, true);
-        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, function () {
-            syncDevStates(dev.ieeeAddr.substr(2), dev.modelId);
-        });
-        
+        adapter.log.info('new dev ' + dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
+        logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
+        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () =>
+            syncDevStates(dev.ieeeAddr.substr(2), dev.modelId));
+
     }
 }
 
 function leaveDevice(id, msg) {
-    var devId = id.substr(2);
-    adapter.log.debug('Try delete dev '+devId+' from iobroker.');
+    const devId = id.substr(2);
+    adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
     adapter.deleteDevice(devId);
 }
 
-function onReady(){
+function onReady() {
     adapter.setState('info.connection', true);
 
     if (adapter.config.disableLed) {
@@ -469,10 +467,11 @@ function onReady(){
     });
     activeDevices.forEach((device) => {
         adapter.log.info(getDeviceStartupLogMessage(device));
+
         // update dev and states
-        updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, function () {
-            syncDevStates(device.ieeeAddr.substr(2), device.modelId);
-        });
+        updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, () =>
+            syncDevStates(device.ieeeAddr.substr(2), device.modelId));
+
         configureDevice(device);
     });
 }
@@ -504,7 +503,7 @@ function configureDevice(device) {
                 if (ok) {
                     adapter.log.info(`Succesfully configured ${ieeeAddr}`);
                 } else {
-                    adapter.log.error(`Failed to configure ${ieeeAddr} ` + device.modelId );
+                    adapter.log.error(`Failed to configure ${ieeeAddr} ` + device.modelId);
                 }
             });
         }
@@ -519,7 +518,7 @@ function onLog(level, msg, data) {
                 logger = adapter.log.error;
                 if (data)
                     data = data.toString();
-                logToPairing('Error: '+msg+'. '+data);
+                logToPairing('Error: ' + msg + '. ' + data);
                 break;
             case 'debug':
                 logger = adapter.log.debug;
@@ -530,9 +529,9 @@ function onLog(level, msg, data) {
         }
         if (data) {
             if (typeof data === 'string') {
-                logger(msg+ '. ' + data);
+                logger(msg + '. ' + data);
             } else {
-                logger(msg+ '. ' + safeJsonStringify(data));
+                logger(msg + '. ' + safeJsonStringify(data));
             }
         } else {
             logger(msg);
@@ -540,7 +539,7 @@ function onLog(level, msg, data) {
     }
 }
 
-function logToPairing(message, ignoreJoin){
+function logToPairing(message, ignoreJoin) {
     if (zbControl) {
         const info = zbControl.getInfo();
         if (ignoreJoin || info.joinTimeLeft > 0) {
@@ -549,7 +548,7 @@ function logToPairing(message, ignoreJoin){
     }
 }
 
-function publishFromState(deviceId, modelId, stateKey, value){
+function publishFromState(deviceId, modelId, stateKey, value) {
     const mappedModel = deviceMapping.findByZigbeeModel(modelId);
     if (!mappedModel) {
         adapter.log.error('Unknown device model ' + modelId);
@@ -557,11 +556,11 @@ function publishFromState(deviceId, modelId, stateKey, value){
     }
     const stateModel = statesMapping.findModel(modelId);
     if (!stateModel) {
-        adapter.log.error('Device ' + deviceId + ' "' + modelId +'" not described in statesMapping.');
+        adapter.log.error('Device ' + deviceId + ' "' + modelId + '" not described in statesMapping.');
         return;
     }
     // find state for set
-    const stateDesc = stateModel.states.find((statedesc) => stateKey == statedesc.id);
+    const stateDesc = stateModel.states.find((statedesc) => stateKey === statedesc.id);
     if (!stateDesc) {
         adapter.log.error(
             `No state available for '${mappedModel.model}' with key '${stateKey}'`
@@ -571,14 +570,14 @@ function publishFromState(deviceId, modelId, stateKey, value){
     let stateList = [{stateDesc: stateDesc, value: value, index: 0}];
 
     if (stateModel.linkedStates) {
-        stateModel.linkedStates.forEach((linkedFunct)=>{
+        stateModel.linkedStates.forEach((linkedFunct) => {
             const res = linkedFunct(stateDesc, value);
             if (res) {
                 stateList = stateList.concat(res);
             }
         });
         // sort by index
-        stateList.sort((a, b)=>{
+        stateList.sort((a, b) => {
             return a.index - b.index;
         });
     }
@@ -595,7 +594,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
             return;
         }
         const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
-        
+
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
         const message = converter.convert(preparedValue, {});
@@ -610,7 +609,7 @@ function publishFromState(deviceId, modelId, stateKey, value){
 function publishToState(devId, modelID, model, payload) {
     const stateModel = statesMapping.findModel(modelID);
     if (!stateModel) {
-        adapter.log.debug('Device ' + devId + ' "' + modelID +'" not described in statesMapping.');
+        adapter.log.debug('Device ' + devId + ' "' + modelID + '" not described in statesMapping.');
         return;
     }
     // find states for payload
@@ -626,8 +625,8 @@ function publishToState(devId, modelID, model, payload) {
             value = payload[statedesc.prop || statedesc.id]
         }
         // checking value
-        if (value == undefined)
-            continue;
+        if (value === undefined) continue;
+
         const common = {
             name: statedesc.name,
             type: statedesc.type,
@@ -660,10 +659,12 @@ function syncDevStates(devId, modelId) {
     // devId - iobroker device id
     const stateModel = statesMapping.findModel(modelId);
     if (!stateModel) {
-        adapter.log.debug('Device ' + devId + ' "' + modelId +'" not described in statesMapping.');
+        adapter.log.debug('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
         return;
     }
     for (const stateInd in stateModel.states) {
+        if (!stateModel.states.hasOwnProperty(stateInd)) continue;
+
         const statedesc = stateModel.states[stateInd];
         const common = {
             name: statedesc.name,
@@ -690,7 +691,7 @@ function collectOptions(devId, modelId, callback) {
     }
     const stateModel = statesMapping.findModel(modelId);
     if (!stateModel) {
-        adapter.log.error('Device ' + devId + ' "' + modelId +'" not described in statesMapping.');
+        adapter.log.error('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
         callback();
         return;
     }
@@ -701,28 +702,28 @@ function collectOptions(devId, modelId, callback) {
     }
     let result = {};
     let cnt = 0, len = states.length;
-    states.forEach((statedesc)=>{
+    states.forEach((statedesc) => {
         const id = adapter.namespace + '.' + devId + '.' + statedesc.id;
         adapter.getState(id, (err, state) => {
-            cnt = cnt+1;
+            cnt = cnt + 1;
             if (!err && state) {
                 result[statedesc.id] = state.val;
             }
-            if (cnt == len) {
+            if (cnt === len) {
                 callback(result);
             }
         });
     });
-    if (len == 0) callback();
-    return;
+    if (!len) callback();
 }
 
 function onDevEvent(type, devId, message, data) {
     switch (type) {
         case 'interview':
-            adapter.log.debug('Device ' + devId + ' try to connect '+ safeJsonStringify(data));
-            logToPairing('Interview state: step '+data.currentEp+'/'+data.totalEp+'. progress: '+data.progress+'%', true);
+            adapter.log.debug('Device ' + devId + ' try to connect ' + safeJsonStringify(data));
+            logToPairing('Interview state: step ' + data.currentEp + '/' + data.totalEp + '. progress: ' + data.progress + '%', true);
             break;
+
         default:
             adapter.log.debug('Device ' + devId + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
             // Map Zigbee modelID to vendor modelID.
@@ -745,9 +746,10 @@ function onDevEvent(type, devId, message, data) {
                 const publish = (payload) => {
                     // Don't cache messages with click and action.
                     const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
-                    adapter.log.debug('Publish '+safeJsonStringify(payload));
+                    adapter.log.debug('Publish ' + safeJsonStringify(payload));
                     publishToState(devId.substr(2), modelID, mappedModel, payload);
                 };
+                
                 collectOptions(devId.substr(2), modelID, (options) => {
                     const payload = converter.convert(mappedModel, message, publish, options);
                     if (payload) {
@@ -766,22 +768,22 @@ function onDevEvent(type, devId, message, data) {
 
 function main() {
     // file path for ZShepherd
-    var dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
+    const dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
     if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
-    var port = adapter.config.port;
-    var panID = parseInt(adapter.config.panID ? adapter.config.panID : 0x1a62);
+    const port = adapter.config.port;
+    const panID = parseInt(adapter.config.panID ? adapter.config.panID : 0x1a62);
     const channel = parseInt(adapter.config.channel ? adapter.config.channel : 11);
-    if (!port){
+    if (!port) {
         adapter.log.error('Serial port not selected! Go to settings page.');
         return;
     }
-    adapter.log.info('Start on port: ' + port + ' with panID ' + panID+' channel ' + channel);
+    adapter.log.info('Start on port: ' + port + ' with panID ' + panID + ' channel ' + channel);
     let shepherd = new ZShepherd(port, {
         net: {panId: panID, channelList: [channel]},
-        sp: { baudRate: 115200, rtscts: false },
-        dbPath: dbDir+'/shepherd.db'
+        sp: {baudRate: 115200, rtscts: false},
+        dbPath: dbDir + '/shepherd.db'
     });
-    // create contoller and handlers
+    // create controller and handlers
     zbControl = new ZigbeeController(shepherd);
     zbControl.on('log', onLog);
     zbControl.on('ready', onReady);
