@@ -164,7 +164,7 @@ function updateStateWithTimeout(dev_id, name, value, common, timeout, outValue) 
 
 
 function updateState(devId, name, value, common) {
-    adapter.getObject(devId, function (err, obj) {
+    adapter.getObject(devId, (err, obj) => {
         if (obj) {
             let new_common = {name: name};
             let id = devId + '.' + name;
@@ -208,10 +208,11 @@ function updateState(devId, name, value, common) {
                     delete new_common.name;
                     delete new_common.role;
                 }
-                adapter.extendObject(id, {type: 'state', common: new_common});
-                if (value !== undefined) {
-                    adapter.setState(id, value, true);
-                }
+                adapter.extendObject(id, {type: 'state', common: new_common}, () => {
+                    if (value !== undefined) {
+                        adapter.setState(id, value, true);
+                    }
+                });
             });
         } else {
             adapter.log.debug('Wrong device ' + devId);
@@ -271,10 +272,12 @@ function updateDev(dev_id, dev_name, model, callback) {
     const icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
     adapter.setObjectNotExists(id, {
         type: 'device',
-        common: {name: dev_name, type: model, icon: icon}
-    }, {}, () => {
+        // actually this is an error, so device.common has no attribute type. It must be in native part
+        common: {name: dev_name, type: model, icon: icon},
+        native: {id: dev_id}
+    }, () => {
         // update type and icon
-        adapter.extendObject(id, {common: {type: model, icon: icon}}, {}, callback);
+        adapter.extendObject(id, {common: {type: model, icon: icon}}, callback);
     });
 }
 
@@ -284,20 +287,11 @@ adapter.on('ready', function () {
     main();
 });
 
-
 function onPermitJoining(joinTimeLeft) {
-    adapter.setObjectNotExists('info.pairingCountdown', {
-        type: 'state',
-        common: {name: 'Pairing countdown'}
-    }, {});
     adapter.setState('info.pairingCountdown', joinTimeLeft);
     // repeat until 0
     if (!joinTimeLeft) {
         // set pairing mode off
-        adapter.setObjectNotExists('info.pairingMode', {
-            type: 'state',
-            common: {name: 'Pairing mode'}
-        }, {});
         adapter.setState('info.pairingMode', false);
     }
     logToPairing('Time left: ' + joinTimeLeft, true);
@@ -310,18 +304,10 @@ function letsPairing(from, command, message, callback) {
             devId = getZBid(message.id);
         }
         // allow devices to join the network within 60 secs
-        adapter.setObjectNotExists('info.pairingMessage', {
-            type: 'state',
-            common: {name: 'Pairing message'}
-        }, {});
         logToPairing('Pairing started ' + devId);
         zbControl.permitJoin(60, devId, err => {
             if (!err) {
                 // set pairing mode on
-                adapter.setObjectNotExists('info.pairingMode', {
-                    type: 'state',
-                    common: {name: 'Pairing mode'}
-                }, {});
                 adapter.setState('info.pairingMode', true);
             }
         });
@@ -393,6 +379,7 @@ function getDevices(from, command, callback) {
                                                 name: undefined,
                                                 type: undefined,
                                             },
+                                            native: {}
                                         });
                                     }
                                 });
@@ -415,6 +402,7 @@ function getDevices(from, command, callback) {
                                         name: undefined,
                                         type: undefined,
                                     },
+                                    native: {}
                                 });
                             }
                         });
@@ -453,11 +441,7 @@ function onReady() {
         zbControl.disableLed();
     }
 
-    // create and update pairing State
-    adapter.setObjectNotExists('info.pairingMode', {
-        type: 'state',
-        common: {name: 'Pairing mode'}
-    }, {});
+    // update pairing State
     adapter.setState('info.pairingMode', false);
     // get and list all registered devices (not in ioBroker)
     let activeDevices = zbControl.getAllClients();
@@ -749,7 +733,7 @@ function onDevEvent(type, devId, message, data) {
                     adapter.log.debug('Publish ' + safeJsonStringify(payload));
                     publishToState(devId.substr(2), modelID, mappedModel, payload);
                 };
-                
+
                 collectOptions(devId.substr(2), modelID, (options) => {
                     const payload = converter.convert(mappedModel, message, publish, options);
                     if (payload) {
