@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.7.5",
+        "version": "0.7.6",
         "news": {
+        	"0.7.6": {
+                "en": "New devices models",
+                "ru": "Новые модели устройств"
+            },
         	"0.7.5": {
                 "en": "Support zigbee-shepherd-converters 4.*",
                 "ru": "Поддержка zigbee-shepherd-converters 4.*"
