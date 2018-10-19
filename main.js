@@ -776,20 +776,22 @@ function main() {
     zbControl.on('join', onPermitJoining);
     zbControl.on('event', onDevEvent);
 
-    // const oldStdOut = process.stdout.write.bind(process.stdout);
-    // const oldErrOut = process.stderr.write.bind(process.stderr);
-    // process.stdout.write = function (logs) {
-    //     if (adapter && adapter.log && adapter.log.debug) {
-    //         adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm,""));
-    //     }
-    //     oldStdOut(logs);
-    // };
-    // process.stderr.write = function (logs) {
-    //     if (adapter && adapter.log && adapter.log.debug) {
-    //         adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm,""));
-    //     }
-    //     oldErrOut(logs);
-    // };
+    if (adapter.log.level == 'debug') {
+        const oldStdOut = process.stdout.write.bind(process.stdout);
+        const oldErrOut = process.stderr.write.bind(process.stderr);
+        process.stdout.write = function (logs) {
+            if (adapter && adapter.log && adapter.log.debug) {
+                adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm,""));
+            }
+            oldStdOut(logs);
+        };
+        process.stderr.write = function (logs) {
+            if (adapter && adapter.log && adapter.log.debug) {
+                adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm,""));
+            }
+            oldErrOut(logs);
+        };
+    }
 
     // start the server
     zbControl.start((err) => {
