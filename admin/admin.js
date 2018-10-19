@@ -493,12 +493,13 @@ function getComPorts(onChange) {
             clearTimeout(timeout);
             timeout = null;
         }
-        if (!list || !list.length) {
-            setTimeout(function () {
-                getComPorts(onChange);
-            }, 1000);
-            return;
-        }
+        // if (!list || !list.length) {
+        //     setTimeout(function () {
+        //         getComPorts(onChange);
+        //     }, 1000);
+        //     return;
+        // }
+        if (!list) return;
         var element = $('#ports');
         for (var j = 0; j < list.length; j++) {
             element.append('<li><a href="#!">' + list[j].comName +'</a></li>');
