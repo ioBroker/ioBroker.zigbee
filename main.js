@@ -14,7 +14,6 @@ const safeJsonStringify = require(__dirname + '/lib/json');
 // you have to require the utils module and call adapter function
 const fs = require('fs');
 const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
-const tools = require(utils.controllerDir + '/lib/tools');
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require(__dirname + '/lib/zigbeecontroller');
 const adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
@@ -89,7 +88,7 @@ adapter.on('stateChange', function (id, state) {
 
 
 // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-adapter.on('message', function (obj) {
+adapter.on('message', obj => {
     if (typeof obj === 'object' && obj.command) {
         switch (obj.command) {
             case 'send':
@@ -143,12 +142,12 @@ adapter.on('message', function (obj) {
 
 function listSerial() {
     return SerialPort.list()
-        .then((ports) =>
+        .then(ports =>
             ports.map(port => {
                 return {comName: port.comName};
             })
         )
-        .catch((err) => {
+        .catch(err => {
             adapter.log.error(err);
             return [];
         });
@@ -157,9 +156,7 @@ function listSerial() {
 
 function updateStateWithTimeout(dev_id, name, value, common, timeout, outValue) {
     updateState(dev_id, name, value, common);
-    setTimeout(function () {
-        updateState(dev_id, name, outValue, common);
-    }, timeout);
+    setTimeout(() => updateState(dev_id, name, outValue, common), timeout);
 }
 
 
@@ -243,14 +240,14 @@ function deleteDevice(from, command, msg, callback) {
             });
             return;
         }
-        zbControl.remove(sysid, (err) => {
+        zbControl.remove(sysid, err => {
             if (!err) {
                 adapter.log.debug('Successfully removed from shepherd!');
                 adapter.deleteDevice(devId, () => adapter.sendTo(from, command, {}, callback));
             } else {
                 adapter.log.debug('Error on remove! ' + err);
                 adapter.log.debug('Try force remove!');
-                zbControl.forceRemove(sysid, function (err) {
+                zbControl.forceRemove(sysid, err => {
                     if (!err) {
                         adapter.log.debug('Force removed from shepherd!');
                         adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
@@ -283,9 +280,7 @@ function updateDev(dev_id, dev_name, model, callback) {
 
 // is called when databases are connected and adapter received configuration.
 // start here!
-adapter.on('ready', function () {
-    main();
-});
+adapter.on('ready', () => main());
 
 function onPermitJoining(joinTimeLeft) {
     adapter.setState('info.pairingCountdown', joinTimeLeft);
@@ -334,7 +329,7 @@ function getDevices(from, command, callback) {
     if (zbControl && zbControl.enabled()) {
         const pairedDevices = zbControl.getDevices();
         let rooms;
-        adapter.getEnums('enum.rooms', function (err, list) {
+        adapter.getEnums('enum.rooms', (err, list) => {
             if (!err) {
                 rooms = list['enum.rooms'];
             }
@@ -390,8 +385,8 @@ function getDevices(from, command, callback) {
                     });
                     if (!len) {
                         // append devices that paired but not created
-                        pairedDevices.forEach((device) => {
-                            const exists = devices.find((dev) => device.ieeeAddr === '0x' + dev._id.split('.')[2]);
+                        pairedDevices.forEach(device => {
+                            const exists = devices.find(dev => device.ieeeAddr === '0x' + dev._id.split('.')[2]);
                             if (!exists) {
                                 devices.push({
                                     _id: device.ieeeAddr,
@@ -446,10 +441,8 @@ function onReady() {
     // get and list all registered devices (not in ioBroker)
     let activeDevices = zbControl.getAllClients();
     adapter.log.debug('Current active devices:');
-    zbControl.getDevices().forEach((device) => {
-        adapter.log.debug(safeJsonStringify(device));
-    });
-    activeDevices.forEach((device) => {
+    zbControl.getDevices().forEach(device => adapter.log.debug(safeJsonStringify(device)));
+    activeDevices.forEach(device => {
         adapter.log.info(getDeviceStartupLogMessage(device));
 
         // update dev and states
@@ -776,7 +769,7 @@ function main() {
     zbControl.on('join', onPermitJoining);
     zbControl.on('event', onDevEvent);
 
-    if (adapter.log.level == 'debug') {
+    if (adapter.log.level === 'debug') {
         const oldStdOut = process.stdout.write.bind(process.stdout);
         const oldErrOut = process.stderr.write.bind(process.stderr);
         process.stdout.write = function (logs) {
@@ -794,11 +787,8 @@ function main() {
     }
 
     // start the server
-    zbControl.start((err) => {
-        if (err) {
-            adapter.setState('info.connection', false);
-        }
-    });
+    zbControl.start(err => {
+             err && adapter.setState('info.connection', false));
 
     // in this template all states changes inside the adapters namespace are subscribed
     adapter.subscribeStates('*');
