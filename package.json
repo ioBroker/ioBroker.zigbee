@@ -13,7 +13,7 @@
     }
   ],
   "dependencies": {
-    "debug": "^4.1.0",
+    "debug": "^3.1.0",
     "serialport": "^6.2.0",
     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/dev",
     "zigbee-shepherd-converters": "^4.0.7"
