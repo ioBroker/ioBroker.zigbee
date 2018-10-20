@@ -49,6 +49,9 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
+### 0.7.6 (2018-10-19)
+* (kirovilya, arteck) New models and devices
+
 ### 0.7.5 (2018-10-02)
 * (kirovilya) Support zigbee-shepherd-converters 4.*
 

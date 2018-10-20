@@ -485,20 +485,21 @@ function showNetworkMap(devices, map){
 }
 
 function getComPorts(onChange) {
-    timeout = setTimeout(function () {
-        getComPorts(onChange);
-    }, 2000);
+    // timeout = setTimeout(function () {
+    //     getComPorts(onChange);
+    // }, 2000);
     sendTo(null, 'listUart', null, function (list) {
-        if (timeout) {
-            clearTimeout(timeout);
-            timeout = null;
-        }
-        if (!list || !list.length) {
-            setTimeout(function () {
-                getComPorts(onChange);
-            }, 1000);
-            return;
-        }
+        // if (timeout) {
+        //     clearTimeout(timeout);
+        //     timeout = null;
+        // }
+        // if (!list || !list.length) {
+        //     setTimeout(function () {
+        //         getComPorts(onChange);
+        //     }, 1000);
+        //     return;
+        // }
+        if (!list) return;
         var element = $('#ports');
         for (var j = 0; j < list.length; j++) {
             element.append('<li><a href="#!">' + list[j].comName +'</a></li>');
