@@ -485,14 +485,14 @@ function showNetworkMap(devices, map){
 }
 
 function getComPorts(onChange) {
-    timeout = setTimeout(function () {
-        getComPorts(onChange);
-    }, 2000);
+    // timeout = setTimeout(function () {
+    //     getComPorts(onChange);
+    // }, 2000);
     sendTo(null, 'listUart', null, function (list) {
-        if (timeout) {
-            clearTimeout(timeout);
-            timeout = null;
-        }
+        // if (timeout) {
+        //     clearTimeout(timeout);
+        //     timeout = null;
+        // }
         // if (!list || !list.length) {
         //     setTimeout(function () {
         //         getComPorts(onChange);
