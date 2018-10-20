@@ -787,8 +787,7 @@ function main() {
     }
 
     // start the server
-    zbControl.start(err => {
-             err && adapter.setState('info.connection', false));
+    zbControl.start(err => err && adapter.setState('info.connection', false));
 
     // in this template all states changes inside the adapters namespace are subscribed
     adapter.subscribeStates('*');
