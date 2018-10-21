@@ -49,6 +49,9 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
+### 0.7.7 (2018-10-21)
+* (arteck) Fix 'is open' state
+
 ### 0.7.6 (2018-10-19)
 * (kirovilya, arteck) New models and devices
 
