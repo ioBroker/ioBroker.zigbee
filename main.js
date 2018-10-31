@@ -639,10 +639,11 @@ function syncDevStates(devId, modelId) {
         adapter.log.debug('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
         return;
     }
-    for (const stateInd in stateModel.states) {
-        if (!stateModel.states.hasOwnProperty(stateInd)) continue;
+    const states = statesMapping.commonStates.concat(stateModel.states);
+    for (const stateInd in states) {
+        if (!states.hasOwnProperty(stateInd)) continue;
 
-        const statedesc = stateModel.states[stateInd];
+        const statedesc = states[stateInd];
         const common = {
             name: statedesc.name,
             type: statedesc.type,
