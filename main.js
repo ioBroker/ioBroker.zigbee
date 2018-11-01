@@ -80,7 +80,9 @@ adapter.on('stateChange', function (id, state) {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
-                publishFromState(deviceId, modelId, stateKey, state.val);
+                collectOptions(id.split('.')[2], modelId, options => {
+                    publishFromState(deviceId, modelId, stateKey, state, options);
+                });
             }
         });
     }
@@ -525,7 +527,7 @@ function logToPairing(message, ignoreJoin) {
     }
 }
 
-function publishFromState(deviceId, modelId, stateKey, value) {
+function publishFromState(deviceId, modelId, stateKey, state, options) {
     const mappedModel = deviceMapping.findByZigbeeModel(modelId);
     if (!mappedModel) {
         adapter.log.error('Unknown device model ' + modelId);
@@ -544,6 +546,9 @@ function publishFromState(deviceId, modelId, stateKey, value) {
         );
         return;
     }
+
+    const value = state.val;
+
     let stateList = [{stateDesc: stateDesc, value: value, index: 0}];
 
     if (stateModel.linkedStates) {
@@ -570,17 +575,20 @@ function publishFromState(deviceId, modelId, stateKey, value) {
             );
             return;
         }
-        const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
-
+        const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
+        const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
+        
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
-        const message = converter.convert(preparedValue, {});
+        const message = converter.convert(preparedValue, preparedOptions);
         if (!message) {
             return;
         }
 
         zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.type);
     });
+    // //adapter.log.info('confirm');
+    adapter.setState(state.id, state.val, true);
 }
 
 function publishToState(devId, modelID, model, payload) {
