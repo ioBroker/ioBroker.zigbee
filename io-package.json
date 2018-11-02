@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.7.7",
+        "version": "0.8.0a",
         "news": {
+            "0.8.0": {
+                "en": "Breaking changes",
+                "ru": "Критические изменения"
+            },
         	"0.7.7": {
                 "en": "Fix 'is open' state",
                 "ru": "Поправлено состояние 'is open'"
