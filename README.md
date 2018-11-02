@@ -49,12 +49,13 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
-### 0.8.0 ()
+### 0.8.0
 
 **BREAKING CHANGES**:
 * (kirovilya) Rename state "isopen" to "opened".
 * (kirovilya) Change brightness interval from 0..254 to 0..100 
 
+Other changes:
 * (kirovilya) Fix for admin2
 * (kirovilya) + Gledopto
 * (kirovilya) + Mijia vibration sensor
