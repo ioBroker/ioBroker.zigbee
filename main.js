@@ -549,6 +549,9 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
 
     const value = state.val;
 
+    if (value === undefined || value === '') 
+        return;
+
     let stateList = [{stateDesc: stateDesc, value: value, index: 0}];
 
     if (stateModel.linkedStates) {
@@ -563,6 +566,8 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             return a.index - b.index;
         });
     }
+
+    const published = [];
 
     stateList.forEach((changedState) => {
         const stateDesc = changedState.stateDesc;
@@ -586,9 +591,42 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         }
 
         zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.type);
+
+        published.push({message: message, converter: converter, ep: ep});
     });
-    // //adapter.log.info('confirm');
     adapter.setState(state.id, state.val, true);
+
+    // copy from https://github.com/Koenkk/zigbee2mqtt/issues/72
+    /**
+     * After publishing a command to a zigbee device we want to monitor the changed attribute(s) so that
+     * everything stays in sync.
+     */
+    published.forEach((p) => {
+        let counter = 0;
+        let secondsToMonitor = 1;
+
+        // In case of a transition we need to monitor for the whole transition time.
+        if (p.message.zclData.hasOwnProperty('transtime')) {
+            // Note that: transtime 10 = 0.1 seconds, 100 = 1 seconds, etc.
+            secondsToMonitor = (p.message.zclData.transtime / 10) + 1;
+        }
+        adapter.log.debug(`Waiting for '${secondsToMonitor}' sec`);
+
+        const timer = setInterval(() => {
+            counter++;
+            
+            // Doing a 'read' will result in the device sending a zigbee message with the current attribute value.
+            // which will be handled by this.handleZigbeeMessage.
+            p.converter.attr.forEach((attribute) => {
+                zbControl.read(deviceId, p.message.cid, attribute, p.ep, () => null);
+            });
+
+            if (counter >= secondsToMonitor) {
+                adapter.log.debug(`Finished waiting`);
+                clearTimeout(timer);
+            }
+        }, 1000);
+    });
 }
 
 function publishToState(devId, modelID, model, payload) {

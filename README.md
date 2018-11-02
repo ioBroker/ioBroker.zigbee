@@ -60,8 +60,9 @@ Other changes:
 * (kirovilya) + Gledopto
 * (kirovilya) + Mijia vibration sensor
 * (kirovilya) Common state "link_quality"
-* (arteck) + Philips LLC011, LTW001, LTW004, LTW012
+* (arteck) + Philips LLC010, LLC011, LLC012, LTW001, LTW004, LTW010, LTW012
 * (arteck) + Osram PAR 16 50 RGBW - LIGHTIFY
+* (kirovilya) Light state "transition_time" for brightness, color, colortemp
 
 
 ### 0.7.7 (2018-10-21)
