@@ -49,6 +49,25 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
+### 0.8.0
+
+**BREAKING CHANGES**:
+* (kirovilya) Rename state "isopen" to "opened".
+* (kirovilya) Change brightness interval from 0..254 to 0..100 
+
+Other changes:
+* (kirovilya) Fix for admin2
+* (kirovilya) + Gledopto
+* (kirovilya) + Mijia vibration sensor
+* (kirovilya) Common state "link_quality"
+* (arteck) + Philips LLC010, LLC011, LLC012, LTW001, LTW004, LTW010, LTW012
+* (arteck) + Osram PAR 16 50 RGBW - LIGHTIFY
+* (kirovilya) Light state "transition_time" for brightness, color, colortemp
+
+
+### 0.7.7 (2018-10-21)
+* (arteck) Fix 'is open' state
+
 ### 0.7.6 (2018-10-19)
 * (kirovilya, arteck) New models and devices
 

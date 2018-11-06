@@ -14,7 +14,6 @@ const safeJsonStringify = require(__dirname + '/lib/json');
 // you have to require the utils module and call adapter function
 const fs = require('fs');
 const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
-const tools = require(utils.controllerDir + '/lib/tools');
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require(__dirname + '/lib/zigbeecontroller');
 const adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
@@ -81,7 +80,9 @@ adapter.on('stateChange', function (id, state) {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
-                publishFromState(deviceId, modelId, stateKey, state.val);
+                collectOptions(id.split('.')[2], modelId, options => {
+                    publishFromState(deviceId, modelId, stateKey, state, options);
+                });
             }
         });
     }
@@ -89,7 +90,7 @@ adapter.on('stateChange', function (id, state) {
 
 
 // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-adapter.on('message', function (obj) {
+adapter.on('message', obj => {
     if (typeof obj === 'object' && obj.command) {
         switch (obj.command) {
             case 'send':
@@ -143,12 +144,12 @@ adapter.on('message', function (obj) {
 
 function listSerial() {
     return SerialPort.list()
-        .then((ports) =>
+        .then(ports =>
             ports.map(port => {
                 return {comName: port.comName};
             })
         )
-        .catch((err) => {
+        .catch(err => {
             adapter.log.error(err);
             return [];
         });
@@ -157,9 +158,7 @@ function listSerial() {
 
 function updateStateWithTimeout(dev_id, name, value, common, timeout, outValue) {
     updateState(dev_id, name, value, common);
-    setTimeout(function () {
-        updateState(dev_id, name, outValue, common);
-    }, timeout);
+    setTimeout(() => updateState(dev_id, name, outValue, common), timeout);
 }
 
 
@@ -243,14 +242,14 @@ function deleteDevice(from, command, msg, callback) {
             });
             return;
         }
-        zbControl.remove(sysid, (err) => {
+        zbControl.remove(sysid, err => {
             if (!err) {
                 adapter.log.debug('Successfully removed from shepherd!');
                 adapter.deleteDevice(devId, () => adapter.sendTo(from, command, {}, callback));
             } else {
                 adapter.log.debug('Error on remove! ' + err);
                 adapter.log.debug('Try force remove!');
-                zbControl.forceRemove(sysid, function (err) {
+                zbControl.forceRemove(sysid, err => {
                     if (!err) {
                         adapter.log.debug('Force removed from shepherd!');
                         adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
@@ -283,9 +282,7 @@ function updateDev(dev_id, dev_name, model, callback) {
 
 // is called when databases are connected and adapter received configuration.
 // start here!
-adapter.on('ready', function () {
-    main();
-});
+adapter.on('ready', () => main());
 
 function onPermitJoining(joinTimeLeft) {
     adapter.setState('info.pairingCountdown', joinTimeLeft);
@@ -334,7 +331,7 @@ function getDevices(from, command, callback) {
     if (zbControl && zbControl.enabled()) {
         const pairedDevices = zbControl.getDevices();
         let rooms;
-        adapter.getEnums('enum.rooms', function (err, list) {
+        adapter.getEnums('enum.rooms', (err, list) => {
             if (!err) {
                 rooms = list['enum.rooms'];
             }
@@ -390,8 +387,8 @@ function getDevices(from, command, callback) {
                     });
                     if (!len) {
                         // append devices that paired but not created
-                        pairedDevices.forEach((device) => {
-                            const exists = devices.find((dev) => device.ieeeAddr === '0x' + dev._id.split('.')[2]);
+                        pairedDevices.forEach(device => {
+                            const exists = devices.find(dev => device.ieeeAddr === '0x' + dev._id.split('.')[2]);
                             if (!exists) {
                                 devices.push({
                                     _id: device.ieeeAddr,
@@ -446,10 +443,8 @@ function onReady() {
     // get and list all registered devices (not in ioBroker)
     let activeDevices = zbControl.getAllClients();
     adapter.log.debug('Current active devices:');
-    zbControl.getDevices().forEach((device) => {
-        adapter.log.debug(safeJsonStringify(device));
-    });
-    activeDevices.forEach((device) => {
+    zbControl.getDevices().forEach(device => adapter.log.debug(safeJsonStringify(device)));
+    activeDevices.forEach(device => {
         adapter.log.info(getDeviceStartupLogMessage(device));
 
         // update dev and states
@@ -532,7 +527,7 @@ function logToPairing(message, ignoreJoin) {
     }
 }
 
-function publishFromState(deviceId, modelId, stateKey, value) {
+function publishFromState(deviceId, modelId, stateKey, state, options) {
     const mappedModel = deviceMapping.findByZigbeeModel(modelId);
     if (!mappedModel) {
         adapter.log.error('Unknown device model ' + modelId);
@@ -551,6 +546,12 @@ function publishFromState(deviceId, modelId, stateKey, value) {
         );
         return;
     }
+
+    const value = state.val;
+
+    if (value === undefined || value === '') 
+        return;
+
     let stateList = [{stateDesc: stateDesc, value: value, index: 0}];
 
     if (stateModel.linkedStates) {
@@ -566,6 +567,8 @@ function publishFromState(deviceId, modelId, stateKey, value) {
         });
     }
 
+    const published = [];
+
     stateList.forEach((changedState) => {
         const stateDesc = changedState.stateDesc;
         if (stateDesc.isOption) return;
@@ -577,16 +580,52 @@ function publishFromState(deviceId, modelId, stateKey, value) {
             );
             return;
         }
-        const preparedValue = (stateDesc.setter) ? stateDesc.setter(value) : value;
-
+        const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
+        const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
+        
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
-        const message = converter.convert(preparedValue, {});
+        const message = converter.convert(preparedValue, preparedOptions);
         if (!message) {
             return;
         }
 
         zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.type);
+
+        published.push({message: message, converter: converter, ep: ep});
+    });
+    adapter.setState(state.id, state.val, true);
+
+    // copy from https://github.com/Koenkk/zigbee2mqtt/issues/72
+    /**
+     * After publishing a command to a zigbee device we want to monitor the changed attribute(s) so that
+     * everything stays in sync.
+     */
+    published.forEach((p) => {
+        let counter = 0;
+        let secondsToMonitor = 1;
+
+        // In case of a transition we need to monitor for the whole transition time.
+        if (p.message.zclData.hasOwnProperty('transtime')) {
+            // Note that: transtime 10 = 0.1 seconds, 100 = 1 seconds, etc.
+            secondsToMonitor = (p.message.zclData.transtime / 10) + 1;
+        }
+        adapter.log.debug(`Waiting for '${secondsToMonitor}' sec`);
+
+        const timer = setInterval(() => {
+            counter++;
+            
+            // Doing a 'read' will result in the device sending a zigbee message with the current attribute value.
+            // which will be handled by this.handleZigbeeMessage.
+            p.converter.attr.forEach((attribute) => {
+                zbControl.read(deviceId, p.message.cid, attribute, p.ep, () => null);
+            });
+
+            if (counter >= secondsToMonitor) {
+                adapter.log.debug(`Finished waiting`);
+                clearTimeout(timer);
+            }
+        }, 1000);
     });
 }
 
@@ -646,10 +685,11 @@ function syncDevStates(devId, modelId) {
         adapter.log.debug('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
         return;
     }
-    for (const stateInd in stateModel.states) {
-        if (!stateModel.states.hasOwnProperty(stateInd)) continue;
+    const states = statesMapping.commonStates.concat(stateModel.states);
+    for (const stateInd in states) {
+        if (!states.hasOwnProperty(stateInd)) continue;
 
-        const statedesc = stateModel.states[stateInd];
+        const statedesc = states[stateInd];
         const common = {
             name: statedesc.name,
             type: statedesc.type,
@@ -719,7 +759,7 @@ function onDevEvent(type, devId, message, data) {
                 adapter.log.error('Unknown device model ' + modelID + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
                 return;
             }
-            const converters = mappedModel.fromZigbee.filter((c) => c.cid === cid && c.type === type);
+            const converters = mappedModel.fromZigbee.filter(c => c.cid === cid && c.type === type);
             if (!converters.length) {
                 adapter.log.error(
                     `No converter available for '${mappedModel.model}' with cid '${cid}' and type '${type}'`
@@ -776,7 +816,7 @@ function main() {
     zbControl.on('join', onPermitJoining);
     zbControl.on('event', onDevEvent);
 
-    if (adapter.log.level == 'debug') {
+    if (adapter.log.level === 'debug') {
         const oldStdOut = process.stdout.write.bind(process.stdout);
         const oldErrOut = process.stderr.write.bind(process.stderr);
         process.stdout.write = function (logs) {
@@ -794,11 +834,7 @@ function main() {
     }
 
     // start the server
-    zbControl.start((err) => {
-        if (err) {
-            adapter.setState('info.connection', false);
-        }
-    });
+    zbControl.start(err => err && adapter.setState('info.connection', false));
 
     // in this template all states changes inside the adapters namespace are subscribed
     adapter.subscribeStates('*');

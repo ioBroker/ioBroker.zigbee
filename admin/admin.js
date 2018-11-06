@@ -1,5 +1,5 @@
-var Materialize = M ? M : Materialize,
-    anime = M ? M.anime : anime,
+var Materialize = (typeof M !== 'undefined') ? M : Materialize,
+    anime = (typeof M !== 'undefined') ? M.anime : anime,
     namespace = 'zigbee.' + instance,
     namespaceLen = namespace.length,
     devices = [],

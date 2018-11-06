@@ -23,6 +23,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.2.0/anime.min.js"></script>
 
 <script type="text/javascript" src="admin.js"></script>
+<style>
+    .m .col .select-wrapper+label {
+        top: -26px;  
+    }
+    .m span{
+        font-size: 0.9em;
+    }
+    .m .zlogo {
+        padding: 0.5rem;
+        width: 64px;
+    }
+    .input-group {
+    display: table;
+    }
+
+    .input-group input, .suffix {
+        display: table-cell;
+    }
+
+    .suffix {
+        width:1%;
+    }
+</style>
 
 <body>
     <!-- you have to put your config page in a div with id adapter-container -->
@@ -35,35 +58,48 @@
                 <div class="col s6">
                     <h3 class="translate center-align">Zigbee adapter</h3>
                 </div>
-                <div class="input-field col s1 m1 l1">
-                    <input id="panID" type="number" min="1" max="65565" class="value" />
-                    <label class="translate" for="panID">PanID</label>
-                </div>
-                <div id="_port" class="input-field col s3 m3 l3">
-                    <select class="value" id="port" type="text" ></select>
-                    <label for="port" class="translate">COM port name</label>                            
-                </div>
                 <div class="col s1">
                     <h3> <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></h3>
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="tabs-content row">
             <div class="col s12">
                 <ul class="tabs">
-                    <li class="tab col s3"><a href="#tab-main" class="translate active">Devices</a></li>
-                    <li class="tab col s3"><a href="#map" class="translate active">Network map</a></li>
-                    <li class="tab col s3"><a href="#tab-sett" class="translate active">Settings</a></li>
+                    <li class="tab col s3"><a id="devs" href="#tab-main" class="translate active">Devices</a></li>
+                    <li class="tab col s3"><a href="#tab-map" class="translate active">Network map</a></li>
+                    <li class="tab col s3"><a id="settings" href="#tab-sett" class="translate active">Settings</a></li>
                 </ul>
             </div>
             <div id="tab-main" class="col s12 page">
                 <div id="devices" class="row">
                 </div>
             </div>
-            <div id="map" class="col s12 page" height="100%">
+            <div id="tab-map" class="col s12 page">
+                <div class="fixed-action-btn" style="padding-bottom: 100px">
+                    <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Refresh"><i class="material-icons large">autorenew</i></a>
+                </div>
+                <div id="map" class="row">
+                </div>
             </div>
             <div id="tab-sett" class="col s12 page">
                 <div id="sett" class="row">
+                    <div class="input-field input-group col s3 m3 l3">
+                        <input id="port" type="text" class="value validate"/>
+                        <label for="port" class="translate">COM port name</label>                            
+                    </div>
+                    <div class="input-field col s2 m2 l2">
+                        <input id="panID" type="number" min="1" max="65565" class="value" />
+                        <label class="translate" for="panID">PanID</label>
+                    </div>
+                    <div class="input-field col s2 m2 l2">
+                        <input id="channel" type="number" min="1" max="65565" class="value" />
+                        <label class="translate" for="channel">Channel</label>
+                    </div>
+                    <div class="input-field col s2 m2 l2">
+                        <input id="disableLed" type="checkbox" class="value" />
+                        <label class="translate" for="disableLed">Disable LED for cc2531</label>
+                    </div>
                 </div>
             </div>
         </div>
