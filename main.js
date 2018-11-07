@@ -747,6 +747,14 @@ function onDevEvent(type, devId, message, data) {
             adapter.log.debug('Device ' + devId + ' try to connect ' + safeJsonStringify(data));
             logToPairing('Interview state: step ' + data.currentEp + '/' + data.totalEp + '. progress: ' + data.progress + '%', true);
             break;
+        case 'msg':
+            adapter.log.debug('Device ' + devId + ' incoming event:' + safeJsonStringify(message));
+            // Map Zigbee modelID to vendor modelID.
+            const mModel = deviceMapping.findByZigbeeModel(data.modelId);
+            const payload = {linkquality: message.linkquality};
+            adapter.log.debug('Publish ' + safeJsonStringify(payload));
+            publishToState(devId.substr(2), data.modelId, mModel, payload);
+            break;
 
         default:
             adapter.log.debug('Device ' + devId + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
