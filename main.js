@@ -80,6 +80,7 @@ adapter.on('stateChange', function (id, state) {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
+                adapter.setState(id, state.val, true);
                 collectOptions(id.split('.')[2], modelId, options => {
                     publishFromState(deviceId, modelId, stateKey, state, options);
                 });
@@ -594,8 +595,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
 
         published.push({message: message, converter: converter, ep: ep});
     });
-    adapter.setState(state.id, state.val, true);
-
+    
     // copy from https://github.com/Koenkk/zigbee2mqtt/issues/72
     /**
      * After publishing a command to a zigbee device we want to monitor the changed attribute(s) so that
