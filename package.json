@@ -16,7 +16,7 @@
     "debug": "^3.1.0",
     "serialport": "^6.2.0",
     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/dev",
-    "zigbee-shepherd-converters": "*"
+    "zigbee-shepherd-converters": "^5.0.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -45,5 +45,5 @@
     "test": "node node_modules/mocha/bin/mocha --exit",
     "docgen": "node support/docgen.js"
   },
-  "version": "0.8.0a"
+  "version": "0.8.0ar"
 }
