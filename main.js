@@ -581,6 +581,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         }
         const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
         const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
+        const readTimeout = (stateDesc.readTimeout) ? stateDesc.readTimeout(value, options) : 0;
         
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
@@ -589,14 +590,18 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             return;
         }
 
-        // wait a timeout
+        // wait a timeout for write
         setTimeout(()=>{
             zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType);
-            // const readMessage = converter.convert(preparedValue, preparedOptions, 'get');
-            // if (readMessage) {
-            //     adapter.log.info('read message: '+safeJsonStringify(readMessage));
-            //     zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType);
-            // }
+            // wait a timeout for read
+            adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
+            setTimeout(()=>{
+                const readMessage = converter.convert(preparedValue, preparedOptions, 'get');
+                if (readMessage) {
+                    adapter.log.debug('read message: '+safeJsonStringify(readMessage));
+                    zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType);
+                }
+            }, readTimeout || 0);
         }, changedState.timeout);
     });
 }
