@@ -23,6 +23,7 @@ const SerialPort = require('serialport');
 
 let zbControl;
 
+// let start;
 
 function processMessages(ignore) {
     adapter.getMessage(function (err, obj) {
@@ -73,17 +74,19 @@ adapter.on('stateChange', function (id, state) {
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
         adapter.log.debug('User stateChange ' + id + ' ' + JSON.stringify(state));
+        // start = new Date();
         const devId = adapter.namespace + '.' + id.split('.')[2]; // iobroker device id
         const deviceId = '0x' + id.split('.')[2]; // zigbee device id
         const stateKey = id.split('.')[3];
+        // adapter.log.info(`change ${id} to ${state.val} time: ${new Date() - start}`);
         adapter.getObject(devId, function (err, obj) {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
-                adapter.setState(id, state.val, true);
                 collectOptions(id.split('.')[2], modelId, options => {
                     publishFromState(deviceId, modelId, stateKey, state, options);
                 });
+                adapter.setState(id, state.val, true);
             }
         });
     }
@@ -567,6 +570,8 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             return a.index - b.index;
         });
     }
+    
+    // adapter.log.info(`pub ${stateDesc.id} time: ${new Date() - start}`);
 
     stateList.forEach((changedState) => {
         const stateDesc = changedState.stateDesc;
@@ -592,16 +597,24 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
 
         // wait a timeout for write
         setTimeout(()=>{
-            zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType);
-            // wait a timeout for read
-            adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
-            setTimeout(()=>{
-                const readMessage = converter.convert(preparedValue, preparedOptions, 'get');
-                if (readMessage) {
-                    adapter.log.debug('read message: '+safeJsonStringify(readMessage));
-                    zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType);
-                }
-            }, readTimeout || 0);
+            // adapter.log.info(`1 before publish. ${stateDesc.id} time: ${new Date() - start}`);
+            zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType, ()=>{
+                // adapter.log.info(`5 publish success. ${stateDesc.id} time: ${new Date() - start}`);
+                // wait a timeout for read
+                adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
+                setTimeout(()=>{
+                    const readMessage = converter.convert(preparedValue, preparedOptions, 'get');
+                    if (readMessage) {
+                        adapter.log.debug('read message: '+safeJsonStringify(readMessage));
+                        // adapter.log.info(`3 before read publish. time: ${new Date() - start}`);
+                        zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType, ()=>{
+                            // adapter.log.info(`6 read publish success. ${stateDesc.id} time: ${new Date() - start}`);
+                        });
+                        // adapter.log.info(`4 after read publish. time: ${new Date() - start}`);
+                    }
+                }, readTimeout || 0);
+            });
+            // adapter.log.info(`2 after publish. ${stateDesc.id} time: ${new Date() - start}`);
         }, changedState.timeout);
     });
 }
@@ -696,7 +709,7 @@ function collectOptions(devId, modelId, callback) {
         callback();
         return;
     }
-    const states = stateModel.states.filter((statedesc) => statedesc.isOption);
+    const states = stateModel.states.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
     if (!states) {
         callback();
         return;
