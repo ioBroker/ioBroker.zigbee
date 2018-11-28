@@ -49,7 +49,7 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
-### 0.8.0
+### 0.8.0 (2018-11-29)
 
 **BREAKING CHANGES**:
 * (kirovilya) Rename state "isopen" to "opened".
