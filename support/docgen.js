@@ -21,13 +21,25 @@ const logDevices = (devices) => {
 
     devices = new Map(devices.map((d) => [d.models, d]));
     devices.forEach((device) => {
-        var pathImg  = device.icon.replace(new RegExp("img/", "g"), '').replace(new RegExp(".png", "g"), '');      
+        var pathImg  = device.icon.replace(new RegExp("img/", "g"), '').replace(new RegExp(".png", "g"), '');
+        var brand, models = [];
         device.models.forEach((modelId) => {
             const mappedModel = findByZigbeeModel(modelId);
-            const desc = mappedModel ? `${mappedModel.description} (${mappedModel.supports})` : `${modelId}`;
-            const brand = mappedModel ? `**${mappedModel.model}**<br>` : ``;
-            result += `| ${brand} (${modelId}) | ${desc} |  ![${pathImg}]` + '(https://github.com/ioBroker/ioBroker.zigbee/blob/master/admin/' + `${device.icon}) |\n`;
+            const re = /[^\x20-\x7E]+/g;
+            const model = modelId.replace(re, " ");
+            const desc = mappedModel ? `${mappedModel.description} (${mappedModel.supports})` : `${model}`;
+            const name = mappedModel ? `**${mappedModel.model}**<br>` : ``;
+            if (brand == undefined) {
+                brand= {
+                    name: name,
+                    desc: desc,
+                    pathImg: pathImg,
+                };
+            }
+            models.push(model);
         });
+        var modelsStr = models.join(', ');
+        result += `| ${brand.name} (${modelsStr}) | ${brand.desc} |  ![${brand.pathImg}]` + '(https://github.com/ioBroker/ioBroker.zigbee/blob/master/admin/' + `${device.icon}) |\n`;
     });
 
     return result;
@@ -43,4 +55,3 @@ vendors.forEach((vendor) => {
 })
 
 fs.writeFileSync(outputdir + '/' + file, text);
-

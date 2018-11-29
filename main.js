@@ -589,7 +589,9 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const readTimeout = (stateDesc.readTimeout) ? stateDesc.readTimeout(value, options) : 0;
         
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
-        const ep = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
+        const device = zbControl.getDevice(deviceId);
+        const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
+        const ep = devEp ? devEp[epName] : null;
         const message = converter.convert(preparedValue, preparedOptions, 'set');
         if (!message) {
             return;
