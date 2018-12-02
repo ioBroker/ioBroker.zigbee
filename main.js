@@ -486,9 +486,7 @@ function configureDevice(device) {
                 if (ok) {
                     adapter.log.info(`Succesfully configured ${ieeeAddr}`);
                 } else {
-                    if (mappedModel.model != '324131092621' /* philips dimmer problems from converter */)  {
-                      adapter.log.error(`Failed to configure ${ieeeAddr} ` + device.modelId);
-                    }
+                    adapter.log.warn(`Failed to configure ${ieeeAddr} ` + device.modelId);
                 }
             });
         }
