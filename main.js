@@ -588,7 +588,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         if (stateDesc.isOption) return;
         
         const value = changedState.value;
-        const converter = mappedModel.toZigbee.find((c) => c.key === stateDesc.prop || c.key === stateDesc.setattr || c.key === stateDesc.id);
+        const converter = mappedModel.toZigbee.find((c) => c.keys.includes(stateDesc.prop) || c.keys.includes(stateDesc.setattr) || c.keys.includes(stateDesc.id));
         
         if (!converter) {
             adapter.log.error(

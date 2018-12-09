@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.8.0",
+        "version": "0.8.1",
         "news": {
+            "0.8.1": {
+                "en": "Queue option",
+                "ru": "Опция отключение очереди сообщений"
+            },
             "0.8.0": {
                 "en": "Breaking changes",
                 "ru": "Критические изменения"
