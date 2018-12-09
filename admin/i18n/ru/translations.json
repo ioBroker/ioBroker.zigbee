@@ -11,5 +11,6 @@
   "Do you really whant to delete device": "Вы действительно хотите удалить устройство",
   "Rename device": "Переименовать устройство",
   "Enter new name": "Введите новое имя",
-  "Delete confirmation": "Подтвердите удаление"
+  "Delete confirmation": "Подтвердите удаление",
+  "Disable Queue": "Disable Queue"
 }
