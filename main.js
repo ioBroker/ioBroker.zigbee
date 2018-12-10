@@ -588,7 +588,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         if (stateDesc.isOption) return;
         
         const value = changedState.value;
-        const converter = mappedModel.toZigbee.find((c) => c.keys.includes(stateDesc.prop) || c.keys.includes(stateDesc.setattr) || c.keys.includes(stateDesc.id));
+        const converter = mappedModel.toZigbee.find((c) => c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id));
         
         if (!converter) {
             adapter.log.error(
@@ -605,11 +605,9 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
          
         const ep = devEp ? devEp[epName] : null;
-        const message = converter.convert(preparedValue, preparedOptions, 'set');
+        const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
+        const message = converter.convert(key, preparedValue, preparedOptions, 'set');
 
-// old 
-        const ep2 = mappedModel.ep && mappedModel.ep[epName] ? mappedModel.ep[epName] : null;
-                  
         if (adapter.config.disableQueue) {
           zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType);
           published.push({message: message, converter: converter, ep: ep});
