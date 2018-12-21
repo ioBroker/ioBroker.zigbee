@@ -21,6 +21,8 @@ const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require(__dirname + '/lib/devstates');
 const SerialPort = require('serialport');
 
+var devNum = 0;
+
 let zbControl;
 
 // let start;
@@ -449,7 +451,8 @@ function onReady() {
     adapter.log.debug('Current active devices:');
     zbControl.getDevices().forEach(device => adapter.log.debug(safeJsonStringify(device)));
     activeDevices.forEach(device => {
-        adapter.log.info(getDeviceStartupLogMessage(device));
+        devNum = devNum + 1;
+        adapter.log.info(devNum + ' ' + getDeviceStartupLogMessage(device));
 
         // update dev and states
         updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, () =>
