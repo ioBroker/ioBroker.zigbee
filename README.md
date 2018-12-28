@@ -49,6 +49,13 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
+### 0.8.1a (2018-12.28)
+
+**BREAKING CHANGES**:
+* (arteck) new converter from zigbee-shepherd.
+* (arteck) new devices Philips LWB004
+* (arteck) new devices Gledopto GL-D-003Z
+
 ### 0.8.0 (2018-11-29)
 
 **BREAKING CHANGES**:
