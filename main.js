@@ -145,6 +145,15 @@ adapter.on('message', obj => {
                         });
                 }
                 break;
+            case 'sendToZigbee':
+            	sendToZigbee(obj);
+            	break;
+            case 'getLibData':
+            	// e.g. zcl lists
+            	if (obj && obj.message && typeof obj.message === 'object') {
+            		getLibData(obj)            		
+            	}           	            	
+            	break;
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                 break;
@@ -441,6 +450,92 @@ function leaveDevice(id, msg) {
     const devId = id.substr(2);
     adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
     adapter.deleteDevice(devId);
+}
+
+function getLibData(obj) {
+	const key = obj.message.key; 
+	const zclId = require('zcl-id');
+	var result = new Object();
+	if (key === 'cidList') {
+		result.list = zclId._common.clusterId;
+	}
+	else if (key === 'attrIdList') {
+		var cid = obj.message.cid;
+		var attrList = zclId.attrList(cid);
+    	for (var i=0; i<attrList.length; i++) {
+    		attrList[i].attrName = zclId.attr(cid, attrList[i].attrId).key;
+    	}
+    	result.list = attrList;
+	}
+	else if (key === 'cmdList') {
+		result.list = zclId._common.foundation;
+	}
+	else if (key === 'respCodes') {
+		result.list = zclId._common.status;
+	}
+	else if (key === 'typeList') {
+		result.list = zclId._common.dataType;
+	}
+	else {
+		return;
+	}
+	adapter.sendTo(obj.from, obj.command, result, obj.callback);
+}
+
+function sendToZigbee(obj) {
+   	const deviceId = obj.message.devId;
+   	const ep = parseInt(obj.message.ep);
+   	const cid = obj.message.cid;
+   	const cmd = obj.message.cmd;
+   	const cmdType = 'foundation';
+   	
+   	var zclData;
+   	if (obj.message.value) {
+   		zclData = [{attrId: obj.message.attrId, dataType: parseInt(obj.message.type), attrData: obj.message.value}];
+   		if (!zclData[0].dataType) {
+   			adapter.sendTo(obj.from, obj.command, {error: 'You must specify dataType!'}, obj.callback);
+   			return;
+   		}
+   		adapter.log.info(JSON.stringify(zclData));
+   	}
+   	else {
+   		zclData = [{attrId: obj.message.attrId}];
+   	}
+
+   	const device = zbControl.getDevice(deviceId);
+	if (!device) {
+		adapter.sendTo(obj.from, obj.command, {error: 'Device '+deviceId+' not found!'}, obj.callback);
+		return;
+	}
+	if (!ep || !cid || !cmd) {
+		adapter.sendTo(obj.from, obj.command, {error: 'Incomplete data (ep, cid or cmd)'}, obj.callback);
+		return;
+	}
+	adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');
+
+	try {
+		zbControl.publish(deviceId, cid, cmd, zclData, ep, cmdType, (err, msg) => {
+			// map err and msg in one object for sendTo
+			var result = new Object();
+			result.msg = msg;
+			if (err) {
+				// err is an instance of Error class, it cannot be forwarded to sendTo, just get message (string)
+				result.err = err.message;
+			}
+			adapter.sendTo(obj.from, obj.command, result, obj.callback);
+		});
+	} catch (exception) {
+		// report exceptions
+		// happens for example if user tries to send write command but did not provide value/type
+		// we dont want to check this errors ourselfs before publish, but let shepherd handle this
+		adapter.log.error('SendToZigbee failed! ('+JSON.stringify(exception)+')');
+		adapter.sendTo(obj.from, obj.command, exception.message, obj.callback);
+		
+		// Note: zcl-packet/lib/foundation.js throws correctly 
+		// "Error: Payload of commnad: write must have dataType property.",
+		// but only at first time. If user sends same again no exception anymore
+		// not sure if bug in zigbee-shepherd or zcl-packet
+	}
 }
 
 function onReady() {
