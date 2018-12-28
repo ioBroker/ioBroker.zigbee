@@ -580,7 +580,9 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const stateDesc = changedState.stateDesc;
         if (stateDesc.isOption) return;
         const value = changedState.value;
-        const converter = mappedModel.toZigbee.find((c) => c.key === stateDesc.prop || c.key === stateDesc.setattr || c.key === stateDesc.id);
+        
+        const converter = mappedModel.toZigbee.find((c) => c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id));
+
         if (!converter) {
             adapter.log.error(
                 `No converter available for '${mappedModel.model}' with key '${stateKey}'`
@@ -595,7 +597,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const device = zbControl.getDevice(deviceId);
         const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
         const ep = devEp ? devEp[epName] : null;
-        const message = converter.convert(preparedValue, preparedOptions, 'set');
+        const message = converter.convert(stateKey, preparedValue, preparedOptions, 'set');
         if (!message) {
             return;
         }
@@ -608,7 +610,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                 // wait a timeout for read
                 adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
                 setTimeout(()=>{
-                    const readMessage = converter.convert(preparedValue, preparedOptions, 'get');
+                    const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
                     if (readMessage) {
                         adapter.log.debug('read message: '+safeJsonStringify(readMessage));
                         // adapter.log.info(`3 before read publish. time: ${new Date() - start}`);
