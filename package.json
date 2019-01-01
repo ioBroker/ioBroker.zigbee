@@ -17,7 +17,8 @@
     "debug": "^3.1.0",
     "serialport": "^6.2.0",
     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/dev",
-    "zigbee-shepherd-converters": "https://github.com/arteck/zigbee-shepherd-converters/tarball/master"
+    "zigbee-shepherd-converters": "https://github.com/arteck/zigbee-shepherd-converters/tarball/a86ee0588172c3f6016befa86978603c7da0a4d5"
+    
   },
   "description": "Zigbee devices",
   "devDependencies": {
