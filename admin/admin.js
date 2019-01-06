@@ -524,34 +524,36 @@ function getComPorts(onChange) {
     });
 }
 
-function loadDeveloperTab(onChange) {   
-	
-	// fill device selector
-	updateSelect('#dev-selector', devices, 
-			function(key, device) {
-				if (device.info.type != 'EndDevice') {
-					return null;
-				}
-				return device.info.manufName +' '+ device.common.name;
-			}, 
-			function(key, device) {
-				return device.info.ieeeAddr;
-	}); 
-	
-	// fill cid, cmd, type selector
-	populateSelector('#cid-selector', 'cidList');	
-    populateSelector('#cmd-selector', 'cmdList', this.value);	 
-	populateSelector('#type-selector', 'typeList', this.value);
-	
-	if (responseCodes == false) {
-		// init event listener only at first load
-		$('#dev-selector').change(function() {
-			if (this.selectedIndex <= 0) {
-				return;
-			}
-			var devIndex = this.selectedIndex - 1;  // first is 'Select... ' message		
-			var device = devices[devIndex];
-			
+function loadDeveloperTab(onChange) {
+
+    // fill device selector
+    updateSelect('#dev-selector', devices,
+            function(key, device) {
+                if (device.info.type == 'Coordinator') {
+                    return null;
+                }
+                return device.info.manufName +' '+ device.common.name;
+            }, 
+            function(key, device) {
+                return device._id;
+    }); 
+
+    // fill cid, cmd, type selector
+    populateSelector('#cid-selector', 'cidList');
+    populateSelector('#cmd-selector', 'cmdList', this.value);
+    populateSelector('#type-selector', 'typeList', this.value);
+
+    if (responseCodes == false) {
+        // init event listener only at first load
+        $('#dev-selector').change(function() {
+            if (this.selectedIndex <= 0) {
+                return;
+            }
+
+            var device = devices.find(obj => {
+                return obj._id === this.value;
+            });
+
 			updateSelect('#ep-selector', device.info.epList, 
 					function(key, ep) {
 						return ep;
@@ -583,13 +585,17 @@ function loadDeveloperTab(onChange) {
 			var cid = $('#cid-selector option:selected').val();
 			var cmd = $('#cmd-selector option:selected').val();
 			var attrId = $('#attrid-selector option:selected').val();
+            var zclData = {attrId: $('#attrid-selector option:selected').val()};
 			var typeId = null;
 			var value = null;    	  
 			if ($("#value-needed").is(':checked')) {
-				typeId = $('#type-selector option:selected').val();
-		    	value = $('#value-input').val();
+			    zclData.dataType = $('#type-selector option:selected').val();
+			    zclData.attrData = $('#value-input').val();
+//		    	value = $('#value-input').val();
+//		    	zclData.
+//		    	  zclData = [{attrId: obj.message.attrId, dataType: parseInt(obj.message.type), attrData: obj.message.value}];
 			}
-			sendToZigbee(devId, ep, cid, cmd, attrId, typeId, value);
+			sendToZigbee(devId, ep, cid, cmd, zclData);
 		});	 
 	}
 	
@@ -600,28 +606,23 @@ function loadDeveloperTab(onChange) {
 	});
 }
 
-function sendToZigbee(devId, ep, cid, cmd, attrId, typeId, value) {
-	if (!devId || !ep) {
-		showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
-		return;
-	}
-	if (!cid || !cmd || !attrId) {
-		showDevRunInfo('Incomplete', 'Please choose ClusterId, Command and AttributeId!', 'yellow');
-		return;
-	}
-	var data = {devId: devId, ep: ep, cid: cid, cmd: cmd, attrId: attrId};
-	if (value != null) {
-		data.value = value;
-		data.type = typeId;
-	}
+function sendToZigbee(id, ep, cid, cmd, zclData) {
+    if (!id || !ep) {
+        showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
+        return;
+    }
+    if (!cid || !cmd || !zclData) {
+        showDevRunInfo('Incomplete', 'Please choose ClusterId, Command and AttributeId!', 'yellow');
+        return;
+    }
+    var data = {id: id, ep: ep, cid: cid, cmd: cmd, zclData: zclData};
 	showDevRunInfo('Send', 'Waiting for reply...');
 	
 	var sendTimeout = setTimeout(function() {
     	showDevRunInfo('Timeout', 'We did not receive any response.');
     }, 15000);
 
-	console.log('Send to zigbee devId '+devId+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', attrId '+attrId
-			+', type '+typeId+', value '+value);
+    console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', zclData '+JSON.stringify(zclData));
 
 	sendTo(null, 'sendToZigbee', data, function (reply) {
 		clearTimeout( sendTimeout);
