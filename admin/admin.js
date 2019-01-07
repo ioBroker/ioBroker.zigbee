@@ -1,3 +1,6 @@
+/*
+ * you must run 'iobroker upload zigbee' if you edited this file to make changes visible
+ */
 var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     anime = (typeof M !== 'undefined') ? M.anime : anime,
     namespace = 'zigbee.' + instance,
@@ -6,7 +9,13 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     dialog,
     messages = [],
     map = [],
-    network;
+    network,
+    responseCodes = false;
+
+//document.addEventListener('DOMContentLoaded', function() {
+//    var elems = document.querySelectorAll('select');
+//    var instances = M.FormSelect.init(elems, {});
+//  });
 
 function getCard(dev) {
     var title = dev.common.name,
@@ -333,6 +342,9 @@ function load(settings, onChange) {
             network.fit();
             network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
         }
+        if ($(e.target).attr("id") == 'develop') {
+        	loadDeveloperTab(onChange);
+        }
     });
 }
 
@@ -510,4 +522,198 @@ function getComPorts(onChange) {
             onChange();
         });
     });
+}
+
+function loadDeveloperTab(onChange) {
+
+    // fill device selector
+    updateSelect('#dev-selector', devices,
+            function(key, device) {
+                if (device.info.type == 'Coordinator') {
+                    return null;
+                }
+                return device.info.manufName +' '+ device.common.name;
+            }, 
+            function(key, device) {
+                return device._id;
+    }); 
+
+    // fill cid, cmd, type selector
+    populateSelector('#cid-selector', 'cidList');
+    populateSelector('#cmd-selector', 'cmdList', this.value);
+    populateSelector('#type-selector', 'typeList', this.value);
+
+    if (responseCodes == false) {
+        // init event listener only at first load
+        $('#dev-selector').change(function() {
+            if (this.selectedIndex <= 0) {
+                return;
+            }
+
+            var device = devices.find(obj => {
+                return obj._id === this.value;
+            });
+
+			updateSelect('#ep-selector', device.info.epList, 
+					function(key, ep) {
+						return ep;
+					}, 
+					function(key, ep) {
+						return ep;
+			}); 
+		});
+		
+		$('#cid-selector').change(function() {
+			populateSelector('#attrid-selector', 'attrIdList', this.value);
+		});	
+		
+		// value selector checkbox
+		$('#value-needed').change(function() {
+			if (this.checked === true) {
+				$('#type-selector, #value-input').removeAttr('disabled');
+			}
+			else {
+				$('#type-selector, #value-input').attr('disabled', 'disabled');		
+			}
+			$('#type-selector').select();
+			Materialize.updateTextFields();
+		});
+
+		$('#dev-send-btn').click(function() {
+			var devId = $('#dev-selector option:selected').val();
+			var ep = $('#ep-selector option:selected').val();
+			var cid = $('#cid-selector option:selected').val();
+			var cmd = $('#cmd-selector option:selected').val();
+			var attrId = $('#attrid-selector option:selected').val();
+            var zclData = {attrId: $('#attrid-selector option:selected').val()};
+			var typeId = null;
+			var value = null;    	  
+			if ($("#value-needed").is(':checked')) {
+			    zclData.dataType = $('#type-selector option:selected').val();
+			    zclData.attrData = $('#value-input').val();
+//		    	value = $('#value-input').val();
+//		    	zclData.
+//		    	  zclData = [{attrId: obj.message.attrId, dataType: parseInt(obj.message.type), attrData: obj.message.value}];
+			}
+			sendToZigbee(devId, ep, cid, cmd, zclData);
+		});	 
+	}
+	
+	responseCodes = null;
+	// load list of response codes
+	sendTo(null, 'getLibData', {key: 'respCodes'}, function (data) {
+		responseCodes = data.list;
+	});
+}
+
+function sendToZigbee(id, ep, cid, cmd, zclData) {
+    if (!id || !ep) {
+        showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
+        return;
+    }
+    if (!cid || !cmd || !zclData) {
+        showDevRunInfo('Incomplete', 'Please choose ClusterId, Command and AttributeId!', 'yellow');
+        return;
+    }
+    var data = {id: id, ep: ep, cid: cid, cmd: cmd, zclData: zclData};
+	showDevRunInfo('Send', 'Waiting for reply...');
+	
+	var sendTimeout = setTimeout(function() {
+    	showDevRunInfo('Timeout', 'We did not receive any response.');
+    }, 15000);
+
+    console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', zclData '+JSON.stringify(zclData));
+
+	sendTo(null, 'sendToZigbee', data, function (reply) {
+		clearTimeout( sendTimeout);
+		console.log('Reply from zigbee: '+ JSON.stringify(reply));		
+		addDevLog(reply);
+		showDevRunInfo('OK', 'Finished.');	
+    });
+}
+/**
+ * Short feedback message next to run button
+ */
+function showDevRunInfo(result, text, level) {
+	var card = $('#devActResult');
+	if (level == 'yellow') {
+		card.removeClass( "white-text" ).addClass( "yellow-text" );	
+	}
+	else {
+		card.removeClass( "yellow-text" ).addClass( "white-text" );	
+	}	
+	$('#devActResult').text(result);
+	$('#devInfoMsg').text(text);
+}
+
+function addDevLog(reply) {
+	var msg, statusCode;
+	if (reply.msg) {
+		if (Array.isArray(reply.msg)) {
+			msg = reply.msg[0];
+		}
+		else {
+			msg = reply.msg;
+		}
+		statusCode = msg.status;
+	}
+	
+	var logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
+	if (responseCodes != undefined) {
+		const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
+		if (statusCode == 0) {
+			logHtml = '<span class="green-text">'+status+'</span>   '+logHtml;
+		}
+		else {
+			logHtml = '<span class="yellow-text">'+status+'</span>   '+logHtml;
+		}
+	}
+	var logView = $('#dev_result_log');
+	logView.append(logHtml);
+	logView.scrollTop(logView.prop("scrollHeight"));
+}
+
+/**
+ * Query adapter and update select with result
+ */
+function populateSelector(selectId, key, cid) {
+	$(selectId+'>option:enabled').remove(); // remove existing elements
+	sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
+		var list = data.list;
+		if (key === 'attrIdList') {
+			updateSelect(selectId, list, 
+					function(index, attr) {
+						return attr.attrName + ' ('+attr.attrId +', type '+attr.dataType+')';
+					}, 
+					function(index, attr) {
+						return attr.attrId;
+			}); 
+		}
+		else {
+			updateSelect(selectId, list, 
+					function(name, val) {
+						return name +' ('+val+')';
+					}, 
+					function(name, val) {
+						return val;
+			}); 
+	    }
+    });
+}
+
+function updateSelect(selectId, list, getText, getId) {
+	var mySelect = $(selectId);
+	$(selectId+'>option:enabled').remove(); // remove existing elements
+	var keys = Object.keys(list);  // is index in case of array
+	for (var i=0; i<keys.length; i++) {
+		var key = keys[i];
+		var item = list[key];
+		var optionText = getText(key, item);
+		if (optionText == null) {
+			continue;
+		}		
+		mySelect.append( new Option(optionText, getId(key, item)));
+	}
+	// update select element (Materialize)
+	mySelect.select();
 }
