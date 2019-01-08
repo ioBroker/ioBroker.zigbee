@@ -492,7 +492,6 @@ function getLibData(obj) {
     const cmdType = 'foundation';	
     var zclData = obj.message.zclData;	
     const zclId = require('zcl-id');	
-    adapter.log.error(typeof zclData);	
     if (!Array.isArray(zclData)) {	
         // wrap object in array	
         zclData = [zclData];	
