@@ -736,11 +736,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                         adapter.log.debug(`Read after timeout for cmd '${readAfterMessage.cmd}' is ${readAfterTimeout}`);
                         setTimeout(()=>{
                             adapter.log.debug(`publishFromState - readAfter: deviceId=${deviceId}, message=${safeJsonStringify(readAfterMessage)}`);
-                            try {	
-                                zbControl.publishDisableQueue(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterEp, readAfterMessage.cmdType);
-                            } catch (exception) {
-                                adapter.log.error(`publishFromState - readAfter failed: ${exception}`);
-                            }
+                            zbControl.publishDisableQueue(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterEp, readAfterMessage.cmdType);
                         }, readAfterTimeout || 0);
                     }
                 });
