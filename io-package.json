@@ -116,7 +116,8 @@
         "port": "",
         "panID": 6754,
         "channel": 11,
-        "disableLed": false
+        "disableLed": false,
+        "groups": {}
     },
     "instanceObjects": [
         {

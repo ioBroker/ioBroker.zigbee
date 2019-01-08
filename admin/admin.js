@@ -10,12 +10,10 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     messages = [],
     map = [],
     network,
-    responseCodes = false;
-
-//document.addEventListener('DOMContentLoaded', function() {
-//    var elems = document.querySelectorAll('select');
-//    var instances = M.FormSelect.init(elems, {});
-//  });
+    responseCodes = false,
+    groups = {},
+    devGroups = {},
+    onChangeEmitter;
 
 function getCard(dev) {
     var title = dev.common.name,
@@ -39,7 +37,7 @@ function getCard(dev) {
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
-        info = '<p style="min-height:96px">' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
+        info = `<p style="min-height:96px">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
         buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black"><i class="material-icons tiny">delete</i></a><a name="edit" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons small">mode_edit</i></a>'+routeBtn,
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
@@ -122,9 +120,14 @@ function deleteConfirmation(id, name) {
 }
 
 function editName(id, name) {
-    var text = 'Enter new name for "'+name+'" ('+id+')?';
-    $('#modaledit').find("input").val(name);
-    $('#modaledit').find("label").text(text);
+    $('#modaledit').find("input[id='name']").val(name);
+    list2select('#groups', groups, devGroups[id] || []);
+    $("#modaledit a.btn[name='save']").unbind("click");
+    $("#modaledit a.btn[name='save']").click(function(e) {
+        var newName = $('#modaledit').find("input[id='name']").val(),
+            newGroups = $('#groups').val();
+        updateDev(id, newName, newGroups);
+    });
     $('#modaledit').modal('open');
     Materialize.updateTextFields();
 }
@@ -184,9 +187,16 @@ function showDevices() {
           }
           return 0;
     });
+    devGroups = {};
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
         if (d.info && d.info.type == "Coordinator") continue;
+        if (d.groups) {
+            devGroups[d._id] = d.groups;
+            d.groupNames = d.groups.map(item=>{
+                return groups[item] || '';
+            }).join(', ');
+        }
         var card = getCard(d);
         html += card;
     }
@@ -201,8 +211,8 @@ function showDevices() {
         var dev_block = $(this).parents("div.device"),
             id = dev_block.attr("id"),
             name = dev_block.find(".card-title").text();
-        // editName(id, name);
-        openReval(e, id, name);
+        editName(id, name);
+        //openReval(e, id, name);
     });
     $("a.btn-floating[name='join']").click(function() {
         var dev_block = $(this).parents("div.device"),
@@ -278,6 +288,7 @@ function getMap() {
 
 // the function loadSettings has to exist ...
 function load(settings, onChange) {
+    onChangeEmitter = onChange;
     if (settings.panID === undefined) settings.panID = 6754;
     if (settings.channel === undefined) settings.channel = 11;
 
@@ -318,10 +329,21 @@ function load(settings, onChange) {
         getMap();
     });
 
+    if (settings.groups === undefined) settings.groups = {};
+    groups = settings.groups;
+    showGroups();
+    $('#add_group').click(function() {
+        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
+        // const newGroup = {};
+        // groups[maxind+1] = '';
+        // showGroups(onChange);
+        editGroupName(maxind+1, "");
+    });
+
     $(document).ready(function() {
         $('.modal').modal({
             startingTop: '30%',
-            endingTop: '30%',
+            endingTop: '10%',
         });
         $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
@@ -334,13 +356,8 @@ function load(settings, onChange) {
     }
 
     $('ul.tabs').on('click', 'a', function(e) {
-        if (network != undefined) {
-            var width = $('#tab-map').width(),
-                height = $('#tab-map').height()-150;
-            network.setSize(width, height);
-            network.redraw();
-            network.fit();
-            network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
+        if ($(e.target).attr("id") == 'tabmap') {
+            redrawMap();
         }
         if ($(e.target).attr("id") == 'develop') {
         	loadDeveloperTab(onChange);
@@ -379,6 +396,18 @@ function save(callback) {
             obj[$this.attr('id')] = $this.prop('checked');
         } else {
             obj[$this.attr('id')] = $this.val();
+        }
+    });
+    // save groups
+    obj.groups = groups;
+    // save dev-groups
+    sendTo(null, 'groupDevices', devGroups, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            } else {
+                getDevices();
+            }
         }
     });
     callback(obj);
@@ -494,6 +523,18 @@ function showNetworkMap(devices, map){
         },
     };
     network = new vis.Network(container, data, options);
+    redrawMap();
+}
+
+function redrawMap() {
+    if (network != undefined) {
+        var width = $('#tabs').width(),
+            height = $('#tabs').height()-64;
+        network.setSize(width, height);
+        network.redraw();
+        network.fit();
+        network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
+    }
 }
 
 function getComPorts(onChange) {
@@ -716,4 +757,90 @@ function updateSelect(selectId, list, getText, getId) {
 	}
 	// update select element (Materialize)
 	mySelect.select();
+}
+
+function list2select(selector, list, selected) {
+    var element = $(selector);
+    element.empty();
+    for (var j in list) {
+        if (list.hasOwnProperty(j)) {
+            const cls = (selected.indexOf(j) >= 0) ? " selected" : "";
+            element.append(`<option value="${j}"${cls}>${list[j]}</option>`);
+        }
+    }
+    element.select();
+}
+
+function showGroups() {
+    $("#groups_table").find(".group").remove();
+    if (!groups) return;
+    var element = $('#groups_table');
+    for (var j in groups) {
+        if (groups.hasOwnProperty(j)) {
+            element.append(`<tr id="group_${j}" class="group"><td>${j}</td><td><div>${groups[j]}<span class="right">`+
+            `<a id="${j}" name="groupedit" class="waves-effect green btn-floating"><i class="material-icons">edit</i></a>`+
+            `<a id="${j}" name="groupdelete" class="waves-effect red btn-floating"><i class="material-icons">delete</i></a></span></div></td></tr>`);
+        }
+    }
+    $("a.btn-floating[name='groupedit']").click(function(e) {
+        const index = $(this).attr("id"),
+            name = groups[index];
+        editGroupName(index, name);
+    });
+    $("a.btn-floating[name='groupdelete']").click(function() {
+        const index = $(this).attr("id"),
+            name = groups[index];
+        deleteGroupConfirmation(index, name);
+    });
+}
+
+function editGroupName(id, name) {
+    //var text = 'Enter new name for "'+name+'" ('+id+')?';
+    $('#groupedit').find("input[id='index']").val(id);
+    $('#groupedit').find("input[id='name']").val(name);
+    $("#groupedit a.btn[name='save']").unbind("click");
+    $("#groupedit a.btn[name='save']").click(function(e) {
+        var newId = $('#groupedit').find("input[id='index']").val(),
+            newName = $('#groupedit').find("input[id='name']").val();
+        updateGroup(id, newId, newName);
+        showGroups();
+    });
+    $('#groupedit').modal('open');
+    Materialize.updateTextFields();
+}
+
+function deleteGroupConfirmation(id, name) {
+    var text = translateWord('Do you really whant to delete group') + ' "'+name+'" ('+id+')?';
+    $('#modaldelete').find("p").text(text);
+    $("#modaldelete a.btn[name='yes']").unbind("click");
+    $("#modaldelete a.btn[name='yes']").click(function(e) {
+        deleteGroup(id);
+        showGroups();
+    });
+    $('#modaldelete').modal('open');
+}
+
+function updateGroup(id, newId, newName) {
+    delete groups[id];
+    groups[newId] = newName;
+    onChangeEmitter();
+}
+
+function deleteGroup(id) {
+    delete groups[id];
+    onChangeEmitter();
+}
+
+function updateDev(id, newName, newGroups) {
+    const dev = devices.find((d) => d._id == id);
+    if (dev && dev.common.name != newName) {
+        renameDevice(id, newName);
+    }
+    const oldGroups = devGroups[id] || [];
+    if (oldGroups.toString() != newGroups.toString()) {
+        devGroups[id] = newGroups;
+        dev.groups = newGroups;
+        showDevices();
+        onChangeEmitter();
+    }
 }
