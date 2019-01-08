@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.8.1",
+        "version": "0.8.2a",
         "news": {
+            "0.8.2": {
+                "en": "new converter from zigbee-shepherd",
+                "ru": "новый конвертер из zigbee-shepherd"
+            },
             "0.8.1": {
                 "en": "Queue option",
                 "ru": "Опция отключение очереди сообщений"
