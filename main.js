@@ -507,7 +507,7 @@ function getLibData(obj) {
         }	
     }	
 
-     const device = zbControl.getDevice(devId);	
+    const device = zbControl.getDevice(devId);	
     if (!device) {	
         adapter.sendTo(obj.from, obj.command, {error: 'Device '+devId+' not found!'}, obj.callback);	
         return;	
@@ -519,7 +519,8 @@ function getLibData(obj) {
     adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');	
 
      try {	
-        zbControl.publish(devId, cid, cmd, zclData, ep, cmdType, (err, msg) => {	
+    	const cfg = {manufSpec: 0, disDefaultRsp: 0};
+        zbControl.publish(devId, cid, cmd, zclData, cfg, ep, cmdType, (err, msg) => {	
             // map err and msg in one object for sendTo	
             var result = new Object();	
             result.msg = msg;	
@@ -716,7 +717,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
         
         if (adapter.config.disableQueue) {	
-            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType, ()=>{
+            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, ()=>{
                 // process read after list
                 readAfterList.forEach((readAfterState) => {
                     const readAfterStateDesc = readAfterState.stateDesc;
@@ -736,7 +737,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                         adapter.log.debug(`Read after timeout for cmd '${readAfterMessage.cmd}' is ${readAfterTimeout}`);
                         setTimeout(()=>{
                             adapter.log.debug(`publishFromState - readAfter: deviceId=${deviceId}, message=${safeJsonStringify(readAfterMessage)}`);
-                            zbControl.publishDisableQueue(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterEp, readAfterMessage.cmdType);
+                            zbControl.publishDisableQueue(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterMessage.cfg, readAfterEp, readAfterMessage.cmdType);
                         }, readAfterTimeout || 0);
                     }
                 });
@@ -745,14 +746,14 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         } else {
             // wait a timeout for write
             setTimeout(()=>{
-                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType, ()=>{
+                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, ()=>{
                     // wait a timeout for read
                     adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
                     setTimeout(()=>{
                         const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
                         if (readMessage) {
                             adapter.log.debug('read message: '+safeJsonStringify(readMessage));
-                            zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType);
+                            zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType);
                         }
                     }, readTimeout || 0);
                 });
@@ -776,7 +777,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                         adapter.log.debug(`Read after timeout for cmd '${readAfterMessage.cmd}' is ${readAfterTimeout}`);
                         setTimeout(()=>{
                             adapter.log.debug(`publishFromState - readAfter: deviceId=${deviceId}, message=${safeJsonStringify(readAfterMessage)}`);
-                            zbControl.publish(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterEp, readAfterMessage.cmdType);
+                            zbControl.publish(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterMessage.cfg, readAfterEp, readAfterMessage.cmdType);
                         }, readAfterTimeout || 0);
                     }
                 });
