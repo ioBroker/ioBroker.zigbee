@@ -468,10 +468,19 @@ function getLibData(obj) {
     		attrList[i].attrName = zclId.attr(cid, attrList[i].attrId).key;	
     	}	
     	result.list = attrList;	
-	}	
-	else if (key === 'cmdList') {	
-		result.list = zclId._common.foundation;	
-	}	
+    }
+    else if (key === 'cmdListFoundation') {
+        result.list = zclId._common.foundation;
+    }
+    else if (key === 'cmdListFunctional') {
+        var cid = zclId.cluster(obj.message.cid).key;
+        result.list = null;
+        var cluster = zclId._getCluster(cid);
+        if (typeof cluster != 'undefined') {
+            var extraCmd = cluster.cmd;
+            result.list = extraCmd !== null ? extraCmd._enumMap : null;
+        }
+    }
 	else if (key === 'respCodes') {	
 		result.list = zclId._common.status;	
 	}	
@@ -489,7 +498,7 @@ function getLibData(obj) {
     const ep = obj.message.ep !== undefined ? parseInt(obj.message.ep) : null;	
     const cid = obj.message.cid;	
     const cmd = obj.message.cmd;	
-    const cmdType = 'foundation';	
+    const cmdType = obj.message.cmdType;
     var zclData = obj.message.zclData;	
     const zclId = require('zcl-id');	
     adapter.log.error(typeof zclData);	

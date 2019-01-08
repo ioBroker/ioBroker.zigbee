@@ -525,7 +525,6 @@ function getComPorts(onChange) {
 }
 
 function loadDeveloperTab(onChange) {
-
     // fill device selector
     updateSelect('#dev-selector', devices,
             function(key, device) {
@@ -540,7 +539,7 @@ function loadDeveloperTab(onChange) {
 
     // fill cid, cmd, type selector
     populateSelector('#cid-selector', 'cidList');
-    populateSelector('#cmd-selector', 'cmdList', this.value);
+    populateSelector('#cmd-selector', 'cmdListFoundation', this.value);
     populateSelector('#type-selector', 'typeList', this.value);
 
     if (responseCodes == false) {
@@ -554,83 +553,124 @@ function loadDeveloperTab(onChange) {
                 return obj._id === this.value;
             });
 
-			updateSelect('#ep-selector', device.info.epList, 
-					function(key, ep) {
-						return ep;
-					}, 
-					function(key, ep) {
-						return ep;
-			}); 
-		});
-		
-		$('#cid-selector').change(function() {
-			populateSelector('#attrid-selector', 'attrIdList', this.value);
-		});	
-		
-		// value selector checkbox
-		$('#value-needed').change(function() {
-			if (this.checked === true) {
-				$('#type-selector, #value-input').removeAttr('disabled');
-			}
-			else {
-				$('#type-selector, #value-input').attr('disabled', 'disabled');		
-			}
-			$('#type-selector').select();
-			Materialize.updateTextFields();
-		});
+            updateSelect('#ep-selector', device.info.epList, 
+                    function(key, ep) {
+                        return ep;
+                    }, 
+                    function(key, ep) {
+                        return ep;
+            }); 
+        });
 
-		$('#dev-send-btn').click(function() {
-			var devId = $('#dev-selector option:selected').val();
-			var ep = $('#ep-selector option:selected').val();
-			var cid = $('#cid-selector option:selected').val();
-			var cmd = $('#cmd-selector option:selected').val();
-			var attrId = $('#attrid-selector option:selected').val();
+        $('#cid-selector').change(function() {
+            populateSelector('#attrid-selector', 'attrIdList', this.value);
+            if ($('#cmd-type-selector').val() == 'functional') {
+                var cid = $('#cid-selector option:selected').val();
+                populateSelector('#cmd-selector', 'cmdListFunctional', cid);
+            }
+        });	
+
+        $('#cmd-type-selector').change(function() {
+            if (this.value == "foundation") {
+                populateSelector('#cmd-selector', 'cmdListFoundation');
+            }
+            else if (this.value == "functional") {
+                var cid = $('#cid-selector option:selected').val();
+                populateSelector('#cmd-selector', 'cmdListFunctional', cid);
+            }
+        }); 
+
+        // value selector checkbox
+        $('#value-needed').change(function() {
+            if (this.checked === true) {
+                $('#type-selector, #value-input').removeAttr('disabled');
+            }
+            else {
+                $('#type-selector, #value-input').attr('disabled', 'disabled');
+            }
+            $('#type-selector').select();
+            Materialize.updateTextFields();
+        });
+
+        $('#dev-send-btn').click(function() {
+            var devId = $('#dev-selector option:selected').val();
+            var ep = $('#ep-selector option:selected').val();
+            var cid = $('#cid-selector option:selected').val();
+            var cmd = $('#cmd-selector option:selected').val();
+            var cmdType = $('#cmd-type-selector').val();
+            var attrId = $('#attrid-selector option:selected').val();
             var zclData = {attrId: $('#attrid-selector option:selected').val()};
-			var typeId = null;
-			var value = null;    	  
-			if ($("#value-needed").is(':checked')) {
-			    zclData.dataType = $('#type-selector option:selected').val();
-			    zclData.attrData = $('#value-input').val();
-//		    	value = $('#value-input').val();
-//		    	zclData.
-//		    	  zclData = [{attrId: obj.message.attrId, dataType: parseInt(obj.message.type), attrData: obj.message.value}];
-			}
-			sendToZigbee(devId, ep, cid, cmd, zclData);
-		});	 
-	}
-	
-	responseCodes = null;
-	// load list of response codes
-	sendTo(null, 'getLibData', {key: 'respCodes'}, function (data) {
-		responseCodes = data.list;
-	});
+            var typeId = null;
+            var value = null;    	  
+            if ($("#value-needed").is(':checked')) {
+                zclData.dataType = $('#type-selector option:selected').val();
+                zclData.attrData = $('#value-input').val();
+            }
+            sendToZigbee(devId, ep, cid, cmd, cmdType, zclData, function (reply) {
+                console.log('Reply from zigbee: '+ JSON.stringify(reply));
+                if (reply.hasOwnProperty("localErr")) {
+                    showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
+                }
+                else {
+                    addDevLog(reply);
+                    showDevRunInfo('OK', 'Finished.');
+                }
+            });
+        });	 
+    }
+
+    responseCodes = null;
+    // load list of response codes
+    sendTo(null, 'getLibData', {key: 'respCodes'}, function (data) {
+        responseCodes = data.list;
+    });
 }
 
-function sendToZigbee(id, ep, cid, cmd, zclData) {
+/**
+ * Sends data to zigbee device. May be used for read/write actions that do not
+ * need to be implemented as state objects
+ * 
+ * @param id
+ * @param ep
+ * @param cid
+ * @param cmd
+ * @param {string}
+ *            cmdType 'foundation' or 'functional'
+ * @param {Object}
+ *            zclData - may contain zclData.attrId, ...
+ * @param {Object}
+ *            callback - called with argument 'reply'. If reply.localErr exists,
+ *            the reply was created on local frontend, not by adapter (e.g.
+ *            timeout)
+ * @returns
+ */
+function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, callback) {
     if (!id || !ep) {
         showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
         return;
     }
-    if (!cid || !cmd || !zclData) {
-        showDevRunInfo('Incomplete', 'Please choose ClusterId, Command and AttributeId!', 'yellow');
+    if (!cid || !cmd || !cmdType || !zclData || !zclData.attrId) {
+        showDevRunInfo('Incomplete', 'Please choose ClusterId, Command, CommandType and AttributeId!', 'yellow');
         return;
     }
-    var data = {id: id, ep: ep, cid: cid, cmd: cmd, zclData: zclData};
-	showDevRunInfo('Send', 'Waiting for reply...');
-	
-	var sendTimeout = setTimeout(function() {
-    	showDevRunInfo('Timeout', 'We did not receive any response.');
+    var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData};
+    showDevRunInfo('Send', 'Waiting for reply...');
+
+    const sendTimeout = setTimeout(function() {
+        if (callback) {
+            callback({localErr: 'Timeout', errMsg: 'We did not receive any response.'})
+        }
     }, 15000);
 
-    console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', zclData '+JSON.stringify(zclData));
-
-	sendTo(null, 'sendToZigbee', data, function (reply) {
-		clearTimeout( sendTimeout);
-		console.log('Reply from zigbee: '+ JSON.stringify(reply));		
-		addDevLog(reply);
-		showDevRunInfo('OK', 'Finished.');	
+    console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData));
+    sendTo(null, 'sendToZigbee', data, function(reply) {
+        clearTimeout(sendTimeout);
+        if (callback) {
+            callback(reply);
+        }
     });
 }
+
 /**
  * Short feedback message next to run button
  */
@@ -647,17 +687,17 @@ function showDevRunInfo(result, text, level) {
 }
 
 function addDevLog(reply) {
-	var msg, statusCode;
-	if (reply.msg) {
-		if (Array.isArray(reply.msg)) {
-			msg = reply.msg[0];
-		}
-		else {
-			msg = reply.msg;
-		}
-		statusCode = msg.status;
-	}
-	
+    var msg, statusCode;
+    if (reply.msg) {
+        if (Array.isArray(reply.msg)) {
+            msg = reply.msg[0];
+        }
+        else {
+            msg = reply.msg;
+        }
+        statusCode = msg.hasOwnProperty('status') ? msg.status : msg.statusCode;
+    }
+
 	var logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
 	if (responseCodes != undefined) {
 		const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
@@ -677,7 +717,8 @@ function addDevLog(reply) {
  * Query adapter and update select with result
  */
 function populateSelector(selectId, key, cid) {
-	$(selectId+'>option:enabled').remove(); // remove existing elements
+    $(selectId+'>option:enabled').remove(); // remove existing elements
+    $(selectId).select();
 	sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
 		var list = data.list;
 		if (key === 'attrIdList') {
@@ -702,18 +743,26 @@ function populateSelector(selectId, key, cid) {
 }
 
 function updateSelect(selectId, list, getText, getId) {
-	var mySelect = $(selectId);
-	$(selectId+'>option:enabled').remove(); // remove existing elements
-	var keys = Object.keys(list);  // is index in case of array
-	for (var i=0; i<keys.length; i++) {
-		var key = keys[i];
-		var item = list[key];
-		var optionText = getText(key, item);
-		if (optionText == null) {
-			continue;
-		}		
-		mySelect.append( new Option(optionText, getId(key, item)));
-	}
-	// update select element (Materialize)
-	mySelect.select();
+    var mySelect = $(selectId);
+    $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
+    $(selectId).select();
+    if (list == null) {
+        var infoOption = new Option("Nothing available");
+        infoOption.disabled = true;
+        mySelect.append( infoOption);
+    }
+    else {
+        var keys = Object.keys(list); // is index in case of array
+        for (var i=0; i<keys.length; i++) {
+            var key = keys[i];
+            var item = list[key];
+            var optionText = getText(key, item);
+            if (optionText == null) {
+                continue;
+            }
+            mySelect.append( new Option(optionText, getId(key, item)));
+        }
+    }
+    // update select element (Materialize)
+    mySelect.select();
 }
