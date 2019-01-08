@@ -739,8 +739,8 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                             adapter.log.debug(`publishFromState - readAfter: deviceId=${deviceId}, message=${safeJsonStringify(readAfterMessage)}`);
                             try {	
                                 zbControl.publishDisableQueue(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterEp, readAfterMessage.cmdType);
-                            } catch (exception) {	
-                                adapter.log.error(`publishFromState - readAfter failed: ${safeJsonStringify(exception)}`);
+                            } catch (exception) {
+                                adapter.log.error(`publishFromState - readAfter failed: ${exception}`);
                             }
                         }, readAfterTimeout || 0);
                     }
