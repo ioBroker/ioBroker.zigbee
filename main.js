@@ -490,7 +490,8 @@ function getLibData(obj) {
 	else {	
 		return;	
 	}	
-	adapter.sendTo(obj.from, obj.command, result, obj.callback);	
+    result.key = key;
+    adapter.sendTo(obj.from, obj.command, result, obj.callback);	
 }	
 
  function sendToZigbee(obj) {	
@@ -499,9 +500,9 @@ function getLibData(obj) {
     const cid = obj.message.cid;	
     const cmd = obj.message.cmd;	
     const cmdType = obj.message.cmdType;
-    var zclData = obj.message.zclData;	
+    var zclData = obj.message.zclData;
+    const cfg = obj.message.hasOwnProperty('cfg') ? obj.message.cfg : null;
     const zclId = require('zcl-id');	
-    adapter.log.error(typeof zclData);	
     if (!Array.isArray(zclData)) {	
         // wrap object in array	
         zclData = [zclData];	
@@ -529,7 +530,7 @@ function getLibData(obj) {
     adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');	
 
      try {	
-        zbControl.publish(devId, cid, cmd, zclData, ep, cmdType, (err, msg) => {	
+        zbControl.publish(devId, cid, cmd, zclData, ep, cmdType, cfg, (err, msg) => {	
             // map err and msg in one object for sendTo	
             var result = new Object();	
             result.msg = msg;	
@@ -727,7 +728,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             // wait a timeout for write
             setTimeout(()=>{
                 // adapter.log.info(`1 before publish. ${stateDesc.id} time: ${new Date() - start}`);
-                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType, ()=>{
+                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType, null, ()=>{
                     // adapter.log.info(`5 publish success. ${stateDesc.id} time: ${new Date() - start}`);
                     // wait a timeout for read
                     adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
@@ -736,7 +737,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                         if (readMessage) {
                             adapter.log.debug('read message: '+safeJsonStringify(readMessage));
                             // adapter.log.info(`3 before read publish. time: ${new Date() - start}`);
-                            zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType, ()=>{
+                            zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType, null, ()=>{
                                 // adapter.log.info(`6 read publish success. ${stateDesc.id} time: ${new Date() - start}`);
                             });
                             // adapter.log.info(`4 after read publish. time: ${new Date() - start}`);

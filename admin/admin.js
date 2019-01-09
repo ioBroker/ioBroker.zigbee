@@ -600,13 +600,14 @@ function loadDeveloperTab(onChange) {
             var cmdType = $('#cmd-type-selector').val();
             var attrId = $('#attrid-selector option:selected').val();
             var zclData = {attrId: $('#attrid-selector option:selected').val()};
+            var cfg = null;
             var typeId = null;
             var value = null;    	  
             if ($("#value-needed").is(':checked')) {
                 zclData.dataType = $('#type-selector option:selected').val();
                 zclData.attrData = $('#value-input').val();
             }
-            sendToZigbee(devId, ep, cid, cmd, cmdType, zclData, function (reply) {
+            sendToZigbee(devId, ep, cid, cmd, cmdType, zclData, cfg, function (reply) {
                 console.log('Reply from zigbee: '+ JSON.stringify(reply));
                 if (reply.hasOwnProperty("localErr")) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
@@ -644,7 +645,7 @@ function loadDeveloperTab(onChange) {
  *            timeout)
  * @returns
  */
-function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, callback) {
+function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
     if (!id || !ep) {
         showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
         return;
@@ -653,7 +654,7 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, callback) {
         showDevRunInfo('Incomplete', 'Please choose ClusterId, Command, CommandType and AttributeId!', 'yellow');
         return;
     }
-    var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData};
+    var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
     showDevRunInfo('Send', 'Waiting for reply...');
 
     const sendTimeout = setTimeout(function() {
