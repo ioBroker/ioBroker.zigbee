@@ -454,20 +454,20 @@ function leaveDevice(id, msg) {
     adapter.deleteDevice(devId);
 }
 
-function getLibData(obj) {	
-	const key = obj.message.key; 	
-	const zclId = require('zcl-id');	
-	var result = new Object();	
-	if (key === 'cidList') {	
-		result.list = zclId._common.clusterId;	
-	}	
-	else if (key === 'attrIdList') {	
-		var cid = obj.message.cid;	
-		var attrList = zclId.attrList(cid);	
-    	for (var i=0; i<attrList.length; i++) {	
-    		attrList[i].attrName = zclId.attr(cid, attrList[i].attrId).key;	
-    	}	
-    	result.list = attrList;	
+function getLibData(obj) {
+    const key = obj.message.key; 
+    const zclId = require('zcl-id');
+    var result = new Object();
+    if (key === 'cidList') {
+        result.list = zclId._common.clusterId;
+    }
+    else if (key === 'attrIdList') {
+        var cid = obj.message.cid;
+        var attrList = zclId.attrList(cid);
+        for (var i=0; i<attrList.length; i++) {
+            attrList[i].attrName = zclId.attr(cid, attrList[i].attrId).key;
+        }
+        result.list = attrList;
     }
     else if (key === 'cmdListFoundation') {
         result.list = zclId._common.foundation;
@@ -481,18 +481,18 @@ function getLibData(obj) {
             result.list = extraCmd !== null ? extraCmd._enumMap : null;
         }
     }
-	else if (key === 'respCodes') {	
-		result.list = zclId._common.status;	
-	}	
-	else if (key === 'typeList') {	
-		result.list = zclId._common.dataType;	
-	}	
-	else {	
-		return;	
-	}	
+    else if (key === 'respCodes') {
+        result.list = zclId._common.status;
+    }
+    else if (key === 'typeList') {
+        result.list = zclId._common.dataType;
+    }
+    else {
+        return;
+    }
     result.key = key;
-    adapter.sendTo(obj.from, obj.command, result, obj.callback);	
-}	
+    adapter.sendTo(obj.from, obj.command, result, obj.callback);
+}
 
  function sendToZigbee(obj) {
     const devId = '0x' + obj.message.id.replace(adapter.namespace + '.', '');

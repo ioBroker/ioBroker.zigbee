@@ -325,6 +325,7 @@ function load(settings, onChange) {
         });
         $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
+        $('.collapsible').collapsible();
     });
 
     var text = $('#pairing').attr('data-tooltip');
@@ -561,7 +562,11 @@ function loadDeveloperTab(onChange) {
         };
 
         const prepareExpertData = function() {
-            return JSON.parse($('#expert-json').val());
+            try {
+                return JSON.parse($('#expert-json').val());
+            } catch (exception) {
+                showDevRunInfo('JSON error', exception, 'yellow');
+            }
         };
         const setExpertData = function(prop, value) {
             if (!$('#expert-mode').is(':checked')) {
@@ -711,14 +716,15 @@ function loadDeveloperTab(onChange) {
  * Sends data to zigbee device. May be used for read/write actions that do not
  * need to be implemented as state objects
  * 
- * @param id
+ * @param {string} id - like 'zigbee.0.001234567890'
  * @param ep
  * @param cid
  * @param cmd
  * @param {string}
- *            cmdType 'foundation' or 'functional'
+ *            cmdType - 'foundation' or 'functional'
  * @param {Object}
  *            zclData - may contain zclData.attrId, ...
+ * @param {?Object} cfg - e.g. { "manufCode": 0000, "manufSpec": 1} or null (default settings)
  * @param {Object}
  *            callback - called with argument 'reply'. If reply.localErr exists,
  *            the reply was created on local frontend, not by adapter (e.g.
@@ -730,7 +736,6 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
         showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
         return;
     }
-    console.log(cid+" "+ep+" "+cmd+" "+cmdType+" "+zclData.attrId);
     if (!cid || !cmd || !cmdType) {
         showDevRunInfo('Incomplete', 'Please choose ClusterId, Command, CommandType and AttributeId!', 'yellow');
         return;
@@ -761,15 +766,15 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
  * Short feedback message next to run button
  */
 function showDevRunInfo(result, text, level) {
-	var card = $('#devActResult');
-	if (level == 'yellow') {
-		card.removeClass( "white-text" ).addClass( "yellow-text" );	
-	}
-	else {
-		card.removeClass( "yellow-text" ).addClass( "white-text" );	
-	}	
-	$('#devActResult').text(result);
-	$('#devInfoMsg').text(text);
+    var card = $('#devActResult');
+    if (level == 'yellow') {
+        card.removeClass( "white-text" ).addClass( "yellow-text" );
+    }
+    else {
+        card.removeClass( "yellow-text" ).addClass( "white-text" );
+    }
+    $('#devActResult').text(result);
+    $('#devInfoMsg').text(text);
 }
 
 function addDevLog(reply) {
@@ -784,19 +789,19 @@ function addDevLog(reply) {
         statusCode = msg.hasOwnProperty('status') ? msg.status : msg.statusCode;
     }
 
-	var logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
-	if (responseCodes != undefined) {
-		const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
-		if (statusCode == 0) {
-			logHtml = '<span class="green-text">'+status+'</span>   '+logHtml;
-		}
-		else {
-			logHtml = '<span class="yellow-text">'+status+'</span>   '+logHtml;
-		}
-	}
-	var logView = $('#dev_result_log');
-	logView.append(logHtml);
-	logView.scrollTop(logView.prop("scrollHeight"));
+    var logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
+    if (responseCodes != undefined) {
+        const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
+        if (statusCode == 0) {
+            logHtml = '<span class="green-text">'+status+'</span>   '+logHtml;
+        }
+        else {
+            logHtml = '<span class="yellow-text">'+status+'</span>   '+logHtml;
+        }
+    }
+    var logView = $('#dev_result_log');
+    logView.append(logHtml);
+    logView.scrollTop(logView.prop("scrollHeight"));
 }
 
 /**
@@ -809,26 +814,26 @@ function populateSelector(selectId, key, cid) {
         updateSelect(selectId, null);
         return;
     }
-	sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
-		var list = data.list;
-		if (key === 'attrIdList') {
-			updateSelect(selectId, list, 
-					function(index, attr) {
-						return attr.attrName + ' ('+attr.attrId +', type '+attr.dataType+')';
-					}, 
-					function(index, attr) {
-						return attr.attrId;
-			}); 
-		}
-		else {
-			updateSelect(selectId, list, 
-					function(name, val) {
-						return name +' ('+val+')';
-					}, 
-					function(name, val) {
-						return val;
-			}); 
-	    }
+    sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
+        var list = data.list;
+        if (key === 'attrIdList') {
+            updateSelect(selectId, list, 
+                    function(index, attr) {
+                        return attr.attrName + ' ('+attr.attrId +', type '+attr.dataType+')';
+                    }, 
+                    function(index, attr) {
+                        return attr.attrId;
+                    });
+        }
+        else {
+            updateSelect(selectId, list, 
+                    function(name, val) {
+                        return name +' ('+val+')';
+                    }, 
+                    function(name, val) {
+                        return val;
+                    }); 
+        }
     });
 }
 
