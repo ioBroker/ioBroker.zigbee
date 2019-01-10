@@ -40,25 +40,44 @@ function getCard(dev) {
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
         info = '<p style="min-height:96px">' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
-        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black"><i class="material-icons tiny">delete</i></a><a name="edit" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons small">mode_edit</i></a>'+routeBtn,
+        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
+            '<i class="material-icons tiny">delete</i></a>'+
+            '<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
+                '<i class="material-icons small">mode_edit</i></a>'+routeBtn,
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
                     '<div class="card-content">'+
-                        '<span class="card-title truncate">'+title+'</span>'+paired+
+                        '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
+                            '<i class="material-icons">info</i></a>'+
+                        '<span id="dName" class="card-title truncate">'+title+'</span>'+paired+
+                        
                         '<i class="left">'+image+'</i>'+
                         info+
                         buttons+
                     '</div>'+
                     '<div class="card-action">'+room+'</div>'+
-                    '<div class="card-reveal">'+
+                    '<div class="card-reveal" name="edit">'+
+                        '<span class="card-title grey-text text-darken-4">Edit device name</span>'+
                         '<div class="input-field">'+
-                            '<input id="name" type="text" class="value validate">'+
-                            '<label for="name" class="translate">Enter new name</label>'+
+                            '<input id="dNameInput" type="text" class="value validate">'+
+                            '<label for="dNameInput" class="translate">Enter new name</label>'+
                         '</div>'+
                         '<span class="right">'+
-                            '<a name="done" class="waves-effect waves-green btn green"><i class="material-icons">done</i></a>'+
-                            '<a name="close" class="waves-effect waves-red btn-flat"><i class="material-icons">close</i></a>'+
+                            '<a name="done" class="waves-effect waves-green btn green">'+
+                            '<i class="material-icons">done</i></a>'+
+                            '<a name="close" class="waves-effect waves-red btn-flat">'+
+                            '<i class="material-icons">close</i></a>'+
                         '</span>'+
+                    '</div>'+
+                    '<div class="card-reveal" name="d-info">'+
+                        '<span class="right">'+
+                            '<a name="close" class="waves-effect waves-red btn-flat top right">'+
+                            '<i class="material-icons">close</i></a>'+
+                        '</span>'+
+                        '<span class="card-title grey-text text-darken-4">Device details</span>'+
+                        '<div id="d-infos">'+
+                            'loading...'+
+                        '</div>'+
                     '</div>'+
                     '</div>'+
                 '</div>';
@@ -73,9 +92,17 @@ function openReval(e, id, name){
             $card.css('overflow') === undefined ? '' : $card.css('overflow')
         );
     }
-    let $cardReveal = $card.find('.card-reveal');
-    $cardReveal.find("input").val(name);
-    Materialize.updateTextFields();
+    var $revealName = e.target.parentNode.name; // click on <i>, get parent <a>
+    let $cardReveal = $card.find('.card-reveal[name="'+$revealName+'"]');
+
+    if ($revealName == "edit") {
+        $cardReveal.find("input").val(name);
+        Materialize.updateTextFields();
+    }
+    else if ($revealName == "d-info") {
+        pollDeviceInfo(id, $card);
+    }
+
     $card.css('overflow', 'hidden');
     $cardReveal.css({ display: 'block'});
     anime({
@@ -87,8 +114,11 @@ function openReval(e, id, name){
 }
 
 function closeReval(e, id, name){
-    if (id) {
-        renameDevice(id, name);
+    let $cardReveal = $(e.target).closest('.card-reveal');
+    var $revealName = $cardReveal[0].getAttribute("name");
+    if ($revealName == "edit" && id) {
+        var newName = $cardReveal.find("input").val();
+        renameDevice(id, newName);
     }
     var $card = $(e.target).closest('.card');
     if ($card.data('initialOverflow') === undefined) {
@@ -97,7 +127,6 @@ function closeReval(e, id, name){
             $card.css('overflow') === undefined ? '' : $card.css('overflow')
         );
     }
-    let $cardReveal = $card.find('.card-reveal');
     anime({
         targets: $cardReveal[0],
         translateY: 0,
@@ -191,32 +220,35 @@ function showDevices() {
         html += card;
     }
     $('#devices').html(html);
+
+    const getDevName = function(dev_block) {
+        return dev_block.find("#dName").text();
+    };
+    const getDevId = function(dev_block) {
+        return dev_block.attr("id");
+    };
     $("a.btn-floating[name='delete']").click(function() {
-        var dev_block = $(this).parents("div.device"),
-            id = dev_block.attr("id"),
-            name = dev_block.find(".card-title").text();
-        deleteConfirmation(id, name);
+        var dev_block = $(this).parents("div.device");
+        deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
     $("a.btn-floating[name='edit']").click(function(e) {
-        var dev_block = $(this).parents("div.device"),
-            id = dev_block.attr("id"),
-            name = dev_block.find(".card-title").text();
+        var dev_block = $(this).parents("div.device");
         // editName(id, name);
-        openReval(e, id, name);
+        openReval(e, getDevId(dev_block), getDevName(dev_block));
     });
     $("a.btn-floating[name='join']").click(function() {
-        var dev_block = $(this).parents("div.device"),
-            id = dev_block.attr("id"),
-            name = dev_block.find(".card-title").text();
+        var dev_block = $(this).parents("div.device");
         if (!$('#pairing').hasClass('pulse'))
-            joinProcess(id);
+            joinProcess(getDevId(dev_block));
         showPairingProcess();
     });
+    $("a[name='d-info']").click(function(e) {
+        var dev_block = $(this).parents("div.device");
+        openReval(e, getDevId(dev_block), getDevName(dev_block));
+    });
     $("a.btn[name='done']").click(function(e) {
-        var dev_block = $(this).parents("div.device"),
-            id = dev_block.attr("id"),
-            name = dev_block.find("input").val();
-        closeReval(e, id, name);
+        var dev_block = $(this).parents("div.device");
+        closeReval(e, getDevId(dev_block), getDevName(dev_block));
     });
     $("a.btn-flat[name='close']").click(function(e) {
         closeReval(e);
@@ -245,6 +277,42 @@ function joinProcess(devId) {
                 showMessage(msg.error, _('Error'), 'alert');
             }
         }
+    });
+}
+
+function pollDeviceInfo(id, card) {
+    var data = {
+            id: id,
+            cid: 'genBasic',
+            cmd: 'read',
+            ep: 1,
+            zclData: [
+                {attrId: 'swBuildId'}, 
+                {attrId: 'hwVersion'}
+            ],
+    }
+    sendTo(null, 'sendToZigbee', data, function (reply) {
+        let infoNode = card.find('#d-infos');
+        if (reply.err) {
+            infoNode.html('No device details available<br><span class="blue-grey-text">(' +reply.err+ ')</span>');
+            return;
+        }
+        
+        let html = '<ul>';
+        for (var i=0; i<reply.msg.length; i++) {
+            var attr = reply.msg[i];
+            if (attr.status != '0') {
+                continue; // unsupAttr,...
+            }
+            if (attr.attrId == '16384') {//swBuildId
+                html += '<li>Firmware Version: '+attr.attrData+'</li>';
+            }
+            else if (attr.attrId == '3') {//hwVersion
+                html += '<li>Hardware Version: '+attr.attrData+'</li>';
+            }
+        }
+        html += '</ul>';
+        infoNode.html(html);
     });
 }
 
