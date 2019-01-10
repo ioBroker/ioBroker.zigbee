@@ -526,7 +526,7 @@ function getComPorts(onChange) {
 
 function loadDeveloperTab(onChange) {
     // fill device selector
-    updateSelect('#dev-selector', devices,
+    updateSelect('#dev', devices,
             function(key, device) {
                 if (device.info.type == 'Coordinator') {
                     return null;
@@ -538,11 +538,61 @@ function loadDeveloperTab(onChange) {
     }); 
 
     // fill cid, cmd, type selector
-    populateSelector('#cid-selector', 'cidList');
-    populateSelector('#cmd-selector', 'cmdListFoundation', this.value);
-    populateSelector('#type-selector', 'typeList', this.value);
+    populateSelector('#cid', 'cidList');
+    populateSelector('#cmd', 'cmdListFoundation', this.value);
+    populateSelector('#type', 'typeList', this.value);
 
     if (responseCodes == false) {
+        const prepareData = function () {
+            var data = {
+                    devId: $('#dev-selector option:selected').val(),
+                    ep: $('#ep-selector option:selected').val(),
+                    cid: $('#cid-selector option:selected').val(),
+                    cmd: $('#cmd-selector option:selected').val(),
+                    cmdType: $('#cmd-type-selector').val(),
+                    zclData: {attrId: $('#attrid-selector').val()},
+                    cfg: null,
+            };
+            if ($("#value-needed").is(':checked')) {
+                data.zclData.dataType = $('#type-selector option:selected').val();
+                data.zclData.attrData = $('#value-input').val();
+            }
+            return data;
+        };
+
+        const prepareExpertData = function() {
+            return JSON.parse($('#expert-json').val());
+        };
+        const setExpertData = function(prop, value) {
+            if (!$('#expert-mode').is(':checked')) {
+                return;
+            }
+            var data;
+            if (prop) {
+                data = prepareExpertData();
+                // https://stackoverflow.com/a/6394168/6937282
+                const assignVal = function index(obj,is, value) {
+                    if (typeof is == 'string')
+                        return index(obj,is.split('.'), value);
+                    else if (is.length==1 && value!==undefined) {
+                        if (value == null) 
+                            return delete obj[is[0]];
+                        else
+                            return obj[is[0]] = value;
+                    }
+                    else if (is.length==0)
+                        return obj;
+                    else
+                        return index(obj[is[0]],is.slice(1), value);
+                }
+                assignVal(data, prop, value);
+            }
+            else {
+                data = prepareData();
+            }
+            $('#expert-json').val(JSON.stringify(data, null, 4));
+        };
+
         // init event listener only at first load
         $('#dev-selector').change(function() {
             if (this.selectedIndex <= 0) {
@@ -553,61 +603,91 @@ function loadDeveloperTab(onChange) {
                 return obj._id === this.value;
             });
 
-            updateSelect('#ep-selector', device.info.epList, 
+            updateSelect('#ep', device.info.epList,
                     function(key, ep) {
                         return ep;
                     }, 
                     function(key, ep) {
                         return ep;
             }); 
+            setExpertData('devId', this.value);
+        });
+        
+        $('#ep-selector').change(function() {
+            setExpertData('ep', this.value);
         });
 
         $('#cid-selector').change(function() {
-            populateSelector('#attrid-selector', 'attrIdList', this.value);
+            populateSelector('#attrid', 'attrIdList', this.value);
             if ($('#cmd-type-selector').val() == 'functional') {
                 var cid = $('#cid-selector option:selected').val();
-                populateSelector('#cmd-selector', 'cmdListFunctional', cid);
+                populateSelector('#cmd', 'cmdListFunctional', cid);
             }
+            setExpertData('cid', this.value);
         });	
 
         $('#cmd-type-selector').change(function() {
             if (this.value == "foundation") {
-                populateSelector('#cmd-selector', 'cmdListFoundation');
+                populateSelector('#cmd', 'cmdListFoundation');
             }
             else if (this.value == "functional") {
                 var cid = $('#cid-selector option:selected').val();
-                populateSelector('#cmd-selector', 'cmdListFunctional', cid);
+                populateSelector('#cmd', 'cmdListFunctional', cid);
             }
+            setExpertData('cmdType', this.value);
         }); 
+        
+        $('#cmd-selector').change(function() {
+            setExpertData('cmd', this.value);
+        });
+        $('#attrid-selector').change(function() {
+            setExpertData('zclData.attrId', this.value);
+        });
+        $('#type-selector').change(function() {
+            setExpertData('zclData.dataType', this.value);
+        });
 
         // value selector checkbox
         $('#value-needed').change(function() {
             if (this.checked === true) {
                 $('#type-selector, #value-input').removeAttr('disabled');
+                setExpertData('zclData.dataType', $('#type-selector').val());
+                setExpertData('zclData.attrData', $('#value-input').val());
             }
             else {
                 $('#type-selector, #value-input').attr('disabled', 'disabled');
+                setExpertData('zclData.dataType', null);
+                setExpertData('zclData.attrData', null);
+            }
+            $('#type-selector').select();
+            Materialize.updateTextFields();
+        });
+
+        $('#value-input').keyup(function() {
+            setExpertData('zclData.attrData', this.value);
+        });
+
+        $('#expert-mode').change(function() {
+            if (this.checked === true) {
+                setExpertData();
+                $('#expert-json-box').css('display', 'inline-block');
+            }
+            else {
+                $('#expert-json-box').css('display', 'none');
             }
             $('#type-selector').select();
             Materialize.updateTextFields();
         });
 
         $('#dev-send-btn').click(function() {
-            var devId = $('#dev-selector option:selected').val();
-            var ep = $('#ep-selector option:selected').val();
-            var cid = $('#cid-selector option:selected').val();
-            var cmd = $('#cmd-selector option:selected').val();
-            var cmdType = $('#cmd-type-selector').val();
-            var attrId = $('#attrid-selector option:selected').val();
-            var zclData = {attrId: $('#attrid-selector option:selected').val()};
-            var cfg = null;
-            var typeId = null;
-            var value = null;    	  
-            if ($("#value-needed").is(':checked')) {
-                zclData.dataType = $('#type-selector option:selected').val();
-                zclData.attrData = $('#value-input').val();
+            var data;
+            if ($('#expert-mode').is(':checked')) {
+                data = prepareExpertData();
             }
-            sendToZigbee(devId, ep, cid, cmd, cmdType, zclData, cfg, function (reply) {
+            else {
+                data = prepareData();
+            }
+            sendToZigbee(data.devId, data.ep, data.cid, data.cmd, data.cmdType, data.zclData, data.cfg, function (reply) {
                 console.log('Reply from zigbee: '+ JSON.stringify(reply));
                 if (reply.hasOwnProperty("localErr")) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
@@ -617,7 +697,7 @@ function loadDeveloperTab(onChange) {
                     showDevRunInfo('OK', 'Finished.');
                 }
             });
-        });	 
+        });
     }
 
     responseCodes = null;
@@ -650,8 +730,13 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
         showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
         return;
     }
-    if (!cid || !cmd || !cmdType || !zclData || !zclData.attrId) {
+    console.log(cid+" "+ep+" "+cmd+" "+cmdType+" "+zclData.attrId);
+    if (!cid || !cmd || !cmdType) {
         showDevRunInfo('Incomplete', 'Please choose ClusterId, Command, CommandType and AttributeId!', 'yellow');
+        return;
+    }
+    if (!zclData || zclData.attrId < 0) {
+        showDevRunInfo('Error', 'Ids must be positive!');
         return;
     }
     var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
@@ -720,6 +805,10 @@ function addDevLog(reply) {
 function populateSelector(selectId, key, cid) {
     $(selectId+'>option:enabled').remove(); // remove existing elements
     $(selectId).select();
+    if (cid == "-2") {
+        updateSelect(selectId, null);
+        return;
+    }
 	sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
 		var list = data.list;
 		if (key === 'attrIdList') {
@@ -743,10 +832,11 @@ function populateSelector(selectId, key, cid) {
     });
 }
 
-function updateSelect(selectId, list, getText, getId) {
+function updateSelect(id, list, getText, getId) {
+    const selectId = id+'-selector';
     var mySelect = $(selectId);
     $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
-    $(selectId).select();
+    mySelect.select();
     if (list == null) {
         var infoOption = new Option("Nothing available");
         infoOption.disabled = true;
@@ -763,6 +853,10 @@ function updateSelect(selectId, list, getText, getId) {
             }
             mySelect.append( new Option(optionText, getId(key, item)));
         }
+    }
+
+    if ($(id+'-c-input').length > 0) {
+        mySelect.append( new Option('CUSTOM', -2));
     }
     // update select element (Materialize)
     mySelect.select();
