@@ -185,7 +185,9 @@
                             </li>
                             <li>
                                 <div class="collapsible-header">Expert Mode</div>
-                                <div class="collapsible-body"><b>JSON:</b> { "devId": "zigbee.0.yourDevId",
+                                <div class="collapsible-body">This is an example for Hue Motion Detector.
+                                Some of it's attributes cannot be accessed the standard way.<br>
+                                <b>JSON:</b> { "devId": "zigbee.0.yourDevId",
                                 "ep": "2", "cid": "1030", "cmd": "0", "cmdType": "foundation", "zclData": { "attrId": "48" },
                                 "cfg": { "manufCode": 4107, "manufSpec": 1}}<br> 
                                 => Read attribute 48. Note "cfg" section, if you try to read same attribute without cfg
@@ -270,7 +272,8 @@
                                 </label>
                             </div> 
                             <div id="expert-json-box" class="input-field col s12" style="display:none;">
-                            <p>You may edit the raw data here. Use JSON format (attribute names in double quotes!).
+                            <p>You may edit the raw data to send here. Do not use this if you are not
+                            sure of what you are doing! Use JSON format (attribute names in double quotes!).
                             Additional properties may be added too. See examples above. (Format as used by zigbee-shepherd)
                             </p>
                             <div class="input-field col s12">
