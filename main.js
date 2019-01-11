@@ -580,6 +580,8 @@ function onReady() {
     adapter.setState('info.pairingMode', false);
 
     // recreate groups
+    //zbControl.removeAllGroup();
+    zbControl.getGroups();
     const groups = adapter.config.groups || {};
     for (var j in groups) {
         if (groups.hasOwnProperty(j)) {
@@ -592,8 +594,9 @@ function onReady() {
             }, () => {
                 adapter.extendObject(id, {common: {type: 'group'}});
             });
+            zbControl.addGroup(j, id);
         }
-    }                
+    }
 
     // get and list all registered devices (not in ioBroker)
     let activeDevices = zbControl.getAllClients();
