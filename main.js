@@ -469,7 +469,6 @@ function newDevice(id, msg) {
         logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
         updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () =>
             syncDevStates(dev.ieeeAddr.substr(2), dev.modelId));
-
     }
 }
 
@@ -570,48 +569,75 @@ function getLibData(obj) {
 }
 
 function onReady() {
-    adapter.setState('info.connection', true);
-
-    if (adapter.config.disableLed) {
-        zbControl.disableLed();
-    }
-
-    // update pairing State
-    adapter.setState('info.pairingMode', false);
-
-    // recreate groups
-    //zbControl.removeAllGroup();
-    zbControl.getGroups();
-    const groups = adapter.config.groups || {};
-    for (var j in groups) {
-        if (groups.hasOwnProperty(j)) {
-            const id = `group_${j}`,
-                  name = groups[j];
-            adapter.setObjectNotExists(id, {
-                type: 'device',
-                common: {name: name, type: 'group'},
-                native: {id: j}
-            }, () => {
-                adapter.extendObject(id, {common: {type: 'group'}});
-            });
-            zbControl.addGroup(j, id);
+    const tasks = new Promise(function(resolve, reject) {
+        resolve();
+    }).then(()=>{
+        adapter.setState('info.connection', true);
+            
+        if (adapter.config.disableLed) {
+            zbControl.disableLed();
         }
-    }
+    
+        // update pairing State
+        adapter.setState('info.pairingMode', false);
+    }).then(()=>{
+        const chain = [];
+        // recreate groups
+        //zbControl.removeAllGroup();
+        //zbControl.getGroups();
+        const usedGroupsIds = [];
+        const groups = adapter.config.groups || {};
+        for (var j in groups) {
+            if (groups.hasOwnProperty(j)) {
+                const id = `group_${j}`,
+                      name = groups[j];
+                chain.push(new Promise((resolve, reject) => {
+                    adapter.setObjectNotExists(id, {
+                        type: 'device',
+                        common: {name: name, type: 'group'},
+                        native: {id: j}
+                    }, () => {
+                        adapter.extendObject(id, {common: {type: 'group'}});
+                        resolve();
+                    });
+                }));
+                usedGroupsIds.push(parseInt(j));
+            }
+        }
+        chain.push(new Promise((resolve, reject) => {
+            zbControl.removeUnusedGroups(usedGroupsIds, ()=>{
+                usedGroupsIds.forEach(j => {
+                    const id = `group_${j}`;
+                    zbControl.addGroup(j, id);
+                });
+                resolve();
+            });
+        }));
+        Promise.all(chain);
+    }).then(()=>{
+        const chain = [];
+        // get and list all registered devices (not in ioBroker)
+        let activeDevices = zbControl.getAllClients();
+        adapter.log.debug('Current active devices:');
+        zbControl.getDevices().forEach(device => adapter.log.debug(safeJsonStringify(device)));
+        activeDevices.forEach(device => {
+            devNum = devNum + 1;
+            adapter.log.info(devNum + ' ' + getDeviceStartupLogMessage(device));
 
-    // get and list all registered devices (not in ioBroker)
-    let activeDevices = zbControl.getAllClients();
-    adapter.log.debug('Current active devices:');
-    zbControl.getDevices().forEach(device => adapter.log.debug(safeJsonStringify(device)));
-    activeDevices.forEach(device => {
-        devNum = devNum + 1;
-        adapter.log.info(devNum + ' ' + getDeviceStartupLogMessage(device));
-
-        // update dev and states
-        updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, () =>
-            syncDevStates(device.ieeeAddr.substr(2), device.modelId));
-
-        configureDevice(device);
-    });
+            // update dev and states
+            chain.push(new Promise((resolve, reject) => {
+                updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, () => {
+                    syncDevStates(device.ieeeAddr.substr(2), device.modelId);
+                    resolve();
+                });
+            }));
+            configureDevice(device);
+        });
+        Promise.all(chain);
+    }).then(()=>{
+        // create writable states for groups from their devices
+    });  
+    return tasks;
 }
 
 function getDeviceStartupLogMessage(device) {
