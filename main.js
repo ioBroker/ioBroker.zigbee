@@ -256,8 +256,15 @@ function renameDevice(from, command, msg, callback) {
 function groupDevices(from, command, devGroups, callback) {
     for (var j in devGroups) {
         if (devGroups.hasOwnProperty(j)) {
-            const id = `${j}.groups`;
-            adapter.setState(id, JSON.stringify(devGroups[j]), true);
+            const id = `${j}.groups`,
+                  groups = devGroups[j];
+            adapter.setState(id, JSON.stringify(groups), true);
+            const sysid = j.replace(adapter.namespace + '.', '0x');
+            zbControl.removeDevFromAllGroups(sysid, () => {
+                groups.forEach(groupId => {
+                    zbControl.addDevToGroup(sysid, groupId);
+                });
+            });
         }
     }
     adapter.sendTo(from, command, {}, callback);
