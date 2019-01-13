@@ -495,14 +495,26 @@ function getLibData(obj) {
 }
 
  function sendToZigbee(obj) {
+    const zclId = require('zcl-id');
     const devId = '0x' + obj.message.id.replace(adapter.namespace + '.', '');
-    const ep = obj.message.ep !== undefined ? parseInt(obj.message.ep) : null;
+    const ep = obj.message.ep !== null ? parseInt(obj.message.ep) : null;
     const cid = obj.message.cid;
-    const cmd = obj.message.cmd;
     const cmdType = obj.message.cmdType;
+    var cmd;
+    var test = obj.message.cmd;
+    if (cmdType === 'functional') { 
+        cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.functional(cid, obj.message.cmd).value;
+    }
+    else if (cmdType === 'foundation') { 
+        cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.foundation(obj.message.cmd).value;
+    }
+    else {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Invalid cmdType'}, obj.callback);
+        return;
+    }
     var zclData = obj.message.zclData;
     const cfg = obj.message.hasOwnProperty('cfg') ? obj.message.cfg : null;
-    const zclId = require('zcl-id');
+
     if (!Array.isArray(zclData)) {
         // wrap object in array
         zclData = [zclData];
@@ -512,21 +524,20 @@ function getLibData(obj) {
         // convert string items to number if needed
         if (typeof zclItem.attrId == 'string') {
             var intId = parseInt(zclItem.attrId);
-            zclData[i].attrId = intId != 'NaN' ? intId : zclId.attr(cid, zclItem.attrId).value;
+            zclData[i].attrId = !isNaN(intId) ? intId : zclId.attr(cid, zclItem.attrId).value;
         }
         if (typeof zclItem.dataType == 'string') {
             var intType = parseInt(zclItem.dataType);
             zclData[i].dataType = intType != 'NaN' ? intType : zclId.attr(cid, zclItem.dataType).value;
         }
     }
-
-     const device = zbControl.getDevice(devId);	
+    const device = zbControl.getDevice(devId);	
     if (!device) {
-        adapter.sendTo(obj.from, obj.command, {error: 'Device '+devId+' not found!'}, obj.callback);
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Device '+devId+' not found!'}, obj.callback);
         return;
     }
-    if (!cid || !cmd) {
-        adapter.sendTo(obj.from, obj.command, {error: 'Incomplete data (ep, cid or cmd)'}, obj.callback);
+    if (!cid || typeof cmd !== 'number') {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Incomplete data (cid or cmd)'}, obj.callback);
         return;
     }
     adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');
@@ -546,8 +557,8 @@ function getLibData(obj) {
         // report exceptions
         // happens for example if user tries to send write command but did not provide value/type
         // we dont want to check this errors ourselfs before publish, but let shepherd handle this
-        adapter.log.error('SendToZigbee failed! ('+JSON.stringify(exception)+')');
-        adapter.sendTo(obj.from, obj.command, exception.message, obj.callback);
+        adapter.log.error('SendToZigbee failed! ('+exception+')');
+        adapter.sendTo(obj.from, obj.command, {err: exception}, obj.callback);
 
          // Note: zcl-packet/lib/foundation.js throws correctly 
         // "Error: Payload of commnad: write must have dataType property.",

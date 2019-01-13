@@ -697,6 +697,9 @@ function loadDeveloperTab(onChange) {
                 if (reply.hasOwnProperty("localErr")) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
                 }
+                else if (reply.hasOwnProperty('localStatus')) {
+                    showDevRunInfo(reply.localErr, reply.errMsg);
+                }
                 else {
                     addDevLog(reply);
                     showDevRunInfo('OK', 'Finished.');
@@ -726,26 +729,26 @@ function loadDeveloperTab(onChange) {
  *            zclData - may contain zclData.attrId, ...
  * @param {?Object} cfg - e.g. { "manufCode": 0000, "manufSpec": 1} or null (default settings)
  * @param {Object}
- *            callback - called with argument 'reply'. If reply.localErr exists,
+ *            callback - called with argument 'reply'. If reply.localErr or localStatus exists,
  *            the reply was created on local frontend, not by adapter (e.g.
  *            timeout)
  * @returns
  */
 function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
-    if (!id || !ep) {
-        showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
+    if (!id) {
+        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please select Device and Endpoint!'});}
         return;
     }
     if (!cid || !cmd || !cmdType) {
-        showDevRunInfo('Incomplete', 'Please choose ClusterId, Command, CommandType and AttributeId!', 'yellow');
+        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please choose ClusterId, Command, CommandType and AttributeId!'});}
         return;
     }
     if (!zclData || zclData.attrId < 0) {
-        showDevRunInfo('Error', 'Ids must be positive!');
+        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Ids must be positive!'});}
         return;
     }
     var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
-    showDevRunInfo('Send', 'Waiting for reply...');
+    if (callback) {callback({localStatus: 'Send', errMsg: 'Waiting for reply...'});}
 
     const sendTimeout = setTimeout(function() {
         if (callback) {
