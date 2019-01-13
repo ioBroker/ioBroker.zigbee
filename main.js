@@ -86,16 +86,16 @@ adapter.on('stateChange', function (id, state) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
 
-                if (adapter.config.disableQueue) {	
-                    adapter.setState(id, state.val, true);	
+                if (adapter.config.disableQueue) {    
+                    adapter.setState(id, state.val, true);    
                 }
 
                 collectOptions(id.split('.')[2], modelId, options => {
                     publishFromState(deviceId, modelId, stateKey, state, options);
                 });
 
-                if (!adapter.config.disableQueue) {	
-                    adapter.setState(id, state.val, true);	
+                if (!adapter.config.disableQueue) {    
+                    adapter.setState(id, state.val, true);    
                 }
             }
         });
@@ -147,15 +147,15 @@ adapter.on('message', obj => {
                         });
                 }
                 break;
-            case 'sendToZigbee':	
-            	sendToZigbee(obj);	
-            	break;	
-            case 'getLibData':	
-            	// e.g. zcl lists	
-            	if (obj && obj.message && typeof obj.message === 'object') {	
-            		getLibData(obj)            			
-            	}           	            		
-            	break;
+            case 'sendToZigbee':    
+                sendToZigbee(obj);    
+                break;    
+            case 'getLibData':    
+                // e.g. zcl lists    
+                if (obj && obj.message && typeof obj.message === 'object') {    
+                    getLibData(obj)                        
+                }                                   
+                break;
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                 break;
@@ -739,88 +739,83 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         
         adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
         
-        if (adapter.config.disableQueue) {	
-            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType, ()=>{
-                // process read after list
-                readAfterList.forEach((readAfterState) => {
-                    const readAfterStateDesc = readAfterState.stateDesc;
-                    const readAfterConverter = mappedModel.toZigbee.find((c) => c.key.includes(readAfterStateDesc.prop) || c.key.includes(readAfterStateDesc.id));
-                    const readAfterEpName = readAfterStateDesc.epname !== undefined ? readAfterStateDesc.epname : (readAfterStateDesc.prop || readAfterStateDesc.id);
-                    const readAfterEp = devEp ? devEp[readAfterEpName] : null;
-                    const readAfterTimeout = (readAfterStateDesc.readTimeout) ? readAfterStateDesc.readTimeout(readAfterState.value, options) : readAfterState.timeout;
-   
-                    // build message
-                    const readAfterKey = readAfterStateDesc.prop || readAfterStateDesc.id;
-                    const readAfterPreparedValue = (readAfterStateDesc.setter) ? readAfterStateDesc.setter(readAfterState.value, options) : readAfterState.value;
-                    const readAfterPreparedOptions = (readAfterStateDesc.setterOpt) ? readAfterStateDesc.setterOpt(readAfterState.value, options) : {};
-                    const readAfterMessage = readAfterConverter.convert(readAfterKey, readAfterPreparedValue, readAfterPreparedOptions, 'get');
-
-                    if (readAfterMessage) {
-                        // wait a timeout for read after message
-                        adapter.log.debug(`Read after timeout for cmd '${readAfterMessage.cmd}' is ${readAfterTimeout}`);
-                        setTimeout(()=>{
-                            adapter.log.debug(`publishFromState - readAfter: deviceId=${deviceId}, message=${safeJsonStringify(readAfterMessage)}`);
-                            zbControl.publishDisableQueue(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterEp, readAfterMessage.cmdType);
-                        }, readAfterTimeout || 0);
-                    }
-                });
-            });	
-            published.push({message: message, converter: converter, ep: ep});	
+        if (adapter.config.disableQueue) {    
+            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
+                if (err) {
+                    // nothing to do in error case
+                } else {
+                    // process read after list
+                    processReadAfterList(deviceId, readAfterList, options, mappedModel, devEp);
+                }
+            });    
+            published.push({message: message, converter: converter, ep: ep});    
         } else {
             // wait a timeout for write
             setTimeout(()=>{
-                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType, null, ()=>{
-                    // wait a timeout for read
-                    adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
-                    setTimeout(()=>{
-                        const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
-                        if (readMessage) {
-                            adapter.log.debug('read message: '+safeJsonStringify(readMessage));
-                            zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType, null);
-                        }
-                    }, readTimeout || 0);
-                });
-                
-                // process read after list
-                readAfterList.forEach((readAfterState) => {
-                    const readAfterStateDesc = readAfterState.stateDesc;
-                    const readAfterConverter = mappedModel.toZigbee.find((c) => c.key.includes(readAfterStateDesc.prop) || c.key.includes(readAfterStateDesc.id));
-                    const readAfterEpName = readAfterStateDesc.epname !== undefined ? readAfterStateDesc.epname : (readAfterStateDesc.prop || readAfterStateDesc.id);
-                    const readAfterEp = devEp ? devEp[readAfterEpName] : null;
-                    const readAfterTimeout = (readAfterStateDesc.readTimeout) ? readAfterStateDesc.readTimeout(readAfterState.value, options) : readAfterState.timeout;
-
-                    // build message
-                    const readAfterKey = readAfterStateDesc.prop || readAfterStateDesc.id;
-                    const readAfterPreparedValue = (readAfterStateDesc.setter) ? readAfterStateDesc.setter(readAfterState.value, options) : readAfterState.value;
-                    const readAfterPreparedOptions = (readAfterStateDesc.setterOpt) ? readAfterStateDesc.setterOpt(readAfterState.value, options) : {};
-                    const readAfterMessage = readAfterConverter.convert(readAfterKey, readAfterPreparedValue, readAfterPreparedOptions, 'get');
-
-                    if (readAfterMessage) {
-                        // wait a timeout for read after message
-                        adapter.log.debug(`Read after timeout for cmd '${readAfterMessage.cmd}' is ${readAfterTimeout}`);
+                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
+                    if (err) {
+                        // nothing to do in error case
+                    } else {
+                        // wait a timeout for read
+                        adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
                         setTimeout(()=>{
-                            adapter.log.debug(`publishFromState - readAfter: deviceId=${deviceId}, message=${safeJsonStringify(readAfterMessage)}`);
-                            zbControl.publish(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterEp, readAfterMessage.cmdType);
-                        }, readAfterTimeout || 0);
+                            const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
+                            if (readMessage) {
+                                adapter.log.debug('read message: '+safeJsonStringify(readMessage));
+                                zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType);
+                            }
+                        }, readTimeout || 0);
+                        
+                        // process read after list
+                        processReadAfterList(deviceId, readAfterList, options, mappedModel, devEp);
                     }
                 });
             }, changedState.timeout);
         }
     });
 
-    if (adapter.config.disableQueue) {	
-        published.forEach((p) => {	
-            let counter = 0;	
-            let secondsToMonitor = 1;	
+    if (adapter.config.disableQueue) {    
+        published.forEach((p) => {    
+            let counter = 0;    
+            let secondsToMonitor = 1;    
   
-            // In case of a transition we need to monitor for the whole transition time.	
-            if (p.message.zclData.hasOwnProperty('transtime')) {	
-                // Note that: transtime 10 = 0.1 seconds, 100 = 1 seconds, etc.	
-                secondsToMonitor = (p.message.zclData.transtime / 10) + 1;	    
-            }	
-            adapter.log.debug(`Waiting for '${secondsToMonitor}' sec`);        	
-        });	
+            // In case of a transition we need to monitor for the whole transition time.    
+            if (p.message.zclData.hasOwnProperty('transtime')) {    
+                // Note that: transtime 10 = 0.1 seconds, 100 = 1 seconds, etc.    
+                secondsToMonitor = (p.message.zclData.transtime / 10) + 1;        
+            }    
+            adapter.log.debug(`Waiting for '${secondsToMonitor}' sec`);            
+        });    
     }
+}
+
+function processReadAfterList(deviceId, readAfterList, options, mappedModel, devEp) {
+    readAfterList.forEach((readAfterState) => {
+        const readAfterStateDesc = readAfterState.stateDesc;
+        const readAfterConverter = mappedModel.toZigbee.find((c) => c.key.includes(readAfterStateDesc.prop) || c.key.includes(readAfterStateDesc.id));
+        const readAfterEpName = readAfterStateDesc.epname !== undefined ? readAfterStateDesc.epname : (readAfterStateDesc.prop || readAfterStateDesc.id);
+        const readAfterEp = devEp ? devEp[readAfterEpName] : null;
+        const readAfterTimeout = (readAfterStateDesc.readTimeout) ? readAfterStateDesc.readTimeout(readAfterState.value, options) : readAfterState.timeout;
+
+        // build message
+        const readAfterKey = readAfterStateDesc.prop || readAfterStateDesc.id;
+        const readAfterPreparedValue = (readAfterStateDesc.setter) ? readAfterStateDesc.setter(readAfterState.value, options) : readAfterState.value;
+        const readAfterPreparedOptions = (readAfterStateDesc.setterOpt) ? readAfterStateDesc.setterOpt(readAfterState.value, options) : {};
+        const readAfterMessage = readAfterConverter.convert(readAfterKey, readAfterPreparedValue, readAfterPreparedOptions, 'get');
+    
+        if (readAfterMessage) {
+            // wait a timeout for read after message
+            adapter.log.debug(`Read after timeout for cmd '${readAfterMessage.cmd}' is ${readAfterTimeout}`);
+            setTimeout(()=>{
+                adapter.log.debug(`publishFromState - readAfter: deviceId=${deviceId}, message=${safeJsonStringify(readAfterMessage)}`);
+                if (adapter.config.disableQueue) {    
+                    zbControl.publishDisableQueue(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterMessage.cfg, readAfterEp, readAfterMessage.cmdType);
+                } else {
+                    zbControl.publish(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterMessage.cfg, readAfterEp, readAfterMessage.cmdType);
+                }
+            }, readAfterTimeout || 0);
+        }
+    });
 }
 
 function publishToState(devId, modelID, model, payload) {
