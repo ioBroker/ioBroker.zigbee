@@ -543,7 +543,7 @@ function getLibData(obj) {
     adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');
 
      try {
-        zbControl.publish(devId, cid, cmd, zclData, ep, cmdType, cfg, (err, msg) => {
+        zbControl.publish(devId, cid, cmd, zclData, cfg, ep, cmdType, (err, msg) => {
             // map err and msg in one object for sendTo
             var result = new Object();
             result.msg = msg;
