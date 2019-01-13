@@ -281,20 +281,15 @@ function joinProcess(devId) {
 }
 
 function pollDeviceInfo(id, card) {
-    var data = {
-            id: id,
-            cid: 'genBasic',
-            cmd: 'read',
-            ep: 1,
-            zclData: [
-                {attrId: 'swBuildId'}, 
-                {attrId: 'hwVersion'}
-            ],
-    }
-    sendTo(null, 'sendToZigbee', data, function (reply) {
+    sendToZigbee(id, null, 'genBasic', 'read', 'foundation', 
+            [ {attrId: 'swBuildId'}, {attrId: 'hwVersion'}], 
+            null, function (reply) {
         let infoNode = card.find('#d-infos');
-        if (reply.err) {
-            infoNode.html('No device details available<br><span class="blue-grey-text">(' +reply.err+ ')</span>');
+        if (reply.hasOwnProperty('localErr')) {
+            infoNode.html('No device details available<br><span class="blue-grey-text">(' +reply.localErr+ ')</span>');
+            return;
+        }
+        if (reply.hasOwnProperty('localStatus')) {
             return;
         }
         
