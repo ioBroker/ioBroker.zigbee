@@ -400,16 +400,6 @@ function save(callback) {
     });
     // save groups
     obj.groups = groups;
-    // save dev-groups
-    sendTo(null, 'groupDevices', devGroups, function (msg) {
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
-            } else {
-                getDevices();
-            }
-        }
-    });
     callback(obj);
 }
 
@@ -840,7 +830,14 @@ function updateDev(id, newName, newGroups) {
     if (oldGroups.toString() != newGroups.toString()) {
         devGroups[id] = newGroups;
         dev.groups = newGroups;
+        // save dev-groups
+        sendTo(null, 'groupDevices', devGroups, function (msg) {
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'), 'alert');
+                }
+            }
+        });    
         showDevices();
-        onChangeEmitter();
     }
 }

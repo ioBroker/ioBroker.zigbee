@@ -21,6 +21,13 @@ const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require(__dirname + '/lib/devstates');
 const SerialPort = require('serialport');
 
+const groupConverters = [
+    deviceMapping.toZigbeeConverters.on_off,
+    deviceMapping.toZigbeeConverters.light_brightness,
+    deviceMapping.toZigbeeConverters.light_colortemp,
+    deviceMapping.toZigbeeConverters.light_color,
+];
+
 var devNum = 0;
 
 let zbControl;
@@ -78,13 +85,16 @@ adapter.on('stateChange', function (id, state) {
         adapter.log.debug('User stateChange ' + id + ' ' + JSON.stringify(state));
         // start = new Date();
         const devId = adapter.namespace + '.' + id.split('.')[2]; // iobroker device id
-        const deviceId = '0x' + id.split('.')[2]; // zigbee device id
+        let deviceId = '0x' + id.split('.')[2]; // zigbee device id
         const stateKey = id.split('.')[3];
         // adapter.log.info(`change ${id} to ${state.val} time: ${new Date() - start}`);
         adapter.getObject(devId, function (err, obj) {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
+                if (modelId === 'group') {
+                    deviceId = parseInt(deviceId.replace('0xgroup_', ''));
+                }
 
                 if (adapter.config.disableQueue) {    
                     adapter.setState(id, state.val, true);    
@@ -605,6 +615,23 @@ function onReady() {
                         native: {id: j}
                     }, () => {
                         adapter.extendObject(id, {common: {type: 'group'}});
+                        // create writable states for groups from their devices
+                        for (var stateInd in statesMapping.groupStates) {
+                            if (!statesMapping.groupStates.hasOwnProperty(stateInd)) continue;
+                            const statedesc = statesMapping.groupStates[stateInd];
+                            const common = {
+                                name: statedesc.name,
+                                type: statedesc.type,
+                                unit: statedesc.unit,
+                                read: statedesc.read,
+                                write: statedesc.write,
+                                icon: statedesc.icon,
+                                role: statedesc.role,
+                                min: statedesc.min,
+                                max: statedesc.max,
+                            };
+                            updateState(id, statedesc.id, undefined, common);
+                        }
                         resolve();
                     });
                 }));
@@ -641,8 +668,6 @@ function onReady() {
             configureDevice(device);
         });
         Promise.all(chain);
-    }).then(()=>{
-        // create writable states for groups from their devices
     });  
     return tasks;
 }
@@ -720,20 +745,31 @@ function logToPairing(message, ignoreJoin) {
 }
 
 function publishFromState(deviceId, modelId, stateKey, state, options) {
-    const mappedModel = deviceMapping.findByZigbeeModel(modelId);
-    if (!mappedModel) {
-        adapter.log.error('Unknown device model ' + modelId);
-        return;
+    let stateDesc, model, mappedModel = {}, stateModel = {}, device;
+    if (modelId === 'group') {
+        model = 'group';
+        mappedModel.toZigbee = groupConverters;
+        // find state for set
+        stateDesc = statesMapping.groupStates.find((statedesc) => stateKey === statedesc.id);
+        device = zbControl.getGroup(deviceId);
+    } else {
+        mappedModel = deviceMapping.findByZigbeeModel(modelId);
+        if (!mappedModel) {
+            adapter.log.error('Unknown device model ' + modelId);
+            return;
+        }
+        model = mappedModel.model;
+        stateModel = statesMapping.findModel(modelId);
+        if (!stateModel) {
+            adapter.log.error('Device ' + deviceId + ' "' + modelId + '" not described in statesMapping.');
+            return;
+        }
+        // find state for set
+        stateDesc = stateModel.states.find((statedesc) => stateKey === statedesc.id);
+        device = zbControl.getDevice(deviceId);
     }
-    const stateModel = statesMapping.findModel(modelId);
-    if (!stateModel) {
-        adapter.log.error('Device ' + deviceId + ' "' + modelId + '" not described in statesMapping.');
-        return;
-    }
-    // find state for set
-    const stateDesc = stateModel.states.find((statedesc) => stateKey === statedesc.id);
     if (!stateDesc) {
-        adapter.log.error(`No state available for '${mappedModel.model}' with key '${stateKey}'`);
+        adapter.log.error(`No state available for '${model}' with key '${stateKey}'`);
         return;
     }
 
@@ -755,10 +791,12 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         });
     }
     
-    const device = zbControl.getDevice(deviceId);
     const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
     const published = [];
-
+    if (modelId != 'group') {
+        device = deviceId;
+    }
+    
     stateList.forEach((changedState) => {
         const stateDesc = changedState.stateDesc;
         if (stateDesc.isOption) return;
@@ -807,17 +845,18 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         } else {
             // wait a timeout for write
             setTimeout(()=>{
-                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
+                zbControl.publish(device, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
                     if (err) {
                         // nothing to do in error case
                     } else {
+                        if (modelId === 'group') return;
                         // wait a timeout for read
                         adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
                         setTimeout(()=>{
                             const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
                             if (readMessage) {
                                 adapter.log.debug('read message: '+safeJsonStringify(readMessage));
-                                zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType);
+                                zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType);
                             }
                         }, readTimeout || 0);
                         
@@ -950,20 +989,25 @@ function syncDevStates(devId, modelId) {
 }
 
 function collectOptions(devId, modelId, callback) {
+    let states;
     // find model states for options and get it values
-    const mappedModel = deviceMapping.findByZigbeeModel(modelId);
-    if (!mappedModel) {
-        adapter.log.error('Unknown device model ' + modelId);
-        callback();
-        return;
+    if (modelId === 'group') {
+        states = statesMapping.groupStates.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
+    } else {
+        const mappedModel = deviceMapping.findByZigbeeModel(modelId);
+        if (!mappedModel) {
+            adapter.log.error('Unknown device model ' + modelId);
+            callback();
+            return;
+        }
+        const stateModel = statesMapping.findModel(modelId);
+        if (!stateModel) {
+            adapter.log.error('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
+            callback();
+            return;
+        }
+        states = stateModel.states.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
     }
-    const stateModel = statesMapping.findModel(modelId);
-    if (!stateModel) {
-        adapter.log.error('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
-        callback();
-        return;
-    }
-    const states = stateModel.states.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
     if (!states) {
         callback();
         return;
