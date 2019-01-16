@@ -17,6 +17,15 @@
 
 <script type="text/javascript" src="admin.js"></script>
 <style>
+    .m .col .select-wrapper+label, .m .col input+label:not(.active) {
+        top: -26px;  
+    }   
+    .m .col input+label { 
+    	font-size: 0.8rem;
+    }
+    .m span{
+        font-size: 0.9em;
+    }
     .m .zlogo {
         padding: 0.5rem;
         width: 64px;
@@ -37,17 +46,24 @@
         margin-bottom: -50px;
     }
     .page:not(.active) {
-		/*	prevents 'all pages visible for a moment at first load' (because pages are loaded before materialize is loaded)  */
-	  	display: none;
-	}
+        /* prevents 'all pages visible for a moment at first load' (because pages are loaded before materialize is loaded)*/
+        display: none;
+    }
     #dev-selectors > div {
-    	margin-top: 30px;
-    	border-bottom: 1px solid lightblue;
+        margin-top: 30px;
+        border-bottom: 1px solid lightblue;
     }
     #dev_result_log {
     	overflow: scroll;
     	height: 10em;
     	padding: 0.5em;
+    }
+    #expert-toggle {
+        margin-bottom: 3em;
+    }
+    #expert-json {
+        min-height: 18rem;
+        overflow-y: scroll;
     }
 </style>
 </head>
@@ -122,123 +138,172 @@
             </div>
             <div id="tab-dev" class="col s12 page">
                 <div id="develop" class="row">
-                	<div class="row">
-                		<div class="col s12">
-                		<h6>This page is needed only for advanced users that like to extend adapter functionalities!</h6>
-                		</div>
-                	</div>
-                 	<div class="row">                		
-	                	<div class="col s4">
-	                		<p>You may send here own commands to your devices that are not yet 
-		                	implemented as Objects. It may also be used to find undocumented settings
-		                	of your devices. Or to test the effects of settings to decide if it
-		                	is worth to implement as Object. And so on...</p>
-		                	<p>You find good explanations what the settings mean  
-		                	<a href="https://docs.smartthings.com/en/latest/device-type-developers-guide/zigbee-primer.html" target="_blank">here</a>
-		                	and in <a href="https://www.nxp.com/docs/en/user-guide/JN-UG-3115.pdf" target="_blank">ZigBee Cluster Library</a>.
-		                	</p>
-		                	<p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-shepherd-converters" target="_blank">
-		                	zigbee-shepherd-converters</a>) to make it available for other user too. 
-		                	</p>
-		                	<p class="grey-text">(Only cmdType 'foundation' implemented as of now.)</p>
-	                	</div>
-	                	<div class="col s8">
-		                	<div class="blue-grey-text">
-		                		<ul  class="collection with-header">
-		                	<li class="collection-header"><h6>Example (for Hue Motion Detector)</h6></li>
-		                	<li class="collection-item">
-		                	<b>Device:</b> SML001, <b>Endpoint:</b> 2, <b>ClusterId:</b> genBasic (0), 
-		                	<b>Command:</b> read (0), <b>AttributeId:</b> swBuildId (16384)<br> 
-		                	=> Result: "6.1.0.18912" (You read the device Firmware version)
-		                	</li>
-		                	<li class="collection-item"><b>Device:</b> SML001, <b>Endpoint:</b> 2, 
-		                	<b>ClusterId:</b> msOccupancySensing (1030), <b>Command:</b> write (2), <b>AttributeId:</b> 
-		                	pirOToUDelay (16, type 33), <b>Value:</b> 55, <b>Type:</b> uint16 (33)<br> 
-		                	=> (You set the timeout until motion detector changes from occupied not unoccupied,  
-		                	test it be <b>reading</b> same attribute)</li>
-		                	</ul><br>
-		                	</div>
-	                	</div>
-		            </div>
-	                <div class="row">
-	                    <div class="input-field col s4">
-	                        <select id ="dev-selector" class="value">
-	      		                  <option value="" disabled selected>Select a device</option>
-	                        </select>
-	                        <label for="dev-selector" class="translate">Device</label>                            
-	                    </div> 
-	                    <div class="input-field col s4 admin-tooltip-icon" title="Some kind of 'device within device'. Every endpoint may have different functions. If one does not work, test another.">
-	                        <select id ="ep-selector" class="value">
-	                        	<option value="" disabled selected>Select an Endpoint</option>
-	                        </select>
-	                        <label for="ep-selector">Endpoint</label>                            
-	                    </div> 
-	                </div>
-	                <div class="row">
-	                	<div class="col s9">
-			                <div id="sett" class="row"> 
-			                	<div class="input-field col s4 admin-tooltip-icon" title="Group of functions. AttributeIds will change depending on your choice here.">
-			                        <select id ="cid-selector" class="value">
-			                        	<option value="" disabled selected>Select cid</option>
-			                        </select>
-			                        <label for="cid-selector">ClusterId</label>    
-			                                            
-			                    </div> 
-			                	<div class="input-field col s4 admin-tooltip-icon" title="The action you want to run.">
-			                        <select id ="cmd-selector" class="value">
-			                        	<option value="" disabled selected>Select Command</option>
-			                        </select>
-			                        <label for="cmd-selector">Command</label>                            
-			                    </div> 
-			                    <div class="input-field col s4 admin-tooltip-icon" title="The setting you are interested in.">
-			                        <select id ="attrid-selector" class="value">
-			                        	<option value="" disabled selected>Select Attribute</option>
-			                        </select>
-			                        <label for="attrid-selector">AttributeId</label>                            
-			                    </div> 
-			                </div>
-	                    	<div id="sett" class="row"> 
-			                    <div class="input-field col s3 offset-s1 admin-tooltip-icon" title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
-				                    <label for="value-needed" style="pointer-events: auto;"> 
-									<!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
-									    <input style="pointer-events: none;" id="value-needed" type="checkbox" class="filled-in"/>
-									    <span style="pointer-events: none;">Needs value</span>
-									</label>
-				                 </div>
-				                
-			                    <div class="input-field col s4 admin-tooltip-icon" title="The value to send to your device.">
-			                        <input id ="value-input" class="value" disabled placeholder="0">	                   
-			                        <label for="value-input">Value</label>                            
-			                    </div> 
-			                     <div class="input-field col s4 admin-tooltip-icon" title="The data type of your value (String, Integer,...)">
-			                        <select id ="type-selector" class="value" disabled>
-			                        	<option value="" disabled selected>Select Type</option>
-			                        </select>
-			                        <label for="type-selector">TypeId</label>                            
-			                    </div> 
-		                    </div>
-	                    </div>
-	                    <div class=" col s3">
-	                    	<div id="dev-action-card" class=".center-align blue card-panel">
-		                    	<div class="card-content white-text">
-									<h5 id="devActResult" class="card-title"></h5>
-									<p id="devInfoMsg">Select your settings. Then click RUN to send command
-									to your Zigbee device.</p>
-						        </div>
-						        <div class="card-action">
-						        	<a id="dev-send-btn" class="waves-effect waves-light white-text btn-large tooltipped"
-						        	data-position="bottom" data-tooltip="I am a tooltip">Run</a>					         
-						        </div>
-	                    	</div>
-	                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                        <h6>This page is needed only for advanced users that like to extend adapter functionalities!</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s4">
+                            <p>You may send here own commands to your devices that are not yet
+                            implemented as Objects. It may also be used to find undocumented settings
+                            of your devices. Or to test the effects of settings to decide if it
+                            is worth to implement as Object. And so on...</p>
+                            <p>You find good explanations what the settings mean
+                            <a href="https://docs.smartthings.com/en/latest/device-type-developers-guide/zigbee-primer.html" target="_blank">here</a>
+                            and in <a href="https://www.nxp.com/docs/en/user-guide/JN-UG-3115.pdf" target="_blank">ZigBee Cluster Library</a>.
+                            </p>
+                            <p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-shepherd-converters" target="_blank">
+                            zigbee-shepherd-converters</a>) to make it available for other user too. 
+                            </p>
+                        </div>
+                        <div class="col s8">
+                            <div class="blue-grey-text">
+                            <h6>Examples:</h6>
+                            <ul  class="collapsible">
+                            <li>
+                                <div class="collapsible-header">Read Firmware</div>
+                                <div class="collapsible-body">Hue Motion Detector: <b>Device:</b> SML001, <b>Endpoint:</b> 2, <b>ClusterId:</b> genBasic (0),
+                                <b>Command Type: </b>Foundation, <b>Command:</b> read (0), <b>AttributeId:</b> swBuildId (16384)<br> 
+                                => Result: "6.1.0.18912" (You read the device Firmware version)
+                                </div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header">Write Attribute</div>
+                                <div class="collapsible-body"><b>Device:</b> SML001, <b>Endpoint:</b> 2,
+                                <b>ClusterId:</b> msOccupancySensing (1030), <b>Command Type: </b>Foundation,
+                                <b>Command:</b> write (2), <b>AttributeId:</b> 
+                                pirOToUDelay (16, type 33), <b>Value:</b> 55, <b>Type:</b> uint16 (33)<br>
+                                => (You set the timeout until motion detector changes from occupied not unoccupied,
+                                test it be <b>reading</b> same attribute)
+                                </div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header">Send Functional command</div>
+                                <div class="collapsible-body"><b>Device:</b> TRADFRI bulb..., <b>Endpoint:</b> 1,
+                                <b>ClusterId:</b> genOnOff (6), <b>Command Type: </b>Functional, 
+                                <b>Command:</b> on (1), <b>AttributeId:</b> 
+                                onOff (0, type 16)<br> 
+                                => You switched on your bulb</div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header">Expert Mode</div>
+                                <div class="collapsible-body">This is an example for Hue Motion Detector.
+                                Some of it's attributes cannot be accessed the standard way.<br>
+                                <b>JSON:</b> { "devId": "zigbee.0.yourDevId",
+                                "ep": "2", "cid": "1030", "cmd": "0", "cmdType": "foundation", "zclData": { "attrId": "48" },
+                                "cfg": { "manufCode": 4107, "manufSpec": 1}}<br> 
+                                => Read attribute 48. Note "cfg" section, if you try to read same attribute without cfg
+                                settings, the sensor will reply "unsupAttribute"!<br>
+                                (You may use selectors together with expert mode to get prepared JSON)</div>
+                            </li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s9">
+                        <div class="row">
+                            <div class="input-field col s4">
+                                <select id ="dev-selector" class="value">
+                                <option value="" disabled selected>Select a device</option>
+                                </select>
+                                <label for="dev-selector" class="translate">Device</label>
+                            </div> 
+                            <div class="input-field col s4 admin-tooltip-icon" title="Some kind of 'device within device'. Every endpoint may have different functions. If one does not work, test another.">
+                                <select id ="ep-selector" class="value">
+                                <option value="" disabled selected>Select an Endpoint</option>
+                                </select>
+                                <label for="ep-selector">Endpoint</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="row"> 
+                                <div class="input-field col s4 admin-tooltip-icon" title="Group of functions. AttributeIds will change depending on your choice here.">
+                                    <select id ="cid-selector" class="value">
+                                    <option value="" disabled selected>Select cid</option>
+                                    </select>
+                                    <label for="cid-selector">Cluster Id</label>
+                                </div> 
+                                <div class="input-field col s4 admin-tooltip-icon" title="Command type. Available commands will change depending on your choice here. Some actions need Foundation, others Functional, you may test both.">
+                                    <select id ="cmd-type-selector" class="value">
+                                    <option value="foundation" selected>Foundation</option>
+                                    <option value="functional">Functional</option>
+                                    </select>
+                                    <label for="cid-selector">Command Type</label>
+                                </div> 
+                                <div class="input-field col s4 admin-tooltip-icon" title="The action you want to run.">
+                                    <select id ="cmd-selector" class="value">
+                                    <option value="" disabled selected>Select Command</option>
+                                    </select>
+                                    <label for="cmd-selector">Command</label>
+                                </div> 
+                                <div class="input-field col s4 admin-tooltip-icon" title="The setting you are interested in.">
+                                    <select id ="attrid-selector" class="value">
+                                    <option value="" disabled selected>Select Attribute</option>
+                                    </select>
+                                    <label for="attrid-selector">Attribute Id</label>
+                                </div> 
+                            </div>
+                            <div class="row">
+                                <div class="input-field col s3 offset-s1 admin-tooltip-icon" title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
+                                    <label for="value-needed" style="pointer-events: auto;">
+                                    <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
+                                        <input style="pointer-events: none;" id="value-needed" type="checkbox" class="filled-in"/>
+                                        <span style="pointer-events: none;">Needs value</span>
+                                    </label>
+                                </div>
+                                <div class="input-field col s4 admin-tooltip-icon" title="The value to send to your device.">
+                                    <input id ="value-input" class="value" disabled placeholder="0">
+                                    <label for="value-input">Value</label>
+                                </div>
+                                <div class="input-field col s4 admin-tooltip-icon" title="The data type of your value (String, Integer,...)">
+                                    <select id ="type-selector" class="value" disabled>
+                                    <option value="" disabled selected>Select Type</option>
+                                    </select>
+                                    <label for="type-selector">Type Id</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s3">
+                        <div class="row">
+                            <div id="expert-toggle" class="input-field col s12 admin-tooltip-icon" title="Switch expert mode to enter raw data, sent to zigbee device.">
+                                <label for="expert-mode" style="pointer-events: auto;"> 
+                                <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
+                                    <input style="pointer-events: none;" id="expert-mode" type="checkbox" class="filled-in"/>
+                                    <span style="pointer-events: none;">Expert mode</span>
+                                </label>
+                            </div> 
+                            <div id="expert-json-box" class="input-field col s12" style="display:none;">
+                            <p>You may edit the raw data to send here. Do not use this if you are not
+                            sure of what you are doing! Use JSON format (attribute names in double quotes!).
+                            Additional properties may be added too. See examples above. (Format as used by zigbee-shepherd)
+                            </p>
+                            <div class="input-field col s12">
+                                <textarea id="expert-json" class="materialize-textarea"></textarea>
+                                <label for="expert-json">JSON</label>
+                            </div>
+                            </div>
+                        </div>
+                        <div id="dev-action-card" class=".center-align blue card-panel">
+                            <div class="card-content white-text">
+                                <h5 id="devActResult" class="card-title"></h5>
+                                <p id="devInfoMsg">Select your settings. Then click RUN to send command
+                                to your Zigbee device.</p>
+                            </div>
+                            <div class="card-action">
+                                <a id="dev-send-btn" class="waves-effect waves-light white-text btn-large tooltipped"
+                                data-position="bottom" data-tooltip="Send data to zigbee">Run</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div id="sett" class="row"> 
-                	<a class="col s1 offset-s11 btn-small" onClick="$('#dev_result_log').html('');">Clear Log</a>
-                    <div class="col s12" class="card-panel ">                  	
-		                <div id="dev_result_log" class="card-content black white-text"></div>
-	                	<label for="dev_result_log">Results</label>
-                    </div>                                              
+                <div id="sett" class="row">
+                    <a class="col s1 offset-s11 btn-small" onClick="$('#dev_result_log').html('');">Clear Log</a>
+                    <div class="col s12" class="card-panel ">
+                        <div id="dev_result_log" class="card-content black white-text"></div>
+                        <label for="dev_result_log">Results</label>
+                    </div>
                 </div>
             </div>
             <div id="tab-groups" class="col s12 page">
@@ -263,7 +328,7 @@
             </div>
         </div>
     </div>
-        
+
     <div class="materialize-dialogs m">
         <div id="modaledit" class="modal">
             <div class="modal-content">
