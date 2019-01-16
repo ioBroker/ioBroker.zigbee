@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.8.2a",
+        "version": "0.8.999",
         "news": {
             "0.8.2": {
                 "en": "new converter from zigbee-shepherd",
