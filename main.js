@@ -85,10 +85,18 @@ adapter.on('stateChange', function (id, state) {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
+
+                if (adapter.config.disableQueue) {    
+                    adapter.setState(id, state.val, true);    
+                }
+
                 collectOptions(id.split('.')[2], modelId, options => {
                     publishFromState(deviceId, modelId, stateKey, state, options);
                 });
-                adapter.setState(id, state.val, true);
+
+                if (!adapter.config.disableQueue) {    
+                    adapter.setState(id, state.val, true);    
+                }
             }
         });
     }
@@ -138,6 +146,15 @@ adapter.on('message', obj => {
                             adapter.sendTo(obj.from, obj.command, ports, obj.callback);
                         });
                 }
+                break;
+            case 'sendToZigbee':    
+                sendToZigbee(obj);    
+                break;    
+            case 'getLibData':    
+                // e.g. zcl lists    
+                if (obj && obj.message && typeof obj.message === 'object') {    
+                    getLibData(obj)                        
+                }                                   
                 break;
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
@@ -437,6 +454,119 @@ function leaveDevice(id, msg) {
     adapter.deleteDevice(devId);
 }
 
+function getLibData(obj) {
+    const key = obj.message.key; 
+    const zclId = require('zcl-id');
+    var result = new Object();
+    if (key === 'cidList') {
+        result.list = zclId._common.clusterId;
+    }
+    else if (key === 'attrIdList') {
+        var cid = obj.message.cid;
+        var attrList = zclId.attrList(cid);
+        for (var i=0; i<attrList.length; i++) {
+            attrList[i].attrName = zclId.attr(cid, attrList[i].attrId).key;
+        }
+        result.list = attrList;
+    }
+    else if (key === 'cmdListFoundation') {
+        result.list = zclId._common.foundation;
+    }
+    else if (key === 'cmdListFunctional') {
+        var cid = zclId.cluster(obj.message.cid).key;
+        result.list = null;
+        var cluster = zclId._getCluster(cid);
+        if (typeof cluster != 'undefined') {
+            var extraCmd = cluster.cmd;
+            result.list = extraCmd !== null ? extraCmd._enumMap : null;
+        }
+    }
+    else if (key === 'respCodes') {
+        result.list = zclId._common.status;
+    }
+    else if (key === 'typeList') {
+        result.list = zclId._common.dataType;
+    }
+    else {
+        return;
+    }
+    result.key = key;
+    adapter.sendTo(obj.from, obj.command, result, obj.callback);
+}
+
+ function sendToZigbee(obj) {
+    const zclId = require('zcl-id');
+    const devId = '0x' + obj.message.id.replace(adapter.namespace + '.', '');
+    const ep = obj.message.ep !== null ? parseInt(obj.message.ep) : null;
+    const cid = obj.message.cid;
+    const cmdType = obj.message.cmdType;
+    var cmd;
+    var test = obj.message.cmd;
+    if (cmdType === 'functional') { 
+        cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.functional(cid, obj.message.cmd).value;
+    }
+    else if (cmdType === 'foundation') { 
+        cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.foundation(obj.message.cmd).value;
+    }
+    else {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Invalid cmdType'}, obj.callback);
+        return;
+    }
+    var zclData = obj.message.zclData;
+    const cfg = obj.message.hasOwnProperty('cfg') ? obj.message.cfg : null;
+
+    if (!Array.isArray(zclData)) {
+        // wrap object in array
+        zclData = [zclData];
+    }
+    for (var i=0; i<zclData.length; i++) {
+        var zclItem = zclData[i];
+        // convert string items to number if needed
+        if (typeof zclItem.attrId == 'string') {
+            var intId = parseInt(zclItem.attrId);
+            zclData[i].attrId = !isNaN(intId) ? intId : zclId.attr(cid, zclItem.attrId).value;
+        }
+        if (typeof zclItem.dataType == 'string') {
+            var intType = parseInt(zclItem.dataType);
+            zclData[i].dataType = intType != 'NaN' ? intType : zclId.attr(cid, zclItem.dataType).value;
+        }
+    }
+    const device = zbControl.getDevice(devId);	
+    if (!device) {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Device '+devId+' not found!'}, obj.callback);
+        return;
+    }
+    if (!cid || typeof cmd !== 'number') {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Incomplete data (cid or cmd)'}, obj.callback);
+        return;
+    }
+    adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');
+
+     try {
+        zbControl.publish(devId, cid, cmd, zclData, cfg, ep, cmdType, (err, msg) => {
+            // map err and msg in one object for sendTo
+            var result = new Object();
+            result.msg = msg;
+            if (err) {
+                // err is an instance of Error class, it cannot be forwarded to sendTo, just get message (string)
+                result.err = err.message;
+            }
+            adapter.sendTo(obj.from, obj.command, result, obj.callback);
+        });
+    } catch (exception) {
+        // report exceptions
+        // happens for example if user tries to send write command but did not provide value/type
+        // we dont want to check this errors ourselfs before publish, but let shepherd handle this
+        adapter.log.error('SendToZigbee failed! ('+exception+')');
+        adapter.sendTo(obj.from, obj.command, {err: exception}, obj.callback);
+
+         // Note: zcl-packet/lib/foundation.js throws correctly 
+        // "Error: Payload of commnad: write must have dataType property.",
+        // but only at first time. If user sends same again no exception anymore
+        // not sure if bug in zigbee-shepherd or zcl-packet
+    }
+}
+
 function onReady() {
     adapter.setState('info.connection', true);
 
@@ -548,22 +678,18 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
     // find state for set
     const stateDesc = stateModel.states.find((statedesc) => stateKey === statedesc.id);
     if (!stateDesc) {
-        adapter.log.error(
-            `No state available for '${mappedModel.model}' with key '${stateKey}'`
-        );
+        adapter.log.error(`No state available for '${mappedModel.model}' with key '${stateKey}'`);
         return;
     }
 
     const value = state.val;
-
     if (value === undefined || value === '') 
         return;
 
     let stateList = [{stateDesc: stateDesc, value: value, index: 0, timeout: 0}];
-
     if (stateModel.linkedStates) {
         stateModel.linkedStates.forEach((linkedFunct) => {
-            const res = linkedFunct(stateDesc, value, options);
+            const res = linkedFunct(stateDesc, value, options, adapter.config.disableQueue);
             if (res) {
                 stateList = stateList.concat(res);
             }
@@ -574,7 +700,9 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         });
     }
     
-    // adapter.log.info(`pub ${stateDesc.id} time: ${new Date() - start}`);
+    const device = zbControl.getDevice(deviceId);
+    const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
+    const published = [];
 
     stateList.forEach((changedState) => {
         const stateDesc = changedState.stateDesc;
@@ -582,47 +710,111 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const value = changedState.value;
         
         const converter = mappedModel.toZigbee.find((c) => c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id));
-
         if (!converter) {
-            adapter.log.error(
-                `No converter available for '${mappedModel.model}' with key '${stateKey}'`
-            );
+            adapter.log.error(`No converter available for '${mappedModel.model}' with key '${stateKey}'`);
             return;
         }
+        
         const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
         const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
         const readTimeout = (stateDesc.readTimeout) ? stateDesc.readTimeout(value, options) : 0;
         
+        let readAfterList = [];
+        if (stateModel.readAfterStates) {
+            stateModel.readAfterStates.forEach((readAfterFunct) => {
+                const res = readAfterFunct(stateDesc, value, options);
+                if (res) {
+                    readAfterList = readAfterList.concat(res);
+                }
+            });
+        }
+
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
-        const device = zbControl.getDevice(deviceId);
-        const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
         const ep = devEp ? devEp[epName] : null;
-        const message = converter.convert(stateKey, preparedValue, preparedOptions, 'set');
+        const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
+        const message = converter.convert(key, preparedValue, preparedOptions, 'set');
         if (!message) {
             return;
         }
-
-        // wait a timeout for write
-        setTimeout(()=>{
-            // adapter.log.info(`1 before publish. ${stateDesc.id} time: ${new Date() - start}`);
-            zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, ep, message.cmdType, ()=>{
-                // adapter.log.info(`5 publish success. ${stateDesc.id} time: ${new Date() - start}`);
-                // wait a timeout for read
-                adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
-                setTimeout(()=>{
-                    const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
-                    if (readMessage) {
-                        adapter.log.debug('read message: '+safeJsonStringify(readMessage));
-                        // adapter.log.info(`3 before read publish. time: ${new Date() - start}`);
-                        zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, ep, readMessage.cmdType, ()=>{
-                            // adapter.log.info(`6 read publish success. ${stateDesc.id} time: ${new Date() - start}`);
-                        });
-                        // adapter.log.info(`4 after read publish. time: ${new Date() - start}`);
+        
+        adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
+        
+        if (adapter.config.disableQueue) {    
+            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
+                if (err) {
+                    // nothing to do in error case
+                } else {
+                    // process read after list
+                    processReadAfterList(deviceId, readAfterList, options, mappedModel, devEp);
+                }
+            });    
+            published.push({message: message, converter: converter, ep: ep});    
+        } else {
+            // wait a timeout for write
+            setTimeout(()=>{
+                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
+                    if (err) {
+                        // nothing to do in error case
+                    } else {
+                        // wait a timeout for read
+                        adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
+                        setTimeout(()=>{
+                            const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
+                            if (readMessage) {
+                                adapter.log.debug('read message: '+safeJsonStringify(readMessage));
+                                zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType);
+                            }
+                        }, readTimeout || 0);
+                        
+                        // process read after list
+                        processReadAfterList(deviceId, readAfterList, options, mappedModel, devEp);
                     }
-                }, readTimeout || 0);
-            });
-            // adapter.log.info(`2 after publish. ${stateDesc.id} time: ${new Date() - start}`);
-        }, changedState.timeout);
+                });
+            }, changedState.timeout);
+        }
+    });
+
+    if (adapter.config.disableQueue) {    
+        published.forEach((p) => {    
+            let counter = 0;    
+            let secondsToMonitor = 1;    
+  
+            // In case of a transition we need to monitor for the whole transition time.    
+            if (p.message.zclData.hasOwnProperty('transtime')) {    
+                // Note that: transtime 10 = 0.1 seconds, 100 = 1 seconds, etc.    
+                secondsToMonitor = (p.message.zclData.transtime / 10) + 1;        
+            }    
+            adapter.log.debug(`Waiting for '${secondsToMonitor}' sec`);            
+        });    
+    }
+}
+
+function processReadAfterList(deviceId, readAfterList, options, mappedModel, devEp) {
+    readAfterList.forEach((readAfterState) => {
+        const readAfterStateDesc = readAfterState.stateDesc;
+        const readAfterConverter = mappedModel.toZigbee.find((c) => c.key.includes(readAfterStateDesc.prop) || c.key.includes(readAfterStateDesc.id));
+        const readAfterEpName = readAfterStateDesc.epname !== undefined ? readAfterStateDesc.epname : (readAfterStateDesc.prop || readAfterStateDesc.id);
+        const readAfterEp = devEp ? devEp[readAfterEpName] : null;
+        const readAfterTimeout = (readAfterStateDesc.readTimeout) ? readAfterStateDesc.readTimeout(readAfterState.value, options) : readAfterState.timeout;
+
+        // build message
+        const readAfterKey = readAfterStateDesc.prop || readAfterStateDesc.id;
+        const readAfterPreparedValue = (readAfterStateDesc.setter) ? readAfterStateDesc.setter(readAfterState.value, options) : readAfterState.value;
+        const readAfterPreparedOptions = (readAfterStateDesc.setterOpt) ? readAfterStateDesc.setterOpt(readAfterState.value, options) : {};
+        const readAfterMessage = readAfterConverter.convert(readAfterKey, readAfterPreparedValue, readAfterPreparedOptions, 'get');
+    
+        if (readAfterMessage) {
+            // wait a timeout for read after message
+            adapter.log.debug(`Read after timeout for cmd '${readAfterMessage.cmd}' is ${readAfterTimeout}`);
+            setTimeout(()=>{
+                adapter.log.debug(`publishFromState - readAfter: deviceId=${deviceId}, message=${safeJsonStringify(readAfterMessage)}`);
+                if (adapter.config.disableQueue) {    
+                    zbControl.publishDisableQueue(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterMessage.cfg, readAfterEp, readAfterMessage.cmdType);
+                } else {
+                    zbControl.publish(deviceId, readAfterMessage.cid, readAfterMessage.cmd, readAfterMessage.zclData, readAfterMessage.cfg, readAfterEp, readAfterMessage.cmdType);
+                }
+            }, readAfterTimeout || 0);
+        }
     });
 }
 
@@ -755,6 +947,13 @@ function onDevEvent(type, devId, message, data) {
 
         default:
             adapter.log.debug('Device ' + devId + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
+        
+            // ignore if remaining time is set in event, cause that's just an intermediate value
+            if (message.data.data && message.data.data.remainingTime) {
+               adapter.log.debug("Found remaining time " + message.data.data.remainingTime + ', so skip event');
+               return;
+            }
+        
             // Map Zigbee modelID to vendor modelID.
             const modelID = data.modelId;
             const mappedModel = deviceMapping.findByZigbeeModel(modelID);
@@ -807,6 +1006,7 @@ function main() {
         return;
     }
     adapter.log.info('Start on port: ' + port + ' with panID ' + panID + ' channel ' + channel);
+    adapter.log.info('Queue is: ' + !adapter.config.disableQueue);
     let shepherd = new ZShepherd(port, {
         net: {panId: panID, channelList: [channel]},
         sp: {baudRate: 115200, rtscts: false},

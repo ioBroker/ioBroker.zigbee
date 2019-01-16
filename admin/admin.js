@@ -40,25 +40,44 @@ function getCard(dev) {
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
         info = '<p style="min-height:96px">' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
-        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black"><i class="material-icons tiny">delete</i></a><a name="edit" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons small">mode_edit</i></a>'+routeBtn,
+        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
+            '<i class="material-icons tiny">delete</i></a>'+
+            '<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
+                '<i class="material-icons small">mode_edit</i></a>'+routeBtn,
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
                     '<div class="card-content">'+
-                        '<span class="card-title truncate">'+title+'</span>'+paired+
+                        '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
+                            '<i class="material-icons">info</i></a>'+
+                        '<span id="dName" class="card-title truncate">'+title+'</span>'+paired+
+                        
                         '<i class="left">'+image+'</i>'+
                         info+
                         buttons+
                     '</div>'+
                     '<div class="card-action">'+room+'</div>'+
-                    '<div class="card-reveal">'+
+                    '<div class="card-reveal" name="edit">'+
+                        '<span class="card-title grey-text text-darken-4">Edit device name</span>'+
                         '<div class="input-field">'+
-                            '<input id="name" type="text" class="value validate">'+
-                            '<label for="name" class="translate">Enter new name</label>'+
+                            '<input id="dNameInput" type="text" class="value validate">'+
+                            '<label for="dNameInput" class="translate">Enter new name</label>'+
                         '</div>'+
                         '<span class="right">'+
-                            '<a name="done" class="waves-effect waves-green btn green"><i class="material-icons">done</i></a>'+
-                            '<a name="close" class="waves-effect waves-red btn-flat"><i class="material-icons">close</i></a>'+
+                            '<a name="done" class="waves-effect waves-green btn green">'+
+                            '<i class="material-icons">done</i></a>'+
+                            '<a name="close" class="waves-effect waves-red btn-flat">'+
+                            '<i class="material-icons">close</i></a>'+
                         '</span>'+
+                    '</div>'+
+                    '<div class="card-reveal" name="d-info">'+
+                        '<span class="right">'+
+                            '<a name="close" class="waves-effect waves-red btn-flat top right">'+
+                            '<i class="material-icons">close</i></a>'+
+                        '</span>'+
+                        '<span class="card-title grey-text text-darken-4">Device details</span>'+
+                        '<div id="d-infos">'+
+                            'loading...'+
+                        '</div>'+
                     '</div>'+
                     '</div>'+
                 '</div>';
@@ -73,9 +92,17 @@ function openReval(e, id, name){
             $card.css('overflow') === undefined ? '' : $card.css('overflow')
         );
     }
-    let $cardReveal = $card.find('.card-reveal');
-    $cardReveal.find("input").val(name);
-    Materialize.updateTextFields();
+    var $revealName = e.target.parentNode.name; // click on <i>, get parent <a>
+    let $cardReveal = $card.find('.card-reveal[name="'+$revealName+'"]');
+
+    if ($revealName == "edit") {
+        $cardReveal.find("input").val(name);
+        Materialize.updateTextFields();
+    }
+    else if ($revealName == "d-info") {
+        pollDeviceInfo(id, $card);
+    }
+
     $card.css('overflow', 'hidden');
     $cardReveal.css({ display: 'block'});
     anime({
@@ -87,8 +114,11 @@ function openReval(e, id, name){
 }
 
 function closeReval(e, id, name){
-    if (id) {
-        renameDevice(id, name);
+    let $cardReveal = $(e.target).closest('.card-reveal');
+    var $revealName = $cardReveal[0].getAttribute("name");
+    if ($revealName == "edit" && id) {
+        var newName = $cardReveal.find("input").val();
+        renameDevice(id, newName);
     }
     var $card = $(e.target).closest('.card');
     if ($card.data('initialOverflow') === undefined) {
@@ -97,7 +127,6 @@ function closeReval(e, id, name){
             $card.css('overflow') === undefined ? '' : $card.css('overflow')
         );
     }
-    let $cardReveal = $card.find('.card-reveal');
     anime({
         targets: $cardReveal[0],
         translateY: 0,
@@ -191,32 +220,35 @@ function showDevices() {
         html += card;
     }
     $('#devices').html(html);
+
+    const getDevName = function(dev_block) {
+        return dev_block.find("#dName").text();
+    };
+    const getDevId = function(dev_block) {
+        return dev_block.attr("id");
+    };
     $("a.btn-floating[name='delete']").click(function() {
-        var dev_block = $(this).parents("div.device"),
-            id = dev_block.attr("id"),
-            name = dev_block.find(".card-title").text();
-        deleteConfirmation(id, name);
+        var dev_block = $(this).parents("div.device");
+        deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
     $("a.btn-floating[name='edit']").click(function(e) {
-        var dev_block = $(this).parents("div.device"),
-            id = dev_block.attr("id"),
-            name = dev_block.find(".card-title").text();
+        var dev_block = $(this).parents("div.device");
         // editName(id, name);
-        openReval(e, id, name);
+        openReval(e, getDevId(dev_block), getDevName(dev_block));
     });
     $("a.btn-floating[name='join']").click(function() {
-        var dev_block = $(this).parents("div.device"),
-            id = dev_block.attr("id"),
-            name = dev_block.find(".card-title").text();
+        var dev_block = $(this).parents("div.device");
         if (!$('#pairing').hasClass('pulse'))
-            joinProcess(id);
+            joinProcess(getDevId(dev_block));
         showPairingProcess();
     });
+    $("a[name='d-info']").click(function(e) {
+        var dev_block = $(this).parents("div.device");
+        openReval(e, getDevId(dev_block), getDevName(dev_block));
+    });
     $("a.btn[name='done']").click(function(e) {
-        var dev_block = $(this).parents("div.device"),
-            id = dev_block.attr("id"),
-            name = dev_block.find("input").val();
-        closeReval(e, id, name);
+        var dev_block = $(this).parents("div.device");
+        closeReval(e, getDevId(dev_block), getDevName(dev_block));
     });
     $("a.btn-flat[name='close']").click(function(e) {
         closeReval(e);
@@ -245,6 +277,37 @@ function joinProcess(devId) {
                 showMessage(msg.error, _('Error'), 'alert');
             }
         }
+    });
+}
+
+function pollDeviceInfo(id, card) {
+    sendToZigbee(id, null, 'genBasic', 'read', 'foundation', 
+            [ {attrId: 'swBuildId'}, {attrId: 'hwVersion'}], 
+            null, function (reply) {
+        let infoNode = card.find('#d-infos');
+        if (reply.hasOwnProperty('localErr')) {
+            infoNode.html('No device details available<br><span class="blue-grey-text">(' +reply.localErr+ ')</span>');
+            return;
+        }
+        if (reply.hasOwnProperty('localStatus')) {
+            return;
+        }
+        
+        let html = '<ul>';
+        for (var i=0; i<reply.msg.length; i++) {
+            var attr = reply.msg[i];
+            if (attr.status != '0') {
+                continue; // unsupAttr,...
+            }
+            if (attr.attrId == '16384') {//swBuildId
+                html += '<li>Firmware Version: '+attr.attrData+'</li>';
+            }
+            else if (attr.attrId == '3') {//hwVersion
+                html += '<li>Hardware Version: '+attr.attrData+'</li>';
+            }
+        }
+        html += '</ul>';
+        infoNode.html(html);
     });
 }
 
@@ -325,6 +388,7 @@ function load(settings, onChange) {
         });
         $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
+        $('.collapsible').collapsible();
     });
 
     var text = $('#pairing').attr('data-tooltip');
@@ -525,9 +589,8 @@ function getComPorts(onChange) {
 }
 
 function loadDeveloperTab(onChange) {
-
     // fill device selector
-    updateSelect('#dev-selector', devices,
+    updateSelect('#dev', devices,
             function(key, device) {
                 if (device.info.type == 'Coordinator') {
                     return null;
@@ -539,11 +602,65 @@ function loadDeveloperTab(onChange) {
     }); 
 
     // fill cid, cmd, type selector
-    populateSelector('#cid-selector', 'cidList');
-    populateSelector('#cmd-selector', 'cmdList', this.value);
-    populateSelector('#type-selector', 'typeList', this.value);
+    populateSelector('#cid', 'cidList');
+    populateSelector('#cmd', 'cmdListFoundation', this.value);
+    populateSelector('#type', 'typeList', this.value);
 
     if (responseCodes == false) {
+        const prepareData = function () {
+            var data = {
+                    devId: $('#dev-selector option:selected').val(),
+                    ep: $('#ep-selector option:selected').val(),
+                    cid: $('#cid-selector option:selected').val(),
+                    cmd: $('#cmd-selector option:selected').val(),
+                    cmdType: $('#cmd-type-selector').val(),
+                    zclData: {attrId: $('#attrid-selector').val()},
+                    cfg: null,
+            };
+            if ($("#value-needed").is(':checked')) {
+                data.zclData.dataType = $('#type-selector option:selected').val();
+                data.zclData.attrData = $('#value-input').val();
+            }
+            return data;
+        };
+
+        const prepareExpertData = function() {
+            try {
+                return JSON.parse($('#expert-json').val());
+            } catch (exception) {
+                showDevRunInfo('JSON error', exception, 'yellow');
+            }
+        };
+        const setExpertData = function(prop, value) {
+            if (!$('#expert-mode').is(':checked')) {
+                return;
+            }
+            var data;
+            if (prop) {
+                data = prepareExpertData();
+                // https://stackoverflow.com/a/6394168/6937282
+                const assignVal = function index(obj,is, value) {
+                    if (typeof is == 'string')
+                        return index(obj,is.split('.'), value);
+                    else if (is.length==1 && value!==undefined) {
+                        if (value == null) 
+                            return delete obj[is[0]];
+                        else
+                            return obj[is[0]] = value;
+                    }
+                    else if (is.length==0)
+                        return obj;
+                    else
+                        return index(obj[is[0]],is.slice(1), value);
+                }
+                assignVal(data, prop, value);
+            }
+            else {
+                data = prepareData();
+            }
+            $('#expert-json').val(JSON.stringify(data, null, 4));
+        };
+
         // init event listener only at first load
         $('#dev-selector').change(function() {
             if (this.selectedIndex <= 0) {
@@ -554,166 +671,264 @@ function loadDeveloperTab(onChange) {
                 return obj._id === this.value;
             });
 
-			updateSelect('#ep-selector', device.info.epList, 
-					function(key, ep) {
-						return ep;
-					}, 
-					function(key, ep) {
-						return ep;
-			}); 
-		});
-		
-		$('#cid-selector').change(function() {
-			populateSelector('#attrid-selector', 'attrIdList', this.value);
-		});	
-		
-		// value selector checkbox
-		$('#value-needed').change(function() {
-			if (this.checked === true) {
-				$('#type-selector, #value-input').removeAttr('disabled');
-			}
-			else {
-				$('#type-selector, #value-input').attr('disabled', 'disabled');		
-			}
-			$('#type-selector').select();
-			Materialize.updateTextFields();
-		});
+            updateSelect('#ep', device.info.epList,
+                    function(key, ep) {
+                        return ep;
+                    }, 
+                    function(key, ep) {
+                        return ep;
+            }); 
+            setExpertData('devId', this.value);
+        });
+        
+        $('#ep-selector').change(function() {
+            setExpertData('ep', this.value);
+        });
 
-		$('#dev-send-btn').click(function() {
-			var devId = $('#dev-selector option:selected').val();
-			var ep = $('#ep-selector option:selected').val();
-			var cid = $('#cid-selector option:selected').val();
-			var cmd = $('#cmd-selector option:selected').val();
-			var attrId = $('#attrid-selector option:selected').val();
-            var zclData = {attrId: $('#attrid-selector option:selected').val()};
-			var typeId = null;
-			var value = null;    	  
-			if ($("#value-needed").is(':checked')) {
-			    zclData.dataType = $('#type-selector option:selected').val();
-			    zclData.attrData = $('#value-input').val();
-//		    	value = $('#value-input').val();
-//		    	zclData.
-//		    	  zclData = [{attrId: obj.message.attrId, dataType: parseInt(obj.message.type), attrData: obj.message.value}];
-			}
-			sendToZigbee(devId, ep, cid, cmd, zclData);
-		});	 
-	}
-	
-	responseCodes = null;
-	// load list of response codes
-	sendTo(null, 'getLibData', {key: 'respCodes'}, function (data) {
-		responseCodes = data.list;
-	});
-}
+        $('#cid-selector').change(function() {
+            populateSelector('#attrid', 'attrIdList', this.value);
+            if ($('#cmd-type-selector').val() == 'functional') {
+                var cid = $('#cid-selector option:selected').val();
+                populateSelector('#cmd', 'cmdListFunctional', cid);
+            }
+            setExpertData('cid', this.value);
+        });	
 
-function sendToZigbee(id, ep, cid, cmd, zclData) {
-    if (!id || !ep) {
-        showDevRunInfo('Incomplete', 'Please select Device and Endpoint!', 'yellow');
-        return;
+        $('#cmd-type-selector').change(function() {
+            if (this.value == "foundation") {
+                populateSelector('#cmd', 'cmdListFoundation');
+            }
+            else if (this.value == "functional") {
+                var cid = $('#cid-selector option:selected').val();
+                populateSelector('#cmd', 'cmdListFunctional', cid);
+            }
+            setExpertData('cmdType', this.value);
+        }); 
+        
+        $('#cmd-selector').change(function() {
+            setExpertData('cmd', this.value);
+        });
+        $('#attrid-selector').change(function() {
+            setExpertData('zclData.attrId', this.value);
+        });
+        $('#type-selector').change(function() {
+            setExpertData('zclData.dataType', this.value);
+        });
+
+        // value selector checkbox
+        $('#value-needed').change(function() {
+            if (this.checked === true) {
+                $('#type-selector, #value-input').removeAttr('disabled');
+                setExpertData('zclData.dataType', $('#type-selector').val());
+                setExpertData('zclData.attrData', $('#value-input').val());
+            }
+            else {
+                $('#type-selector, #value-input').attr('disabled', 'disabled');
+                setExpertData('zclData.dataType', null);
+                setExpertData('zclData.attrData', null);
+            }
+            $('#type-selector').select();
+            Materialize.updateTextFields();
+        });
+
+        $('#value-input').keyup(function() {
+            setExpertData('zclData.attrData', this.value);
+        });
+
+        $('#expert-mode').change(function() {
+            if (this.checked === true) {
+                setExpertData();
+                $('#expert-json-box').css('display', 'inline-block');
+            }
+            else {
+                $('#expert-json-box').css('display', 'none');
+            }
+            $('#type-selector').select();
+            Materialize.updateTextFields();
+        });
+
+        $('#dev-send-btn').click(function() {
+            var data;
+            if ($('#expert-mode').is(':checked')) {
+                data = prepareExpertData();
+            }
+            else {
+                data = prepareData();
+            }
+            sendToZigbee(data.devId, data.ep, data.cid, data.cmd, data.cmdType, data.zclData, data.cfg, function (reply) {
+                console.log('Reply from zigbee: '+ JSON.stringify(reply));
+                if (reply.hasOwnProperty("localErr")) {
+                    showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
+                }
+                else if (reply.hasOwnProperty('localStatus')) {
+                    showDevRunInfo(reply.localErr, reply.errMsg);
+                }
+                else {
+                    addDevLog(reply);
+                    showDevRunInfo('OK', 'Finished.');
+                }
+            });
+        });
     }
-    if (!cid || !cmd || !zclData) {
-        showDevRunInfo('Incomplete', 'Please choose ClusterId, Command and AttributeId!', 'yellow');
-        return;
-    }
-    var data = {id: id, ep: ep, cid: cid, cmd: cmd, zclData: zclData};
-	showDevRunInfo('Send', 'Waiting for reply...');
-	
-	var sendTimeout = setTimeout(function() {
-    	showDevRunInfo('Timeout', 'We did not receive any response.');
-    }, 15000);
 
-    console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', zclData '+JSON.stringify(zclData));
-
-	sendTo(null, 'sendToZigbee', data, function (reply) {
-		clearTimeout( sendTimeout);
-		console.log('Reply from zigbee: '+ JSON.stringify(reply));		
-		addDevLog(reply);
-		showDevRunInfo('OK', 'Finished.');	
+    responseCodes = null;
+    // load list of response codes
+    sendTo(null, 'getLibData', {key: 'respCodes'}, function (data) {
+        responseCodes = data.list;
     });
 }
+
+/**
+ * Sends data to zigbee device. May be used for read/write actions that do not
+ * need to be implemented as state objects
+ * 
+ * @param {string} id - like 'zigbee.0.001234567890'
+ * @param ep
+ * @param cid
+ * @param cmd
+ * @param {string}
+ *            cmdType - 'foundation' or 'functional'
+ * @param {Object}
+ *            zclData - may contain zclData.attrId, ...
+ * @param {?Object} cfg - e.g. { "manufCode": 0000, "manufSpec": 1} or null (default settings)
+ * @param {Object}
+ *            callback - called with argument 'reply'. If reply.localErr or localStatus exists,
+ *            the reply was created on local frontend, not by adapter (e.g.
+ *            timeout)
+ * @returns
+ */
+function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
+    if (!id) {
+        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please select Device and Endpoint!'});}
+        return;
+    }
+    if (!cid || !cmd || !cmdType) {
+        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please choose ClusterId, Command, CommandType and AttributeId!'});}
+        return;
+    }
+    if (!zclData || zclData.attrId < 0) {
+        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Ids must be positive!'});}
+        return;
+    }
+    var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
+    if (callback) {callback({localStatus: 'Send', errMsg: 'Waiting for reply...'});}
+
+    const sendTimeout = setTimeout(function() {
+        if (callback) {
+            callback({localErr: 'Timeout', errMsg: 'We did not receive any response.'})
+        }
+    }, 15000);
+
+    console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData));
+    sendTo(null, 'sendToZigbee', data, function(reply) {
+        clearTimeout(sendTimeout);
+        if (callback) {
+            callback(reply);
+        }
+    });
+}
+
 /**
  * Short feedback message next to run button
  */
 function showDevRunInfo(result, text, level) {
-	var card = $('#devActResult');
-	if (level == 'yellow') {
-		card.removeClass( "white-text" ).addClass( "yellow-text" );	
-	}
-	else {
-		card.removeClass( "yellow-text" ).addClass( "white-text" );	
-	}	
-	$('#devActResult').text(result);
-	$('#devInfoMsg').text(text);
+    var card = $('#devActResult');
+    if (level == 'yellow') {
+        card.removeClass( "white-text" ).addClass( "yellow-text" );
+    }
+    else {
+        card.removeClass( "yellow-text" ).addClass( "white-text" );
+    }
+    $('#devActResult').text(result);
+    $('#devInfoMsg').text(text);
 }
 
 function addDevLog(reply) {
-	var msg, statusCode;
-	if (reply.msg) {
-		if (Array.isArray(reply.msg)) {
-			msg = reply.msg[0];
-		}
-		else {
-			msg = reply.msg;
-		}
-		statusCode = msg.status;
-	}
-	
-	var logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
-	if (responseCodes != undefined) {
-		const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
-		if (statusCode == 0) {
-			logHtml = '<span class="green-text">'+status+'</span>   '+logHtml;
-		}
-		else {
-			logHtml = '<span class="yellow-text">'+status+'</span>   '+logHtml;
-		}
-	}
-	var logView = $('#dev_result_log');
-	logView.append(logHtml);
-	logView.scrollTop(logView.prop("scrollHeight"));
+    var msg, statusCode;
+    if (reply.msg) {
+        if (Array.isArray(reply.msg)) {
+            msg = reply.msg[0];
+        }
+        else {
+            msg = reply.msg;
+        }
+        statusCode = msg.hasOwnProperty('status') ? msg.status : msg.statusCode;
+    }
+
+    var logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
+    if (responseCodes != undefined) {
+        const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
+        if (statusCode == 0) {
+            logHtml = '<span class="green-text">'+status+'</span>   '+logHtml;
+        }
+        else {
+            logHtml = '<span class="yellow-text">'+status+'</span>   '+logHtml;
+        }
+    }
+    var logView = $('#dev_result_log');
+    logView.append(logHtml);
+    logView.scrollTop(logView.prop("scrollHeight"));
 }
 
 /**
  * Query adapter and update select with result
  */
 function populateSelector(selectId, key, cid) {
-	$(selectId+'>option:enabled').remove(); // remove existing elements
-	sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
-		var list = data.list;
-		if (key === 'attrIdList') {
-			updateSelect(selectId, list, 
-					function(index, attr) {
-						return attr.attrName + ' ('+attr.attrId +', type '+attr.dataType+')';
-					}, 
-					function(index, attr) {
-						return attr.attrId;
-			}); 
-		}
-		else {
-			updateSelect(selectId, list, 
-					function(name, val) {
-						return name +' ('+val+')';
-					}, 
-					function(name, val) {
-						return val;
-			}); 
-	    }
+    $(selectId+'>option:enabled').remove(); // remove existing elements
+    $(selectId).select();
+    if (cid == "-2") {
+        updateSelect(selectId, null);
+        return;
+    }
+    sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
+        var list = data.list;
+        if (key === 'attrIdList') {
+            updateSelect(selectId, list, 
+                    function(index, attr) {
+                        return attr.attrName + ' ('+attr.attrId +', type '+attr.dataType+')';
+                    }, 
+                    function(index, attr) {
+                        return attr.attrId;
+                    });
+        }
+        else {
+            updateSelect(selectId, list, 
+                    function(name, val) {
+                        return name +' ('+val+')';
+                    }, 
+                    function(name, val) {
+                        return val;
+                    }); 
+        }
     });
 }
 
-function updateSelect(selectId, list, getText, getId) {
-	var mySelect = $(selectId);
-	$(selectId+'>option:enabled').remove(); // remove existing elements
-	var keys = Object.keys(list);  // is index in case of array
-	for (var i=0; i<keys.length; i++) {
-		var key = keys[i];
-		var item = list[key];
-		var optionText = getText(key, item);
-		if (optionText == null) {
-			continue;
-		}		
-		mySelect.append( new Option(optionText, getId(key, item)));
-	}
-	// update select element (Materialize)
-	mySelect.select();
+function updateSelect(id, list, getText, getId) {
+    const selectId = id+'-selector';
+    var mySelect = $(selectId);
+    $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
+    mySelect.select();
+    if (list == null) {
+        var infoOption = new Option("Nothing available");
+        infoOption.disabled = true;
+        mySelect.append( infoOption);
+    }
+    else {
+        var keys = Object.keys(list); // is index in case of array
+        for (var i=0; i<keys.length; i++) {
+            var key = keys[i];
+            var item = list[key];
+            var optionText = getText(key, item);
+            if (optionText == null) {
+                continue;
+            }
+            mySelect.append( new Option(optionText, getId(key, item)));
+        }
+    }
+
+    if ($(id+'-c-input').length > 0) {
+        mySelect.append( new Option('CUSTOM', -2));
+    }
+    // update select element (Materialize)
+    mySelect.select();
 }
