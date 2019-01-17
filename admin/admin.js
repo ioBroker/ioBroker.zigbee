@@ -72,7 +72,7 @@ function getCard(dev) {
                             '<a name="close" class="waves-effect waves-red btn-flat top right">'+
                             '<i class="material-icons">close</i></a>'+
                         '</span>'+
-                        '<span class="card-title grey-text text-darken-4">Device details</span>'+
+                        '<span class="card-title grey-text text-darken-4 translate">Device details</span>'+
                         '<div id="d-infos">'+
                             'loading...'+
                         '</div>'+
