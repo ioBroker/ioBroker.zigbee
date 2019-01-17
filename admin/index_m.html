@@ -19,7 +19,10 @@
 <style>
     .m .col .select-wrapper+label, .m .col input+label:not(.active) {
         top: -26px;  
-    }   
+    }
+    .select-wrapper li span {
+        pointer-events: none; // workarround for checkbox in select, else checkbox and label not clickable
+    }
     .m .col input+label { 
     	font-size: 0.8rem;
     }
@@ -86,10 +89,10 @@
                 <div class="nav-content">
                     <ul class="tabs tabs-transparent">
                         <li class="tab col s2"><a id="devs" href="#tab-main" class="translate">Devices</a></li>
+                        <li class="tab col s2"><a href="#tab-groups" class="translate">Groups</a></li>
                         <li class="tab col s2"><a id="tabmap" href="#tab-map" class="translate">Network map</a></li>
                         <li class="tab col s2"><a id="settings" href="#tab-sett" class="translate">Settings</a></li>
                         <li class="tab col s2"><a id="develop" href="#tab-dev" class="translate">Developer</a></li>
-                        <li class="tab col s2"><a href="#tab-groups" class="translate">Groups</a></li>
                     </ul>
                 </div>
             </nav>
