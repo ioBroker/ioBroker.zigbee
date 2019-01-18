@@ -21,6 +21,13 @@ const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require(__dirname + '/lib/devstates');
 const SerialPort = require('serialport');
 
+const groupConverters = [
+    deviceMapping.toZigbeeConverters.on_off,
+    deviceMapping.toZigbeeConverters.light_brightness,
+    deviceMapping.toZigbeeConverters.light_colortemp,
+    deviceMapping.toZigbeeConverters.light_color,
+];
+
 var devNum = 0;
 
 let zbControl;
@@ -78,13 +85,16 @@ adapter.on('stateChange', function (id, state) {
         adapter.log.debug('User stateChange ' + id + ' ' + JSON.stringify(state));
         // start = new Date();
         const devId = adapter.namespace + '.' + id.split('.')[2]; // iobroker device id
-        const deviceId = '0x' + id.split('.')[2]; // zigbee device id
+        let deviceId = '0x' + id.split('.')[2]; // zigbee device id
         const stateKey = id.split('.')[3];
         // adapter.log.info(`change ${id} to ${state.val} time: ${new Date() - start}`);
         adapter.getObject(devId, function (err, obj) {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
+                if (modelId === 'group') {
+                    deviceId = parseInt(deviceId.replace('0xgroup_', ''));
+                }
 
                 if (adapter.config.disableQueue) {    
                     adapter.setState(id, state.val, true);    
@@ -131,6 +141,11 @@ adapter.on('message', obj => {
             case 'renameDevice':
                 if (obj && obj.message && typeof obj.message === 'object') {
                     renameDevice(obj.from, obj.command, obj.message, obj.callback);
+                }
+                break;
+            case 'groupDevices':
+                if (obj && obj.message && typeof obj.message === 'object') {
+                    groupDevices(obj.from, obj.command, obj.message, obj.callback);
                 }
                 break;
             case 'deleteDevice':
@@ -248,6 +263,22 @@ function renameDevice(from, command, msg, callback) {
     adapter.sendTo(from, command, {}, callback);
 }
 
+function groupDevices(from, command, devGroups, callback) {
+    for (var j in devGroups) {
+        if (devGroups.hasOwnProperty(j)) {
+            const id = `${j}.groups`,
+                  groups = devGroups[j];
+            adapter.setState(id, JSON.stringify(groups), true);
+            const sysid = j.replace(adapter.namespace + '.', '0x');
+            zbControl.removeDevFromAllGroups(sysid, () => {
+                groups.forEach(groupId => {
+                    zbControl.addDevToGroup(sysid, groupId);
+                });
+            });
+        }
+    }
+    adapter.sendTo(from, command, {}, callback);
+}
 
 function deleteDevice(from, command, msg, callback) {
     if (zbControl) {
@@ -353,85 +384,96 @@ function getMap(from, command, callback) {
 function getDevices(from, command, callback) {
     if (zbControl && zbControl.enabled()) {
         const pairedDevices = zbControl.getDevices();
-        let rooms;
-        adapter.getEnums('enum.rooms', (err, list) => {
-            if (!err) {
-                rooms = list['enum.rooms'];
-            }
-            adapter.getDevices((err, result) => {
-                if (result) {
-                    const devices = [];
-                    let cnt = 0;
-                    const len = result.length;
-
-                    result.forEach((devInfo) => {
-                        if (devInfo._id) {
-                            const id = getZBid(devInfo._id);
-                            const modelDesc = statesMapping.findModel(devInfo.common.type);
-                            devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
-                            devInfo.rooms = [];
-                            for (const room in rooms) {
-                                if (!rooms.hasOwnProperty(room) ||
-                                    !rooms[room] ||
-                                    !rooms[room].common ||
-                                    !rooms[room].common.members) {
-                                    continue;
-                                }
-                                if (rooms[room].common.members.indexOf(devInfo._id) !== -1) {
-                                    devInfo.rooms.push(rooms[room].common.name);
-                                }
-                            }
-                            devInfo.info = zbControl.getDevice(id);
-                            devInfo.paired = !!devInfo.info;
-                            devices.push(devInfo);
-                            cnt++;
-                            if (cnt === len) {
-                                // append devices that paired but not created
-                                pairedDevices.forEach((device) => {
-                                    const exists = devices.find((dev) => device.ieeeAddr === getZBid(dev._id));
-                                    if (!exists) {
-                                        devices.push({
-                                            _id: device.ieeeAddr,
-                                            icon: 'img/unknown.png',
-                                            paired: true,
-                                            info: device,
-                                            common: {
-                                                name: undefined,
-                                                type: undefined,
-                                            },
-                                            native: {}
-                                        });
+        const groups={};
+        var rooms;
+        adapter.getEnumsAsync('enum.rooms')
+            .then(enums=>{
+                // rooms
+                rooms = enums['enum.rooms'];
+            })
+            .then(()=>{
+                // get all adapter devices
+                return adapter.getDevicesAsync()
+            })
+            .then(result=>{
+                // not groups
+                return result.filter(devInfo => devInfo.common.type != 'group')
+            })
+            .then(result=>{
+                // get device groups
+                const chain = [];
+                result.forEach(devInfo => {
+                    if (devInfo._id) {
+                        chain.push((res) => {
+                            return adapter.getStateAsync(`${devInfo._id}.groups`)
+                                .then(devGroups=>{
+                                    // fill groups info
+                                    if (devGroups) {
+                                        groups[devInfo._id] = JSON.parse(devGroups.val);
                                     }
+                                    return res;
                                 });
-                                adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
-                                adapter.sendTo(from, command, devices, callback);
-                            }
-                        }
-                    });
-                    if (!len) {
-                        // append devices that paired but not created
-                        pairedDevices.forEach(device => {
-                            const exists = devices.find(dev => device.ieeeAddr === '0x' + dev._id.split('.')[2]);
-                            if (!exists) {
-                                devices.push({
-                                    _id: device.ieeeAddr,
-                                    icon: 'img/unknown.png',
-                                    paired: true,
-                                    info: device,
-                                    common: {
-                                        name: undefined,
-                                        type: undefined,
-                                    },
-                                    native: {}
-                                });
-                            }
                         });
-                        adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
-                        adapter.sendTo(from, command, devices, callback);
+                    };
+                });
+
+                return chain.reduce((promiseChain, currentTask) => {
+                    return promiseChain.then(currentTask);
+                }, new Promise((resolve, reject)=>resolve(result)));
+            })
+            .then(result=>{
+                // combine info
+                const devices = [];
+                result.forEach(devInfo=>{
+                    const id = getZBid(devInfo._id);
+                    const modelDesc = statesMapping.findModel(devInfo.common.type);
+                    devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
+                    devInfo.rooms = [];
+                    for (const room in rooms) {
+                        if (!rooms.hasOwnProperty(room) ||
+                            !rooms[room] ||
+                            !rooms[room].common ||
+                            !rooms[room].common.members) {
+                            continue;
+                        }
+                        if (rooms[room].common.members.indexOf(devInfo._id) !== -1) {
+                            devInfo.rooms.push(rooms[room].common.name);
+                        }
                     }
-                }
+                    devInfo.info = zbControl.getDevice(id);
+                    devInfo.paired = !!devInfo.info;
+                    devInfo.groups = groups[devInfo._id];
+                    devices.push(devInfo);
+                });
+                return devices;
+            })
+            .then(devices=>{
+                // append devices that paired but not created
+                pairedDevices.forEach((device) => {
+                    const exists = devices.find((dev) => device.ieeeAddr === getZBid(dev._id));
+                    if (!exists) {
+                        devices.push({
+                            _id: device.ieeeAddr,
+                            icon: 'img/unknown.png',
+                            paired: true,
+                            info: device,
+                            common: {
+                                name: undefined,
+                                type: undefined,
+                            },
+                            native: {}
+                        });
+                    }
+                });
+                return devices;
+            })
+            .then(devices=>{
+                adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
+                adapter.sendTo(from, command, devices, callback);
+            })
+            .catch(err=>{
+                adapter.log.error('getDevices error: ' + JSON.stringify(err));
             });
-        });
     } else {
         adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);
     }
@@ -444,7 +486,6 @@ function newDevice(id, msg) {
         logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
         updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () =>
             syncDevStates(dev.ieeeAddr.substr(2), dev.modelId));
-
     }
 }
 
@@ -454,119 +495,204 @@ function leaveDevice(id, msg) {
     adapter.deleteDevice(devId);
 }
 
-function getLibData(obj) {    
-    const key = obj.message.key;     
-    const zclId = require('zcl-id');    
-    var result = new Object();    
-    if (key === 'cidList') {    
-        result.list = zclId._common.clusterId;    
-    }    
-    else if (key === 'attrIdList') {    
-        var cid = obj.message.cid;    
-        var attrList = zclId.attrList(cid);    
-        for (var i=0; i<attrList.length; i++) {    
-            attrList[i].attrName = zclId.attr(cid, attrList[i].attrId).key;    
-        }    
-        result.list = attrList;    
-    }    
-    else if (key === 'cmdList') {    
-        result.list = zclId._common.foundation;    
-    }    
-    else if (key === 'respCodes') {    
-        result.list = zclId._common.status;    
-    }    
-    else if (key === 'typeList') {    
-        result.list = zclId._common.dataType;    
-    }    
-    else {    
-        return;    
-    }    
-    adapter.sendTo(obj.from, obj.command, result, obj.callback);    
-}    
+function getLibData(obj) {
+    const key = obj.message.key; 
+    const zclId = require('zcl-id');
+    var result = new Object();
+    if (key === 'cidList') {
+        result.list = zclId._common.clusterId;
+    }
+    else if (key === 'attrIdList') {
+        var cid = obj.message.cid;
+        var attrList = zclId.attrList(cid);
+        for (var i=0; i<attrList.length; i++) {
+            attrList[i].attrName = zclId.attr(cid, attrList[i].attrId).key;
+        }
+        result.list = attrList;
+    }
+    else if (key === 'cmdListFoundation') {
+        result.list = zclId._common.foundation;
+    }
+    else if (key === 'cmdListFunctional') {
+        var cid = zclId.cluster(obj.message.cid).key;
+        result.list = null;
+        var cluster = zclId._getCluster(cid);
+        if (typeof cluster != 'undefined') {
+            var extraCmd = cluster.cmd;
+            result.list = extraCmd !== null ? extraCmd._enumMap : null;
+        }
+    }
+    else if (key === 'respCodes') {
+        result.list = zclId._common.status;
+    }
+    else if (key === 'typeList') {
+        result.list = zclId._common.dataType;
+    }
+    else {
+        return;
+    }
+    result.key = key;
+    adapter.sendTo(obj.from, obj.command, result, obj.callback);
+}
 
- function sendToZigbee(obj) {    
-    const devId = '0x' + obj.message.id.replace(adapter.namespace + '.', '');    
-    const ep = obj.message.ep !== undefined ? parseInt(obj.message.ep) : null;    
-    const cid = obj.message.cid;    
-    const cmd = obj.message.cmd;    
-    const cmdType = 'foundation';    
-    var zclData = obj.message.zclData;    
-    const zclId = require('zcl-id');    
-    if (!Array.isArray(zclData)) {    
-        // wrap object in array    
-        zclData = [zclData];    
-    }    
-    for (var i=0; i<zclData.length; i++) {    
-        var zclItem = zclData[i];    
-        // convert string items to number if needed    
-        if (typeof zclItem.attrId == 'string') {    
-            zclData[i].attrId = zclId.attr(cid, zclItem.attrId).value;    
-        }    
-        if (typeof zclItem.dataType == 'string') {    
-            zclData[i].dataType = parseInt(zclItem.dataType);    
-        }    
-    }    
+ function sendToZigbee(obj) {
+    const zclId = require('zcl-id');
+    const devId = '0x' + obj.message.id.replace(adapter.namespace + '.', '');
+    const ep = obj.message.ep !== null ? parseInt(obj.message.ep) : null;
+    const cid = obj.message.cid;
+    const cmdType = obj.message.cmdType;
+    var cmd;
+    var test = obj.message.cmd;
+    if (cmdType === 'functional') { 
+        cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.functional(cid, obj.message.cmd).value;
+    }
+    else if (cmdType === 'foundation') { 
+        cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.foundation(obj.message.cmd).value;
+    }
+    else {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Invalid cmdType'}, obj.callback);
+        return;
+    }
+    var zclData = obj.message.zclData;
+    const cfg = obj.message.hasOwnProperty('cfg') ? obj.message.cfg : null;
 
-    const device = zbControl.getDevice(devId);    
-    if (!device) {    
-        adapter.sendTo(obj.from, obj.command, {error: 'Device '+devId+' not found!'}, obj.callback);    
-        return;    
-    }    
-    if (!cid || !cmd) {    
-        adapter.sendTo(obj.from, obj.command, {error: 'Incomplete data (ep, cid or cmd)'}, obj.callback);    
-        return;    
-    }    
-    adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');    
+    if (!Array.isArray(zclData)) {
+        // wrap object in array
+        zclData = [zclData];
+    }
+    for (var i=0; i<zclData.length; i++) {
+        var zclItem = zclData[i];
+        // convert string items to number if needed
+        if (typeof zclItem.attrId == 'string') {
+            var intId = parseInt(zclItem.attrId);
+            zclData[i].attrId = !isNaN(intId) ? intId : zclId.attr(cid, zclItem.attrId).value;
+        }
+        if (typeof zclItem.dataType == 'string') {
+            var intType = parseInt(zclItem.dataType);
+            zclData[i].dataType = intType != 'NaN' ? intType : zclId.attr(cid, zclItem.dataType).value;
+        }
+    }
+    const device = zbControl.getDevice(devId);	
+    if (!device) {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Device '+devId+' not found!'}, obj.callback);
+        return;
+    }
+    if (!cid || typeof cmd !== 'number') {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Incomplete data (cid or cmd)'}, obj.callback);
+        return;
+    }
+    adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');
 
-     try {    
-        const cfg = {manufSpec: 0, disDefaultRsp: 0};
-        zbControl.publish(devId, cid, cmd, zclData, cfg, ep, cmdType, (err, msg) => {    
-            // map err and msg in one object for sendTo    
-            var result = new Object();    
-            result.msg = msg;    
-            if (err) {    
-                // err is an instance of Error class, it cannot be forwarded to sendTo, just get message (string)    
-                result.err = err.message;    
-            }    
-            adapter.sendTo(obj.from, obj.command, result, obj.callback);    
-        });    
-    } catch (exception) {    
-        // report exceptions    
-        // happens for example if user tries to send write command but did not provide value/type    
-        // we dont want to check this errors ourselfs before publish, but let shepherd handle this    
-        adapter.log.error('SendToZigbee failed! ('+JSON.stringify(exception)+')');    
-        adapter.sendTo(obj.from, obj.command, exception.message, obj.callback);    
+     try {
+        zbControl.publish(devId, cid, cmd, zclData, cfg, ep, cmdType, (err, msg) => {
+            // map err and msg in one object for sendTo
+            var result = new Object();
+            result.msg = msg;
+            if (err) {
+                // err is an instance of Error class, it cannot be forwarded to sendTo, just get message (string)
+                result.err = err.message;
+            }
+            adapter.sendTo(obj.from, obj.command, result, obj.callback);
+        });
+    } catch (exception) {
+        // report exceptions
+        // happens for example if user tries to send write command but did not provide value/type
+        // we dont want to check this errors ourselfs before publish, but let shepherd handle this
+        adapter.log.error('SendToZigbee failed! ('+exception+')');
+        adapter.sendTo(obj.from, obj.command, {err: exception}, obj.callback);
 
-         // Note: zcl-packet/lib/foundation.js throws correctly     
-        // "Error: Payload of commnad: write must have dataType property.",    
-        // but only at first time. If user sends same again no exception anymore    
-        // not sure if bug in zigbee-shepherd or zcl-packet    
-    }    
+         // Note: zcl-packet/lib/foundation.js throws correctly 
+        // "Error: Payload of commnad: write must have dataType property.",
+        // but only at first time. If user sends same again no exception anymore
+        // not sure if bug in zigbee-shepherd or zcl-packet
+    }
 }
 
 function onReady() {
-    adapter.setState('info.connection', true);
+    const tasks = new Promise(function(resolve, reject) {
+        resolve();
+    }).then(()=>{
+        adapter.setState('info.connection', true);
+            
+        if (adapter.config.disableLed) {
+            zbControl.disableLed();
+        }
+    
+        // update pairing State
+        adapter.setState('info.pairingMode', false);
+    }).then(()=>{
+        const chain = [];
+        // recreate groups
+        //zbControl.removeAllGroup();
+        //zbControl.getGroups();
+        const usedGroupsIds = [];
+        const groups = adapter.config.groups || {};
+        for (var j in groups) {
+            if (groups.hasOwnProperty(j)) {
+                const id = `group_${j}`,
+                      name = groups[j];
+                chain.push(new Promise((resolve, reject) => {
+                    adapter.setObjectNotExists(id, {
+                        type: 'device',
+                        common: {name: name, type: 'group'},
+                        native: {id: j}
+                    }, () => {
+                        adapter.extendObject(id, {common: {type: 'group'}});
+                        // create writable states for groups from their devices
+                        for (var stateInd in statesMapping.groupStates) {
+                            if (!statesMapping.groupStates.hasOwnProperty(stateInd)) continue;
+                            const statedesc = statesMapping.groupStates[stateInd];
+                            const common = {
+                                name: statedesc.name,
+                                type: statedesc.type,
+                                unit: statedesc.unit,
+                                read: statedesc.read,
+                                write: statedesc.write,
+                                icon: statedesc.icon,
+                                role: statedesc.role,
+                                min: statedesc.min,
+                                max: statedesc.max,
+                            };
+                            updateState(id, statedesc.id, undefined, common);
+                        }
+                        resolve();
+                    });
+                }));
+                usedGroupsIds.push(parseInt(j));
+            }
+        }
+        chain.push(new Promise((resolve, reject) => {
+            zbControl.removeUnusedGroups(usedGroupsIds, ()=>{
+                usedGroupsIds.forEach(j => {
+                    const id = `group_${j}`;
+                    zbControl.addGroup(j, id);
+                });
+                resolve();
+            });
+        }));
+        Promise.all(chain);
+    }).then(()=>{
+        const chain = [];
+        // get and list all registered devices (not in ioBroker)
+        let activeDevices = zbControl.getAllClients();
+        adapter.log.debug('Current active devices:');
+        zbControl.getDevices().forEach(device => adapter.log.debug(safeJsonStringify(device)));
+        activeDevices.forEach(device => {
+            devNum = devNum + 1;
+            adapter.log.info(devNum + ' ' + getDeviceStartupLogMessage(device));
 
-    if (adapter.config.disableLed) {
-        zbControl.disableLed();
-    }
-
-    // update pairing State
-    adapter.setState('info.pairingMode', false);
-    // get and list all registered devices (not in ioBroker)
-    let activeDevices = zbControl.getAllClients();
-    adapter.log.debug('Current active devices:');
-    zbControl.getDevices().forEach(device => adapter.log.debug(safeJsonStringify(device)));
-    activeDevices.forEach(device => {
-        devNum = devNum + 1;
-        adapter.log.info(devNum + ' ' + getDeviceStartupLogMessage(device));
-
-        // update dev and states
-        updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, () =>
-            syncDevStates(device.ieeeAddr.substr(2), device.modelId));
-
-        configureDevice(device);
-    });
+            // update dev and states
+            chain.push(new Promise((resolve, reject) => {
+                updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, () => {
+                    syncDevStates(device.ieeeAddr.substr(2), device.modelId);
+                    resolve();
+                });
+            }));
+            configureDevice(device);
+        });
+        Promise.all(chain);
+    });  
+    return tasks;
 }
 
 function getDeviceStartupLogMessage(device) {
@@ -642,20 +768,31 @@ function logToPairing(message, ignoreJoin) {
 }
 
 function publishFromState(deviceId, modelId, stateKey, state, options) {
-    const mappedModel = deviceMapping.findByZigbeeModel(modelId);
-    if (!mappedModel) {
-        adapter.log.error('Unknown device model ' + modelId);
-        return;
+    let stateDesc, model, mappedModel = {}, stateModel = {}, device;
+    if (modelId === 'group') {
+        model = 'group';
+        mappedModel.toZigbee = groupConverters;
+        // find state for set
+        stateDesc = statesMapping.groupStates.find((statedesc) => stateKey === statedesc.id);
+        device = zbControl.getGroup(deviceId);
+    } else {
+        mappedModel = deviceMapping.findByZigbeeModel(modelId);
+        if (!mappedModel) {
+            adapter.log.error('Unknown device model ' + modelId);
+            return;
+        }
+        model = mappedModel.model;
+        stateModel = statesMapping.findModel(modelId);
+        if (!stateModel) {
+            adapter.log.error('Device ' + deviceId + ' "' + modelId + '" not described in statesMapping.');
+            return;
+        }
+        // find state for set
+        stateDesc = stateModel.states.find((statedesc) => stateKey === statedesc.id);
+        device = zbControl.getDevice(deviceId);
     }
-    const stateModel = statesMapping.findModel(modelId);
-    if (!stateModel) {
-        adapter.log.error('Device ' + deviceId + ' "' + modelId + '" not described in statesMapping.');
-        return;
-    }
-    // find state for set
-    const stateDesc = stateModel.states.find((statedesc) => stateKey === statedesc.id);
     if (!stateDesc) {
-        adapter.log.error(`No state available for '${mappedModel.model}' with key '${stateKey}'`);
+        adapter.log.error(`No state available for '${model}' with key '${stateKey}'`);
         return;
     }
 
@@ -677,10 +814,12 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         });
     }
     
-    const device = zbControl.getDevice(deviceId);
     const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
     const published = [];
-
+    if (modelId != 'group') {
+        device = deviceId;
+    }
+    
     stateList.forEach((changedState) => {
         const stateDesc = changedState.stateDesc;
         if (stateDesc.isOption) return;
@@ -729,17 +868,18 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         } else {
             // wait a timeout for write
             setTimeout(()=>{
-                zbControl.publish(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
+                zbControl.publish(device, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
                     if (err) {
                         // nothing to do in error case
                     } else {
+                        if (modelId === 'group') return;
                         // wait a timeout for read
                         adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
                         setTimeout(()=>{
                             const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
                             if (readMessage) {
                                 adapter.log.debug('read message: '+safeJsonStringify(readMessage));
-                                zbControl.publish(deviceId, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType);
+                                zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType);
                             }
                         }, readTimeout || 0);
                         
@@ -872,20 +1012,25 @@ function syncDevStates(devId, modelId) {
 }
 
 function collectOptions(devId, modelId, callback) {
+    let states;
     // find model states for options and get it values
-    const mappedModel = deviceMapping.findByZigbeeModel(modelId);
-    if (!mappedModel) {
-        adapter.log.error('Unknown device model ' + modelId);
-        callback();
-        return;
+    if (modelId === 'group') {
+        states = statesMapping.groupStates.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
+    } else {
+        const mappedModel = deviceMapping.findByZigbeeModel(modelId);
+        if (!mappedModel) {
+            adapter.log.error('Unknown device model ' + modelId);
+            callback();
+            return;
+        }
+        const stateModel = statesMapping.findModel(modelId);
+        if (!stateModel) {
+            adapter.log.error('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
+            callback();
+            return;
+        }
+        states = stateModel.states.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
     }
-    const stateModel = statesMapping.findModel(modelId);
-    if (!stateModel) {
-        adapter.log.error('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
-        callback();
-        return;
-    }
-    const states = stateModel.states.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
     if (!states) {
         callback();
         return;

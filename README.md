@@ -47,14 +47,19 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
+## Plan
+
+### 1.0.0 
+
+* Binding
+
 ## Changelog
 
-### 0.8.1a (2018-12.28)
-
-**BREAKING CHANGES**:
-* (arteck) new converter from zigbee-shepherd.
-* (arteck) new devices Philips LWB004
-* (arteck) new devices Gledopto GL-D-003Z
+### 0.9.0 (2019-01)
+* (arteck) Many new devices
+* (allofmex) Developer tab
+* (modmax) Reading attributes
+* (kirovilya) Groups support
 
 ### 0.8.0 (2018-11-29)
 
