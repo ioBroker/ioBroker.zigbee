@@ -586,8 +586,8 @@ function showNetworkMap(devices, map){
 
 function redrawMap() {
     if (network != undefined) {
-        var width = $('#tabs').width(),
-            height = $('#tabs').height()-64;
+        var width = $('.adapter-body').width(),
+            height = $('.adapter-body').height()-128;
         network.setSize(width, height);
         network.redraw();
         network.fit();
