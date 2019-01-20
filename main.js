@@ -157,7 +157,7 @@ adapter.on('message', obj => {
                 if (obj.callback) {
                     listSerial()
                         .then((ports) => {
-                            adapter.log.info('List of ports: ' + JSON.stringify(ports));
+                            adapter.log.debug('List of ports: ' + JSON.stringify(ports));
                             adapter.sendTo(obj.from, obj.command, ports, obj.callback);
                         });
                 }
@@ -171,6 +171,12 @@ adapter.on('message', obj => {
                     getLibData(obj)                        
                 }                                   
                 break;
+            case 'updateGroups':
+                updateGroups(obj);
+                break;    
+            case 'getGroups':
+                getGroups(obj);
+                break;    
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                 break;
@@ -608,6 +614,89 @@ function getLibData(obj) {
     }
 }
 
+function updateGroups(obj) {
+    const groups = obj.message;
+    adapter.setState('info.groups', JSON.stringify(groups), true);
+    syncGroups(groups);
+    adapter.sendTo(obj.from, obj.command, 'ok', obj.callback);
+}
+
+function getGroups(obj) {
+    adapter.getState('info.groups', (err, groupsState)=>{
+        const groups = (groupsState && groupsState.val) ? JSON.parse(groupsState.val) : {};
+        adapter.log.debug('getGroups result: ' + JSON.stringify(groups));
+        adapter.sendTo(obj.from, obj.command, groups, obj.callback);
+    });
+}
+
+function syncGroups(groups) {
+    const chain = [];
+    // recreate groups
+    //zbControl.removeAllGroup();
+    //zbControl.getGroups();
+    const usedGroupsIds = [];
+    for (var j in groups) {
+        if (groups.hasOwnProperty(j)) {
+            const id = `group_${j}`,
+                  name = groups[j];
+            chain.push(new Promise((resolve, reject) => {
+                adapter.setObjectNotExists(id, {
+                    type: 'device',
+                    common: {name: name, type: 'group'},
+                    native: {id: j}
+                }, () => {
+                    adapter.extendObject(id, {common: {type: 'group'}});
+                    // create writable states for groups from their devices
+                    for (var stateInd in statesMapping.groupStates) {
+                        if (!statesMapping.groupStates.hasOwnProperty(stateInd)) continue;
+                        const statedesc = statesMapping.groupStates[stateInd];
+                        const common = {
+                            name: statedesc.name,
+                            type: statedesc.type,
+                            unit: statedesc.unit,
+                            read: statedesc.read,
+                            write: statedesc.write,
+                            icon: statedesc.icon,
+                            role: statedesc.role,
+                            min: statedesc.min,
+                            max: statedesc.max,
+                        };
+                        updateState(id, statedesc.id, undefined, common);
+                    }
+                    resolve();
+                });
+            }));
+            usedGroupsIds.push(parseInt(j));
+        }
+    }
+    chain.push(new Promise((resolve, reject) => {
+        zbControl.removeUnusedGroups(usedGroupsIds, ()=>{
+            usedGroupsIds.forEach(j => {
+                const id = `group_${j}`;
+                zbControl.addGroup(j, id);
+            });
+            resolve();
+        });
+    }));
+    chain.push(new Promise((resolve, reject) => {
+        // remove unused adpter groups
+        adapter.getDevices((err, devices)=> {
+            if (!err) {
+                devices.forEach((dev)=>{
+                    if (dev.common.type == 'group') {
+                        const groupid = parseInt(dev.native.id);
+                        if (!usedGroupsIds.includes(groupid)) {
+                            adapter.deleteDevice(`group_${groupid}`);
+                        }
+                    }
+                });
+            }
+            resolve();
+        });
+    }));
+    Promise.all(chain);
+}
+
 function onReady() {
     const tasks = new Promise(function(resolve, reject) {
         resolve();
@@ -621,68 +710,11 @@ function onReady() {
         // update pairing State
         adapter.setState('info.pairingMode', false);
     }).then(()=>{
-        const chain = [];
-        // recreate groups
-        //zbControl.removeAllGroup();
-        //zbControl.getGroups();
-        const usedGroupsIds = [];
-        const groups = adapter.config.groups || {};
-        for (var j in groups) {
-            if (groups.hasOwnProperty(j)) {
-                const id = `group_${j}`,
-                      name = groups[j];
-                chain.push(new Promise((resolve, reject) => {
-                    adapter.setObjectNotExists(id, {
-                        type: 'device',
-                        common: {name: name, type: 'group'},
-                        native: {id: j}
-                    }, () => {
-                        adapter.extendObject(id, {common: {type: 'group'}});
-                        // create writable states for groups from their devices
-                        for (var stateInd in statesMapping.groupStates) {
-                            if (!statesMapping.groupStates.hasOwnProperty(stateInd)) continue;
-                            const statedesc = statesMapping.groupStates[stateInd];
-                            const common = {
-                                name: statedesc.name,
-                                type: statedesc.type,
-                                unit: statedesc.unit,
-                                read: statedesc.read,
-                                write: statedesc.write,
-                                icon: statedesc.icon,
-                                role: statedesc.role,
-                                min: statedesc.min,
-                                max: statedesc.max,
-                            };
-                            updateState(id, statedesc.id, undefined, common);
-                        }
-                        resolve();
-                    });
-                }));
-                usedGroupsIds.push(parseInt(j));
-            }
-        }
-        chain.push(new Promise((resolve, reject) => {
-            zbControl.removeUnusedGroups(usedGroupsIds, ()=>{
-                usedGroupsIds.forEach(j => {
-                    const id = `group_${j}`;
-                    zbControl.addGroup(j, id);
-                });
-                resolve();
+        return adapter.getStateAsync('info.groups')
+            .then((groupsState)=>{
+                const groups = (groupsState && groupsState.val) ? JSON.parse(groupsState.val) : {};
+                syncGroups(groups);
             });
-            // remove unused adpter groups
-            adapter.getDevices((err, devices)=> {
-                if (err) return;
-                devices.forEach((dev)=>{
-                    if (dev.common.type == 'group') {
-                        const groupid = parseInt(dev.native.id);
-                        if (!usedGroupsIds.includes(groupid)) {
-                            adapter.deleteDevice(`group_${groupid}`);
-                        }
-                    }
-                });
-            });
-        }));
-        Promise.all(chain);
     }).then(()=>{
         const chain = [];
         // get and list all registered devices (not in ioBroker)
@@ -1141,6 +1173,14 @@ function main() {
     }
     adapter.log.info('Start on port: ' + port + ' with panID ' + panID + ' channel ' + channel);
     adapter.log.info('Queue is: ' + !adapter.config.disableQueue);
+    adapter.getState('info.groups', (err, groupsState)=>{
+        if (groupsState == undefined) {
+            adapter.extendObject('info.groups', {type: 'state', "common": {"name": "Groups", "type": "string", "read": true, "write": false}}, () => {
+                adapter.setState('info.groups', JSON.stringify(adapter.config.groups || {}), true);
+            });
+        }
+    });
+
     let shepherd = new ZShepherd(port, {
         net: {panId: panID, channelList: [channel]},
         sp: {baudRate: 115200, rtscts: false},
