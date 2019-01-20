@@ -669,6 +669,18 @@ function onReady() {
                 });
                 resolve();
             });
+            // remove unused adpter groups
+            adapter.getDevices((err, devices)=> {
+                if (err) return;
+                devices.forEach((dev)=>{
+                    if (dev.common.type == 'group') {
+                        const groupid = parseInt(dev.native.id);
+                        if (!usedGroupsIds.includes(groupid)) {
+                            adapter.deleteDevice(`group_${groupid}`);
+                        }
+                    }
+                });
+            });
         }));
         Promise.all(chain);
     }).then(()=>{
