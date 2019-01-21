@@ -542,24 +542,24 @@ function getLibData(obj) {
     const cid = obj.message.cid;
     const cmdType = obj.message.cmdType;
     var cmd;
-    var test = obj.message.cmd;
+    var zclData = obj.message.zclData;
     if (cmdType === 'functional') { 
         cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.functional(cid, obj.message.cmd).value;
     }
     else if (cmdType === 'foundation') { 
         cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.foundation(obj.message.cmd).value;
+        if (!Array.isArray(zclData)) {
+            // wrap object in array
+            zclData = [zclData];
+        }
     }
     else {
         adapter.sendTo(obj.from, obj.command, {localErr: 'Invalid cmdType'}, obj.callback);
         return;
     }
-    var zclData = obj.message.zclData;
+
     const cfg = obj.message.hasOwnProperty('cfg') ? obj.message.cfg : null;
 
-    if (!Array.isArray(zclData)) {
-        // wrap object in array
-        zclData = [zclData];
-    }
     for (var i=0; i<zclData.length; i++) {
         var zclItem = zclData[i];
         // convert string items to number if needed
