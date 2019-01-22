@@ -277,6 +277,19 @@ function groupDevices(from, command, devGroups, callback) {
     adapter.sendTo(from, command, {}, callback);
 }
 
+function deleteDeviceStates(devId, callback) {
+    adapter.getStatesOf(devId, (err, states)=>{
+        if (!err && states) {
+            states.forEach((state)=>{
+                adapter.deleteState(devId, null, state._id);
+            });
+        }
+        adapter.deleteDevice(devId, (err)=>{
+            if (callback) callback();
+        });
+    });
+}
+
 function deleteDevice(from, command, msg, callback) {
     if (zbControl) {
         adapter.log.debug('deleteDevice message: ' + JSON.stringify(msg));
@@ -288,7 +301,7 @@ function deleteDevice(from, command, msg, callback) {
         if (!dev) {
             adapter.log.debug('Not found on shepherd!');
             adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
-            adapter.deleteDevice(devId, function () {
+            deleteDeviceStates(devId, ()=>{
                 adapter.sendTo(from, command, {}, callback);
             });
             return;
@@ -296,7 +309,9 @@ function deleteDevice(from, command, msg, callback) {
         zbControl.remove(sysid, err => {
             if (!err) {
                 adapter.log.debug('Successfully removed from shepherd!');
-                adapter.deleteDevice(devId, () => adapter.sendTo(from, command, {}, callback));
+                deleteDeviceStates(devId, ()=>{
+                    adapter.sendTo(from, command, {}, callback);
+                });
             } else {
                 adapter.log.debug('Error on remove! ' + err);
                 adapter.log.debug('Try force remove!');
@@ -304,7 +319,7 @@ function deleteDevice(from, command, msg, callback) {
                     if (!err) {
                         adapter.log.debug('Force removed from shepherd!');
                         adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
-                        adapter.deleteDevice(devId, () => adapter.sendTo(from, command, {}, callback));
+                        deleteDeviceStates(devId, () => adapter.sendTo(from, command, {}, callback));
                     } else {
                         adapter.sendTo(from, command, {error: err}, callback);
                     }
@@ -489,7 +504,7 @@ function newDevice(id, msg) {
 function leaveDevice(id, msg) {
     const devId = id.substr(2);
     adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
-    adapter.deleteDevice(devId);
+    deleteDeviceStates(devId);
 }
 
 function getLibData(obj) {
@@ -677,7 +692,7 @@ function syncGroups(groups) {
                     if (dev.common.type == 'group') {
                         const groupid = parseInt(dev.native.id);
                         if (!usedGroupsIds.includes(groupid)) {
-                            adapter.deleteDevice(`group_${groupid}`);
+                            deleteDeviceStates(`group_${groupid}`);
                         }
                     }
                 });
