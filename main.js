@@ -584,7 +584,7 @@ function getLibData(obj) {
             zclData[i].dataType = intType != 'NaN' ? intType : zclId.attr(cid, zclItem.dataType).value;
         }
     }
-    const device = zbControl.getDevice(devId);	
+    const device = zbControl.getDevice(devId);
     if (!device) {
         adapter.sendTo(obj.from, obj.command, {localErr: 'Device '+devId+' not found!'}, obj.callback);
         return;
@@ -868,7 +868,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
     let readAfterWriteStates = [];
     if (stateModel.readAfterWriteStates) {
         stateModel.readAfterWriteStates.forEach((readAfterWriteStateDesc) => {
-        	readAfterWriteStates = readAfterWriteStates.concat(readAfterWriteStateDesc.id);
+            readAfterWriteStates = readAfterWriteStates.concat(readAfterWriteStateDesc.id);
         });
     }
     
@@ -882,6 +882,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const value = changedState.value;
 
         if (stateDesc.isOption) {
+            // acknowledge state with given value
             acknowledgeState(deviceId, modelId, stateDesc, value);
             return;
         }
@@ -911,7 +912,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
         const message = converter.convert(key, preparedValue, preparedOptions, 'set');
         if (!message) {
-            // acknowledge state
+            // acknowledge state with given value
             acknowledgeState(deviceId, modelId, stateDesc, value);
             return;
         }
@@ -923,7 +924,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                 if (err) {
                     // nothing to do in error case
                 } else {
-                    // acknowledge state
+                    // acknowledge state with given value
                     acknowledgeState(deviceId, modelId, stateDesc, value);
                     // process sync state list
                     processSnycStatesList(deviceId, modelId, syncStateList);
@@ -936,7 +937,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                     if (err) {
                         // nothing to do in error case
                     } else if (modelId === 'group') {
-                        // acknowledge state
+                        // acknowledge state with given value
                         acknowledgeState(deviceId, modelId, stateDesc, value);
                     } else if (readAfterWriteStates.includes(key)) {
                         // wait a timeout for read state value after write
@@ -945,15 +946,29 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                             const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
                             if (readMessage) {
                                 adapter.log.debug('read message: '+safeJsonStringify(readMessage));
-                                zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType);
+                                zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType, (err, resp) => {
+                                    if (err) {
+                                        // nothing to do in error case
+                                    } else {
+                                        // read value from response
+                                        let readValue =  readValueFromResponse(stateDesc, resp);
+                                        if (readValue != undefined) {
+                                            // acknowledge state with read value
+                                            acknowledgeState(deviceId, modelId, stateDesc, readValue);
+                                            // process sync state list
+                                            processSnycStatesList(deviceId, modelId, syncStateList);
+                                        }
+                                    }
+                                });
+                            } else {
+                                // acknowledge state with given value
+                                acknowledgeState(deviceId, modelId, stateDesc, value);
+                                // process sync state list
+                                processSnycStatesList(deviceId, modelId, syncStateList);
                             }
-                            // acknowledge state
-                            acknowledgeState(deviceId, modelId, stateDesc, value);
-                            // process sync state list
-                            processSnycStatesList(deviceId, modelId, syncStateList);
-                        }, readTimeout || 0);
+                        }, (readTimeout || 10); // a slight offset between write and read is needed
                     } else {
-                        // acknowledge state
+                        // acknowledge state with given value
                         acknowledgeState(deviceId, modelId, stateDesc, value);
                         // process sync state list
                         processSnycStatesList(deviceId, modelId, syncStateList);
@@ -978,6 +993,29 @@ function processSnycStatesList(deviceId, modelId, syncStateList) {
     syncStateList.forEach((syncState) => {
         acknowledgeState(deviceId, modelId, syncState.stateDesc, syncState.value);
     });
+}
+
+function readValueFromResponse(stateDesc, resp) {
+    adapter.log.debug('read response: '+safeJsonStringify(resp));
+    // check if response is an array with at least one element
+    if (resp && Array.isArray(resp) && resp.length > 0) {
+        if (stateDesc.readResponse) {
+            // use readResponse function from state to get object value
+            return stateDesc.readResponse(resp);
+        } else if (resp.length === 1) {
+            // simple default implementation for response with just one response object
+            let respObj = resp[0];
+            if (respObj.status === 0 && respObj.attrData != undefined) {
+                if (stateDesc.type === 'number') {
+                    // return number from attrData
+                    return respObj.attrData;
+                } else if (stateDesc.type === 'boolean') {
+                    // return attrData converted into boolean
+                    return (respObj.attrData === 1);
+                }
+            }
+        }
+    }
 }
 
 function publishToState(devId, modelID, model, payload) {
