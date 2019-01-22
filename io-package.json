@@ -5,77 +5,221 @@
         "news": {
             "0.8.0": {
                 "en": "Breaking changes",
-                "ru": "Критические изменения"
+                "ru": "Критические изменения",
+                "de": "Änderungen brechen",
+                "pt": "Quebrando mudanças",
+                "nl": "Veranderingen doorbreken",
+                "fr": "Briser les changements",
+                "it": "Ultime modifiche",
+                "es": "Rompiendo cambios",
+                "pl": "Łamanie zmian",
+                "zh-cn": "打破变化"
             },
-        	"0.7.7": {
+            "0.7.7": {
                 "en": "Fix 'is open' state",
-                "ru": "Поправлено состояние 'is open'"
+                "ru": "Поправлено состояние 'is open'",
+                "de": "Fix 'ist offen' Zustand",
+                "pt": "Corrigir estado 'está aberto'",
+                "nl": "Fix 'is open' staat",
+                "fr": "État \"ouvert\"",
+                "it": "Stato Fix 'è aperto'",
+                "es": "El estado 'está abierto'",
+                "pl": "Napraw stan \"jest otwarty\"",
+                "zh-cn": "修复'打开'状态"
             },
-        	"0.7.6": {
+            "0.7.6": {
                 "en": "New devices models",
-                "ru": "Новые модели устройств"
+                "ru": "Новые модели устройств",
+                "de": "Neue Gerätemodelle",
+                "pt": "Novos modelos de dispositivos",
+                "nl": "Nieuwe apparatenmodellen",
+                "fr": "Nouveaux modèles d'appareils",
+                "it": "Nuovi modelli di dispositivi",
+                "es": "Nuevos modelos de dispositivos.",
+                "pl": "Nowe modele urządzeń",
+                "zh-cn": "新设备型号"
             },
-        	"0.7.5": {
+            "0.7.5": {
                 "en": "Support zigbee-shepherd-converters 4.*",
-                "ru": "Поддержка zigbee-shepherd-converters 4.*"
+                "ru": "Поддержка zigbee-shepherd-converters 4.*",
+                "de": "Unterstütze Zigbee-Hirten-Konverter 4. *",
+                "pt": "Suporte zigbee-shepherd-converters 4. *",
+                "nl": "Ondersteuning zigbee-herder-converters 4. *",
+                "fr": "Soutenez les zigbee-shepherd-converters 4. *",
+                "it": "Supporta zigbee-shepherd-converters 4. *",
+                "es": "Soporte zigbee-shepherd-converters 4. *",
+                "pl": "Wspieraj konie zigbee-pasterzem 4. *",
+                "zh-cn": "支持zigbee-shepherd-converters 4. *"
             },
-        	"0.7.4": {
+            "0.7.4": {
                 "en": "Allow enter port without selector",
-                "ru": "Ввод порта без выбора из списка"
+                "ru": "Ввод порта без выбора из списка",
+                "de": "Erlaube den Port ohne Selector",
+                "pt": "Permitir entrar na porta sem seletor",
+                "nl": "Sta poort vrij zonder selector",
+                "fr": "Autoriser le port d'entrée sans sélecteur",
+                "it": "Consenti la porta di entrata senza selettore",
+                "es": "Permitir entrar puerto sin selector",
+                "pl": "Zezwalaj na port wejściowy bez selektora",
+                "zh-cn": "允许输入端口没有选择器"
             },
             "0.7.3": {
                 "en": "OSRAM A60 W clear and Occupancy timeout",
-                "ru": "OSRAM A60 W clear и таймаут детектора движения"
+                "ru": "OSRAM A60 W clear и таймаут детектора движения",
+                "de": "OSRAM A60 W clear und Belegungszeitüberschreitung",
+                "pt": "OSRAM A60 W clear e tempo limite de ocupação",
+                "nl": "OSRAM A60 W helder en bezetting time-out",
+                "fr": "OSRAM A60 W clear et timeout d'occupation",
+                "it": "OSRAM A60 W azzeramento e tempo di attesa",
+                "es": "OSRAM A60 W claro y tiempo de espera de ocupación",
+                "pl": "OSRAM A60 W czysty i limit czasu obecności",
+                "zh-cn": "欧司朗A60 W清除和占用超时"
             },
             "0.7.1": {
                 "en": "Network map feature",
-                "ru": "Карта сети и другие улучшения"
+                "ru": "Карта сети и другие улучшения",
+                "de": "Netzwerkkartenfunktion",
+                "pt": "Recurso de mapa de rede",
+                "nl": "Netwerkkaartfunctie",
+                "fr": "Fonction de carte réseau",
+                "it": "Funzionalità della mappa di rete",
+                "es": "Función de mapa de red",
+                "pl": "Funkcja mapy sieci",
+                "zh-cn": "网络地图功能"
             },
             "0.6.0": {
                 "en": "More new devices",
-                "ru": "Много новых устройств"
+                "ru": "Много новых устройств",
+                "de": "Weitere neue Geräte",
+                "pt": "Mais novos dispositivos",
+                "nl": "Meer nieuwe apparaten",
+                "fr": "Plus de nouveaux appareils",
+                "it": "Altri nuovi dispositivi",
+                "es": "Más nuevos dispositivos",
+                "pl": "Więcej nowych urządzeń",
+                "zh-cn": "更多新设备"
             },
             "0.5.9": {
                 "en": "Osram led, Philips Hue",
-                "ru": "Osram led, Philips Hue"
+                "ru": "Osram led, Philips Hue",
+                "de": "Osram führte Philips Hue an",
+                "pt": "Osram liderou, Philips Hue",
+                "nl": "Osram led, Philips Hue",
+                "fr": "Osram a mené Philips Hue",
+                "it": "Condusse Osram, Philips Hue",
+                "es": "Osram led, Philips Hue",
+                "pl": "Osram prowadził, Philips Hue",
+                "zh-cn": "欧司朗领导，飞利浦Hue"
             },
             "0.5.8": {
                 "en": "backup/restore, new Jiawen bulb, remove device by setup key",
-                "ru": "backup/restore, новая лампа Jiawen, удаление устройства при покидании сети"
+                "ru": "backup/restore, новая лампа Jiawen, удаление устройства при покидании сети",
+                "de": "Backup / Restore, neue Jiawen-Birne, Gerät mit Setup-Taste entfernen",
+                "pt": "backup / restauração, nova lâmpada Jiawen, remova o dispositivo pela chave de instalação",
+                "nl": "back-up / herstel, nieuwe Jiawen-lamp, verwijder het apparaat via de setup-toets",
+                "fr": "sauvegarde / restauration, nouvelle ampoule Jiawen, suppression du périphérique à l'aide de la touche d'installation",
+                "it": "backup / ripristino, nuova lampadina Jiawen, rimozione del dispositivo tramite la chiave di installazione",
+                "es": "Copia de seguridad / restauración, nueva bombilla Jiawen, eliminar dispositivo por clave de configuración",
+                "pl": "tworzenie kopii zapasowej / przywracanie, nowa żarówka Jiawena, usunięcie urządzenia za pomocą klucza instalacyjnego",
+                "zh-cn": "备份/恢复，新的佳文灯泡，通过设置键删除设备"
             },
             "0.5.7": {
                 "en": "Update states on adapter start",
-                "ru": "Обновление состояний при старте адаптера"
+                "ru": "Обновление состояний при старте адаптера",
+                "de": "Status beim Adapterstart aktualisieren",
+                "pt": "Atualizar estados no início do adaptador",
+                "nl": "Status bijwerken bij het starten van de adapter",
+                "fr": "Mise à jour des états au démarrage de l'adaptateur",
+                "it": "Stati di aggiornamento sull'avvio dell'adattatore",
+                "es": "Actualizar estados en el inicio del adaptador",
+                "pl": "Zaktualizuj stany na początku adaptera",
+                "zh-cn": "适配器启动时更新状态"
             },
             "0.5.6": {
                 "en": "PanID configuration",
-                "ru": "Настройка PanID для сети"
+                "ru": "Настройка PanID для сети",
+                "de": "PanID-Konfiguration",
+                "pt": "Configuração PanID",
+                "nl": "PanID-configuratie",
+                "fr": "Configuration PanID",
+                "it": "Configurazione PanID",
+                "es": "Configuración de PanID",
+                "pl": "Konfiguracja PanID",
+                "zh-cn": "PanID配置"
             },
             "0.5.5": {
                 "en": "Return runing on NodeJS 4.x",
-                "ru": "Вернул работу в NodeJS 4.x"
+                "ru": "Вернул работу в NodeJS 4.x",
+                "de": "Laufen auf NodeJS 4.x zurück",
+                "pt": "Retornar a execução no NodeJS 4.x",
+                "nl": "Retour runing op NodeJS 4.x",
+                "fr": "Retour en cours d'exécution sur NodeJS 4.x",
+                "it": "Ritorna il run su NodeJS 4.x",
+                "es": "Ejecución de retorno en NodeJS 4.x",
+                "pl": "Zwraca runing na NodeJS 4.x",
+                "zh-cn": "返回在NodeJS 4.x上运行"
             },
             "0.5.4": {
                 "en": "Public version",
-                "ru": "Публичная версия"
+                "ru": "Публичная версия",
+                "de": "Öffentliche Version",
+                "pt": "Versão pública",
+                "nl": "Openbare versie",
+                "fr": "Version publique",
+                "it": "Versione pubblica",
+                "es": "Versión pública",
+                "pl": "Wersja publiczna",
+                "zh-cn": "公开版"
             },
             "0.5.0": {
                 "en": "Refactoring version",
-                "ru": "Реструктурированная версия"
+                "ru": "Реструктурированная версия",
+                "de": "Refactoring-Version",
+                "pt": "Versão de refatoração",
+                "nl": "De versie reviseren",
+                "fr": "Refactoring version",
+                "it": "Versione di refactoring",
+                "es": "Versión refactorización",
+                "pl": "Wersja refaktoryzująca",
+                "zh-cn": "重构版本"
             },
             "0.1.0": {
                 "en": "Alpha-version",
-                "ru": "Альфа-версия"
+                "ru": "Альфа-версия",
+                "de": "Alpha-Version",
+                "pt": "Versão alfa",
+                "nl": "Alpha-versie",
+                "fr": "Version alpha",
+                "it": "Alpha-versione",
+                "es": "Versión alfa",
+                "pl": "Wersja alfa",
+                "zh-cn": "阿尔法版本"
             }
         },
         "title": "Zigbee adapter",
         "titleLang": {
             "en": "Zigbee adapter",
-            "ru": "Zigbee адаптер"
+            "ru": "Zigbee адаптер",
+            "de": "ZigBee-Adapter",
+            "pt": "Adaptador Zigbee",
+            "nl": "Zigbee-adapter",
+            "fr": "Adaptateur Zigbee",
+            "it": "Adattatore Zigbee",
+            "es": "Adaptador zigbee",
+            "pl": "Adapter Zigbee",
+            "zh-cn": "Zigbee适配器"
         },
         "desc": {
             "en": "Zigbee adapter for Xiaomi (and other) devices via TI cc2531/cc2530",
-            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через TI cc2531/cc2530"
+            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через TI cc2531/cc2530",
+            "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über TI cc2531 / cc2530",
+            "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via TI cc2531 / cc2530",
+            "nl": "Zigbee-adapter voor Xiaomi (en andere) apparaten via TI cc2531 / cc2530",
+            "fr": "Adaptateur Zigbee pour périphériques Xiaomi (et autres) via TI cc2531 / cc2530",
+            "it": "Adattatore Zigbee per dispositivi Xiaomi (e altri) tramite TI cc2531 / cc2530",
+            "es": "Adaptador Zigbee para dispositivos Xiaomi (y otros) a través de TI cc2531 / cc2530",
+            "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem TI cc2531 / cc2530",
+            "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过TI cc2531 / cc2530"
         },
         "authors": [
             "Kirov Ilya<kirovilya@gmail.com>"
@@ -96,7 +240,12 @@
         "icon": "zigbee.png",
         "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
         "enabled": true,
-        "keywords": ["zigbee", "xiaomi", "cc2531", "cc2530"],
+        "keywords": [
+            "zigbee",
+            "xiaomi",
+            "cc2531",
+            "cc2530"
+        ],
         "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "loglevel": "info",
         "type": "hardware",
@@ -112,7 +261,7 @@
     },
     "instanceObjects": [
         {
-            "_id":  "info",
+            "_id": "info",
             "type": "channel",
             "common": {
                 "name": "Information"
@@ -120,51 +269,51 @@
             "native": {}
         },
         {
-            "_id":  "info.connection",
+            "_id": "info.connection",
             "type": "state",
             "common": {
-                "role":  "indicator.connected",
-                "name":  "If connected to zigbee device",
-                "type":  "boolean",
-                "read":  true,
+                "role": "indicator.connected",
+                "name": "If connected to zigbee device",
+                "type": "boolean",
+                "read": true,
                 "write": false,
-                "def":   false
+                "def": false
             },
             "native": {}
         },
         {
-            "_id":  "info.pairingMode",
+            "_id": "info.pairingMode",
             "type": "state",
             "common": {
-                "name":  "Pairing mode",
-                "type":  "boolean",
-                "read":  true,
+                "name": "Pairing mode",
+                "type": "boolean",
+                "read": true,
                 "write": false,
-                "def":   false
+                "def": false
             },
             "native": {}
         },
         {
-            "_id":  "info.pairingCountdown",
+            "_id": "info.pairingCountdown",
             "type": "state",
             "common": {
-                "name":  "Pairing countdown",
-                "type":  "number",
-                "read":  true,
+                "name": "Pairing countdown",
+                "type": "number",
+                "read": true,
                 "write": false,
-                "def":   0
+                "def": 0
             },
             "native": {}
         },
         {
-            "_id":  "info.pairingMessage",
+            "_id": "info.pairingMessage",
             "type": "state",
             "common": {
-                "name":  "Pairing message",
-                "type":  "string",
-                "read":  true,
+                "name": "Pairing message",
+                "type": "string",
+                "read": true,
                 "write": false,
-                "def":   ""
+                "def": ""
             },
             "native": {}
         }
