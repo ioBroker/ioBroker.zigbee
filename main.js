@@ -506,7 +506,8 @@ function newDevice(id, msg) {
         adapter.log.info('new dev ' + dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
         logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
         updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () =>
-            syncDevStates(dev.ieeeAddr.substr(2), dev.modelId));
+            syncDevStates(dev)
+        );
     }
 }
 
@@ -743,7 +744,7 @@ function onReady() {
             // update dev and states
             chain.push(new Promise((resolve, reject) => {
                 updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, () => {
-                    syncDevStates(device.ieeeAddr.substr(2), device.modelId);
+                    syncDevStates(device);
                     resolve();
                 });
             }));
@@ -1043,14 +1044,19 @@ function publishToState(devId, modelID, model, payload) {
     }
 }
 
-function syncDevStates(devId, modelId) {
+function syncDevStates(dev) {
+    const devId = dev.ieeeAddr.substr(2), 
+          modelId = dev.modelId,
+          hasGroups = dev.type === 'Router';
     // devId - iobroker device id
     const stateModel = statesMapping.findModel(modelId);
     if (!stateModel) {
         adapter.log.debug('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
         return;
     }
-    const states = statesMapping.commonStates.concat(stateModel.states);
+    const states = statesMapping.commonStates.concat(stateModel.states)
+        .concat((hasGroups) ? [statesMapping.groupsState] : []);
+
     for (const stateInd in states) {
         if (!states.hasOwnProperty(stateInd)) continue;
 
