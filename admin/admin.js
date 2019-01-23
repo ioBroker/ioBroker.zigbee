@@ -149,12 +149,18 @@ function deleteConfirmation(id, name) {
 }
 
 function editName(id, name) {
-    $('#modaledit').find("input[id='name']").val(name);
-    list2select('#groups', groups, devGroups[id] || []);
+    const dev = devices.find((d) => d._id == id);
+    $('#modaledit').find("input[id='d_name']").val(name);
+    if (dev.info.type == "Router") {
+        list2select('#d_groups', groups, devGroups[id] || []);
+        $("#d_groups").parent().parent().removeClass('hide');
+    } else {
+        $("#d_groups").parent().parent().addClass('hide');
+    }
     $("#modaledit a.btn[name='save']").unbind("click");
     $("#modaledit a.btn[name='save']").click(function(e) {
-        var newName = $('#modaledit').find("input[id='name']").val(),
-            newGroups = $('#groups').val();
+        var newName = $('#modaledit').find("input[id='d_name']").val(),
+            newGroups = $('#d_groups').val();
         updateDev(id, newName, newGroups);
     });
     $('#modaledit').modal('open');
@@ -220,7 +226,7 @@ function showDevices() {
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
         if (d.info && d.info.type == "Coordinator") continue;
-        if (d.groups) {
+        if (d.groups && d.info && d.info.type == "Router") {
             devGroups[d._id] = d.groups;
             d.groupNames = d.groups.map(item=>{
                 return groups[item] || '';
@@ -246,7 +252,6 @@ function showDevices() {
             id = getDevId(dev_block),
             name = getDevName(dev_block);
         editName(id, name);
-        //openReval(e, id, name);
     });
     $("a.btn-floating[name='join']").click(function() {
         var dev_block = $(this).parents("div.device");
@@ -396,14 +401,13 @@ function load(settings, onChange) {
         getMap();
     });
 
-    if (settings.groups === undefined) settings.groups = {};
-    groups = settings.groups;
-    showGroups();
+    sendTo(null, 'getGroups', {}, function (data) {
+        groups = data;
+        showGroups();
+    });
+
     $('#add_group').click(function() {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
-        // const newGroup = {};
-        // groups[maxind+1] = '';
-        // showGroups(onChange);
         editGroupName(maxind+1, "");
     });
 
@@ -466,8 +470,6 @@ function save(callback) {
             obj[$this.attr('id')] = $this.val();
         }
     });
-    // save groups
-    obj.groups = groups;
     callback(obj);
 }
 
@@ -503,7 +505,7 @@ socket.on('stateChange', function (id, state) {
 
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
-    if (obj && obj.type == "device") {
+    if (obj && obj.type == "device" && obj.common.type !== 'group') {
         getDevices();
     }
 });
@@ -586,8 +588,8 @@ function showNetworkMap(devices, map){
 
 function redrawMap() {
     if (network != undefined) {
-        var width = $('#tabs').width(),
-            height = $('#tabs').height()-64;
+        var width = $('.adapter-body').width(),
+            height = $('.adapter-body').height()-128;
         network.setSize(width, height);
         network.redraw();
         network.fit();
@@ -1005,12 +1007,12 @@ function showGroups() {
 
 function editGroupName(id, name) {
     //var text = 'Enter new name for "'+name+'" ('+id+')?';
-    $('#groupedit').find("input[id='index']").val(id);
-    $('#groupedit').find("input[id='name']").val(name);
+    $('#groupedit').find("input[id='g_index']").val(id);
+    $('#groupedit').find("input[id='g_name']").val(name);
     $("#groupedit a.btn[name='save']").unbind("click");
     $("#groupedit a.btn[name='save']").click(function(e) {
-        var newId = $('#groupedit').find("input[id='index']").val(),
-            newName = $('#groupedit').find("input[id='name']").val();
+        var newId = $('#groupedit').find("input[id='g_index']").val(),
+            newName = $('#groupedit').find("input[id='g_name']").val();
         updateGroup(id, newId, newName);
         showGroups();
     });
@@ -1032,12 +1034,12 @@ function deleteGroupConfirmation(id, name) {
 function updateGroup(id, newId, newName) {
     delete groups[id];
     groups[newId] = newName;
-    onChangeEmitter();
+    sendTo(null, 'updateGroups', groups);
 }
 
 function deleteGroup(id) {
     delete groups[id];
-    onChangeEmitter();
+    sendTo(null, 'updateGroups', groups);
 }
 
 function updateDev(id, newName, newGroups) {
@@ -1045,18 +1047,20 @@ function updateDev(id, newName, newGroups) {
     if (dev && dev.common.name != newName) {
         renameDevice(id, newName);
     }
-    const oldGroups = devGroups[id] || [];
-    if (oldGroups.toString() != newGroups.toString()) {
-        devGroups[id] = newGroups;
-        dev.groups = newGroups;
-        // save dev-groups
-        sendTo(null, 'groupDevices', devGroups, function (msg) {
-            if (msg) {
-                if (msg.error) {
-                    showMessage(msg.error, _('Error'), 'alert');
+    if (dev.info.type == "Router") {
+        const oldGroups = devGroups[id] || [];
+        if (oldGroups.toString() != newGroups.toString()) {
+            devGroups[id] = newGroups;
+            dev.groups = newGroups;
+            // save dev-groups
+            sendTo(null, 'groupDevices', devGroups, function (msg) {
+                if (msg) {
+                    if (msg.error) {
+                        showMessage(msg.error, _('Error'), 'alert');
+                    }
                 }
-            }
-        });    
-        showDevices();
+            });
+            showDevices();
+        }
     }
 }

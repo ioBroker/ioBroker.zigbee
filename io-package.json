@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.8.999",
+        "version": "0.8.9999",
         "news": {
             "0.8.2": {
                 "en": "new converter from zigbee-shepherd",
@@ -116,8 +116,7 @@
         "port": "",
         "panID": 6754,
         "channel": 11,
-        "disableLed": false,
-        "groups": {}
+        "disableLed": false
     },
     "instanceObjects": [
         {
@@ -170,6 +169,18 @@
             "type": "state",
             "common": {
                 "name":  "Pairing message",
+                "type":  "string",
+                "read":  true,
+                "write": false,
+                "def":   ""
+            },
+            "native": {}
+        },
+        {
+            "_id":  "info.groups",
+            "type": "state",
+            "common": {
+                "name":  "Groups",
                 "type":  "string",
                 "read":  true,
                 "write": false,
