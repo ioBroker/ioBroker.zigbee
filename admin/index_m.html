@@ -187,7 +187,10 @@
                                 <b>ClusterId:</b> genOnOff (6), <b>Command Type: </b>Functional, 
                                 <b>Command:</b> on (1), <b>AttributeId:</b> 
                                 onOff (0, type 16)<br> 
-                                => You switched on your bulb</div>
+                                => You switched on your bulb
+                                <p>For details about needed arguments (expert mode) see 
+                                <a href="https://github.com/zigbeer/zcl-packet/wiki/6.-Appendix#621-general">
+                                zcl-packet - Appendix</a></p></div>
                             </li>
                             <li>
                                 <div class="collapsible-header">Expert Mode</div>
@@ -207,13 +210,13 @@
                     <div class="col s9">
                         <div class="row">
                             <div class="input-field col s4">
-                                <select id ="dev-selector" class="value">
+                                <select id ="dev-selector">
                                 <option value="" disabled selected>Select a device</option>
                                 </select>
                                 <label for="dev-selector" class="translate">Device</label>
                             </div> 
                             <div class="input-field col s4 admin-tooltip-icon" title="Some kind of 'device within device'. Every endpoint may have different functions. If one does not work, test another.">
-                                <select id ="ep-selector" class="value">
+                                <select id ="ep-selector">
                                 <option value="" disabled selected>Select an Endpoint</option>
                                 </select>
                                 <label for="ep-selector">Endpoint</label>
@@ -222,26 +225,26 @@
                         <div class="row">
                             <div class="row"> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="Group of functions. AttributeIds will change depending on your choice here.">
-                                    <select id ="cid-selector" class="value">
+                                    <select id ="cid-selector">
                                     <option value="" disabled selected>Select cid</option>
                                     </select>
                                     <label for="cid-selector">Cluster Id</label>
                                 </div> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="Command type. Available commands will change depending on your choice here. Some actions need Foundation, others Functional, you may test both.">
-                                    <select id ="cmd-type-selector" class="value">
+                                    <select id ="cmd-type-selector">
                                     <option value="foundation" selected>Foundation</option>
                                     <option value="functional">Functional</option>
                                     </select>
                                     <label for="cid-selector">Command Type</label>
                                 </div> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="The action you want to run.">
-                                    <select id ="cmd-selector" class="value">
+                                    <select id ="cmd-selector">
                                     <option value="" disabled selected>Select Command</option>
                                     </select>
                                     <label for="cmd-selector">Command</label>
                                 </div> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="The setting you are interested in.">
-                                    <select id ="attrid-selector" class="value">
+                                    <select id ="attrid-selector">
                                     <option value="" disabled selected>Select Attribute</option>
                                     </select>
                                     <label for="attrid-selector">Attribute Id</label>
@@ -256,11 +259,11 @@
                                     </label>
                                 </div>
                                 <div class="input-field col s4 admin-tooltip-icon" title="The value to send to your device.">
-                                    <input id ="value-input" class="value" disabled placeholder="0">
+                                    <input id ="value-input" disabled placeholder="0">
                                     <label for="value-input">Value</label>
                                 </div>
                                 <div class="input-field col s4 admin-tooltip-icon" title="The data type of your value (String, Integer,...)">
-                                    <select id ="type-selector" class="value" disabled>
+                                    <select id ="type-selector" disabled>
                                     <option value="" disabled selected>Select Type</option>
                                     </select>
                                     <label for="type-selector">Type Id</label>
