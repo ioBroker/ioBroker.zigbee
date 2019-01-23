@@ -636,7 +636,19 @@ function loadDeveloperTab(onChange) {
             }, 
             function(key, device) {
                 return device._id;
-    }); 
+    });
+    // add groups to device selector
+    var groupList = [];
+    for (var key in groups) {
+        groupList.push({'_id': namespace+'.'+key.toString(16).padStart(16, '0'), 'groupId': key, 'groupName': groups[key]});
+    }
+    updateSelect('#dev', groupList,
+            function(key, device) {
+                return 'Group '+device.groupId+': '+device.groupName;
+            }, 
+            function(key, device) {
+                return device._id;
+    }, true); 
 
     // fill cid, cmd, type selector
     populateSelector('#cid', 'cidList');
@@ -668,10 +680,11 @@ function loadDeveloperTab(onChange) {
                 showDevRunInfo('JSON error', exception, 'yellow');
             }
         };
-        const setExpertData = function(prop, value) {
+        const setExpertData = function(prop, value, removeIfEmpty = true) {
             if (!$('#expert-mode').is(':checked')) {
                 return;
             }
+            if (!removeIfEmpty && value == null) { value = ''; }
             var data;
             if (prop) {
                 data = prepareExpertData();
@@ -708,7 +721,8 @@ function loadDeveloperTab(onChange) {
                 return obj._id === this.value;
             });
 
-            updateSelect('#ep', device.info.epList,
+            var epList = device ? device.info.epList : null;
+            updateSelect('#ep', epList,
                     function(key, ep) {
                         return ep;
                     }, 
@@ -716,6 +730,7 @@ function loadDeveloperTab(onChange) {
                         return ep;
             }); 
             setExpertData('devId', this.value);
+            setExpertData('ep', $('#ep-selector').val(), false);
         });
         
         $('#ep-selector').change(function() {
@@ -940,12 +955,14 @@ function populateSelector(selectId, key, cid) {
     });
 }
 
-function updateSelect(id, list, getText, getId) {
+function updateSelect(id, list, getText, getId, append = false) {
     const selectId = id+'-selector';
     var mySelect = $(selectId);
-    $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
-    mySelect.select();
-    if (list == null) {
+    if (!append) {
+        $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
+        mySelect.select();
+    }
+    if (list == null && !append) {
         var infoOption = new Option("Nothing available");
         infoOption.disabled = true;
         mySelect.append( infoOption);

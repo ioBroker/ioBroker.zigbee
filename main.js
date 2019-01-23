@@ -551,7 +551,7 @@ function getLibData(obj) {
  function sendToZigbee(obj) {
     const zclId = require('zcl-id');
     const devId = '0x' + obj.message.id.replace(adapter.namespace + '.', '');
-    const ep = obj.message.ep !== null ? parseInt(obj.message.ep) : null;
+    const ep = obj.message.ep ? parseInt(obj.message.ep) : null;
     const cid = obj.message.cid;
     const cmdType = obj.message.cmdType;
     var cmd;
@@ -585,9 +585,9 @@ function getLibData(obj) {
             zclData[i].dataType = intType != 'NaN' ? intType : zclId.attr(cid, zclItem.dataType).value;
         }
     }
-    const device = zbControl.getDevice(devId);
-    if (!device) {
-        adapter.sendTo(obj.from, obj.command, {localErr: 'Device '+devId+' not found!'}, obj.callback);
+    var publishTarget = zbControl.getDevice(devId) ? devId : zbControl.getGroup(parseInt(devId));
+    if (!publishTarget) {
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Device or group '+devId+' not found!'}, obj.callback);
         return;
     }
     if (!cid || typeof cmd !== 'number') {
@@ -597,7 +597,7 @@ function getLibData(obj) {
     adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');
 
      try {
-        zbControl.publish(devId, cid, cmd, zclData, cfg, ep, cmdType, (err, msg) => {
+        zbControl.publish(publishTarget, cid, cmd, zclData, cfg, ep, cmdType, (err, msg) => {
             // map err and msg in one object for sendTo
             var result = new Object();
             result.msg = msg;
