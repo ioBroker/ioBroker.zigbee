@@ -858,10 +858,6 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
         if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please choose ClusterId, Command, CommandType and AttributeId!'});}
         return;
     }
-    if (!zclData || zclData.attrId < 0) {
-        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Ids must be positive!'});}
-        return;
-    }
     var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
     if (callback) {callback({localStatus: 'Send', errMsg: 'Waiting for reply...'});}
 
