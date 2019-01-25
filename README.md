@@ -40,7 +40,7 @@ After successful pairing, the device appears in the configuration panel. If the 
 There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality on the same technologies, where you can work with the same devices using the MQTT protocol. Therefore, if any improvements or support for new zigbee-devices occur in the Zigbee2MQTT project, we can transfer and add the same functionality to this adapter. If you notice this, then write the issue - we'll postpone it.
 
 There are knowledge bases that can be useful for working with Zigbee-devices and equipment:
-* in English https://github.com/koenkk/zigbee2mqtt/wiki
+* in English https://koenkk.github.io/zigbee2mqtt/
 * in Russian https://github.com/kirovilya/ioBroker.zigbee/wiki
 
 ## Supported devices
