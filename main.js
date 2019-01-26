@@ -941,7 +941,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                         acknowledgeState(deviceId, modelId, stateDesc, value);
                     } else if (readAfterWriteStates.includes(key)) {
                         // wait a timeout for read state value after write
-                        adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
+                        adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${message.readAfterWriteTime}`);
                         setTimeout(()=>{
                             const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
                             if (readMessage) {
