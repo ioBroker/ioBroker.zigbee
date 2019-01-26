@@ -896,7 +896,6 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         
         const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
         const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
-        const readTimeout = (stateDesc.readTimeout) ? stateDesc.readTimeout(value, options) : 0;
         
         let syncStateList = [];
         if (stateModel.syncStates) {
@@ -967,7 +966,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                                 // process sync state list
                                 processSnycStatesList(deviceId, modelId, syncStateList);
                             }
-                        }, (readTimeout || 10)); // a slight offset between write and read is needed
+                        }, (message.readAfterWriteTime || 10)); // a slight offset between write and read is needed
                     } else {
                         // acknowledge state with given value
                         acknowledgeState(deviceId, modelId, stateDesc, value);
