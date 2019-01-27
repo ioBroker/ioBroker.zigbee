@@ -138,6 +138,11 @@
                         <label class="translate" for="disableQueue">Disable Queue</label>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="input-field col s6 m3 l1">
+                        <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
+                    </div>
+                </div>
             </div>
             <div id="tab-dev" class="col s12 page">
                 <div id="develop" class="row">
@@ -399,6 +404,18 @@
             <div class="modal-footer">
                 <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
                 <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+
+        <div id="modalreset" class="modal">
+            <div class="modal-content">
+                <h3 class="translate">Reset confirmation</h3>
+                <p class="translate">Reset Info</p>
+                <a id="soft" data-mode="soft" class="modal-action modal-close waves-effect waves-red btn translate">Soft-Reset</a>
+                <a id="hard" data-mode="hard" class="modal-action modal-close waves-effect waves-red btn translate">Hard-Reset</a>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat translate">Cancel</a>
             </div>
         </div>
     </div>
