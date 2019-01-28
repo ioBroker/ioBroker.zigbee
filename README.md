@@ -71,7 +71,7 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
-### 0.9.0 (2019-01)
+### 0.9.0 (2019-01-28)
 * (arteck) Many new devices
 * (allofmex) Developer tab
 * (modmax) Reading attributes

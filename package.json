@@ -47,5 +47,5 @@
     "test": "node node_modules/mocha/bin/mocha --exit",
     "docgen": "node support/docgen.js"
   },
-  "version": "0.8.9999"
+  "version": "0.9.0"
 }
