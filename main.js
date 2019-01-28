@@ -153,21 +153,26 @@ adapter.on('message', obj => {
                         });
                 }
                 break;
-            case 'sendToZigbee':    
-                sendToZigbee(obj);    
+            case 'sendToZigbee':
+                sendToZigbee(obj);
                 break;    
-            case 'getLibData':    
-                // e.g. zcl lists    
-                if (obj && obj.message && typeof obj.message === 'object') {    
-                    getLibData(obj)                        
-                }                                   
+            case 'getLibData':
+                // e.g. zcl lists
+                if (obj && obj.message && typeof obj.message === 'object') {
+                    getLibData(obj);
+                }
                 break;
             case 'updateGroups':
                 updateGroups(obj);
-                break;    
+                break;
             case 'getGroups':
                 getGroups(obj);
-                break;    
+                break;
+            case 'reset':
+                zbControl.reset(obj.message.mode, function(err, data) {
+                    adapter.sendTo(obj.from, obj.command, err, obj.callback);
+                });
+                break;
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                 break;
