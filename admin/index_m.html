@@ -19,7 +19,10 @@
 <style>
     .m .col .select-wrapper+label, .m .col input+label:not(.active) {
         top: -26px;  
-    }   
+    }
+    .select-wrapper li span {
+        pointer-events: none; // workarround for checkbox in select, else checkbox and label not clickable
+    }
     .m .col input+label { 
     	font-size: 0.8rem;
     }
@@ -31,15 +34,19 @@
         width: 64px;
     }
     .input-group {
-    display: table;
+        display: table;
     }
-
     .input-group input, .suffix {
         display: table-cell;
     }
-
     .suffix {
         width:1%;
+    }
+    #tabs {
+        margin-top: 120px;
+    }
+    #main {
+        margin-bottom: -50px;
     }
     .page:not(.active) {
         /* prevents 'all pages visible for a moment at first load' (because pages are loaded before materialize is loaded)*/
@@ -65,33 +72,32 @@
 </head>
 <body>
     <!-- you have to put your config page in a div with id adapter-container -->
-    <div class="m adapter-container">
-        <div class="col s12">
-            <div class="row">
-                <nav>
-                    <div class="nav-wrapper">
-                        <div class="col">
-                            <img src="zigbee.png" class="zlogo left" height="64px">
-                        </div>
-                        <div class="col">
-                            <h5 class="translate center-align">Zigbee adapter</h5>
-                        </div>
-                        <ul id="nav-mobile" class="right">
-                            <li><a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></li>
-                        </ul>
+    <div id="main" class="m adapter-container">
+        <div class="row navbar-fixed">
+            <nav class="nav-extended">
+                <div class="nav-wrapper">
+                    <div class="col">
+                        <img src="zigbee.png" class="zlogo left" height="64px">
                     </div>
-                </nav>
-            </div>
+                    <div class="col">
+                        <h5 class="translate center-align">Zigbee adapter</h5>
+                    </div>
+                    <ul id="nav-mobile" class="right">
+                        <li><a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></li>
+                    </ul>
+                </div>
+                <div class="nav-content">
+                    <ul class="tabs tabs-transparent">
+                        <li class="tab col s2"><a id="devs" href="#tab-main" class="translate">Devices</a></li>
+                        <li class="tab col s2"><a href="#tab-groups" class="translate">Groups</a></li>
+                        <li class="tab col s2"><a id="tabmap" href="#tab-map" class="translate">Network map</a></li>
+                        <li class="tab col s2"><a id="settings" href="#tab-sett" class="translate">Settings</a></li>
+                        <li class="tab col s2"><a id="develop" href="#tab-dev" class="translate">Developer</a></li>
+                    </ul>
+                </div>
+            </nav>
         </div>
-        <div class="tabs-content row">
-            <div class="col s12">
-                <ul class="tabs">
-                    <li class="tab col s3"><a id="devs" href="#tab-main" class="translate active">Devices</a></li>
-                    <li class="tab col s3"><a href="#tab-map" class="translate active">Network map</a></li>
-                    <li class="tab col s3"><a id="settings" href="#tab-sett" class="translate active">Settings</a></li>
-                    <li class="tab col s3"><a id="develop" href="#tab-dev" class="translate active">Developer</a></li>
-                </ul>
-            </div>
+        <div id="tabs" class="tabs-content row">
             <div id="tab-main" class="col s12 page active">
                 <div id="devices" class="row">
                 </div>
@@ -105,7 +111,7 @@
             </div>
             <div id="tab-sett" class="col s12 page">
                 <div id="sett" class="row">
-                    <div class="input-field input-group col s3 m3 l3">
+                    <div class="input-field input-group col s12 m6 l3">
                         <input id="port" type="text" class="value validate"/>
                         <label for="port" class="translate">COM port name</label>                            
                         <span class="suffix">
@@ -115,25 +121,25 @@
                             </ul>
                         </span>
                     </div>
-                    <div class="input-field col s2 m2 l2">
+                    <div class="input-field col s6 m3 l1">
                         <input id="panID" type="number" min="1" max="65565" class="value" />
                         <label class="translate" for="panID">PanID</label>
                     </div>
-                    <div class="input-field col s2 m2 l2">
+                    <div class="input-field col s6 m3 l1">
                         <input id="channel" type="number" min="1" max="65565" class="value" />
                         <label class="translate" for="channel">Channel</label>
                     </div>
-                    <div class="input-field col s2 m2 l2">
+                    <div class="input-field col s12 m6 l3">
                         <input id="disableLed" type="checkbox" class="value" />
                         <label class="translate" for="disableLed">Disable LED for cc2531</label>
                     </div>
-                    <div class="input-field col s2 m2 l2">
+                    <div class="input-field col s6 m3 l1">
                         <input id="disableQueue" type="checkbox" class="value" />
                         <label class="translate" for="disableQueue">Disable Queue</label>
                     </div>
                 </div>
             </div>
-            <div id="tab-dev" class="col s12 page invis-on-load">
+            <div id="tab-dev" class="col s12 page">
                 <div id="develop" class="row">
                     <div class="row">
                         <div class="col s12">
@@ -181,7 +187,10 @@
                                 <b>ClusterId:</b> genOnOff (6), <b>Command Type: </b>Functional, 
                                 <b>Command:</b> on (1), <b>AttributeId:</b> 
                                 onOff (0, type 16)<br> 
-                                => You switched on your bulb</div>
+                                => You switched on your bulb
+                                <p>For details about needed arguments (expert mode) see 
+                                <a href="https://github.com/zigbeer/zcl-packet/wiki/6.-Appendix#621-general">
+                                zcl-packet - Appendix</a></p></div>
                             </li>
                             <li>
                                 <div class="collapsible-header">Expert Mode</div>
@@ -201,13 +210,13 @@
                     <div class="col s9">
                         <div class="row">
                             <div class="input-field col s4">
-                                <select id ="dev-selector" class="value">
+                                <select id ="dev-selector">
                                 <option value="" disabled selected>Select a device</option>
                                 </select>
                                 <label for="dev-selector" class="translate">Device</label>
                             </div> 
                             <div class="input-field col s4 admin-tooltip-icon" title="Some kind of 'device within device'. Every endpoint may have different functions. If one does not work, test another.">
-                                <select id ="ep-selector" class="value">
+                                <select id ="ep-selector">
                                 <option value="" disabled selected>Select an Endpoint</option>
                                 </select>
                                 <label for="ep-selector">Endpoint</label>
@@ -216,26 +225,26 @@
                         <div class="row">
                             <div class="row"> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="Group of functions. AttributeIds will change depending on your choice here.">
-                                    <select id ="cid-selector" class="value">
+                                    <select id ="cid-selector">
                                     <option value="" disabled selected>Select cid</option>
                                     </select>
                                     <label for="cid-selector">Cluster Id</label>
                                 </div> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="Command type. Available commands will change depending on your choice here. Some actions need Foundation, others Functional, you may test both.">
-                                    <select id ="cmd-type-selector" class="value">
+                                    <select id ="cmd-type-selector">
                                     <option value="foundation" selected>Foundation</option>
                                     <option value="functional">Functional</option>
                                     </select>
                                     <label for="cid-selector">Command Type</label>
                                 </div> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="The action you want to run.">
-                                    <select id ="cmd-selector" class="value">
+                                    <select id ="cmd-selector">
                                     <option value="" disabled selected>Select Command</option>
                                     </select>
                                     <label for="cmd-selector">Command</label>
                                 </div> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="The setting you are interested in.">
-                                    <select id ="attrid-selector" class="value">
+                                    <select id ="attrid-selector">
                                     <option value="" disabled selected>Select Attribute</option>
                                     </select>
                                     <label for="attrid-selector">Attribute Id</label>
@@ -250,11 +259,11 @@
                                     </label>
                                 </div>
                                 <div class="input-field col s4 admin-tooltip-icon" title="The value to send to your device.">
-                                    <input id ="value-input" class="value" disabled placeholder="0">
+                                    <input id ="value-input" disabled placeholder="0">
                                     <label for="value-input">Value</label>
                                 </div>
                                 <div class="input-field col s4 admin-tooltip-icon" title="The data type of your value (String, Integer,...)">
-                                    <select id ="type-selector" class="value" disabled>
+                                    <select id ="type-selector" disabled>
                                     <option value="" disabled selected>Select Type</option>
                                     </select>
                                     <label for="type-selector">Type Id</label>
@@ -303,49 +312,95 @@
                     </div>
                 </div>
             </div>
+            <div id="tab-groups" class="col s12 page">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="col s12">
+                            <table class="">
+                                <thead>
+                                    <tr>
+                                        <th data-name="num" class="translate">№</th>
+                                        <th data-name="name" class="translate">Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groups_table"></tbody>
+                            </table>
+                        </div>
+                        <a id="add_group" class="btn-floating waves-effect waves-light blue table-button-add">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="materialize-dialogs m">
-    <div id="modaledit" class="modal">
-        <div class="modal-content">
-            <h3 class="translate">Rename device</h3>
-            <div class="row">
-                <div class="input-field col s12">
-                    <input id="name" type="text" class="value validate">
-                    <label for="name" class="translate">Name</label>
+        <div id="modaledit" class="modal">
+            <div class="modal-content">
+                <!-- <h3 class="translate">Config device</h3> -->
+                <div class="row">
+                    <div class="input-field">
+                        <input id="d_name" type="text" class="value validate">
+                        <label for="d_name" class="translate">Name</label>
+                    </div>
+                    <div class="input-field">
+                        <select id="d_groups" class="materialSelect" multiple><option value="1">Значение</option></select>
+                        <label for="d_groups" class="translate">Groups</label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-        <a href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-        </div>
-    </div>
-
-    <div id="modaldelete" class="modal">
-        <div class="modal-content">
-        <h3 class="translate">Delete confirmation</h3>
-        <p>A bunch of text</p>
-        </div>
-        <div class="modal-footer">
-        <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
-        <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-        </div>
-    </div>
-
-    <div id="modalpairing" class="modal modal-fixed-footer">
-        <div class="modal-content">
-            <h3 class="translate">Pairing process</h3>
-            <div class="row textarea">
-                <textarea id="stdout" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 100px)"></textarea>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
-        <div class="modal-footer">
-        <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
-        <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+
+        <div id="groupedit" class="modal">
+            <div class="modal-content">
+                <!-- <h3 class="translate">Group</h3> -->
+                <div class="row">
+                    <div class="input-field col s12 m4 l2">
+                        <input id="g_index" type="number" min="1" class="value validate">
+                        <label for="g_index" class="translate">№</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="g_name" type="text" class="value validate">
+                        <label for="g_name" class="translate">Name</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
         </div>
-    </div>
+
+        <div id="modaldelete" class="modal">
+            <div class="modal-content">
+                <h3 class="translate">Delete confirmation</h3>
+                <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+                <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="modalpairing" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h3 class="translate">Pairing process</h3>
+                <div class="row textarea">
+                    <textarea id="stdout" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 100px)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
+                <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
     </div>
 </body>
 

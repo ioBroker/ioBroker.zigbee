@@ -10,12 +10,10 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     messages = [],
     map = [],
     network,
-    responseCodes = false;
-
-//document.addEventListener('DOMContentLoaded', function() {
-//    var elems = document.querySelectorAll('select');
-//    var instances = M.FormSelect.init(elems, {});
-//  });
+    responseCodes = false,
+    groups = {},
+    devGroups = {},
+    onChangeEmitter;
 
 function getCard(dev) {
     var title = dev.common.name,
@@ -39,7 +37,7 @@ function getCard(dev) {
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
-        info = '<p style="min-height:96px">' + type + '<br>' + id.replace(namespace+'.', '') + '</p>',
+        info = `<p style="min-height:96px">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
         buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
             '<i class="material-icons tiny">delete</i></a>'+
             '<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
@@ -74,7 +72,7 @@ function getCard(dev) {
                             '<a name="close" class="waves-effect waves-red btn-flat top right">'+
                             '<i class="material-icons">close</i></a>'+
                         '</span>'+
-                        '<span class="card-title grey-text text-darken-4">Device details</span>'+
+                        '<span class="card-title grey-text text-darken-4 translate">Device details</span>'+
                         '<div id="d-infos">'+
                             'loading...'+
                         '</div>'+
@@ -151,9 +149,20 @@ function deleteConfirmation(id, name) {
 }
 
 function editName(id, name) {
-    var text = 'Enter new name for "'+name+'" ('+id+')?';
-    $('#modaledit').find("input").val(name);
-    $('#modaledit').find("label").text(text);
+    const dev = devices.find((d) => d._id == id);
+    $('#modaledit').find("input[id='d_name']").val(name);
+    if (dev.info.type == "Router") {
+        list2select('#d_groups', groups, devGroups[id] || []);
+        $("#d_groups").parent().parent().removeClass('hide');
+    } else {
+        $("#d_groups").parent().parent().addClass('hide');
+    }
+    $("#modaledit a.btn[name='save']").unbind("click");
+    $("#modaledit a.btn[name='save']").click(function(e) {
+        var newName = $('#modaledit').find("input[id='d_name']").val(),
+            newGroups = $('#d_groups').val();
+        updateDev(id, newName, newGroups);
+    });
     $('#modaledit').modal('open');
     Materialize.updateTextFields();
 }
@@ -213,9 +222,16 @@ function showDevices() {
           }
           return 0;
     });
+    devGroups = {};
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
         if (d.info && d.info.type == "Coordinator") continue;
+        if (d.groups && d.info && d.info.type == "Router") {
+            devGroups[d._id] = d.groups;
+            d.groupNames = d.groups.map(item=>{
+                return groups[item] || '';
+            }).join(', ');
+        }
         var card = getCard(d);
         html += card;
     }
@@ -232,9 +248,10 @@ function showDevices() {
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
     $("a.btn-floating[name='edit']").click(function(e) {
-        var dev_block = $(this).parents("div.device");
-        // editName(id, name);
-        openReval(e, getDevId(dev_block), getDevName(dev_block));
+        var dev_block = $(this).parents("div.device"),
+            id = getDevId(dev_block),
+            name = getDevName(dev_block);
+        editName(id, name);
     });
     $("a.btn-floating[name='join']").click(function() {
         var dev_block = $(this).parents("div.device");
@@ -294,16 +311,18 @@ function pollDeviceInfo(id, card) {
         }
         
         let html = '<ul>';
-        for (var i=0; i<reply.msg.length; i++) {
-            var attr = reply.msg[i];
-            if (attr.status != '0') {
-                continue; // unsupAttr,...
-            }
-            if (attr.attrId == '16384') {//swBuildId
-                html += '<li>Firmware Version: '+attr.attrData+'</li>';
-            }
-            else if (attr.attrId == '3') {//hwVersion
-                html += '<li>Hardware Version: '+attr.attrData+'</li>';
+        if (reply.msg) {
+            for (var i=0; i<reply.msg.length; i++) {
+                var attr = reply.msg[i];
+                if (attr.status != '0') {
+                    continue; // unsupAttr,...
+                }
+                if (attr.attrId == '16384') {//swBuildId
+                    html += '<li>Firmware Version: '+attr.attrData+'</li>';
+                }
+                else if (attr.attrId == '3') {//hwVersion
+                    html += '<li>Hardware Version: '+attr.attrData+'</li>';
+                }
             }
         }
         html += '</ul>';
@@ -341,6 +360,7 @@ function getMap() {
 
 // the function loadSettings has to exist ...
 function load(settings, onChange) {
+    onChangeEmitter = onChange;
     if (settings.panID === undefined) settings.panID = 6754;
     if (settings.channel === undefined) settings.channel = 11;
 
@@ -381,10 +401,20 @@ function load(settings, onChange) {
         getMap();
     });
 
+    sendTo(null, 'getGroups', {}, function (data) {
+        groups = data;
+        showGroups();
+    });
+
+    $('#add_group').click(function() {
+        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
+        editGroupName(maxind+1, "");
+    });
+
     $(document).ready(function() {
         $('.modal').modal({
             startingTop: '30%',
-            endingTop: '30%',
+            endingTop: '10%',
         });
         $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
@@ -398,13 +428,8 @@ function load(settings, onChange) {
     }
 
     $('ul.tabs').on('click', 'a', function(e) {
-        if (network != undefined) {
-            var width = $('#tab-map').width(),
-                height = $('#tab-map').height()-150;
-            network.setSize(width, height);
-            network.redraw();
-            network.fit();
-            network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
+        if ($(e.target).attr("id") == 'tabmap') {
+            redrawMap();
         }
         if ($(e.target).attr("id") == 'develop') {
         	loadDeveloperTab(onChange);
@@ -480,7 +505,7 @@ socket.on('stateChange', function (id, state) {
 
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
-    if (obj && obj.type == "device") {
+    if (obj && obj.type == "device" && obj.common.type !== 'group') {
         getDevices();
     }
 });
@@ -558,6 +583,18 @@ function showNetworkMap(devices, map){
         },
     };
     network = new vis.Network(container, data, options);
+    redrawMap();
+}
+
+function redrawMap() {
+    if (network != undefined) {
+        var width = $('.adapter-body').width(),
+            height = $('.adapter-body').height()-128;
+        network.setSize(width, height);
+        network.redraw();
+        network.fit();
+        network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
+    }
 }
 
 function getComPorts(onChange) {
@@ -599,7 +636,19 @@ function loadDeveloperTab(onChange) {
             }, 
             function(key, device) {
                 return device._id;
-    }); 
+    });
+    // add groups to device selector
+    var groupList = [];
+    for (var key in groups) {
+        groupList.push({'_id': namespace+'.'+key.toString(16).padStart(16, '0'), 'groupId': key, 'groupName': groups[key]});
+    }
+    updateSelect('#dev', groupList,
+            function(key, device) {
+                return 'Group '+device.groupId+': '+device.groupName;
+            }, 
+            function(key, device) {
+                return device._id;
+    }, true); 
 
     // fill cid, cmd, type selector
     populateSelector('#cid', 'cidList');
@@ -631,10 +680,11 @@ function loadDeveloperTab(onChange) {
                 showDevRunInfo('JSON error', exception, 'yellow');
             }
         };
-        const setExpertData = function(prop, value) {
+        const setExpertData = function(prop, value, removeIfEmpty = true) {
             if (!$('#expert-mode').is(':checked')) {
                 return;
             }
+            if (!removeIfEmpty && value == null) { value = ''; }
             var data;
             if (prop) {
                 data = prepareExpertData();
@@ -671,7 +721,8 @@ function loadDeveloperTab(onChange) {
                 return obj._id === this.value;
             });
 
-            updateSelect('#ep', device.info.epList,
+            var epList = device ? device.info.epList : null;
+            updateSelect('#ep', epList,
                     function(key, ep) {
                         return ep;
                     }, 
@@ -679,6 +730,7 @@ function loadDeveloperTab(onChange) {
                         return ep;
             }); 
             setExpertData('devId', this.value);
+            setExpertData('ep', $('#ep-selector').val(), false);
         });
         
         $('#ep-selector').change(function() {
@@ -806,10 +858,6 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
         if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please choose ClusterId, Command, CommandType and AttributeId!'});}
         return;
     }
-    if (!zclData || zclData.attrId < 0) {
-        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Ids must be positive!'});}
-        return;
-    }
     var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
     if (callback) {callback({localStatus: 'Send', errMsg: 'Waiting for reply...'});}
 
@@ -903,12 +951,14 @@ function populateSelector(selectId, key, cid) {
     });
 }
 
-function updateSelect(id, list, getText, getId) {
+function updateSelect(id, list, getText, getId, append = false) {
     const selectId = id+'-selector';
     var mySelect = $(selectId);
-    $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
-    mySelect.select();
-    if (list == null) {
+    if (!append) {
+        $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
+        mySelect.select();
+    }
+    if (list == null && !append) {
         var infoOption = new Option("Nothing available");
         infoOption.disabled = true;
         mySelect.append( infoOption);
@@ -931,4 +981,99 @@ function updateSelect(id, list, getText, getId) {
     }
     // update select element (Materialize)
     mySelect.select();
+}
+
+function list2select(selector, list, selected) {
+    var element = $(selector);
+    element.empty();
+    for (var j in list) {
+        if (list.hasOwnProperty(j)) {
+            const cls = (selected.indexOf(j) >= 0) ? " selected" : "";
+            element.append(`<option value="${j}"${cls}>${list[j]}</option>`);
+        }
+    }
+    element.select();
+}
+
+function showGroups() {
+    $("#groups_table").find(".group").remove();
+    if (!groups) return;
+    var element = $('#groups_table');
+    for (var j in groups) {
+        if (groups.hasOwnProperty(j)) {
+            element.append(`<tr id="group_${j}" class="group"><td>${j}</td><td><div>${groups[j]}<span class="right">`+
+            `<a id="${j}" name="groupedit" class="waves-effect green btn-floating"><i class="material-icons">edit</i></a>`+
+            `<a id="${j}" name="groupdelete" class="waves-effect red btn-floating"><i class="material-icons">delete</i></a></span></div></td></tr>`);
+        }
+    }
+    $("a.btn-floating[name='groupedit']").click(function(e) {
+        const index = $(this).attr("id"),
+            name = groups[index];
+        editGroupName(index, name);
+    });
+    $("a.btn-floating[name='groupdelete']").click(function() {
+        const index = $(this).attr("id"),
+            name = groups[index];
+        deleteGroupConfirmation(index, name);
+    });
+}
+
+function editGroupName(id, name) {
+    //var text = 'Enter new name for "'+name+'" ('+id+')?';
+    $('#groupedit').find("input[id='g_index']").val(id);
+    $('#groupedit').find("input[id='g_name']").val(name);
+    $("#groupedit a.btn[name='save']").unbind("click");
+    $("#groupedit a.btn[name='save']").click(function(e) {
+        var newId = $('#groupedit').find("input[id='g_index']").val(),
+            newName = $('#groupedit').find("input[id='g_name']").val();
+        updateGroup(id, newId, newName);
+        showGroups();
+    });
+    $('#groupedit').modal('open');
+    Materialize.updateTextFields();
+}
+
+function deleteGroupConfirmation(id, name) {
+    var text = translateWord('Do you really whant to delete group') + ' "'+name+'" ('+id+')?';
+    $('#modaldelete').find("p").text(text);
+    $("#modaldelete a.btn[name='yes']").unbind("click");
+    $("#modaldelete a.btn[name='yes']").click(function(e) {
+        deleteGroup(id);
+        showGroups();
+    });
+    $('#modaldelete').modal('open');
+}
+
+function updateGroup(id, newId, newName) {
+    delete groups[id];
+    groups[newId] = newName;
+    sendTo(null, 'updateGroups', groups);
+}
+
+function deleteGroup(id) {
+    delete groups[id];
+    sendTo(null, 'updateGroups', groups);
+}
+
+function updateDev(id, newName, newGroups) {
+    const dev = devices.find((d) => d._id == id);
+    if (dev && dev.common.name != newName) {
+        renameDevice(id, newName);
+    }
+    if (dev.info.type == "Router") {
+        const oldGroups = devGroups[id] || [];
+        if (oldGroups.toString() != newGroups.toString()) {
+            devGroups[id] = newGroups;
+            dev.groups = newGroups;
+            // save dev-groups
+            sendTo(null, 'groupDevices', devGroups, function (msg) {
+                if (msg) {
+                    if (msg.error) {
+                        showMessage(msg.error, _('Error'), 'alert');
+                    }
+                }
+            });
+            showDevices();
+        }
+    }
 }
