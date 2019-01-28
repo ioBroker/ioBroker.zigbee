@@ -35,6 +35,22 @@ To connect Zigbee devices in most cases, just press the pairing button on the de
 
 After successful pairing, the device appears in the configuration panel. If the device appears in the configuration panel but has the type "undefined", then this is an unknown device and can not be work with it. If the device is in the list of available devices, but added as "undefined", then try to remove the device and add it again.
 
+### Device Groups
+You may create groups of devices. 
+
+![](docs/tutorial/groups-1.png)
+
+It is a Zigbee feature, intended for example to switch bulbs synchronized. Assign groups via device tabs edit button. A group will show as own "device" in Objects.
+
+![](docs/tutorial/groups-2.png)
+
+Note: Not all devices support groups (not supported by end devices like sensors).
+
+### Developer Tab
+
+This is a tool for advanced users to test currently unsupported devices or enhance this adapters functionality. More instructions can be found on tab.
+![](docs/tutorial/tab-dev-1.png)
+
 ## Additional info
 
 There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality on the same technologies, where you can work with the same devices using the MQTT protocol. Therefore, if any improvements or support for new zigbee-devices occur in the Zigbee2MQTT project, we can transfer and add the same functionality to this adapter. If you notice this, then write the issue - we'll postpone it.
@@ -47,7 +63,19 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
+## Plan
+
+### 1.0.0 
+
+* Binding
+
 ## Changelog
+
+### 0.9.0 (2019-01)
+* (arteck) Many new devices
+* (allofmex) Developer tab
+* (modmax) Reading attributes
+* (kirovilya) Groups support
 
 ### 0.8.0 (2018-11-29)
 
