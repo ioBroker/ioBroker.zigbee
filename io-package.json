@@ -1,19 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.8.9999",
+        "version": "0.9.0",
         "news": {
-            "0.8.9999": {
-                "en": "news",
-                "de": "neues",
-                "ru": "новое",
-                "pt": "novidades",
-                "nl": "nieuws",
-                "fr": "nouvelles",
-                "it": "notizie",
-                "es": "noticias",
-                "pl": "nowości",
-                "zh-cn": "新"
+            "0.9.0": {
+                "en": "Groups and new Developer tab",
+                "ru": "Группы и новая вкладка Разработчик"
             },
             "0.8.2": {
                 "en": "new converter from zigbee-shepherd",

@@ -24,4 +24,25 @@ systemDictionary = {
     "Groups": {                                      "en": "Groups",                                          "de": "Gruppen",                                         "ru": "Группы",                                          "pt": "Groups",                                          "nl": "Groups",                                          "fr": "Groups",                                          "it": "Groups",                                          "es": "Groups",                                          "pl": "Groups"},
     "Developer": {                                   "en": "Developer",                                       "de": "Analyse",                                         "ru": "Developer",                                       "pt": "Developer",                                       "nl": "Developer",                                       "fr": "Developer",                                       "it": "Developer",                                       "es": "Developer",                                       "pl": "Developer"},
     "Device details": {                              "en": "Device details",                                  "de": "Details",                                         "ru": "Device details",                                  "pt": "Device details",                                  "nl": "Device details",                                  "fr": "Device details",                                  "it": "Device details",                                  "es": "Device details",                                  "pl": "Device details"},
+    "Reset confirmation": {                          "en": "Reset confirmation",                              "de": "Wirklich resetten?",                              "ru": "Reset confirmation",                              "pt": "Reset confirmação",                               "nl": "Reset verwijderen",                               "fr": "Reset la confirmation",                           "it": "Reset conferma",                                  "es": "Reset confirmación",                              "pl": "Reset potwierdzenie"},
+    "Reset Info": {
+        "en":   "A Soft-reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
+                "and it resets CC253x settings too. You will have to repair ALL of your devices!",
+        "de":   "Ein Soft-Reset startet nur den CC253x Adapter und die zugehörige Software neu. "+
+                "Ein Hard-Reset setzt die Liste ALLER gepairten Geräte und die CC253x Einstellungen"+
+                "zurück! Alle Geräte müssen anschließend neu gepairt werden!",
+        "ru":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
+                "and it resets CC253x settings too. You will have to repair ALL of your devices!",
+        "pt":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
+                "and it resets CC253x settings too. You will have to repair ALL of your devices!",
+        "nl":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
+                "and it resets CC253x settings too. You will have to repair ALL of your devices!",
+        "fr":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
+                "and it resets CC253x settings too. You will have to repair ALL of your devices!",
+        "it":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
+                "and it resets CC253x settings too. You will have to repair ALL of your devices!",
+        "es":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
+                "and it resets CC253x settings too. You will have to repair ALL of your devices!",
+        "pl":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
+                "and it resets CC253x settings too. You will have to repair ALL of your devices!"},
 };

@@ -400,6 +400,10 @@ function load(settings, onChange) {
     $('#refresh').click(function() {
         getMap();
     });
+    
+    $('#reset-btn').click(function() {
+        resetConfirmation();
+    });
 
     sendTo(null, 'getGroups', {}, function (data) {
         groups = data;
@@ -1076,4 +1080,20 @@ function updateDev(id, newName, newGroups) {
             showDevices();
         }
     }
+}
+
+function resetConfirmation() {
+    $('#modalreset').modal('open');
+    var btn = $("#modalreset .modal-content a.btn");
+    btn.unbind("click");
+    btn.click(function(e) {
+        sendTo(null, 'reset', {mode: e.target.id}, function (err) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                console.log('Reseted');
+            }
+        });
+    });
 }

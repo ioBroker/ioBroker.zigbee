@@ -153,21 +153,26 @@ adapter.on('message', obj => {
                         });
                 }
                 break;
-            case 'sendToZigbee':    
-                sendToZigbee(obj);    
+            case 'sendToZigbee':
+                sendToZigbee(obj);
                 break;    
-            case 'getLibData':    
-                // e.g. zcl lists    
-                if (obj && obj.message && typeof obj.message === 'object') {    
-                    getLibData(obj)                        
-                }                                   
+            case 'getLibData':
+                // e.g. zcl lists
+                if (obj && obj.message && typeof obj.message === 'object') {
+                    getLibData(obj);
+                }
                 break;
             case 'updateGroups':
                 updateGroups(obj);
-                break;    
+                break;
             case 'getGroups':
                 getGroups(obj);
-                break;    
+                break;
+            case 'reset':
+                zbControl.reset(obj.message.mode, function(err, data) {
+                    adapter.sendTo(obj.from, obj.command, err, obj.callback);
+                });
+                break;
             default:
                 adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                 break;
@@ -896,7 +901,6 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         
         const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
         const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
-        const readTimeout = (stateDesc.readTimeout) ? stateDesc.readTimeout(value, options) : 0;
         
         let syncStateList = [];
         if (stateModel.syncStates) {
@@ -942,7 +946,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                         acknowledgeState(deviceId, modelId, stateDesc, value);
                     } else if (readAfterWriteStates.includes(key)) {
                         // wait a timeout for read state value after write
-                        adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${readTimeout}`);
+                        adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${message.readAfterWriteTime}`);
                         setTimeout(()=>{
                             const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
                             if (readMessage) {
@@ -967,7 +971,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                                 // process sync state list
                                 processSnycStatesList(deviceId, modelId, syncStateList);
                             }
-                        }, (readTimeout || 10)); // a slight offset between write and read is needed
+                        }, (message.readAfterWriteTime || 10)); // a slight offset between write and read is needed
                     } else {
                         // acknowledge state with given value
                         acknowledgeState(deviceId, modelId, stateDesc, value);
@@ -1256,7 +1260,11 @@ function main() {
             oldErrOut(logs);
         };
     }
-
+// before start reset converter
+    zbControl.reset("soft", function(err, data) {
+          adapter.log.info('Restart converter ' );                    
+    });
+    
     // start the server
     zbControl.start(err => err && adapter.setState('info.connection', false));
 
