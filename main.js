@@ -1260,7 +1260,11 @@ function main() {
             oldErrOut(logs);
         };
     }
-
+// before start reset converter
+    zbControl.reset("soft", function(err, data) {
+          adapter.log.info('Restart converter ' );                    
+    });
+    
     // start the server
     zbControl.start(err => err && adapter.setState('info.connection', false));
 
