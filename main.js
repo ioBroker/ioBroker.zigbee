@@ -1260,9 +1260,9 @@ function main() {
             oldErrOut(logs);
         };
     }
-// before start reset converter
+    // before start reset coordinator
     zbControl.reset("soft", function(err, data) {
-          adapter.log.info('Restart converter ' );                    
+        adapter.log.info('Reset coordinator' );                    
     });
     
     // start the server
