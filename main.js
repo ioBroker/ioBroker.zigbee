@@ -16,7 +16,6 @@ const fs = require('fs');
 const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require(__dirname + '/lib/zigbeecontroller');
-const adapter = utils.Adapter({name: 'zigbee', systemConfig: true});
 const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require(__dirname + '/lib/devstates');
 const SerialPort = require('serialport');
@@ -31,8 +30,42 @@ const groupConverters = [
 var devNum = 0;
 
 let zbControl;
+let adapter;
 
 // let start;
+ 
+function startAdapter(options) {
+  options = options || {};
+  Object.assign(options, {
+    name:  'zigbee',
+    systemConfig: true,
+// is called when adapter shuts down - callback has to be called under any circumstances!    
+    unload: function () {
+      try {
+        adapter.log.debug('cleaned everything up...');
+        if (zbControl) {
+            zbControl.stop();
+            zbControl = undefined;
+        }
+        callback();
+      } catch (e) {
+          callback();
+      }
+    },         
+    
+    stateChange: function (id, state) {
+      setDevChange(id, state);
+    },
+    
+    objectChange: function (id, obj) {
+      //adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
+    }     
+    
+  });
+  adapter = new utils.Adapter(options);
+    
+  return adapter;
+};
 
 function processMessages(ignore) {
     adapter.getMessage(function (err, obj) {
@@ -55,31 +88,8 @@ function processMessage(message) {
     }
 }
 
-
-// is called when adapter shuts down - callback has to be called under any circumstances!
-adapter.on('unload', function (callback) {
-    try {
-        adapter.log.debug('cleaned everything up...');
-        if (zbControl) {
-            zbControl.stop();
-            zbControl = undefined;
-        }
-        callback();
-    } catch (e) {
-        callback();
-    }
-});
-
-
-// is called if a subscribed object changes
-adapter.on('objectChange', function (id, obj) {
-    // Warning, obj can be null if it was deleted
-    // adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
-});
-
-
 // is called if a subscribed state changes
-adapter.on('stateChange', function (id, state) {
+function setDevChange(id, state) {
     // you can use the ack flag to detect if it is status (true) or command (false)
     if (state && !state.ack) {
         adapter.log.debug('User stateChange ' + id + ' ' + JSON.stringify(state));
@@ -101,8 +111,15 @@ adapter.on('stateChange', function (id, state) {
             }
         });
     }
-});
+};
 
+// If started as allInOne/compact mode => return function to create instance
+if (module && module.parent) {
+    module.exports = startAdapter;
+} else {
+    // or start the instance directly
+    startAdapter();
+} 
 
 // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
 adapter.on('message', obj => {
