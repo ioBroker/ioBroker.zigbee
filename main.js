@@ -155,7 +155,7 @@ adapter.on('message', obj => {
                 break;
             case 'sendToZigbee':
                 sendToZigbee(obj);
-                break;    
+                break;
             case 'getLibData':
                 // e.g. zcl lists
                 if (obj && obj.message && typeof obj.message === 'object') {
@@ -332,7 +332,7 @@ function deleteDevice(from, command, msg, callback) {
             }
         });
     } else {
-        adapter.sendTo(from, command, {error: 'You need save and run adapter!'}, callback);
+        adapter.sendTo(from, command, {error: 'You need to save and start the adapter!'}, callback);
     }
 }
 
@@ -381,7 +381,7 @@ function letsPairing(from, command, message, callback) {
         });
         adapter.sendTo(from, command, 'Start pairing!', callback);
     } else {
-        adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);
+        adapter.sendTo(from, command, {error: 'You need to save and start the adapter before pairing!'}, callback);
     }
 }
 
@@ -514,7 +514,7 @@ function leaveDevice(id, msg) {
 }
 
 function getLibData(obj) {
-    const key = obj.message.key; 
+    const key = obj.message.key;
     const zclId = require('zcl-id');
     var result = new Object();
     if (key === 'cidList') {
@@ -561,10 +561,10 @@ function getLibData(obj) {
     const cmdType = obj.message.cmdType;
     var cmd;
     var zclData = obj.message.zclData;
-    if (cmdType === 'functional') { 
+    if (cmdType === 'functional') {
         cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.functional(cid, obj.message.cmd).value;
     }
-    else if (cmdType === 'foundation') { 
+    else if (cmdType === 'foundation') {
         cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.foundation(obj.message.cmd).value;
         if (!Array.isArray(zclData)) {
             // wrap object in array
@@ -619,7 +619,7 @@ function getLibData(obj) {
         adapter.log.error('SendToZigbee failed! ('+exception+')');
         adapter.sendTo(obj.from, obj.command, {err: exception}, obj.callback);
 
-         // Note: zcl-packet/lib/foundation.js throws correctly 
+         // Note: zcl-packet/lib/foundation.js throws correctly
         // "Error: Payload of commnad: write must have dataType property.",
         // but only at first time. If user sends same again no exception anymore
         // not sure if bug in zigbee-shepherd or zcl-packet
@@ -714,11 +714,11 @@ function onReady() {
         resolve();
     }).then(()=>{
         adapter.setState('info.connection', true);
-            
+
         if (adapter.config.disableLed) {
             zbControl.disableLed();
         }
-    
+
         // update pairing State
         adapter.setState('info.pairingMode', false);
     }).then(()=>{
@@ -747,7 +747,7 @@ function onReady() {
             configureDevice(device);
         });
         Promise.all(chain);
-    });  
+    });
     return tasks;
 }
 
@@ -853,7 +853,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
     }
 
     const value = state.val;
-    if (value === undefined || value === '') 
+    if (value === undefined || value === '')
         return;
 
     let stateList = [{stateDesc: stateDesc, value: value, index: 0, timeout: 0}];
@@ -869,7 +869,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             return a.index - b.index;
         });
     }
-    
+
     // holds the states for for read after write requests
     let readAfterWriteStates = [];
     if (stateModel.readAfterWriteStates) {
@@ -877,12 +877,12 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             readAfterWriteStates = readAfterWriteStates.concat(readAfterWriteStateDesc.id);
         });
     }
-    
+
     const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
     if (modelId != 'group') {
         device = deviceId;
     }
-    
+
     stateList.forEach((changedState) => {
         const stateDesc = changedState.stateDesc;
         const value = changedState.value;
@@ -892,16 +892,16 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             acknowledgeState(deviceId, modelId, stateDesc, value);
             return;
         }
-        
+
         const converter = mappedModel.toZigbee.find((c) => c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id));
         if (!converter) {
             adapter.log.error(`No converter available for '${mappedModel.model}' with key '${stateKey}'`);
             return;
         }
-        
+
         const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
         const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
-        
+
         let syncStateList = [];
         if (stateModel.syncStates) {
             stateModel.syncStates.forEach((syncFunct) => {
@@ -921,10 +921,10 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             acknowledgeState(deviceId, modelId, stateDesc, value);
             return;
         }
-        
+
         adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
-        
-        if (adapter.config.disableQueue) {    
+
+        if (adapter.config.disableQueue) {
             zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
                 if (err) {
                     // nothing to do in error case
@@ -932,9 +932,9 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                     // acknowledge state with given value
                     acknowledgeState(deviceId, modelId, stateDesc, value);
                     // process sync state list
-                    processSnycStatesList(deviceId, modelId, syncStateList);
+                    processSyncStatesList(deviceId, modelId, syncStateList);
                 }
-            });    
+            });
         } else {
             // wait a timeout for write
             setTimeout(()=>{
@@ -961,7 +961,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                                             // acknowledge state with read value
                                             acknowledgeState(deviceId, modelId, stateDesc, readValue);
                                             // process sync state list
-                                            processSnycStatesList(deviceId, modelId, syncStateList);
+                                            processSyncStatesList(deviceId, modelId, syncStateList);
                                         }
                                     }
                                 });
@@ -969,14 +969,14 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                                 // acknowledge state with given value
                                 acknowledgeState(deviceId, modelId, stateDesc, value);
                                 // process sync state list
-                                processSnycStatesList(deviceId, modelId, syncStateList);
+                                processSyncStatesList(deviceId, modelId, syncStateList);
                             }
                         }, (message.readAfterWriteTime || 10)); // a slight offset between write and read is needed
                     } else {
                         // acknowledge state with given value
                         acknowledgeState(deviceId, modelId, stateDesc, value);
                         // process sync state list
-                        processSnycStatesList(deviceId, modelId, syncStateList);
+                        processSyncStatesList(deviceId, modelId, syncStateList);
                     }
                 });
             }, changedState.timeout);
@@ -994,7 +994,7 @@ function acknowledgeState(deviceId, modelId, stateDesc, value) {
     }
 }
 
-function processSnycStatesList(deviceId, modelId, syncStateList) {
+function processSyncStatesList(deviceId, modelId, syncStateList) {
     syncStateList.forEach((syncState) => {
         acknowledgeState(deviceId, modelId, syncState.stateDesc, syncState.value);
     });
@@ -1073,7 +1073,7 @@ function publishToState(devId, modelID, model, payload) {
 }
 
 function syncDevStates(dev) {
-    const devId = dev.ieeeAddr.substr(2), 
+    const devId = dev.ieeeAddr.substr(2),
           modelId = dev.modelId,
           hasGroups = dev.type === 'Router';
     // devId - iobroker device id
@@ -1162,13 +1162,13 @@ function onDevEvent(type, devId, message, data) {
 
         default:
             adapter.log.debug('Device ' + devId + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
-        
+
             // ignore if remaining time is set in event, cause that's just an intermediate value
             if (message.data.data && message.data.data.remainingTime) {
                adapter.log.debug("Found remaining time " + message.data.data.remainingTime + ', so skip event');
                return;
             }
-        
+
             // Map Zigbee modelID to vendor modelID.
             const modelID = data.modelId;
             const mappedModel = deviceMapping.findByZigbeeModel(modelID);
@@ -1262,9 +1262,9 @@ function main() {
     }
     // before start reset coordinator
     zbControl.reset("soft", function(err, data) {
-        adapter.log.info('Reset coordinator' );                    
+        adapter.log.info('Reset coordinator' );
     });
-    
+
     // start the server
     zbControl.start(err => err && adapter.setState('info.connection', false));
 
