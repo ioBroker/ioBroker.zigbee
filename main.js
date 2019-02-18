@@ -257,18 +257,38 @@ function updateState(devId, name, value, common) {
                 }
             }
             // check if state exist
-
             adapter.getObject(id, (err, stobj) => {
+                let hasChanges = false;
                 if (stobj) {
                     // update state - not change name and role (user can it changed)
                     delete new_common.name;
                     delete new_common.role;
-                }
-                adapter.extendObject(id, {type: 'state', common: new_common}, () => {
-                    if (value !== undefined) {
-                        adapter.setState(id, value, true);
+
+                    // check whether any common property is different
+                    if(stobj.common){
+                        for (var property in new_common) {
+                            if (stobj.common.hasOwnProperty(property)) {
+                                if(stobj.common[property] == new_common[property]){
+                                    delete new_common[property];
+                                } else {
+                                    hasChanges = true;
+                                }
+                            }
+                        }
                     }
-                });
+                }
+
+                // only change object when any common property has changed
+                if(hasChanges){
+                    adapter.extendObject(id, {type: 'state', common: new_common}, () => {
+                        if (value !== undefined) {
+                            adapter.setState(id, value, true);
+                        }
+                    });
+                } else if (value !== undefined) {
+                    adapter.setState(id, value, true);
+                }
+                
             });
         } else {
             adapter.log.debug('Wrong device ' + devId);
