@@ -1089,6 +1089,12 @@ function syncDevStates(dev) {
         if (!states.hasOwnProperty(stateInd)) continue;
 
         const statedesc = states[stateInd];
+
+        // Filter out non routers or devices that are battery driven for the availability flag
+        if( statedesc.id === "available" )
+          if( !(dev.type === 'Router') || dev.powerSource === 'Battery' )
+            continue;
+
         const common = {
             name: statedesc.name,
             type: statedesc.type,
@@ -1155,7 +1161,17 @@ function onDevEvent(type, devId, message, data) {
             adapter.log.debug('Device ' + devId + ' incoming event:' + safeJsonStringify(message));
             // Map Zigbee modelID to vendor modelID.
             const mModel = deviceMapping.findByZigbeeModel(data.modelId);
-            const payload = {linkquality: message.linkquality};
+
+
+            let payload = {};
+            if( message.hasOwnProperty('linkquality') ) {
+              payload.linkquality = message.linkquality;
+            }
+
+            if( message.hasOwnProperty('available') ) {
+              payload.available = message.available;
+            }
+
             adapter.log.debug('Publish ' + safeJsonStringify(payload));
             publishToState(devId.substr(2), data.modelId, mModel, payload);
             break;
