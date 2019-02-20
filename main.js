@@ -8,7 +8,7 @@
 /*jslint node: true */
 'use strict';
 
-process.env.DEBUG = 'zigbee*,cc-znp*';
+//process.env.DEBUG = 'zigbee*,cc-znp*';
 
 const safeJsonStringify = require(__dirname + '/lib/json');
 // you have to require the utils module and call adapter function
@@ -288,7 +288,7 @@ function updateState(devId, name, value, common) {
                 } else if (value !== undefined) {
                     adapter.setState(id, value, true);
                 }
-                
+
             });
         } else {
             adapter.log.debug('Wrong device ' + devId);
