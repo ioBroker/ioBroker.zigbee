@@ -369,7 +369,7 @@ function deleteDevice(from, command, msg, callback) {
             }
         });
     } else {
-        adapter.sendTo(from, command, {error: 'You need save and run adapter!'}, callback);
+        adapter.sendTo(from, command, {error: 'You need to save and start the adapter!'}, callback);
     }
 }
 
@@ -418,7 +418,7 @@ function letsPairing(from, command, message, callback) {
         });
         adapter.sendTo(from, command, 'Start pairing!', callback);
     } else {
-        adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);
+        adapter.sendTo(from, command, {error: 'You need to save and start the adapter before pairing!'}, callback);
     }
 }
 
@@ -969,7 +969,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                     // acknowledge state with given value
                     acknowledgeState(deviceId, modelId, stateDesc, value);
                     // process sync state list
-                    processSnycStatesList(deviceId, modelId, syncStateList);
+                    processSyncStatesList(deviceId, modelId, syncStateList);
                 }
             });
         } else {
@@ -998,7 +998,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                                             // acknowledge state with read value
                                             acknowledgeState(deviceId, modelId, stateDesc, readValue);
                                             // process sync state list
-                                            processSnycStatesList(deviceId, modelId, syncStateList);
+                                            processSyncStatesList(deviceId, modelId, syncStateList);
                                         }
                                     }
                                 });
@@ -1006,14 +1006,14 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                                 // acknowledge state with given value
                                 acknowledgeState(deviceId, modelId, stateDesc, value);
                                 // process sync state list
-                                processSnycStatesList(deviceId, modelId, syncStateList);
+                                processSyncStatesList(deviceId, modelId, syncStateList);
                             }
                         }, (message.readAfterWriteTime || 10)); // a slight offset between write and read is needed
                     } else {
                         // acknowledge state with given value
                         acknowledgeState(deviceId, modelId, stateDesc, value);
                         // process sync state list
-                        processSnycStatesList(deviceId, modelId, syncStateList);
+                        processSyncStatesList(deviceId, modelId, syncStateList);
                     }
                 });
             }, changedState.timeout);
@@ -1031,7 +1031,7 @@ function acknowledgeState(deviceId, modelId, stateDesc, value) {
     }
 }
 
-function processSnycStatesList(deviceId, modelId, syncStateList) {
+function processSyncStatesList(deviceId, modelId, syncStateList) {
     syncStateList.forEach((syncState) => {
         acknowledgeState(deviceId, modelId, syncState.stateDesc, syncState.value);
     });
@@ -1126,6 +1126,12 @@ function syncDevStates(dev) {
         if (!states.hasOwnProperty(stateInd)) continue;
 
         const statedesc = states[stateInd];
+
+        // Filter out non routers or devices that are battery driven for the availability flag
+        if( statedesc.id === "available" )
+          if( !(dev.type === 'Router') || dev.powerSource === 'Battery' )
+            continue;
+
         const common = {
             name: statedesc.name,
             type: statedesc.type,
@@ -1192,7 +1198,17 @@ function onDevEvent(type, devId, message, data) {
             adapter.log.debug('Device ' + devId + ' incoming event:' + safeJsonStringify(message));
             // Map Zigbee modelID to vendor modelID.
             const mModel = deviceMapping.findByZigbeeModel(data.modelId);
-            const payload = {linkquality: message.linkquality};
+
+
+            let payload = {};
+            if( message.hasOwnProperty('linkquality') ) {
+              payload.linkquality = message.linkquality;
+            }
+
+            if( message.hasOwnProperty('available') ) {
+              payload.available = message.available;
+            }
+
             adapter.log.debug('Publish ' + safeJsonStringify(payload));
             publishToState(devId.substr(2), data.modelId, mModel, payload);
             break;
