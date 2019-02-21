@@ -276,7 +276,7 @@ function updateState(devId, name, value, common) {
                             }
                         }
                     }
-                }
+                } else hasChanges = false;
 
                 // only change object when any common property has changed
                 if(hasChanges){
@@ -288,7 +288,7 @@ function updateState(devId, name, value, common) {
                 } else if (value !== undefined) {
                     adapter.setState(id, value, true);
                 }
-                
+
             });
         } else {
             adapter.log.debug('Wrong device ' + devId);
