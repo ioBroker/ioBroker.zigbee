@@ -8,7 +8,7 @@
 /*jslint node: true */
 'use strict';
 
-process.env.DEBUG = 'zigbee*,cc-znp*';
+//process.env.DEBUG = 'zigbee*,cc-znp*';
 
 const safeJsonStringify = require(__dirname + '/lib/json');
 // you have to require the utils module and call adapter function
@@ -1227,7 +1227,9 @@ function onDevEvent(type, devId, message, data) {
                     // Don't cache messages with click and action.
                     const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
                     adapter.log.debug('Publish ' + safeJsonStringify(payload));
-                    publishToState(devId.substr(2), modelID, mappedModel, payload);
+                    if (payload) {
+                      publishToState(devId.substr(2), modelID, mappedModel, payload);
+                    }
                 };
 
                 collectOptions(devId.substr(2), modelID, (options) => {
