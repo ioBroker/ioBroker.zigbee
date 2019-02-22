@@ -276,7 +276,7 @@ function updateState(devId, name, value, common) {
                             }
                         }
                     }
-                }
+                } else hasChanges = true;
 
                 // only change object when any common property has changed
                 if(hasChanges){
