@@ -56,6 +56,86 @@ function startAdapter(options) {
 
     adapter = new utils.Adapter(options);
 
+    // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
+    adapter.on('message', obj => {
+        if (typeof obj === 'object' && obj.command) {
+            switch (obj.command) {
+                case 'send':
+                    // e.g. send email or pushover or whatever
+                    adapter.log.debug('send command');
+                    // Send response in callback if required
+                    obj.callback && adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+                    break;
+                case 'letsPairing':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        letsPairing(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'getDevices':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getDevices(obj.from, obj.command, obj.callback);
+                    }
+                    break;
+                case 'getMap':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getMap(obj.from, obj.command, obj.callback);
+                    }
+                    break;
+                case 'renameDevice':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        renameDevice(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'groupDevices':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        groupDevices(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'deleteDevice':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        deleteDevice(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'listUart':
+                    if (obj.callback) {
+                        listSerial()
+                            .then((ports) => {
+                                adapter.log.debug('List of ports: ' + JSON.stringify(ports));
+                                adapter.sendTo(obj.from, obj.command, ports, obj.callback);
+                            });
+                    }
+                    break;
+                case 'sendToZigbee':
+                    sendToZigbee(obj);
+                    break;
+                case 'getLibData':
+                    // e.g. zcl lists
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getLibData(obj);
+                    }
+                    break;
+                case 'updateGroups':
+                    updateGroups(obj);
+                    break;
+                case 'getGroups':
+                    getGroups(obj);
+                    break;
+                case 'reset':
+                    zbControl.reset(obj.message.mode, function (err, data) {
+                        adapter.sendTo(obj.from, obj.command, err, obj.callback);
+                    });
+                    break;
+                default:
+                    adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
+                    break;
+            }
+        }
+        processMessages();
+    });
+
+    // is called when databases are connected and adapter received configuration.
+    adapter.on('ready', () => main());
+
     return adapter;
 }
 
@@ -104,83 +184,6 @@ function setDevChange(id, state) {
         });
     }
 }
-
-// Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-adapter.on('message', obj => {
-    if (typeof obj === 'object' && obj.command) {
-        switch (obj.command) {
-            case 'send':
-                // e.g. send email or pushover or whatever
-                adapter.log.debug('send command');
-                // Send response in callback if required
-                obj.callback && adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-                break;
-            case 'letsPairing':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    letsPairing(obj.from, obj.command, obj.message, obj.callback);
-                }
-                break;
-            case 'getDevices':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    getDevices(obj.from, obj.command, obj.callback);
-                }
-                break;
-            case 'getMap':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    getMap(obj.from, obj.command, obj.callback);
-                }
-                break;
-            case 'renameDevice':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    renameDevice(obj.from, obj.command, obj.message, obj.callback);
-                }
-                break;
-            case 'groupDevices':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    groupDevices(obj.from, obj.command, obj.message, obj.callback);
-                }
-                break;
-            case 'deleteDevice':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    deleteDevice(obj.from, obj.command, obj.message, obj.callback);
-                }
-                break;
-            case 'listUart':
-                if (obj.callback) {
-                    listSerial()
-                        .then((ports) => {
-                            adapter.log.debug('List of ports: ' + JSON.stringify(ports));
-                            adapter.sendTo(obj.from, obj.command, ports, obj.callback);
-                        });
-                }
-                break;
-            case 'sendToZigbee':
-                sendToZigbee(obj);
-                break;
-            case 'getLibData':
-                // e.g. zcl lists
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    getLibData(obj);
-                }
-                break;
-            case 'updateGroups':
-                updateGroups(obj);
-                break;
-            case 'getGroups':
-                getGroups(obj);
-                break;
-            case 'reset':
-                zbControl.reset(obj.message.mode, function (err, data) {
-                    adapter.sendTo(obj.from, obj.command, err, obj.callback);
-                });
-                break;
-            default:
-                adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
-                break;
-        }
-    }
-    processMessages();
-});
 
 function listSerial() {
     return SerialPort.list()
@@ -369,10 +372,6 @@ function updateDev(dev_id, dev_name, model, callback) {
         adapter.extendObject(id, {common: {type: model, icon: icon}}, callback);
     });
 }
-
-// is called when databases are connected and adapter received configuration.
-// start here!
-adapter.on('ready', () => main());
 
 function onPermitJoining(joinTimeLeft) {
     adapter.setState('info.pairingCountdown', joinTimeLeft);
