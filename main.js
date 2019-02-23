@@ -881,7 +881,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             return;
         }
         // find state for set
-        stateDesc = stateModel.states.find((statedesc) => stateKey === statedesc.id);
+        stateDesc = stateModel.states.find(statedesc => stateKey === statedesc.id);
         device = zbControl.getDevice(deviceId);
     }
     if (!stateDesc) {
@@ -916,7 +916,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
     }
 
     const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
-    if (modelId != 'group') {
+    if (modelId !== 'group') {
         device = deviceId;
     }
 
@@ -994,7 +994,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                                     } else {
                                         // read value from response
                                         let readValue =  readValueFromResponse(stateDesc, resp);
-                                        if (readValue != undefined) {
+                                        if (readValue !== undefined && readValue !== null) {
                                             // acknowledge state with read value
                                             acknowledgeState(deviceId, modelId, stateDesc, readValue);
                                             // process sync state list
@@ -1047,7 +1047,7 @@ function readValueFromResponse(stateDesc, resp) {
         } else if (resp.length === 1) {
             // simple default implementation for response with just one response object
             let respObj = resp[0];
-            if (respObj.status === 0 && respObj.attrData != undefined) {
+            if (respObj.status === 0 && respObj.attrData !== undefined && respObj.attrData !== null) {
                 if (stateDesc.type === 'number') {
                     // return number from attrData
                     return respObj.attrData;
@@ -1165,7 +1165,7 @@ function collectOptions(devId, modelId, callback) {
             callback();
             return;
         }
-        states = stateModel.states.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
+        states = stateModel.states.filter(statedesc => statedesc.isOption || statedesc.inOptions);
     }
     if (!states) {
         callback();
@@ -1173,7 +1173,7 @@ function collectOptions(devId, modelId, callback) {
     }
     let result = {};
     let cnt = 0, len = states.length;
-    states.forEach((statedesc) => {
+    states.forEach(statedesc => {
         const id = adapter.namespace + '.' + devId + '.' + statedesc.id;
         adapter.getState(id, (err, state) => {
             cnt = cnt + 1;
