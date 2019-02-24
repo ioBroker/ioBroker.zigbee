@@ -10,14 +10,14 @@
 
 //process.env.DEBUG = 'zigbee*,cc-znp*';
 
-const safeJsonStringify = require(__dirname + '/lib/json');
+const safeJsonStringify = require('./lib/json');
 // you have to require the utils module and call adapter function
 const fs = require('fs');
-const utils = require(__dirname + '/lib/utils'); // Get common adapter utils
+const utils = require('./lib/utils'); // Get common adapter utils
 const ZShepherd = require('zigbee-shepherd');
-const ZigbeeController = require(__dirname + '/lib/zigbeecontroller');
+const ZigbeeController = require('./lib/zigbeecontroller');
 const deviceMapping = require('zigbee-shepherd-converters');
-const statesMapping = require(__dirname + '/lib/devstates');
+const statesMapping = require('./lib/devstates');
 const SerialPort = require('serialport');
 
 const groupConverters = [
@@ -27,50 +27,122 @@ const groupConverters = [
     deviceMapping.toZigbeeConverters.light_color,
 ];
 
-var devNum = 0;
+let devNum = 0;
 
 let zbControl;
 let adapter;
 
-// let start;
-
 function startAdapter(options) {
-  options = options || {};
-  Object.assign(options, {
-    name:  'zigbee',
-    systemConfig: true,
-// is called when adapter shuts down - callback has to be called under any circumstances!
-    unload: function (callback) {
-      try {
-        adapter.log.debug('cleaned everything up...');
-        if (zbControl) {
-            zbControl.stop();
-            zbControl = undefined;
+    options = options || {};
+    Object.assign(options, {
+        name: 'zigbee',
+        systemConfig: true,
+        // is called when adapter shuts down - callback has to be called under any circumstances!
+        unload: callback => {
+            try {
+                adapter.log.debug('cleaned everything up...');
+                if (zbControl) {
+                    zbControl.stop();
+                    zbControl = undefined;
+                }
+                callback();
+            } catch (e) {
+                callback();
+            }
+        },
+
+        stateChange: (id, state) => setDevChange(id, state)
+    });
+
+    adapter = new utils.Adapter(options);
+
+    // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
+    adapter.on('message', obj => {
+        if (typeof obj === 'object' && obj.command) {
+            switch (obj.command) {
+                case 'send':
+                    // e.g. send email or pushover or whatever
+                    adapter.log.debug('send command');
+                    // Send response in callback if required
+                    obj.callback && adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+                    break;
+                case 'letsPairing':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        letsPairing(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'getDevices':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getDevices(obj.from, obj.command, obj.callback);
+                    }
+                    break;
+                case 'getMap':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getMap(obj.from, obj.command, obj.callback);
+                    }
+                    break;
+                case 'renameDevice':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        renameDevice(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'groupDevices':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        groupDevices(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'deleteDevice':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        deleteDevice(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'listUart':
+                    if (obj.callback) {
+                        listSerial()
+                            .then((ports) => {
+                                adapter.log.debug('List of ports: ' + JSON.stringify(ports));
+                                adapter.sendTo(obj.from, obj.command, ports, obj.callback);
+                            });
+                    }
+                    break;
+                case 'sendToZigbee':
+                    sendToZigbee(obj);
+                    break;
+                case 'getLibData':
+                    // e.g. zcl lists
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getLibData(obj);
+                    }
+                    break;
+                case 'updateGroups':
+                    updateGroups(obj);
+                    break;
+                case 'getGroups':
+                    getGroups(obj);
+                    break;
+                case 'reset':
+                    zbControl.reset(obj.message.mode, function (err, data) {
+                        adapter.sendTo(obj.from, obj.command, err, obj.callback);
+                    });
+                    break;
+                default:
+                    adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
+                    break;
+            }
         }
-        callback();
-      } catch (e) {
-          callback();
-      }
-    },
+        processMessages();
+    });
 
-    stateChange: function (id, state) {
-      setDevChange(id, state);
-    },
+    // is called when databases are connected and adapter received configuration.
+    adapter.on('ready', () => main());
 
-    objectChange: function (id, obj) {
-      //adapter.log.info('objectChange ' + id + ' ' + JSON.stringify(obj));
-    }
-
-  });
-  adapter = new utils.Adapter(options);
-
-  return adapter;
-};
+    return adapter;
+}
 
 function processMessages(ignore) {
     adapter.getMessage(function (err, obj) {
         if (obj) {
-            if (!ignore && obj && obj.command === 'send') processMessage(obj.message);
+            !ignore && obj && obj.command === 'send' && processMessage(obj.message);
             processMessages();
         }
     });
@@ -98,7 +170,7 @@ function setDevChange(id, state) {
         let deviceId = '0x' + id.split('.')[2]; // zigbee device id
         const stateKey = id.split('.')[3];
         // adapter.log.info(`change ${id} to ${state.val} time: ${new Date() - start}`);
-        adapter.getObject(devId, function (err, obj) {
+        adapter.getObject(devId, (err, obj) => {
             if (obj) {
                 const modelId = obj.common.type;
                 if (!modelId) return;
@@ -111,93 +183,7 @@ function setDevChange(id, state) {
             }
         });
     }
-};
-
-// If started as allInOne/compact mode => return function to create instance
-if (module && module.parent) {
-    module.exports = startAdapter;
-} else {
-    // or start the instance directly
-    startAdapter();
 }
-
-// Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-adapter.on('message', obj => {
-    if (typeof obj === 'object' && obj.command) {
-        switch (obj.command) {
-            case 'send':
-                // e.g. send email or pushover or whatever
-                adapter.log.debug('send command');
-                // Send response in callback if required
-                if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-                break;
-            case 'letsPairing':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    letsPairing(obj.from, obj.command, obj.message, obj.callback);
-                }
-                break;
-            case 'getDevices':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    getDevices(obj.from, obj.command, obj.callback);
-                }
-                break;
-            case 'getMap':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    getMap(obj.from, obj.command, obj.callback);
-                }
-                break;
-            case 'renameDevice':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    renameDevice(obj.from, obj.command, obj.message, obj.callback);
-                }
-                break;
-            case 'groupDevices':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    groupDevices(obj.from, obj.command, obj.message, obj.callback);
-                }
-                break;
-            case 'deleteDevice':
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    deleteDevice(obj.from, obj.command, obj.message, obj.callback);
-                }
-                break;
-            case 'listUart':
-                if (obj.callback) {
-                    listSerial()
-                        .then((ports) => {
-                            adapter.log.debug('List of ports: ' + JSON.stringify(ports));
-                            adapter.sendTo(obj.from, obj.command, ports, obj.callback);
-                        });
-                }
-                break;
-            case 'sendToZigbee':
-                sendToZigbee(obj);
-                break;
-            case 'getLibData':
-                // e.g. zcl lists
-                if (obj && obj.message && typeof obj.message === 'object') {
-                    getLibData(obj);
-                }
-                break;
-            case 'updateGroups':
-                updateGroups(obj);
-                break;
-            case 'getGroups':
-                getGroups(obj);
-                break;
-            case 'reset':
-                zbControl.reset(obj.message.mode, function(err, data) {
-                    adapter.sendTo(obj.from, obj.command, err, obj.callback);
-                });
-                break;
-            default:
-                adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
-                break;
-        }
-    }
-    processMessages();
-});
-
 
 function listSerial() {
     return SerialPort.list()
@@ -212,12 +198,10 @@ function listSerial() {
         });
 }
 
-
 function updateStateWithTimeout(dev_id, name, value, common, timeout, outValue) {
     updateState(dev_id, name, value, common);
     setTimeout(() => updateState(dev_id, name, outValue, common), timeout);
 }
-
 
 function updateState(devId, name, value, common) {
     adapter.getObject(devId, (err, obj) => {
@@ -265,10 +249,10 @@ function updateState(devId, name, value, common) {
                     delete new_common.role;
 
                     // check whether any common property is different
-                    if(stobj.common){
-                        for (var property in new_common) {
+                    if (stobj.common) {
+                        for (const property in new_common) {
                             if (stobj.common.hasOwnProperty(property)) {
-                                if(stobj.common[property] == new_common[property]){
+                                if (stobj.common[property] === new_common[property]) {
                                     delete new_common[property];
                                 } else {
                                     hasChanges = true;
@@ -276,14 +260,14 @@ function updateState(devId, name, value, common) {
                             }
                         }
                     }
-                } else hasChanges = true;
+                } else {
+                    hasChanges = true;
+                }
 
                 // only change object when any common property has changed
-                if(hasChanges){
+                if (hasChanges) {
                     adapter.extendObject(id, {type: 'state', common: new_common}, () => {
-                        if (value !== undefined) {
-                            adapter.setState(id, value, true);
-                        }
+                        value !== undefined && adapter.setState(id, value, true);
                     });
                 } else if (value !== undefined) {
                     adapter.setState(id, value, true);
@@ -303,10 +287,11 @@ function renameDevice(from, command, msg, callback) {
 }
 
 function groupDevices(from, command, devGroups, callback) {
-    for (var j in devGroups) {
+    for (const j in devGroups) {
         if (devGroups.hasOwnProperty(j)) {
-            const id = `${j}.groups`,
-                  groups = devGroups[j];
+            const id = `${j}.groups`;
+            const groups = devGroups[j];
+
             adapter.setState(id, JSON.stringify(groups), true);
             const sysid = j.replace(adapter.namespace + '.', '0x');
             zbControl.removeDevFromAllGroups(sysid, () => {
@@ -320,14 +305,14 @@ function groupDevices(from, command, devGroups, callback) {
 }
 
 function deleteDeviceStates(devId, callback) {
-    adapter.getStatesOf(devId, (err, states)=>{
+    adapter.getStatesOf(devId, (err, states) => {
         if (!err && states) {
-            states.forEach((state)=>{
+            states.forEach((state) => {
                 adapter.deleteState(devId, null, state._id);
             });
         }
-        adapter.deleteDevice(devId, (err)=>{
-            if (callback) callback();
+        adapter.deleteDevice(devId, (err) => {
+            callback && callback();
         });
     });
 }
@@ -343,7 +328,7 @@ function deleteDevice(from, command, msg, callback) {
         if (!dev) {
             adapter.log.debug('Not found on shepherd!');
             adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
-            deleteDeviceStates(devId, ()=>{
+            deleteDeviceStates(devId, () => {
                 adapter.sendTo(from, command, {}, callback);
             });
             return;
@@ -351,7 +336,7 @@ function deleteDevice(from, command, msg, callback) {
         zbControl.remove(sysid, err => {
             if (!err) {
                 adapter.log.debug('Successfully removed from shepherd!');
-                deleteDeviceStates(devId, ()=>{
+                deleteDeviceStates(devId, () => {
                     adapter.sendTo(from, command, {}, callback);
                 });
             } else {
@@ -387,10 +372,6 @@ function updateDev(dev_id, dev_name, model, callback) {
         adapter.extendObject(id, {common: {type: model, icon: icon}}, callback);
     });
 }
-
-// is called when databases are connected and adapter received configuration.
-// start here!
-adapter.on('ready', () => main());
 
 function onPermitJoining(joinTimeLeft) {
     adapter.setState('info.pairingCountdown', joinTimeLeft);
@@ -438,29 +419,29 @@ function getMap(from, command, callback) {
 function getDevices(from, command, callback) {
     if (zbControl && zbControl.enabled()) {
         const pairedDevices = zbControl.getDevices();
-        const groups={};
-        var rooms;
+        const groups = {};
+        let rooms;
         adapter.getEnumsAsync('enum.rooms')
-            .then(enums=>{
+            .then(enums => {
                 // rooms
                 rooms = enums['enum.rooms'];
             })
-            .then(()=>{
+            .then(() => {
                 // get all adapter devices
                 return adapter.getDevicesAsync()
             })
-            .then(result=>{
+            .then(result => {
                 // not groups
-                return result.filter(devInfo => devInfo.common.type != 'group')
+                return result.filter(devInfo => devInfo.common.type !== 'group')
             })
-            .then(result=>{
+            .then(result => {
                 // get device groups
                 const chain = [];
                 result.forEach(devInfo => {
                     if (devInfo._id) {
                         chain.push((res) => {
                             return adapter.getStateAsync(`${devInfo._id}.groups`)
-                                .then(devGroups=>{
+                                .then(devGroups => {
                                     // fill groups info
                                     if (devGroups) {
                                         groups[devInfo._id] = JSON.parse(devGroups.val);
@@ -468,17 +449,17 @@ function getDevices(from, command, callback) {
                                     return res;
                                 });
                         });
-                    };
+                    }
                 });
 
-                return chain.reduce((promiseChain, currentTask) => {
-                    return promiseChain.then(currentTask);
-                }, new Promise((resolve, reject)=>resolve(result)));
+                return chain.reduce((promiseChain, currentTask) =>
+                    promiseChain.then(currentTask),
+                    new Promise((resolve, reject) => resolve(result)));
             })
-            .then(result=>{
+            .then(result => {
                 // combine info
                 const devices = [];
-                result.forEach(devInfo=>{
+                result.forEach(devInfo => {
                     const id = getZBid(devInfo._id);
                     const modelDesc = statesMapping.findModel(devInfo.common.type);
                     devInfo.icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
@@ -501,7 +482,7 @@ function getDevices(from, command, callback) {
                 });
                 return devices;
             })
-            .then(devices=>{
+            .then(devices => {
                 // append devices that paired but not created
                 pairedDevices.forEach((device) => {
                     const exists = devices.find((dev) => device.ieeeAddr === getZBid(dev._id));
@@ -521,11 +502,11 @@ function getDevices(from, command, callback) {
                 });
                 return devices;
             })
-            .then(devices=>{
+            .then(devices => {
                 adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
                 adapter.sendTo(from, command, devices, callback);
             })
-            .catch(err=>{
+            .catch(err => {
                 adapter.log.error('getDevices error: ' + JSON.stringify(err));
             });
     } else {
@@ -553,95 +534,87 @@ function leaveDevice(id, msg) {
 function getLibData(obj) {
     const key = obj.message.key;
     const zclId = require('zcl-id');
-    var result = new Object();
+    const result = {};
     if (key === 'cidList') {
         result.list = zclId._common.clusterId;
-    }
-    else if (key === 'attrIdList') {
-        var cid = obj.message.cid;
-        var attrList = zclId.attrList(cid);
-        for (var i=0; i<attrList.length; i++) {
+    } else if (key === 'attrIdList') {
+        const cid = obj.message.cid;
+        const attrList = zclId.attrList(cid);
+        for (let i = 0; i < attrList.length; i++) {
             attrList[i].attrName = zclId.attr(cid, attrList[i].attrId).key;
         }
         result.list = attrList;
-    }
-    else if (key === 'cmdListFoundation') {
+    } else if (key === 'cmdListFoundation') {
         result.list = zclId._common.foundation;
-    }
-    else if (key === 'cmdListFunctional') {
-        var cid = zclId.cluster(obj.message.cid).key;
+    } else if (key === 'cmdListFunctional') {
+        const cid = zclId.cluster(obj.message.cid).key;
         result.list = null;
-        var cluster = zclId._getCluster(cid);
+        const cluster = zclId._getCluster(cid);
         if (typeof cluster != 'undefined') {
-            var extraCmd = cluster.cmd;
+            const extraCmd = cluster.cmd;
             result.list = extraCmd !== null ? extraCmd._enumMap : null;
         }
-    }
-    else if (key === 'respCodes') {
+    } else if (key === 'respCodes') {
         result.list = zclId._common.status;
-    }
-    else if (key === 'typeList') {
+    } else if (key === 'typeList') {
         result.list = zclId._common.dataType;
-    }
-    else {
+    } else {
         return;
     }
     result.key = key;
     adapter.sendTo(obj.from, obj.command, result, obj.callback);
 }
 
- function sendToZigbee(obj) {
+function sendToZigbee(obj) {
     const zclId = require('zcl-id');
     const devId = '0x' + obj.message.id.replace(adapter.namespace + '.', '');
     const ep = obj.message.ep ? parseInt(obj.message.ep) : null;
     const cid = obj.message.cid;
     const cmdType = obj.message.cmdType;
-    var cmd;
-    var zclData = obj.message.zclData;
+    let cmd;
+    let zclData = obj.message.zclData;
     if (cmdType === 'functional') {
         cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.functional(cid, obj.message.cmd).value;
-    }
-    else if (cmdType === 'foundation') {
+    } else if (cmdType === 'foundation') {
         cmd = (typeof obj.message.cmd === 'number') ? obj.message.cmd : zclId.foundation(obj.message.cmd).value;
         if (!Array.isArray(zclData)) {
             // wrap object in array
             zclData = [zclData];
         }
-    }
-    else {
+    } else {
         adapter.sendTo(obj.from, obj.command, {localErr: 'Invalid cmdType'}, obj.callback);
         return;
     }
 
     const cfg = obj.message.hasOwnProperty('cfg') ? obj.message.cfg : null;
 
-    for (var i=0; i<zclData.length; i++) {
-        var zclItem = zclData[i];
+    for (let i = 0; i < zclData.length; i++) {
+        const zclItem = zclData[i];
         // convert string items to number if needed
         if (typeof zclItem.attrId == 'string') {
-            var intId = parseInt(zclItem.attrId);
+            const intId = parseInt(zclItem.attrId);
             zclData[i].attrId = !isNaN(intId) ? intId : zclId.attr(cid, zclItem.attrId).value;
         }
         if (typeof zclItem.dataType == 'string') {
-            var intType = parseInt(zclItem.dataType);
-            zclData[i].dataType = intType != 'NaN' ? intType : zclId.attr(cid, zclItem.dataType).value;
+            const intType = parseInt(zclItem.dataType);
+            zclData[i].dataType = !isNaN(intType) ? intType : zclId.attr(cid, zclItem.dataType).value;
         }
     }
-    var publishTarget = zbControl.getDevice(devId) ? devId : zbControl.getGroup(parseInt(devId));
+    const publishTarget = zbControl.getDevice(devId) ? devId : zbControl.getGroup(parseInt(devId));
     if (!publishTarget) {
-        adapter.sendTo(obj.from, obj.command, {localErr: 'Device or group '+devId+' not found!'}, obj.callback);
+        adapter.sendTo(obj.from, obj.command, {localErr: 'Device or group ' + devId + ' not found!'}, obj.callback);
         return;
     }
     if (!cid || typeof cmd !== 'number') {
         adapter.sendTo(obj.from, obj.command, {localErr: 'Incomplete data (cid or cmd)'}, obj.callback);
         return;
     }
-    adapter.log.debug('Ready to send (ep: '+ep+', cid: '+cid+' cmd, '+cmd+' zcl: '+JSON.stringify(zclData)+')');
+    adapter.log.debug('Ready to send (ep: ' + ep + ', cid: ' + cid + ' cmd, ' + cmd + ' zcl: ' + JSON.stringify(zclData) + ')');
 
-     try {
+    try {
         zbControl.publish(publishTarget, cid, cmd, zclData, cfg, ep, cmdType, (err, msg) => {
             // map err and msg in one object for sendTo
-            var result = new Object();
+            const result = {};
             result.msg = msg;
             if (err) {
                 // err is an instance of Error class, it cannot be forwarded to sendTo, just get message (string)
@@ -653,11 +626,11 @@ function getLibData(obj) {
         // report exceptions
         // happens for example if user tries to send write command but did not provide value/type
         // we dont want to check this errors ourselfs before publish, but let shepherd handle this
-        adapter.log.error('SendToZigbee failed! ('+exception+')');
+        adapter.log.error('SendToZigbee failed! (' + exception + ')');
         adapter.sendTo(obj.from, obj.command, {err: exception}, obj.callback);
 
-         // Note: zcl-packet/lib/foundation.js throws correctly
-        // "Error: Payload of commnad: write must have dataType property.",
+        // Note: zcl-packet/lib/foundation.js throws correctly
+        // 'Error: Payload of commnad: write must have dataType property.',
         // but only at first time. If user sends same again no exception anymore
         // not sure if bug in zigbee-shepherd or zcl-packet
     }
@@ -671,7 +644,7 @@ function updateGroups(obj) {
 }
 
 function getGroups(obj) {
-    adapter.getState('info.groups', (err, groupsState)=>{
+    adapter.getState('info.groups', (err, groupsState) => {
         const groups = (groupsState && groupsState.val) ? JSON.parse(groupsState.val) : {};
         adapter.log.debug('getGroups result: ' + JSON.stringify(groups));
         adapter.sendTo(obj.from, obj.command, groups, obj.callback);
@@ -684,10 +657,10 @@ function syncGroups(groups) {
     //zbControl.removeAllGroup();
     //zbControl.getGroups();
     const usedGroupsIds = [];
-    for (var j in groups) {
+    for (const j in groups) {
         if (groups.hasOwnProperty(j)) {
             const id = `group_${j}`,
-                  name = groups[j];
+                name = groups[j];
             chain.push(new Promise((resolve, reject) => {
                 adapter.setObjectNotExists(id, {
                     type: 'device',
@@ -696,7 +669,7 @@ function syncGroups(groups) {
                 }, () => {
                     adapter.extendObject(id, {common: {type: 'group'}});
                     // create writable states for groups from their devices
-                    for (var stateInd in statesMapping.groupStates) {
+                    for (const stateInd in statesMapping.groupStates) {
                         if (!statesMapping.groupStates.hasOwnProperty(stateInd)) continue;
                         const statedesc = statesMapping.groupStates[stateInd];
                         const common = {
@@ -719,7 +692,7 @@ function syncGroups(groups) {
         }
     }
     chain.push(new Promise((resolve, reject) => {
-        zbControl.removeUnusedGroups(usedGroupsIds, ()=>{
+        zbControl.removeUnusedGroups(usedGroupsIds, () => {
             usedGroupsIds.forEach(j => {
                 const id = `group_${j}`;
                 zbControl.addGroup(j, id);
@@ -729,10 +702,10 @@ function syncGroups(groups) {
     }));
     chain.push(new Promise((resolve, reject) => {
         // remove unused adpter groups
-        adapter.getDevices((err, devices)=> {
+        adapter.getDevices((err, devices) => {
             if (!err) {
-                devices.forEach((dev)=>{
-                    if (dev.common.type == 'group') {
+                devices.forEach((dev) => {
+                    if (dev.common.type === 'group') {
                         const groupid = parseInt(dev.native.id);
                         if (!usedGroupsIds.includes(groupid)) {
                             deleteDeviceStates(`group_${groupid}`);
@@ -747,9 +720,9 @@ function syncGroups(groups) {
 }
 
 function onReady() {
-    const tasks = new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         resolve();
-    }).then(()=>{
+    }).then(() => {
         adapter.setState('info.connection', true);
 
         if (adapter.config.disableLed) {
@@ -758,13 +731,13 @@ function onReady() {
 
         // update pairing State
         adapter.setState('info.pairingMode', false);
-    }).then(()=>{
+    }).then(() => {
         return adapter.getStateAsync('info.groups')
-            .then((groupsState)=>{
+            .then((groupsState) => {
                 const groups = (groupsState && groupsState.val) ? JSON.parse(groupsState.val) : {};
                 syncGroups(groups);
             });
-    }).then(()=>{
+    }).then(() => {
         const chain = [];
         // get and list all registered devices (not in ioBroker)
         let activeDevices = zbControl.getAllClients();
@@ -785,7 +758,6 @@ function onReady() {
         });
         Promise.all(chain);
     });
-    return tasks;
 }
 
 function getDeviceStartupLogMessage(device) {
@@ -813,7 +785,7 @@ function configureDevice(device) {
         if (mappedModel && mappedModel.configure) {
             mappedModel.configure(ieeeAddr, zbControl.shepherd, zbControl.getCoordinator(), (ok, msg) => {
                 if (ok) {
-                    adapter.log.info(`Succesfully configured ${ieeeAddr}`);
+                    adapter.log.info(`Successfully configured ${ieeeAddr}`);
                 } else {
                     adapter.log.warn(`Failed to configure ${ieeeAddr} ` + device.modelId);
                 }
@@ -881,7 +853,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             return;
         }
         // find state for set
-        stateDesc = stateModel.states.find((statedesc) => stateKey === statedesc.id);
+        stateDesc = stateModel.states.find(statedesc => stateKey === statedesc.id);
         device = zbControl.getDevice(deviceId);
     }
     if (!stateDesc) {
@@ -916,7 +888,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
     }
 
     const devEp = mappedModel.hasOwnProperty('ep') ? mappedModel.ep(device) : null;
-    if (modelId != 'group') {
+    if (modelId !== 'group') {
         device = deviceId;
     }
 
@@ -962,7 +934,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
 
         if (adapter.config.disableQueue) {
-            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
+            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
                 if (err) {
                     // nothing to do in error case
                 } else {
@@ -974,8 +946,8 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
             });
         } else {
             // wait a timeout for write
-            setTimeout(()=>{
-                zbControl.publish(device, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err)=>{
+            setTimeout(() => {
+                zbControl.publish(device, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
                     if (err) {
                         // nothing to do in error case
                     } else if (modelId === 'group') {
@@ -984,17 +956,17 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                     } else if (readAfterWriteStates.includes(key)) {
                         // wait a timeout for read state value after write
                         adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${message.readAfterWriteTime}`);
-                        setTimeout(()=>{
+                        setTimeout(() => {
                             const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
                             if (readMessage) {
-                                adapter.log.debug('read message: '+safeJsonStringify(readMessage));
+                                adapter.log.debug('read message: ' + safeJsonStringify(readMessage));
                                 zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType, (err, resp) => {
                                     if (err) {
                                         // nothing to do in error case
                                     } else {
                                         // read value from response
-                                        let readValue =  readValueFromResponse(stateDesc, resp);
-                                        if (readValue != undefined) {
+                                        let readValue = readValueFromResponse(stateDesc, resp);
+                                        if (readValue !== undefined && readValue !== null) {
                                             // acknowledge state with read value
                                             acknowledgeState(deviceId, modelId, stateDesc, readValue);
                                             // process sync state list
@@ -1026,7 +998,7 @@ function acknowledgeState(deviceId, modelId, stateDesc, value) {
         let stateId = adapter.namespace + '.group_' + deviceId + '.' + stateDesc.id;
         adapter.setState(stateId, value, true);
     } else {
-        let stateId = adapter.namespace + '.' + deviceId.replace('0x','') + '.' + stateDesc.id;
+        let stateId = adapter.namespace + '.' + deviceId.replace('0x', '') + '.' + stateDesc.id;
         adapter.setState(stateId, value, true);
     }
 }
@@ -1038,7 +1010,7 @@ function processSyncStatesList(deviceId, modelId, syncStateList) {
 }
 
 function readValueFromResponse(stateDesc, resp) {
-    adapter.log.debug('read response: '+safeJsonStringify(resp));
+    adapter.log.debug('read response: ' + safeJsonStringify(resp));
     // check if response is an array with at least one element
     if (resp && Array.isArray(resp) && resp.length > 0) {
         if (stateDesc.readResponse) {
@@ -1047,7 +1019,7 @@ function readValueFromResponse(stateDesc, resp) {
         } else if (resp.length === 1) {
             // simple default implementation for response with just one response object
             let respObj = resp[0];
-            if (respObj.status === 0 && respObj.attrData != undefined) {
+            if (respObj.status === 0 && respObj.attrData !== undefined && respObj.attrData !== null) {
                 if (stateDesc.type === 'number') {
                     // return number from attrData
                     return respObj.attrData;
@@ -1111,8 +1083,8 @@ function publishToState(devId, modelID, model, payload) {
 
 function syncDevStates(dev) {
     const devId = dev.ieeeAddr.substr(2),
-          modelId = dev.modelId,
-          hasGroups = dev.type === 'Router';
+        modelId = dev.modelId,
+        hasGroups = dev.type === 'Router';
     // devId - iobroker device id
     const stateModel = statesMapping.findModel(modelId);
     if (!stateModel) {
@@ -1128,9 +1100,9 @@ function syncDevStates(dev) {
         const statedesc = states[stateInd];
 
         // Filter out non routers or devices that are battery driven for the availability flag
-        if( statedesc.id === "available" )
-          if( !(dev.type === 'Router') || dev.powerSource === 'Battery' )
-            continue;
+        if (statedesc.id === 'available')
+            if (!(dev.type === 'Router') || dev.powerSource === 'Battery')
+                continue;
 
         const common = {
             name: statedesc.name,
@@ -1165,7 +1137,7 @@ function collectOptions(devId, modelId, callback) {
             callback();
             return;
         }
-        states = stateModel.states.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
+        states = stateModel.states.filter(statedesc => statedesc.isOption || statedesc.inOptions);
     }
     if (!states) {
         callback();
@@ -1173,7 +1145,7 @@ function collectOptions(devId, modelId, callback) {
     }
     let result = {};
     let cnt = 0, len = states.length;
-    states.forEach((statedesc) => {
+    states.forEach(statedesc => {
         const id = adapter.namespace + '.' + devId + '.' + statedesc.id;
         adapter.getState(id, (err, state) => {
             cnt = cnt + 1;
@@ -1201,12 +1173,12 @@ function onDevEvent(type, devId, message, data) {
 
 
             let payload = {};
-            if( message.hasOwnProperty('linkquality') ) {
-              payload.linkquality = message.linkquality;
+            if (message.hasOwnProperty('linkquality')) {
+                payload.linkquality = message.linkquality;
             }
 
-            if( message.hasOwnProperty('available') ) {
-              payload.available = message.available;
+            if (message.hasOwnProperty('available')) {
+                payload.available = message.available;
             }
 
             adapter.log.debug('Publish ' + safeJsonStringify(payload));
@@ -1218,8 +1190,8 @@ function onDevEvent(type, devId, message, data) {
 
             // ignore if remaining time is set in event, cause that's just an intermediate value
             if (message.data.data && message.data.data.remainingTime) {
-               adapter.log.debug("Found remaining time " + message.data.data.remainingTime + ', so skip event');
-               return;
+                adapter.log.debug('Found remaining time ' + message.data.data.remainingTime + ', so skip event');
+                return;
             }
 
             // Map Zigbee modelID to vendor modelID.
@@ -1275,11 +1247,13 @@ function main() {
     }
     adapter.log.info('Start on port: ' + port + ' with panID ' + panID + ' channel ' + channel);
     adapter.log.info('Queue is: ' + !adapter.config.disableQueue);
-    adapter.getState('info.groups', (err, groupsState)=>{
-        if (groupsState == undefined) {
-            adapter.extendObject('info.groups', {type: 'state', "common": {"name": "Groups", "type": "string", "read": true, "write": false}}, () => {
-                adapter.setState('info.groups', JSON.stringify(adapter.config.groups || {}), true);
-            });
+    adapter.getState('info.groups', (err, groupsState) => {
+        if (!groupsState) {
+            adapter.extendObject('info.groups', {
+                type: 'state',
+                common: {name: 'Groups', type: 'string', read: true, write: false}
+            }, () =>
+                adapter.setState('info.groups', JSON.stringify(adapter.config.groups || {}), true));
         }
     });
 
@@ -1302,21 +1276,20 @@ function main() {
         const oldErrOut = process.stderr.write.bind(process.stderr);
         process.stdout.write = function (logs) {
             if (adapter && adapter.log && adapter.log.debug) {
-                adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm,""));
+                adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm, ""));
             }
             oldStdOut(logs);
         };
         process.stderr.write = function (logs) {
             if (adapter && adapter.log && adapter.log.debug) {
-                adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm,""));
+                adapter.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm, ""));
             }
             oldErrOut(logs);
         };
     }
     // before start reset coordinator
-    zbControl.reset("soft", function(err, data) {
-        adapter.log.info('Reset coordinator' );
-    });
+    zbControl.reset('soft', (err, data) =>
+        adapter.log.info('Reset coordinator'));
 
     // start the server
     zbControl.start(err => err && adapter.setState('info.connection', false));
@@ -1325,4 +1298,12 @@ function main() {
     adapter.subscribeStates('*');
 
     processMessages(true);
+}
+
+// If started as allInOne/compact mode => return function to create instance
+if (module && module.parent) {
+    module.exports = startAdapter;
+} else {
+    // or start the instance directly
+    startAdapter();
 }
