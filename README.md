@@ -71,6 +71,7 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 ### 0.9.2 (2019-02-25)
+No support of node.js 4 any more
 * (bluefox) Xiaomi Lock was added
 
 ### 0.9.1 (2019-01-29)
