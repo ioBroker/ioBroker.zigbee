@@ -48,7 +48,7 @@ function getCard(dev) {
                         '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
                             '<i class="material-icons">info</i></a>'+
                         '<span id="dName" class="card-title truncate">'+title+'</span>'+paired+
-                        
+
                         '<i class="left">'+image+'</i>'+
                         info+
                         buttons+
@@ -139,7 +139,7 @@ function closeReval(e, id, name){
 }
 
 function deleteConfirmation(id, name) {
-    var text = translateWord('Do you really whant to delete device') + ' "'+name+'" ('+id+')?';
+    var text = translateWord('Do you really want to delete device') + ' "'+name+'" ('+id+')?';
     $('#modaldelete').find("p").text(text);
     $("#modaldelete a.btn[name='yes']").unbind("click");
     $("#modaldelete a.btn[name='yes']").click(function(e) {
@@ -298,8 +298,8 @@ function joinProcess(devId) {
 }
 
 function pollDeviceInfo(id, card) {
-    sendToZigbee(id, null, 'genBasic', 'read', 'foundation', 
-            [ {attrId: 'swBuildId'}, {attrId: 'hwVersion'}], 
+    sendToZigbee(id, null, 'genBasic', 'read', 'foundation',
+            [ {attrId: 'swBuildId'}, {attrId: 'hwVersion'}],
             null, function (reply) {
         let infoNode = card.find('#d-infos');
         if (reply.hasOwnProperty('localErr')) {
@@ -309,7 +309,7 @@ function pollDeviceInfo(id, card) {
         if (reply.hasOwnProperty('localStatus')) {
             return;
         }
-        
+
         let html = '<ul>';
         if (reply.msg) {
             for (var i=0; i<reply.msg.length; i++) {
@@ -382,7 +382,7 @@ function load(settings, onChange) {
     }
 
     getComPorts(onChange);
-    
+
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getMap();
@@ -400,7 +400,7 @@ function load(settings, onChange) {
     $('#refresh').click(function() {
         getMap();
     });
-    
+
     $('#reset-btn').click(function() {
         resetConfirmation();
     });
@@ -456,7 +456,7 @@ function showPairingProcess() {
         endingTop: '10%',
         dismissible: false
     });
-    
+
     $('#modalpairing').modal('open');
     Materialize.updateTextFields();
 }
@@ -533,7 +533,7 @@ function showNetworkMap(devices, map){
     // create an array with edges
     var edges = [];
 
-    
+
     const keys = {};
     devices.forEach((dev)=>{
         if (dev.info) {
@@ -546,7 +546,7 @@ function showNetworkMap(devices, map){
         const node = {
             id: dev._id,
             label: dev.common.name,
-            shape: 'image', 
+            shape: 'image',
             image: dev.icon,
         }
         if (dev.info && dev.info.type == 'Coordinator') {
@@ -637,7 +637,7 @@ function loadDeveloperTab(onChange) {
                     return null;
                 }
                 return device.info.manufName +' '+ device.common.name;
-            }, 
+            },
             function(key, device) {
                 return device._id;
     });
@@ -649,10 +649,10 @@ function loadDeveloperTab(onChange) {
     updateSelect('#dev', groupList,
             function(key, device) {
                 return 'Group '+device.groupId+': '+device.groupName;
-            }, 
+            },
             function(key, device) {
                 return device._id;
-    }, true); 
+    }, true);
 
     // fill cid, cmd, type selector
     populateSelector('#cid', 'cidList');
@@ -697,7 +697,7 @@ function loadDeveloperTab(onChange) {
                     if (typeof is == 'string')
                         return index(obj,is.split('.'), value);
                     else if (is.length==1 && value!==undefined) {
-                        if (value == null) 
+                        if (value == null)
                             return delete obj[is[0]];
                         else
                             return obj[is[0]] = value;
@@ -729,14 +729,14 @@ function loadDeveloperTab(onChange) {
             updateSelect('#ep', epList,
                     function(key, ep) {
                         return ep;
-                    }, 
+                    },
                     function(key, ep) {
                         return ep;
-            }); 
+            });
             setExpertData('devId', this.value);
             setExpertData('ep', $('#ep-selector').val(), false);
         });
-        
+
         $('#ep-selector').change(function() {
             setExpertData('ep', this.value);
         });
@@ -748,7 +748,7 @@ function loadDeveloperTab(onChange) {
                 populateSelector('#cmd', 'cmdListFunctional', cid);
             }
             setExpertData('cid', this.value);
-        });	
+        });
 
         $('#cmd-type-selector').change(function() {
             if (this.value == "foundation") {
@@ -759,8 +759,8 @@ function loadDeveloperTab(onChange) {
                 populateSelector('#cmd', 'cmdListFunctional', cid);
             }
             setExpertData('cmdType', this.value);
-        }); 
-        
+        });
+
         $('#cmd-selector').change(function() {
             setExpertData('cmd', this.value);
         });
@@ -837,7 +837,7 @@ function loadDeveloperTab(onChange) {
 /**
  * Sends data to zigbee device. May be used for read/write actions that do not
  * need to be implemented as state objects
- * 
+ *
  * @param {string} id - like 'zigbee.0.001234567890'
  * @param ep
  * @param cid
@@ -935,22 +935,22 @@ function populateSelector(selectId, key, cid) {
     sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
         var list = data.list;
         if (key === 'attrIdList') {
-            updateSelect(selectId, list, 
+            updateSelect(selectId, list,
                     function(index, attr) {
                         return attr.attrName + ' ('+attr.attrId +', type '+attr.dataType+')';
-                    }, 
+                    },
                     function(index, attr) {
                         return attr.attrId;
                     });
         }
         else {
-            updateSelect(selectId, list, 
+            updateSelect(selectId, list,
                     function(name, val) {
                         return name +' ('+val+')';
-                    }, 
+                    },
                     function(name, val) {
                         return val;
-                    }); 
+                    });
         }
     });
 }
