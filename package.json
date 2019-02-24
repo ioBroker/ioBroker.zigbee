@@ -1,4 +1,6 @@
 {
+  "name": "iobroker.zigbee",
+  "version": "0.9.2",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -14,10 +16,10 @@
   ],
   "dependencies": {
     "queue": "*",
-    "debug": "^3.1.0",
+    "debug": "^4.1.1",
     "serialport": "^6.2.0",
     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/dev",
-    "zigbee-shepherd-converters": "^7.1.8"
+    "zigbee-shepherd-converters": "^7.1.13"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -36,7 +38,6 @@
   ],
   "license": "MIT",
   "main": "main.js",
-  "name": "iobroker.zigbee",
   "optionalDependencies": {},
   "readmeFilename": "README.md",
   "repository": {
@@ -46,6 +47,5 @@
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha --exit",
     "docgen": "node support/docgen.js"
-  },
-  "version": "0.9.1"
+  }
 }
