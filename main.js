@@ -1215,7 +1215,9 @@ function onDevEvent(type, devId, message, data) {
                     // Don't cache messages with click and action.
                     const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
                     adapter.log.debug('Publish ' + safeJsonStringify(payload));
-                    publishToState(devId.substr(2), modelID, mappedModel, payload);
+                    if (payload) {
+                      publishToState(devId.substr(2), modelID, mappedModel, payload);
+                    }
                 };
 
                 collectOptions(devId.substr(2), modelID, (options) => {
