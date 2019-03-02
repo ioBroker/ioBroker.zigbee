@@ -70,6 +70,16 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * Binding
 
 ## Changelog
+### 0.9.2 (2019-02-25)
+No support of node.js 4 any more
+* (bluefox) Xiaomi Lock was added
+* (nisiode) Some fixes
+* (sonntam) Some fixes
+* (arteck) Heiman SmokeSensor
+* (asgothian, allofmex) Eurotronic support
+
+### 0.9.1 (2019-01-29)
+* Groups and new Developer tab were added
 
 ### 0.9.0 (2019-01-28)
 * (arteck) Many new devices
@@ -161,7 +171,7 @@ Other changes:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2019 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
