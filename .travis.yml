@@ -9,8 +9,8 @@ node_js:
   - '8'
   - '10'
 before_install:
-  - sudo ln -s `which node` `which node`js
-  - which nodejs || which node
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo ln -s `which node` `which node`js; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then which nodejs || which node; fi
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CC=clang++; export CXX=clang++; export CXXFLAGS=-std=c++11; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew unlink pkg-config; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX=g++-4.9; CC=gcc-4.9; fi'
