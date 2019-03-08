@@ -526,56 +526,103 @@ function getNetworkInfo(devId, networkmap){
 }
 
 function showNetworkMap(devices, map){
-
-    // create an array with nodes
-    var nodes = [];
-
+    // create an object with nodes
+    var nodes = {};
     // create an array with edges
     var edges = [];
+//    const mapKeys = map.keys();
 
-
-    const keys = {};
-    devices.forEach((dev)=>{
-        if (dev.info) {
-            keys[dev.info.ieeeAddr] = dev;
-        }
-    });
-    const links = {};
-
-    devices.forEach((dev)=>{
+    const createNode = function(dev) {
         const node = {
             id: dev._id,
             label: dev.common.name,
             shape: 'image',
             image: dev.icon,
-        }
+        };
         if (dev.info && dev.info.type == 'Coordinator') {
             node.shape = 'star';
             node.label = 'Coordinator';
         }
-        nodes.push(node);
+        return node;
+    };
+
+    const getDevice = function(ieeeAddr) {
+        return devices.find((devInfo) => { return devInfo.info.ieeeAddr == ieeeAddr });
+    }
+    
+    map.forEach((mapEntry)=>{
+        const dev = getDevice(mapEntry.ieeeAddr);
+        if (!dev) {
+            console.log("No dev with ieee "+mapEntry.ieeeAddr);
+            return;
+        }
+
+        var node;
+        if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
+            node = createNode(dev);
+            nodes[mapEntry.ieeeAddr] = node;
+        }
+        else {
+            node = nodes[mapEntry.ieeeAddr];
+        }
+
         if (dev.info) {
-            const networkInfo = getNetworkInfo(dev.info.ieeeAddr, map);
-            if (networkInfo) {
-                const to = keys[networkInfo.parent] ? keys[networkInfo.parent]._id : undefined;
-                const from = dev._id;
-                if (to && from && ((links[to] == from) || (links[from] == to))) return;
-                const link = {
-                    from: from,
-                    to: to,
-                    label: networkInfo.lqi.toString(),
-                    font: {align: 'middle'},
-                };
-                edges.push(link);
-                links[from] = to;
+            const parentDev = getDevice(mapEntry.parent);
+            const to = parentDev ? parentDev._id : undefined;
+            const from = dev._id;
+            var label = mapEntry.lqi.toString();
+            if (mapEntry.status !== 'online' ) {
+                label = label + ' (offline)';
             }
+            var edge = edges.find((edge) => {
+                return (edge.to == to && edge.from == from)
+            });
+
+            var color = mapEntry.lqi > 10 ? '#0000ff' : '#ff4400';
+            edge = {
+                from: from,
+                to: to,
+                label: label,
+                font: {
+                    align: 'middle', 
+                    size: 0, // label hidden if not selected
+                    color: color},
+                arrows: { to: { enabled: false, scaleFactor: 0.3 }},
+                arrowStrikethrough: false,
+                color: {
+                    color: color,
+                    opacity: 0.1,
+                    highlight: color},
+                selectionWidth: 0,
+                physics: false,
+                chosen: {
+                    edge: function(values, id, selected, hovering) {
+                        values.opacity = 1.0;
+                        values.toArrow = true;
+                    },
+                    label: function(values, id, selected, hovering) {
+                        // see onMapSelect workaround
+//                        values.size = 10;
+                    }
+                }
+            };
+            edges.push(edge);
+        }
+    });
+    
+    const nodesArray = Object.values(nodes);
+    // add devices without network links to map
+    devices.forEach((dev) => {
+        const node = nodesArray.find((node) => { return node.id == dev._id });
+        if (!node) {
+            nodesArray.push(createNode(dev));
         }
     });
 
     // create a network
     var container = document.getElementById('map');
     var data = {
-        nodes: nodes,
+        nodes: nodesArray,
         edges: edges
     };
     var options = {
@@ -585,8 +632,35 @@ function showNetworkMap(devices, map){
         nodes: {
             shape: 'box'
         },
+        layout: {
+            improvedLayout:true,
+        }
     };
+
     network = new vis.Network(container, data, options);
+    
+    const onMapSelect = function (event, properties, senderId) {
+        // workaround for https://github.com/almende/vis/issues/4112
+        // may be moved to edge.chosen.label if fixed
+        function doSelection(select, edges, data) {
+            edges.forEach((edgeId => {
+                const options = data.edges._data[edgeId];
+                if (select) {
+                    options.font.size = 10;
+                } else {
+                    options.font.size = 0;
+                }
+                network.clustering.updateEdge(edgeId, options);
+            }));
+        }
+
+        if (event.hasOwnProperty('previousSelection')) { // unselect previous selected
+            doSelection(false, event.previousSelection.edges, this.body.data);
+        }
+        doSelection(true, event.edges, this.body.data);
+    }
+    network.on('selectNode', onMapSelect);
+    network.on('deselectNode', onMapSelect);
     redrawMap();
 }
 
