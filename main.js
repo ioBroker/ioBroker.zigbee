@@ -13,7 +13,7 @@
 const safeJsonStringify = require('./lib/json');
 // you have to require the utils module and call adapter function
 const fs = require('fs');
-const utils = require('./lib/utils'); // Get common adapter utils
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const deviceMapping = require('zigbee-shepherd-converters');
