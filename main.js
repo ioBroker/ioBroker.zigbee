@@ -797,27 +797,26 @@ function scheduleDeviceConfig(device, delay) {
     if (pendingDevConfigRun == null) {
         const configCall = () => {
             adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
-            if (!pendingDevConfigs || pendingDevConfigs.length == 0) {
-                return;
-            }
-            pendingDevConfigs.forEach((ieeeAddr) => {
-                const devToConfig = zbControl.getDevice(ieeeAddr);
-                configureDevice(devToConfig, (ok, msg) => {
-                    if (ok) {
-                        if (msg !== false) { // false = no config needed
-                            adapter.log.info(`Successfully configured ${ieeeAddr}`);
+            if (pendingDevConfigs && pendingDevConfigs.length > 0) {
+                pendingDevConfigs.forEach((ieeeAddr) => {
+                    const devToConfig = zbControl.getDevice(ieeeAddr);
+                    configureDevice(devToConfig, (ok, msg) => {
+                        if (ok) {
+                            if (msg !== false) { // false = no config needed
+                                adapter.log.info(`Successfully configured ${ieeeAddr}`);
+                            }
+                            var index = pendingDevConfigs.indexOf(ieeeAddr);
+                            if (index > -1) {
+                                pendingDevConfigs.splice(index, 1);
+                            }
+                        } else {
+                            adapter.log.warn(`Failed to configure ${ieeeAddr} ` + devToConfig.modelId + `, try again in 300 sec`);
+                            scheduleDeviceConfig(devToConfig, 300 * 1000);
                         }
-                        var index = pendingDevConfigs.indexOf(ieeeAddr);
-                        if (index > -1) {
-                            pendingDevConfigs.splice(index, 1);
-                        }
-                    } else {
-                        adapter.log.warn(`Failed to configure ${ieeeAddr} ` + devToConfig.modelId + `, try again in 300 sec`);
-                        scheduleDeviceConfig(devToConfig);
-                    }
+                    });
                 });
-            });
-            if (pendingDevConfigRun.length == 0) {
+            }
+            if (pendingDevConfigs.length == 0) {
                 pendingDevConfigRun = null;
             }
             else {
