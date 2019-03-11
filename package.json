@@ -30,7 +30,8 @@
     "axios": "^0.18.0",
     "chai": "^4.2.0",
     "gulp": "^4.0.0",
-    "mocha": "^6.0.2"
+    "mocha": "^6.0.2",
+    "@iobroker/testing": "^1.1.10"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
@@ -49,7 +50,10 @@
     "url": "git+https://github.com/ioBroker/ioBroker.zigbee.git"
   },
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit",
-    "docgen": "node support/docgen.js"
+    "test": "npm run test:package && npm run test:unit",
+    "docgen": "node support/docgen.js",
+    "test:package": "mocha test/package --exit",
+    "test:unit": "mocha test/unit --exit",
+    "test:integration": "mocha test/integration --exit"
   }
 }
