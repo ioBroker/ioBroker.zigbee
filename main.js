@@ -1284,6 +1284,7 @@ function onDevEvent(type, devId, message, data) {
 
 
 function main() {
+	if (!adapter.systemConfig) return;
     // file path for ZShepherd
     const dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
     if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
