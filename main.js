@@ -698,15 +698,15 @@ function syncGroups(groups) {
             usedGroupsIds.push(parseInt(j));
         }
     }
-    chain.push(new Promise((resolve, reject) => {
-        zbControl.removeUnusedGroups(usedGroupsIds, () => {
-            usedGroupsIds.forEach(j => {
-                const id = `group_${j}`;
-                zbControl.addGroup(j, id);
-            });
-            resolve();
-        });
-    }));
+    // chain.push(new Promise((resolve, reject) => {
+    //     zbControl.removeUnusedGroups(usedGroupsIds, () => {
+    //         usedGroupsIds.forEach(j => {
+    //             const id = `group_${j}`;
+    //             zbControl.addGroup(j, id);
+    //         });
+    //         resolve();
+    //     });
+    // }));
     chain.push(new Promise((resolve, reject) => {
         // remove unused adpter groups
         adapter.getDevices((err, devices) => {
