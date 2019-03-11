@@ -32,6 +32,9 @@ let devNum = 0;
 let zbControl;
 let adapter;
 
+let pendingDevConfigRun = null;
+let pendingDevConfigs = [];
+
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {
@@ -44,6 +47,9 @@ function startAdapter(options) {
                 if (zbControl) {
                     zbControl.stop();
                     zbControl = undefined;
+                }
+                if (pendingDevConfigRun != null) {
+                    clearTimeout(pendingDevConfigRun);
                 }
                 callback();
             } catch (e) {
@@ -519,9 +525,10 @@ function newDevice(id, msg) {
     if (dev) {
         adapter.log.info('new dev ' + dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
         logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
-        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () =>
-            syncDevStates(dev)
-        );
+        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () => {
+            syncDevStates(dev);
+            scheduleDeviceConfig(dev);
+        });
     }
 }
 
@@ -754,7 +761,7 @@ function onReady() {
                     resolve();
                 });
             }));
-            configureDevice(device);
+            scheduleDeviceConfig(device);
         });
         Promise.all(chain);
     });
@@ -776,22 +783,62 @@ function getDeviceStartupLogMessage(device) {
         `${friendlyDevice.vendor} ${friendlyDevice.description} (${type})`;
 }
 
-function configureDevice(device) {
+function scheduleDeviceConfig(device, delay) {
+    const ieeeAddr = device.ieeeAddr;
+    
+    if (pendingDevConfigs.indexOf(ieeeAddr) !== -1) { // device is already scheduled
+        return;
+    }
+    adapter.log.debug(`Schedule device config for ${ieeeAddr}`);
+    pendingDevConfigs.push(ieeeAddr);
+    if (!delay) {
+        delay = 30 * 1000;
+    }
+    if (pendingDevConfigRun == null) {
+        const configCall = () => {
+            adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
+            if (pendingDevConfigs && pendingDevConfigs.length > 0) {
+                pendingDevConfigs.forEach((ieeeAddr) => {
+                    const devToConfig = zbControl.getDevice(ieeeAddr);
+                    configureDevice(devToConfig, (ok, msg) => {
+                        if (ok) {
+                            if (msg !== false) { // false = no config needed
+                                adapter.log.info(`Successfully configured ${ieeeAddr}`);
+                            }
+                            var index = pendingDevConfigs.indexOf(ieeeAddr);
+                            if (index > -1) {
+                                pendingDevConfigs.splice(index, 1);
+                            }
+                        } else {
+                            adapter.log.warn(`Failed to configure ${ieeeAddr} ` + devToConfig.modelId + `, try again in 300 sec`);
+                            scheduleDeviceConfig(devToConfig, 300 * 1000);
+                        }
+                    });
+                });
+            }
+            if (pendingDevConfigs.length == 0) {
+                pendingDevConfigRun = null;
+            }
+            else {
+                pendingDevConfigRun = setTimeout(configCall, 300 * 1000);
+            }
+        };
+        pendingDevConfigRun = setTimeout(configCall, delay);
+    }
+}
+
+function configureDevice(device, callback) {
     // Configure reporting for this device.
     const ieeeAddr = device.ieeeAddr;
     if (ieeeAddr && device.modelId) {
         const mappedModel = deviceMapping.findByZigbeeModel(device.modelId);
 
         if (mappedModel && mappedModel.configure) {
-            mappedModel.configure(ieeeAddr, zbControl.shepherd, zbControl.getCoordinator(), (ok, msg) => {
-                if (ok) {
-                    adapter.log.info(`Successfully configured ${ieeeAddr}`);
-                } else {
-                    adapter.log.warn(`Failed to configure ${ieeeAddr} ` + device.modelId);
-                }
-            });
+            mappedModel.configure(ieeeAddr, zbControl.shepherd, zbControl.getCoordinator(), callback);
+            return;
         }
     }
+    callback(true, false); // device does not require configuration
 }
 
 function onLog(level, msg, data) {
