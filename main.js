@@ -1250,8 +1250,10 @@ function onDevEvent(type, devId, message, data) {
                 adapter.log.error('Unknown device model ' + modelID + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
                 return;
             }
-            const converters = mappedModel.fromZigbee.filter(c => c.cid === cid && c.type === type);
+            const search = type === 'readRsp' ? 'attReport' : type;
+            const converters = mappedModel.fromZigbee.filter(c => c.cid === cid && c.type === search);
             if (!converters.length) {
+                if (type === 'readRsp') return;
                 adapter.log.error(
                     `No converter available for '${mappedModel.model}' with cid '${cid}' and type '${type}'`
                 );
