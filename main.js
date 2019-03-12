@@ -829,8 +829,8 @@ function scheduleDeviceConfig(device, delay) {
 
 function configureDevice(device, callback) {
     // Configure reporting for this device.
-    const ieeeAddr = device.ieeeAddr;
-    if (ieeeAddr && device.modelId) {
+    if (device && device.ieeeAddr && device.modelId) {
+        const ieeeAddr = device.ieeeAddr;
         const mappedModel = deviceMapping.findByZigbeeModel(device.modelId);
 
         if (mappedModel && mappedModel.configure) {
