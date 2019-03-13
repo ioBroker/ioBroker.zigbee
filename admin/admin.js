@@ -575,7 +575,7 @@ function showNetworkMap(devices, map){
             var linkColor = '#0000ff';
             if (mapEntry.status !== 'online' ) {
                 label = label + ' (off)';
-                linkColor = '#ff4400';
+                linkColor = '#ff0000';
             }
             var edge = edges.find((edge) => {
                 return (edge.to == to && edge.from == from)
@@ -601,10 +601,10 @@ function showNetworkMap(devices, map){
                         color: color
                     },
                     arrows: { to: { enabled: false, scaleFactor: 0.7 }},
-                    arrowStrikethrough: false,
+                    //arrowStrikethrough: false,
                     color: {
                         color: linkColor,
-                        opacity: 0.1, // start unselected
+                        opacity: 0.2, // start unselected
                         highlight: linkColor
                     },
                     chosen: {
@@ -619,7 +619,7 @@ function showNetworkMap(devices, map){
                         }
                     },
                     selectionWidth: 0,
-                    physics: false,
+                    //physics: false,
                 };
                 edges.push(edge);
             }
