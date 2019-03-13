@@ -532,10 +532,11 @@ function showNetworkMap(devices, map){
     var edges = [];
 //    const mapKeys = map.keys();
 
-    const createNode = function(dev) {
+    const createNode = function(dev, nwkAddr) {
         const node = {
             id: dev._id,
             label: dev.common.name,
+            title: dev._id.replace(namespace+'.', '') + ' (nwkAddr: '+nwkAddr+')',
             shape: 'image',
             image: dev.icon,
         };
@@ -543,6 +544,7 @@ function showNetworkMap(devices, map){
             node.shape = 'star';
             node.label = 'Coordinator';
         }
+        console.log("dev"+JSON.stringify(dev));
         return node;
     };
 
@@ -559,7 +561,7 @@ function showNetworkMap(devices, map){
 
         var node;
         if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-            node = createNode(dev);
+            node = createNode(dev, mapEntry.nwkAddr);
             nodes[mapEntry.ieeeAddr] = node;
         }
         else {
