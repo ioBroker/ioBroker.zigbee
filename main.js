@@ -396,7 +396,7 @@ function letsPairing(from, command, message, callback) {
             devId = getZBid(message.id);
         }
         // allow devices to join the network within 60 secs
-        logToPairing('Pairing started ' + devId);
+        logToPairing('Pairing started ' + devId, true);
         zbControl.permitJoin(60, devId, err => {
             if (!err) {
                 // set pairing mode on
@@ -849,7 +849,7 @@ function onLog(level, msg, data) {
                 logger = adapter.log.error;
                 if (data)
                     data = data.toString();
-                logToPairing('Error: ' + msg + '. ' + data);
+                logToPairing('Error: ' + msg + '. ' + data, true);
                 break;
             case 'debug':
                 logger = adapter.log.debug;
