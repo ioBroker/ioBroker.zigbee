@@ -722,10 +722,15 @@ function loadDeveloperTab(onChange) {
     // fill device selector
     updateSelect('#dev', devices,
             function(key, device) {
-                if (device.info.type == 'Coordinator') {
-                    return null;
+                if (device.hasOwnProperty('info')) {
+                    if (device.info.type == 'Coordinator') {
+                        return null;
+                    }
+                    return device.info.manufName +' '+ device.common.name;
                 }
-                return device.info.manufName +' '+ device.common.name;
+                else { // fallback if device in list but not paired
+                    device.common.name + ' ' +device.native.id;
+                }
             },
             function(key, device) {
                 return device._id;
