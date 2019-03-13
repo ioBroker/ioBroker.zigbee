@@ -544,7 +544,6 @@ function showNetworkMap(devices, map){
             node.shape = 'star';
             node.label = 'Coordinator';
         }
-        console.log("dev"+JSON.stringify(dev));
         return node;
     };
 
