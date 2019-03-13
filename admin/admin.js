@@ -571,42 +571,44 @@ function showNetworkMap(devices, map){
             const to = parentDev ? parentDev._id : undefined;
             const from = dev._id;
             var label = mapEntry.lqi.toString();
+            var linkColor = '#0000ff';
             if (mapEntry.status !== 'online' ) {
-                label = label + ' (offline)';
+                label = label + ' (off)';
+                linkColor = '#ff4400';
             }
             var edge = edges.find((edge) => {
                 return (edge.to == to && edge.from == from)
             });
+            var reverse = edges.find((edge) => {
+                return (edge.to == from && edge.from == to)
+            });
 
             var color = mapEntry.lqi > 10 ? '#0000ff' : '#ff4400';
-            edge = {
-                from: from,
-                to: to,
-                label: label,
-                font: {
-                    align: 'middle', 
-                    size: 0, // label hidden if not selected
-                    color: color},
-                arrows: { to: { enabled: false, scaleFactor: 0.3 }},
-                arrowStrikethrough: false,
-                color: {
-                    color: color,
-                    opacity: 0.1,
-                    highlight: color},
-                selectionWidth: 0,
-                physics: false,
-                chosen: {
-                    edge: function(values, id, selected, hovering) {
-                        values.opacity = 1.0;
-                        values.toArrow = true;
+            if (reverse) {
+                // update reverse edge
+                edge = reverse;
+                edge.label += '\n'+label;
+                edge.arrows.from = { enabled: true, scaleFactor: 0.7 };
+            } else if (!edge) {
+                edge = {
+                    from: from,
+                    to: to,
+                    label: label,
+                    font: {
+                        align: 'middle', 
+                        size: 10,
+                        color: color
                     },
-                    label: function(values, id, selected, hovering) {
-                        // see onMapSelect workaround
-//                        values.size = 10;
-                    }
-                }
-            };
-            edges.push(edge);
+                    arrows: { to: { enabled: true, scaleFactor: 0.7 }},
+                    color: {
+                        color: linkColor,
+                        opacity: 1,
+                        highlight: linkColor
+                    },
+                    selectionWidth: 0
+                };
+                edges.push(edge);
+            }
         }
     });
     
@@ -638,29 +640,6 @@ function showNetworkMap(devices, map){
     };
 
     network = new vis.Network(container, data, options);
-    
-    const onMapSelect = function (event, properties, senderId) {
-        // workaround for https://github.com/almende/vis/issues/4112
-        // may be moved to edge.chosen.label if fixed
-        function doSelection(select, edges, data) {
-            edges.forEach((edgeId => {
-                const options = data.edges._data[edgeId];
-                if (select) {
-                    options.font.size = 10;
-                } else {
-                    options.font.size = 0;
-                }
-                network.clustering.updateEdge(edgeId, options);
-            }));
-        }
-
-        if (event.hasOwnProperty('previousSelection')) { // unselect previous selected
-            doSelection(false, event.previousSelection.edges, this.body.data);
-        }
-        doSelection(true, event.edges, this.body.data);
-    }
-    network.on('selectNode', onMapSelect);
-    network.on('deselectNode', onMapSelect);
     redrawMap();
 }
 

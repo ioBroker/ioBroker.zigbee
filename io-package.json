@@ -244,18 +244,18 @@
                 "zh-cn": "阿尔法版本"
             }
         },
-        "title": "Zigbee adapter",
+        "title": "Zigbee",
         "titleLang": {
-            "en": "Zigbee adapter",
-            "ru": "Zigbee адаптер",
-            "de": "ZigBee-Adapter",
-            "pt": "Adaptador Zigbee",
-            "nl": "Zigbee-adapter",
-            "fr": "Adaptateur Zigbee",
-            "it": "Adattatore Zigbee",
-            "es": "Adaptador zigbee",
-            "pl": "Adapter Zigbee",
-            "zh-cn": "Zigbee适配器"
+            "en": "Zigbee",
+            "ru": "Zigbee",
+            "de": "ZigBee",
+            "pt": "Zigbee",
+            "nl": "Zigbee",
+            "fr": "Zigbee",
+            "it": "Zigbee",
+            "es": "zigbee",
+            "pl": "Zigbee",
+            "zh-cn": "Zigbee"
         },
         "desc": {
             "en": "Zigbee adapter for Xiaomi (and other) devices via TI cc2531/cc2530",
