@@ -1257,7 +1257,7 @@ function onDevEvent(type, devId, message, data) {
                     (c.type instanceof Array) ? c.type.includes('attReport') : c.type === 'attReport'));
             }
             if (!converters.length) {
-                adapter.log.error(
+                adapter.log.debug(
                     `No converter available for '${mappedModel.model}' with cid '${cid}' and type '${type}'`
                 );
                 return;
