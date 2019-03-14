@@ -532,10 +532,11 @@ function showNetworkMap(devices, map){
     var edges = [];
 //    const mapKeys = map.keys();
 
-    const createNode = function(dev) {
+    const createNode = function(dev, nwkAddr) {
         const node = {
             id: dev._id,
             label: dev.common.name,
+            title: dev._id.replace(namespace+'.', '') + ' (nwkAddr: '+nwkAddr+')',
             shape: 'image',
             image: dev.icon,
         };
@@ -559,7 +560,7 @@ function showNetworkMap(devices, map){
 
         var node;
         if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-            node = createNode(dev);
+            node = createNode(dev, mapEntry.nwkAddr);
             nodes[mapEntry.ieeeAddr] = node;
         }
         else {
@@ -571,42 +572,57 @@ function showNetworkMap(devices, map){
             const to = parentDev ? parentDev._id : undefined;
             const from = dev._id;
             var label = mapEntry.lqi.toString();
+            var linkColor = '#0000ff';
             if (mapEntry.status !== 'online' ) {
-                label = label + ' (offline)';
+                label = label + ' (off)';
+                linkColor = '#ff0000';
             }
             var edge = edges.find((edge) => {
                 return (edge.to == to && edge.from == from)
             });
+            var reverse = edges.find((edge) => {
+                return (edge.to == from && edge.from == to)
+            });
 
             var color = mapEntry.lqi > 10 ? '#0000ff' : '#ff4400';
-            edge = {
-                from: from,
-                to: to,
-                label: label,
-                font: {
-                    align: 'middle', 
-                    size: 0, // label hidden if not selected
-                    color: color},
-                arrows: { to: { enabled: false, scaleFactor: 0.3 }},
-                arrowStrikethrough: false,
-                color: {
-                    color: color,
-                    opacity: 0.1,
-                    highlight: color},
-                selectionWidth: 0,
-                physics: false,
-                chosen: {
-                    edge: function(values, id, selected, hovering) {
-                        values.opacity = 1.0;
-                        values.toArrow = true;
+            if (reverse) {
+                // update reverse edge
+                edge = reverse;
+                edge.label += '\n'+label;
+                edge.arrows.from = { enabled: false, scaleFactor: 0.7 }; // start hidden if node is not selected
+            } else if (!edge) {
+                edge = {
+                    from: from,
+                    to: to,
+                    label: label,
+                    font: {
+                        align: 'middle', 
+                        size: 0, // start hidden
+                        color: color
                     },
-                    label: function(values, id, selected, hovering) {
+                    arrows: { to: { enabled: false, scaleFactor: 0.7 }},
+                    //arrowStrikethrough: false,
+                    color: {
+                        color: linkColor,
+                        opacity: 0.2, // start unselected
+                        highlight: linkColor
+                    },
+                    chosen: {
+                        edge: function(values, id, selected, hovering) {
+                            values.opacity = 1.0;
+                            values.toArrow = true; // always existing
+                            values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
+                        },
+                        label: function(values, id, selected, hovering) {
                         // see onMapSelect workaround
 //                        values.size = 10;
-                    }
-                }
-            };
-            edges.push(edge);
+                        }
+                    },
+                    selectionWidth: 0,
+                    //physics: false,
+                };
+                edges.push(edge);
+            }
         }
     });
     
@@ -707,10 +723,15 @@ function loadDeveloperTab(onChange) {
     // fill device selector
     updateSelect('#dev', devices,
             function(key, device) {
-                if (device.info.type == 'Coordinator') {
-                    return null;
+                if (device.hasOwnProperty('info')) {
+                    if (device.info.type == 'Coordinator') {
+                        return null;
+                    }
+                    return device.info.manufName +' '+ device.common.name;
                 }
-                return device.info.manufName +' '+ device.common.name;
+                else { // fallback if device in list but not paired
+                    device.common.name + ' ' +device.native.id;
+                }
             },
             function(key, device) {
                 return device._id;
