@@ -1254,7 +1254,7 @@ function onDevEvent(type, devId, message, data) {
                 (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
             if (!converters.length && type === 'readRsp') {
                 converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
-                    (c.type instanceof Array) ? c.type.includes('attrReport') : c.type === 'attrReport'));
+                    (c.type instanceof Array) ? c.type.includes('attReport') : c.type === 'attReport'));
             }
             if (!converters.length) {
                 adapter.log.error(
