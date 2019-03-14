@@ -71,7 +71,7 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
-### 0.10.0 (2019-03-13)
+### 0.10.0 (2019-03-14)
 * some fixes
 * (allofmex) Visualize mesh newtwork map, "available" state, configuration requests
 * (Apollon77) Update test framework

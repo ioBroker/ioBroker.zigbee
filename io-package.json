@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.9.2",
+        "version": "0.10.0",
         "news": {
+            "0.10.0": {
+                "en": "New devices and fixes"
+            },
             "0.9.2": {
                 "en": "Xiaomi Lock was added",
                 "de": "Xiaomi Lock wurde hinzugefügt",
