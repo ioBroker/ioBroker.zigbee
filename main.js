@@ -761,7 +761,7 @@ function onReady() {
                     resolve();
                 });
             }));
-            scheduleDeviceConfig(device);
+            scheduleDeviceConfig(device, 30 * 1000); // grant net bit time to settle first
         });
         Promise.all(chain);
     });
@@ -789,12 +789,9 @@ function scheduleDeviceConfig(device, delay) {
     if (pendingDevConfigs.indexOf(ieeeAddr) !== -1) { // device is already scheduled
         return;
     }
-    adapter.log.debug(`Schedule device config for ${ieeeAddr}`);
-    pendingDevConfigs.push(ieeeAddr);
-    if (!delay) {
-        delay = 30 * 1000;
-    }
-    if (pendingDevConfigRun == null) {
+    adapter.log.debug(`Schedule device config for ${ieeeAddr} ${device.modelId}`);
+    pendingDevConfigs.unshift(ieeeAddr); // add as first in list
+    if (!delay || pendingDevConfigRun == null) {
         const configCall = () => {
             adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
             if (pendingDevConfigs && pendingDevConfigs.length > 0) {
@@ -803,14 +800,14 @@ function scheduleDeviceConfig(device, delay) {
                     configureDevice(devToConfig, (ok, msg) => {
                         if (ok) {
                             if (msg !== false) { // false = no config needed
-                                adapter.log.info(`Successfully configured ${ieeeAddr}`);
+                                adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
                             }
                             var index = pendingDevConfigs.indexOf(ieeeAddr);
                             if (index > -1) {
                                 pendingDevConfigs.splice(index, 1);
                             }
                         } else {
-                            adapter.log.warn(`Failed to configure ${ieeeAddr} ` + devToConfig.modelId + `, try again in 300 sec`);
+                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
                             scheduleDeviceConfig(devToConfig, 300 * 1000);
                         }
                     });
@@ -818,12 +815,16 @@ function scheduleDeviceConfig(device, delay) {
             }
             if (pendingDevConfigs.length == 0) {
                 pendingDevConfigRun = null;
-            }
-            else {
+            } else {
                 pendingDevConfigRun = setTimeout(configCall, 300 * 1000);
             }
         };
-        pendingDevConfigRun = setTimeout(configCall, delay);
+        if (!delay) { // run immediately
+            clearTimeout(pendingDevConfigRun);
+            configCall();
+        } else {
+            pendingDevConfigRun = setTimeout(configCall, delay);
+        }
     }
 }
 
