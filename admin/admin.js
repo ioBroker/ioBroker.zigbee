@@ -532,10 +532,11 @@ function showNetworkMap(devices, map){
     var edges = [];
 //    const mapKeys = map.keys();
 
-    const createNode = function(dev) {
+    const createNode = function(dev, nwkAddr) {
         const node = {
             id: dev._id,
             label: dev.common.name,
+            title: dev._id.replace(namespace+'.', '') + ' (nwkAddr: '+nwkAddr+')',
             shape: 'image',
             image: dev.icon,
         };
@@ -559,7 +560,7 @@ function showNetworkMap(devices, map){
 
         var node;
         if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-            node = createNode(dev);
+            node = createNode(dev, mapEntry.nwkAddr);
             nodes[mapEntry.ieeeAddr] = node;
         }
         else {
@@ -574,7 +575,7 @@ function showNetworkMap(devices, map){
             var linkColor = '#0000ff';
             if (mapEntry.status !== 'online' ) {
                 label = label + ' (off)';
-                linkColor = '#ff4400';
+                linkColor = '#ff0000';
             }
             var edge = edges.find((edge) => {
                 return (edge.to == to && edge.from == from)
@@ -588,7 +589,7 @@ function showNetworkMap(devices, map){
                 // update reverse edge
                 edge = reverse;
                 edge.label += '\n'+label;
-                edge.arrows.from = { enabled: true, scaleFactor: 0.7 };
+                edge.arrows.from = { enabled: false, scaleFactor: 0.7 }; // start hidden if node is not selected
             } else if (!edge) {
                 edge = {
                     from: from,
@@ -596,16 +597,29 @@ function showNetworkMap(devices, map){
                     label: label,
                     font: {
                         align: 'middle', 
-                        size: 10,
+                        size: 0, // start hidden
                         color: color
                     },
-                    arrows: { to: { enabled: true, scaleFactor: 0.7 }},
+                    arrows: { to: { enabled: false, scaleFactor: 0.7 }},
+                    //arrowStrikethrough: false,
                     color: {
                         color: linkColor,
-                        opacity: 1,
+                        opacity: 0.2, // start unselected
                         highlight: linkColor
                     },
-                    selectionWidth: 0
+                    chosen: {
+                        edge: function(values, id, selected, hovering) {
+                            values.opacity = 1.0;
+                            values.toArrow = true; // always existing
+                            values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
+                        },
+                        label: function(values, id, selected, hovering) {
+                        // see onMapSelect workaround
+//                        values.size = 10;
+                        }
+                    },
+                    selectionWidth: 0,
+                    physics: false,
                 };
                 edges.push(edge);
             }
@@ -640,6 +654,29 @@ function showNetworkMap(devices, map){
     };
 
     network = new vis.Network(container, data, options);
+    
+    const onMapSelect = function (event, properties, senderId) {
+        // workaround for https://github.com/almende/vis/issues/4112
+        // may be moved to edge.chosen.label if fixed
+        function doSelection(select, edges, data) {
+            edges.forEach((edgeId => {
+                const options = data.edges._data[edgeId];
+                if (select) {
+                    options.font.size = 10;
+                } else {
+                    options.font.size = 0;
+                }
+                network.clustering.updateEdge(edgeId, options);
+            }));
+        }
+
+        if (event.hasOwnProperty('previousSelection')) { // unselect previous selected
+            doSelection(false, event.previousSelection.edges, this.body.data);
+        }
+        doSelection(true, event.edges, this.body.data);
+    }
+    network.on('selectNode', onMapSelect);
+    network.on('deselectNode', onMapSelect);
     redrawMap();
 }
 
@@ -686,10 +723,15 @@ function loadDeveloperTab(onChange) {
     // fill device selector
     updateSelect('#dev', devices,
             function(key, device) {
-                if (device.info.type == 'Coordinator') {
-                    return null;
+                if (device.hasOwnProperty('info')) {
+                    if (device.info.type == 'Coordinator') {
+                        return null;
+                    }
+                    return device.info.manufName +' '+ device.common.name;
                 }
-                return device.info.manufName +' '+ device.common.name;
+                else { // fallback if device in list but not paired
+                    device.common.name + ' ' +device.native.id;
+                }
             },
             function(key, device) {
                 return device._id;

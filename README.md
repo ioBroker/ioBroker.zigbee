@@ -71,14 +71,13 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
-### 0.10.0 (2019-03-13)
+### 0.10.2 (2019-03-15)
 * some fixes
 * (allofmex) Visualize mesh newtwork map, "available" state, configuration requests
 * (Apollon77) Update test framework
 * (sonntam) Tint remote
 * (arteck) OSRAM Lightify Switch Mini, rwl021 dimmer
 * (asgothian) TRADFRI signal repeater, Innr SP 120, Xiaomi Gas detector
-* bumped serialport version to 7.*
 
 ### 0.9.2 (2019-02-25)
 No support of node.js 4 any more
