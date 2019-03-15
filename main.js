@@ -1250,11 +1250,14 @@ function onDevEvent(type, devId, message, data) {
                 adapter.log.error('Unknown device model ' + modelID + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
                 return;
             }
-            const search = type === 'readRsp' ? 'attReport' : type;
-            const converters = mappedModel.fromZigbee.filter(c => c.cid === cid && c.type === search);
+            let converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
+                (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
+            if (!converters.length && type === 'readRsp') {
+                converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
+                    (c.type instanceof Array) ? c.type.includes('attReport') : c.type === 'attReport'));
+            }
             if (!converters.length) {
-                if (type === 'readRsp') return;
-                adapter.log.error(
+                adapter.log.debug(
                     `No converter available for '${mappedModel.model}' with cid '${cid}' and type '${type}'`
                 );
                 return;

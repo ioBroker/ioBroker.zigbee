@@ -619,7 +619,7 @@ function showNetworkMap(devices, map){
                         }
                     },
                     selectionWidth: 0,
-                    //physics: false,
+                    physics: false,
                 };
                 edges.push(edge);
             }
