@@ -1,7 +1,6 @@
 version: 'test-{build}'
 environment:
   matrix:
-    - nodejs_version: '4'
     - nodejs_version: '6'
     - nodejs_version: '8'
     - nodejs_version: '10'
@@ -15,11 +14,11 @@ install:
   - ps: 'if($NpmVersion -eq 5) { npm install -g npm@5 }'
   - ps: npm --version
   - npm install
-  - npm install winston@2.3.1
-  - 'npm install https://github.com/ioBroker/ioBroker.js-controller/tarball/master --production'
 test_script:
   - echo %cd%
   - node --version
   - npm --version
-  - npm test
+  - 'npm run test:package'
+  - 'npm run test:unit'
+  - 'npm run test:integration'
 build: 'off'

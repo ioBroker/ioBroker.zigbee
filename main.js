@@ -13,7 +13,7 @@
 const safeJsonStringify = require('./lib/json');
 // you have to require the utils module and call adapter function
 const fs = require('fs');
-const utils = require('./lib/utils'); // Get common adapter utils
+const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const ZShepherd = require('zigbee-shepherd');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const deviceMapping = require('zigbee-shepherd-converters');
@@ -32,6 +32,9 @@ let devNum = 0;
 let zbControl;
 let adapter;
 
+let pendingDevConfigRun = null;
+let pendingDevConfigs = [];
+
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {
@@ -44,6 +47,9 @@ function startAdapter(options) {
                 if (zbControl) {
                     zbControl.stop();
                     zbControl = undefined;
+                }
+                if (pendingDevConfigRun != null) {
+                    clearTimeout(pendingDevConfigRun);
                 }
                 callback();
             } catch (e) {
@@ -390,7 +396,7 @@ function letsPairing(from, command, message, callback) {
             devId = getZBid(message.id);
         }
         // allow devices to join the network within 60 secs
-        logToPairing('Pairing started ' + devId);
+        logToPairing('Pairing started ' + devId, true);
         zbControl.permitJoin(60, devId, err => {
             if (!err) {
                 // set pairing mode on
@@ -519,9 +525,10 @@ function newDevice(id, msg) {
     if (dev) {
         adapter.log.info('new dev ' + dev.ieeeAddr + ' ' + dev.nwkAddr + ' ' + dev.modelId);
         logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
-        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () =>
-            syncDevStates(dev)
-        );
+        updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () => {
+            syncDevStates(dev);
+            scheduleDeviceConfig(dev);
+        });
     }
 }
 
@@ -691,15 +698,15 @@ function syncGroups(groups) {
             usedGroupsIds.push(parseInt(j));
         }
     }
-    chain.push(new Promise((resolve, reject) => {
-        zbControl.removeUnusedGroups(usedGroupsIds, () => {
-            usedGroupsIds.forEach(j => {
-                const id = `group_${j}`;
-                zbControl.addGroup(j, id);
-            });
-            resolve();
-        });
-    }));
+    // chain.push(new Promise((resolve, reject) => {
+    //     zbControl.removeUnusedGroups(usedGroupsIds, () => {
+    //         usedGroupsIds.forEach(j => {
+    //             const id = `group_${j}`;
+    //             zbControl.addGroup(j, id);
+    //         });
+    //         resolve();
+    //     });
+    // }));
     chain.push(new Promise((resolve, reject) => {
         // remove unused adpter groups
         adapter.getDevices((err, devices) => {
@@ -754,7 +761,7 @@ function onReady() {
                     resolve();
                 });
             }));
-            configureDevice(device);
+            scheduleDeviceConfig(device, 30 * 1000); // grant net bit time to settle first
         });
         Promise.all(chain);
     });
@@ -776,22 +783,63 @@ function getDeviceStartupLogMessage(device) {
         `${friendlyDevice.vendor} ${friendlyDevice.description} (${type})`;
 }
 
-function configureDevice(device) {
-    // Configure reporting for this device.
+function scheduleDeviceConfig(device, delay) {
     const ieeeAddr = device.ieeeAddr;
-    if (ieeeAddr && device.modelId) {
+    
+    if (pendingDevConfigs.indexOf(ieeeAddr) !== -1) { // device is already scheduled
+        return;
+    }
+    adapter.log.debug(`Schedule device config for ${ieeeAddr} ${device.modelId}`);
+    pendingDevConfigs.unshift(ieeeAddr); // add as first in list
+    if (!delay || pendingDevConfigRun == null) {
+        const configCall = () => {
+            adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
+            if (pendingDevConfigs && pendingDevConfigs.length > 0) {
+                pendingDevConfigs.forEach((ieeeAddr) => {
+                    const devToConfig = zbControl.getDevice(ieeeAddr);
+                    configureDevice(devToConfig, (ok, msg) => {
+                        if (ok) {
+                            if (msg !== false) { // false = no config needed
+                                adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
+                            }
+                            var index = pendingDevConfigs.indexOf(ieeeAddr);
+                            if (index > -1) {
+                                pendingDevConfigs.splice(index, 1);
+                            }
+                        } else {
+                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
+                            scheduleDeviceConfig(devToConfig, 300 * 1000);
+                        }
+                    });
+                });
+            }
+            if (pendingDevConfigs.length == 0) {
+                pendingDevConfigRun = null;
+            } else {
+                pendingDevConfigRun = setTimeout(configCall, 300 * 1000);
+            }
+        };
+        if (!delay) { // run immediately
+            clearTimeout(pendingDevConfigRun);
+            configCall();
+        } else {
+            pendingDevConfigRun = setTimeout(configCall, delay);
+        }
+    }
+}
+
+function configureDevice(device, callback) {
+    // Configure reporting for this device.
+    if (device && device.ieeeAddr && device.modelId) {
+        const ieeeAddr = device.ieeeAddr;
         const mappedModel = deviceMapping.findByZigbeeModel(device.modelId);
 
         if (mappedModel && mappedModel.configure) {
-            mappedModel.configure(ieeeAddr, zbControl.shepherd, zbControl.getCoordinator(), (ok, msg) => {
-                if (ok) {
-                    adapter.log.info(`Successfully configured ${ieeeAddr}`);
-                } else {
-                    adapter.log.warn(`Failed to configure ${ieeeAddr} ` + device.modelId);
-                }
-            });
+            mappedModel.configure(ieeeAddr, zbControl.shepherd, zbControl.getCoordinator(), callback);
+            return;
         }
     }
+    callback(true, false); // device does not require configuration
 }
 
 function onLog(level, msg, data) {
@@ -802,7 +850,7 @@ function onLog(level, msg, data) {
                 logger = adapter.log.error;
                 if (data)
                     data = data.toString();
-                logToPairing('Error: ' + msg + '. ' + data);
+                logToPairing('Error: ' + msg + '. ' + data, true);
                 break;
             case 'debug':
                 logger = adapter.log.debug;
@@ -1203,9 +1251,14 @@ function onDevEvent(type, devId, message, data) {
                 adapter.log.error('Unknown device model ' + modelID + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
                 return;
             }
-            const converters = mappedModel.fromZigbee.filter(c => c.cid === cid && c.type === type);
+            let converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
+                (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
+            if (!converters.length && type === 'readRsp') {
+                converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
+                    (c.type instanceof Array) ? c.type.includes('attReport') : c.type === 'attReport'));
+            }
             if (!converters.length) {
-                adapter.log.error(
+                adapter.log.debug(
                     `No converter available for '${mappedModel.model}' with cid '${cid}' and type '${type}'`
                 );
                 return;
@@ -1237,6 +1290,7 @@ function onDevEvent(type, devId, message, data) {
 
 
 function main() {
+	if (!adapter.systemConfig) return;
     // file path for ZShepherd
     const dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
     if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);

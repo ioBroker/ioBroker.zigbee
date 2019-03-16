@@ -1,7 +1,7 @@
 ![Logo](admin/zigbee.png)
 # ioBroker.zigbee
 
-[![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
+![Number of Installations](http://iobroker.live/badges/zigbee-installed.svg) ![Number of Installations](http://iobroker.live/badges/zigbee-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 [![Tests](https://travis-ci.org/ioBroker/ioBroker.zigbee.svg?branch=master)](https://travis-ci.org/ioBroker/ioBroker.zigbee)
 
@@ -9,7 +9,7 @@
 
 ## ioBroker Zigbee adapter for Xiaomi (and other) devices via cc2531/cc2530
 
-With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others), it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue). About the device Zigbee-network can be read [here (in English)](https://github.com/Koenkk/zigbee2mqtt/wiki/ZigBee-network).
+With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others), it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
 
@@ -20,7 +20,7 @@ For work, you need one of the following devices, flashed with a special ZNP firm
 <span><img src="http://img.dxcdn.com/productimages/sku_429601_2.jpg" width="100"></span>
 <span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
 
-The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://github.com/Koenkk/zigbee2mqtt/wiki/Getting-started) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
+The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
 
 The devices connected to the Zigbee-network and inform the coordinator of their status and events (button presses, motion detection, temperature change). This information is reflected in the ioBroker object-states. Some ioBroker states have feedback and send commands to the zigbee-device when the value changes (switching the state of the outlet or lamp, changing the scene or the brightness of the lamp).
 
@@ -31,7 +31,7 @@ The devices connected to the Zigbee-network and inform the coordinator of their 
 To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2531 or `/dev/ttyUSB0` for the UART-connection cc2530. For Windows this will be the COM port number.
 
 To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
-To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://github.com/Koenkk/zigbee2mqtt/wiki/Pairing-devices) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0)
+To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0)
 
 After successful pairing, the device appears in the configuration panel. If the device appears in the configuration panel but has the type "undefined", then this is an unknown device and can not be work with it. If the device is in the list of available devices, but added as "undefined", then try to remove the device and add it again.
 
@@ -56,7 +56,7 @@ This is a tool for advanced users to test currently unsupported devices or enhan
 There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality on the same technologies, where you can work with the same devices using the MQTT protocol. Therefore, if any improvements or support for new zigbee-devices occur in the Zigbee2MQTT project, we can transfer and add the same functionality to this adapter. If you notice this, then write the issue - we'll postpone it.
 
 There are knowledge bases that can be useful for working with Zigbee-devices and equipment:
-* in English https://koenkk.github.io/zigbee2mqtt/
+* in English https://www.zigbee2mqtt.io/
 * in Russian https://github.com/kirovilya/ioBroker.zigbee/wiki
 
 ## Supported devices
@@ -70,6 +70,25 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * Binding
 
 ## Changelog
+
+### 0.10.2 (2019-03-15)
+* some fixes
+* (allofmex) Visualize mesh newtwork map, "available" state, configuration requests
+* (Apollon77) Update test framework
+* (sonntam) Tint remote
+* (arteck) OSRAM Lightify Switch Mini, rwl021 dimmer
+* (asgothian) TRADFRI signal repeater, Innr SP 120, Xiaomi Gas detector
+
+### 0.9.2 (2019-02-25)
+No support of node.js 4 any more
+* (bluefox) Xiaomi Lock was added
+* (nisiode) Some fixes
+* (sonntam) Some fixes
+* (arteck) Heiman SmokeSensor
+* (asgothian, allofmex) Eurotronic support
+
+### 0.9.1 (2019-01-29)
+* Groups and new Developer tab were added
 
 ### 0.9.0 (2019-01-28)
 * (arteck) Many new devices
@@ -161,7 +180,7 @@ Other changes:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2019 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
