@@ -493,17 +493,34 @@ function getDevices(from, command, callback) {
                 pairedDevices.forEach((device) => {
                     const exists = devices.find((dev) => device.ieeeAddr === getZBid(dev._id));
                     if (!exists) {
-                        devices.push({
-                            _id: device.ieeeAddr,
-                            icon: 'img/unknown.png',
-                            paired: true,
-                            info: device,
-                            common: {
-                                name: undefined,
-                                type: undefined,
-                            },
-                            native: {}
-                        });
+                        if (device.type == "Coordinator") {
+                            let fwinfo = zbControl.getInfo();
+                            devices.push({
+                                _id: device.ieeeAddr,
+                                icon: 'img/coordinator.png',
+                                paired: true,
+                                info: device,
+                                common: {
+                                    name: fwinfo.net.state + " ("+fwinfo.net.panId+")",
+                                    type: "TI cc253x V" + fwinfo.firmware.version + " R" + fwinfo.firmware.revision,
+                                },
+                                native: {}
+                            });
+                        }
+                        else
+                        {
+                            devices.push({
+                                _id: device.ieeeAddr,
+                                icon: 'img/unknown.png',
+                                paired: true,
+                                info: device,
+                                common: {
+                                    name: undefined,
+                                    type: undefined,
+                                },
+                                native: {}
+                            });
+                        }
                     }
                 });
                 return devices;
@@ -785,7 +802,7 @@ function getDeviceStartupLogMessage(device) {
 
 function scheduleDeviceConfig(device, delay) {
     const ieeeAddr = device.ieeeAddr;
-    
+
     if (pendingDevConfigs.indexOf(ieeeAddr) !== -1) { // device is already scheduled
         return;
     }
@@ -1215,6 +1232,26 @@ function onDevEvent(type, devId, message, data) {
             logToPairing('Interview state: step ' + data.currentEp + '/' + data.totalEp + '. progress: ' + data.progress + '%', true);
             break;
         case 'msg':
+        // check here if we can trigger the configure immediately
+            const devToConfig = zbControl.getDevice(devId);
+            if (pendingDevConfigs.indexOf(devId) !== -1) { // device is already scheduled
+                adapter.log.info("Attempting to configure device " + devId);
+                var index = pendingDevConfigs.indexOf(devId);
+                if (index > -1) {
+                    pendingDevConfigs.splice(index, 1);
+                }
+
+                configureDevice(devToConfig, (ok, msg) => {
+                    if (ok) {
+                        if (msg !== false) { // false = no config needed
+                            adapter.log.info(`Successfully configured ${devId} ${devToConfig.modelId}`);
+                        }
+                    } else {
+                      adapter.log.warn(`Dev ${devId} ${devToConfig.modelId} was not configured successfully - configuration sheduled`);
+                      scheduleDeviceConfig(devToConfig, 300 * 1000);
+                    }
+                });
+            }
             adapter.log.debug('Device ' + devId + ' incoming event:' + safeJsonStringify(message));
             // Map Zigbee modelID to vendor modelID.
             const mModel = deviceMapping.findByZigbeeModel(data.modelId);

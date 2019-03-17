@@ -31,22 +31,26 @@ function getCard(dev) {
     }
     room = rooms.join(',') || '&nbsp';
     let routeBtn = '';
-    if (dev.info && dev.info.type == 'Router') {
+    let editBtn = '';
+    let infoBtn = '';
+    if (dev.info && dev.info.type == 'Router' || dev.info.type == 'Coordinator') {
         routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
     }
-
+    if (dev.info && dev.info.type != 'Coordinator') {
+      editBtn = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
+          '<i class="material-icons tiny">delete</i></a>'+'<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
+          '<i class="material-icons small">mode_edit</i></a>'
+      infoBtn = '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
+              '<i class="material-icons">info</i></a>'
+    }
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
         info = `<p style="min-height:96px">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
-        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
-            '<i class="material-icons tiny">delete</i></a>'+
-            '<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
-                '<i class="material-icons small">mode_edit</i></a>'+routeBtn,
+        buttons = editBtn+routeBtn,
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
-                    '<div class="card-content">'+
-                        '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
-                            '<i class="material-icons">info</i></a>'+
+                    '<div class="card-content">'+ infoBtn
+                        +
                         '<span id="dName" class="card-title truncate">'+title+'</span>'+paired+
 
                         '<i class="left">'+image+'</i>'+
@@ -225,7 +229,7 @@ function showDevices() {
     devGroups = {};
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
-        if (d.info && d.info.type == "Coordinator") continue;
+//        if (d.info && d.info.type == "Coordinator") continue;
         if (d.groups && d.info && d.info.type == "Router") {
             devGroups[d._id] = d.groups;
             d.groupNames = d.groups.map(item=>{
@@ -540,17 +544,17 @@ function showNetworkMap(devices, map){
             shape: 'image',
             image: dev.icon,
         };
-        if (dev.info && dev.info.type == 'Coordinator') {
-            node.shape = 'star';
-            node.label = 'Coordinator';
-        }
+//        if (dev.info && dev.info.type == 'Coordinator') {
+//            node.shape = 'star';
+//            node.label = 'Coordinator';
+//        }
         return node;
     };
 
     const getDevice = function(ieeeAddr) {
         return devices.find((devInfo) => { return devInfo.info.ieeeAddr == ieeeAddr });
     }
-    
+
     map.forEach((mapEntry)=>{
         const dev = getDevice(mapEntry.ieeeAddr);
         if (!dev) {
@@ -596,7 +600,7 @@ function showNetworkMap(devices, map){
                     to: to,
                     label: label,
                     font: {
-                        align: 'middle', 
+                        align: 'middle',
                         size: 0, // start hidden
                         color: color
                     },
@@ -625,7 +629,7 @@ function showNetworkMap(devices, map){
             }
         }
     });
-    
+
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
     devices.forEach((dev) => {
@@ -654,7 +658,7 @@ function showNetworkMap(devices, map){
     };
 
     network = new vis.Network(container, data, options);
-    
+
     const onMapSelect = function (event, properties, senderId) {
         // workaround for https://github.com/almende/vis/issues/4112
         // may be moved to edge.chosen.label if fixed
