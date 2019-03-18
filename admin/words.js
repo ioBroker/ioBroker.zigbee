@@ -45,4 +45,18 @@ systemDictionary = {
                 "and it resets CC253x settings too. You will have to repair ALL of your devices!",
         "pl":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
                 "and it resets CC253x settings too. You will have to repair ALL of your devices!"},
+    "Device map info": {
+        "en":   "<b>Click a device to see more details.</b> Every device can have only one parent. Devices may change there parents by themselves. There "+
+                "is no way to force a device to a specific parent. (if you see more than one parent link, it "+
+                "may be outdated data).<br>You may also move devices for better "+
+                "visibility.<br>Weak and offline links are shown red. If a device label shows red, no links where found. "+
+                "No problem if a device has only 'Previous Parents' links, it may just have not send new data since some time.",
+        "de":   "Device map info",
+        "ru":   "Device map info",
+        "pt":   "Device map info",
+        "nl":   "Device map info",
+        "fr":   "Device map info",
+        "it":   "Device map info",
+        "es":   "Device map info",
+        "pl":   "Device map info"},
 };
