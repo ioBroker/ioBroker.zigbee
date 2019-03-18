@@ -546,6 +546,7 @@ function showNetworkMap(devices, map){
             title: dev._id.replace(namespace+'.', '') + extInfo,
             shape: 'image',
             image: dev.icon,
+            font: {color:'#007700'},
         };
         if (dev.info && dev.info.type == 'Coordinator') {
             node.shape = 'star';
@@ -597,7 +598,7 @@ function showNetworkMap(devices, map){
                     linkColor = '#ff0000';
                 }
             } else if (mapEntry.relationship === 2) { // sibling
-                linkColor = '#00dd00';
+                linkColor = '#00bb00';
             } else if (mapEntry.relationship === 3 && !reverse) { // unknown
                 linkColor = '#aaaaff';
             } else if (mapEntry.relationship === 4) { // previous child
