@@ -33,6 +33,7 @@ function getCard(dev) {
     let routeBtn = '';
     let editBtn = '';
     let infoBtn = '';
+    let configureBtn = ''
     if (dev.info && dev.info.type == 'Router' || dev.info.type == 'Coordinator') {
         routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
     }
@@ -43,10 +44,11 @@ function getCard(dev) {
       infoBtn = '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
               '<i class="material-icons">info</i></a>'
     }
+    if (dev.configured > -1) configureBtn = (dev.configured>0) ? '<a name="configure" class="btn-floating waves-effect waves-light right hoverable red"><i class="material-icons tiny">assignment_late</i></a>' : '<a name="configure" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">assignment_turned_in</i></a>';
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
         info = `<p style="min-height:96px">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
-        buttons = editBtn+routeBtn,
+        buttons = editBtn+routeBtn + configureBtn,
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
                     '<div class="card-content">'+ infoBtn

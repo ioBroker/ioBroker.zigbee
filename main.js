@@ -491,14 +491,17 @@ function getDevices(from, command, callback) {
             .then(devices => {
                 // append devices that paired but not created
                 pairedDevices.forEach((device) => {
+                  adapter.log.warn("getting devices: "+ device.modelId);
                     const exists = devices.find((dev) => device.ieeeAddr === getZBid(dev._id));
                     if (!exists) {
+                      adapter.log.warn("getting devices no exist: "+ device.modelId);
                         if (device.type == "Coordinator") {
                             let fwinfo = zbControl.getInfo();
                             devices.push({
                                 _id: device.ieeeAddr,
                                 icon: 'img/coordinator.png',
                                 paired: true,
+                                configured: -1,
                                 info: device,
                                 common: {
                                     name: fwinfo.net.state + " ("+fwinfo.net.panId+")",
@@ -513,6 +516,7 @@ function getDevices(from, command, callback) {
                                 _id: device.ieeeAddr,
                                 icon: 'img/unknown.png',
                                 paired: true,
+                                configured: configure,
                                 info: device,
                                 common: {
                                     name: undefined,
@@ -522,6 +526,21 @@ function getDevices(from, command, callback) {
                             });
                         }
                     }
+/*
+                    else
+                    {
+                        var configure = -1;
+                        adapter.log.warn("a " + JSON.stringify(device))
+                        mappedModel = deviceMapping.findByZigbeeModel(device.modelId);
+                        adapter.log.warn("b "+ JSON.stringify(mappedModel))
+                        if (mappedModel && mappedModel.configure) {
+                          adapter.log.warn("c ")
+                          if (pendingDevConfigs.indexOf(device.ieeeAddr) === -1) configure = 1; else configure = 0;
+                        }
+                        adapter.log.warn("setting configure flag for "+ device.modelId + " to "+configure);
+                        devices.configured = configure;
+                    }
+*/
                 });
                 return devices;
             })
