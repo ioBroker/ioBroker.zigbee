@@ -785,7 +785,7 @@ function getDeviceStartupLogMessage(device) {
 
 function scheduleDeviceConfig(device, delay) {
     const ieeeAddr = device.ieeeAddr;
-
+    
     if (pendingDevConfigs.indexOf(ieeeAddr) !== -1) { // device is already scheduled
         return;
     }
@@ -1147,11 +1147,6 @@ function syncDevStates(dev) {
 
         const statedesc = states[stateInd];
 
-        if (!statedesc)
-        {
-          adapter.log.warn("Illegal state (" + JSON.stringify(stateInd) + ")")
-          continue;
-        }
         // Filter out non routers or devices that are battery driven for the availability flag
         if (statedesc.id === 'available')
             if (!(dev.type === 'Router') || dev.powerSource === 'Battery')
