@@ -9,6 +9,7 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     dialog,
     messages = [],
     map = [],
+    mapEdges = null,
     network,
     responseCodes = false,
     groups = {},
@@ -530,15 +531,22 @@ function showNetworkMap(devices, map){
     var nodes = {};
     // create an array with edges
     var edges = [];
-//    const mapKeys = map.keys();
+    
+    if (map.length === 0) { // first init
+        $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function() {
+            updateMapFilter();
+        });
+    }
 
-    const createNode = function(dev, nwkAddr) {
+    const createNode = function(dev, mapEntry) {
+        const extInfo = (mapEntry && mapEntry.nwkAddr) ? ' (nwkAddr: 0x'+mapEntry.nwkAddr.toString(16)+')' : '';
         const node = {
             id: dev._id,
             label: dev.common.name,
-            title: dev._id.replace(namespace+'.', '') + ' (nwkAddr: '+nwkAddr+')',
+            title: dev._id.replace(namespace+'.', '') + extInfo,
             shape: 'image',
             image: dev.icon,
+            font: {color:'#007700'},
         };
         if (dev.info && dev.info.type == 'Coordinator') {
             node.shape = 'star';
@@ -560,7 +568,7 @@ function showNetworkMap(devices, map){
 
         var node;
         if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-            node = createNode(dev, mapEntry.nwkAddr);
+            node = createNode(dev, mapEntry);
             nodes[mapEntry.ieeeAddr] = node;
         }
         else {
@@ -573,10 +581,6 @@ function showNetworkMap(devices, map){
             const from = dev._id;
             var label = mapEntry.lqi.toString();
             var linkColor = '#0000ff';
-            if (mapEntry.status !== 'online' ) {
-                label = label + ' (off)';
-                linkColor = '#ff0000';
-            }
             var edge = edges.find((edge) => {
                 return (edge.to == to && edge.from == from)
             });
@@ -584,12 +588,31 @@ function showNetworkMap(devices, map){
                 return (edge.to == from && edge.from == to)
             });
 
-            var color = mapEntry.lqi > 10 ? '#0000ff' : '#ff4400';
+            if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
+                // // parent/child
+                if (mapEntry.status !== 'online' ) {
+                    label = label + ' (off)';
+                    linkColor = '#ff0000';
+                }
+                if (mapEntry.lqi < 10) {
+                    linkColor = '#ff0000';
+                }
+            } else if (mapEntry.relationship === 2) { // sibling
+                linkColor = '#00bb00';
+            } else if (mapEntry.relationship === 3 && !reverse) { // unknown
+                linkColor = '#aaaaff';
+            } else if (mapEntry.relationship === 4) { // previous child
+                linkColor = '#555555';
+            }
             if (reverse) {
                 // update reverse edge
                 edge = reverse;
                 edge.label += '\n'+label;
-                edge.arrows.from = { enabled: false, scaleFactor: 0.7 }; // start hidden if node is not selected
+                edge.arrows.from = { enabled: false, scaleFactor: 0.5 }; // start hidden if node is not selected
+                if (mapEntry.relationship == 1) { // 
+                    edge.color.color = linkColor;
+                    edge.color.highlight = linkColor;
+                }
             } else if (!edge) {
                 edge = {
                     from: from,
@@ -598,13 +621,13 @@ function showNetworkMap(devices, map){
                     font: {
                         align: 'middle', 
                         size: 0, // start hidden
-                        color: color
+                        color: linkColor
                     },
-                    arrows: { to: { enabled: false, scaleFactor: 0.7 }},
+                    arrows: { to: { enabled: false, scaleFactor: 0.5 }},
                     //arrowStrikethrough: false,
                     color: {
                         color: linkColor,
-                        opacity: 0.2, // start unselected
+                        opacity: 0, // start hidden
                         highlight: linkColor
                     },
                     chosen: {
@@ -619,7 +642,8 @@ function showNetworkMap(devices, map){
                         }
                     },
                     selectionWidth: 0,
-                    physics: false,
+                    physics: mapEntry.relationship === 1 ? true : false,
+                    relationship: mapEntry.relationship
                 };
                 edges.push(edge);
             }
@@ -631,15 +655,18 @@ function showNetworkMap(devices, map){
     devices.forEach((dev) => {
         const node = nodesArray.find((node) => { return node.id == dev._id });
         if (!node) {
-            nodesArray.push(createNode(dev));
+            const node = createNode(dev);
+            node.font = {color:'#ff0000'};
+            nodesArray.push(node);
         }
     });
 
     // create a network
     var container = document.getElementById('map');
+    mapEdges = new vis.DataSet(edges);
     var data = {
-        nodes: nodesArray,
-        edges: edges
+          nodes: nodesArray,
+          edges: mapEdges
     };
     var options = {
         autoResize: true,
@@ -678,6 +705,7 @@ function showNetworkMap(devices, map){
     network.on('selectNode', onMapSelect);
     network.on('deselectNode', onMapSelect);
     redrawMap();
+    updateMapFilter();
 }
 
 function redrawMap() {
@@ -689,6 +717,27 @@ function redrawMap() {
         network.fit();
         network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
     }
+}
+
+function updateMapFilter() {
+    if (mapEdges == null) {
+        return;
+    }
+    const showParent = $('#filterParent').is(':checked');
+    const showSibl = $('#filterSibl').is(':checked');
+    const showPrvChild = $('#filterPrvChild').is(':checked');
+    const invisColor = $('#filterMesh').is(':checked') ? 0.2 : 0;
+    mapEdges.forEach((edge, id) => {
+        if (((edge.relationship === 0 || edge.relationship === 1) && showParent)
+                || (edge.relationship === 2 && showSibl)
+              || (edge.relationship === 3 && showParent) // ignore relationship "unknown"
+                || (edge.relationship === 4 && showPrvChild)) {
+            edge.color.opacity = 1.0;
+        } else {
+            edge.color.opacity = invisColor;
+        }
+        mapEdges.update(edge);
+    });
 }
 
 function getComPorts(onChange) {
