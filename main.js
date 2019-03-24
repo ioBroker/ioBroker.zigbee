@@ -854,24 +854,13 @@ function scheduleDeviceConfig(device, delay) {
                             if (msg !== false) { // false = no config needed
                                 adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
                             }
-//                            adapter.extendObject(ieeeAddr, {native: { configureNeeded: 0}} );
-                            adapter.getObject(ieeeAddr, function (err, obj) {
-                                if (err) {
-                                    adapter.log.error(err);
-                                } else {
-                                    adapter.log.info(JSON.stringify(obj));
-                                    obj.native.configureNeeded = 0; // modify object
-                                    adapter.setObject(obj._id, obj, function (err) {
-                                        if (err) adapter.log.error(err);
-                                    });
-                                }
-                            });
+                            adapter.extendObject(ieeeAddr.split('x')[1], {native: { configureNeeded: 0}} );
                             var index = pendingDevConfigs.indexOf(ieeeAddr);
                             if (index > -1) {
                                 pendingDevConfigs.splice(index, 1);
                             }
                         } else {
-                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
+                            adapter.log.debug(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
                             scheduleDeviceConfig(devToConfig, 300 * 1000);
                         }
                     });
@@ -1294,23 +1283,9 @@ function onDevEvent(type, devId, message, data) {
                       if (ok) {
                           if (msg !== false) { // false = no config needed
                               adapter.log.info(`Successfully configured ${devId} ${devToConfig.modelId}`);
-//                              adapter.extendObject(devId, {native: { configureNeeded: 0}} , function (err, obj) { if (err) { adapter.log.error(err); } adapter.log.warn("extend object callback "+ JSON.stringify(obj))});
-/*
-                              adapter.getObject(devId, function (err, obj) {
-                                  if (err) {
-                                      adapter.log.error(err);
-                                  } else {
-                                      adapter.log.info(JSON.stringify(obj));
-                                      obj.native.configureNeeded = 0; // modify object
-                                      adapter.setObject(devId, obj, function (err) {
-                                          if (err) adapter.log.error(err);
-                                      });
-                                  }
-                              });
-*/
+                              adapter.extendObject(devId.split('x')[1], {native: { configureNeeded: 0}} , function (err, obj) { if (err) { adapter.log.error(err); }});
                           }
                       } else {
-                        adapter.log.warn(`Dev ${devId} ${devToConfig.modelId} was not configured successfully - configuration scheduled`);
                         scheduleDeviceConfig(devToConfig, 300 * 1000);
                       }
                   });
