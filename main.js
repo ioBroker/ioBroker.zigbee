@@ -848,22 +848,32 @@ function scheduleDeviceConfig(device, delay) {
             adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
             if (pendingDevConfigs && pendingDevConfigs.length > 0) {
                 pendingDevConfigs.forEach((ieeeAddr) => {
-                    const devToConfig = zbControl.getDevice(ieeeAddr);
-                    configureDevice(devToConfig, (ok, msg) => {
-                        if (ok) {
-                            if (msg !== false) { // false = no config needed
-                                adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
-                            }
-//                            adapter.extendObject(ieeeAddr.split('x')[1], {native: { configureNeeded: 0}} );
-                            var index = pendingDevConfigs.indexOf(ieeeAddr);
-                            if (index > -1) {
-                                pendingDevConfigs.splice(index, 1);
-                            }
-                        } else {
-                            adapter.log.debug(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
-                            scheduleDeviceConfig(devToConfig, 300 * 1000);
-                        }
-                    });
+                    adapter.getObject(ieeeAddr.split('x')[1], function(err, obj) {
+                    if (obj && obj.native && (obj.native.configureNeeded > 0 || obj.native.configureNeeded === null))
+                    {
+                      const devToConfig = zbControl.getDevice(ieeeAddr);
+                      configureDevice(devToConfig, (ok, msg) => {
+                          if (ok) {
+                              if (msg !== false) { // false = no config needed
+                                  adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
+                              }
+                              adapter.extendObject(ieeeAddr.split('x')[1], {native: { configureNeeded: 0}} );
+                              var index = pendingDevConfigs.indexOf(ieeeAddr);
+                              if (index > -1) {
+                                  pendingDevConfigs.splice(index, 1);
+                              }
+                          } else {
+                              adapter.log.debug(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
+                              scheduleDeviceConfig(devToConfig, 300 * 1000);
+                          }
+                      });
+                    } else {
+                      var index = pendingDevConfigs.indexOf(ieeeAddr);
+                      if (index > -1) {
+                          pendingDevConfigs.splice(index, 1);
+                      }
+                    }
+                  });
                 });
             }
             if (pendingDevConfigs.length == 0) {
@@ -871,13 +881,14 @@ function scheduleDeviceConfig(device, delay) {
             } else {
                 pendingDevConfigRun = setTimeout(configCall, 300 * 1000);
             }
+
         };
-        if (!delay) { // run immediately
-            clearTimeout(pendingDevConfigRun);
-            configCall();
-        } else {
-            pendingDevConfigRun = setTimeout(configCall, delay);
-        }
+            if (!delay) { // run immediately
+                clearTimeout(pendingDevConfigRun);
+                configCall();
+            } else {
+                pendingDevConfigRun = setTimeout(configCall, delay);
+            }
     }
 }
 
