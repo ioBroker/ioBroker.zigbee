@@ -854,7 +854,7 @@ function scheduleDeviceConfig(device, delay) {
                             if (msg !== false) { // false = no config needed
                                 adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
                             }
-                            adapter.extendObject(ieeeAddr.split('x')[1], {native: { configureNeeded: 0}} );
+//                            adapter.extendObject(ieeeAddr.split('x')[1], {native: { configureNeeded: 0}} );
                             var index = pendingDevConfigs.indexOf(ieeeAddr);
                             if (index > -1) {
                                 pendingDevConfigs.splice(index, 1);
