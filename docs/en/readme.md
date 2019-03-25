@@ -4,10 +4,10 @@ With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others), 
 ## Hardware
 For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc2530 + RF](https://github.com/Koenkk/zigbee2mqtt/wiki/Supported-sniffer-devices#zigbee-coordinator)
 
-<span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
-<span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
-<span><img src="http://img.dxcdn.com/productimages/sku_429601_2.jpg" width="100"></span>
-<span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
+![](img/CC2531.png)
+![](img/sku_429478_2.png)
+![](img/sku_429601_2.png)
+![](img/CC2591.png)
 
 The necessary equipment for the firmware and the device preparation process is described [here (in English)](https://github.com/Koenkk/zigbee2mqtt/wiki/Getting-started) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
 
