@@ -45,4 +45,28 @@ systemDictionary = {
                 "and it resets CC253x settings too. You will have to repair ALL of your devices!",
         "pl":   "A Soft reset will just restart routines and CC253x. Hard-Reset will clear paired devices data "+
                 "and it resets CC253x settings too. You will have to repair ALL of your devices!"},
+    "Device map info": {
+        "en":   "<b>Click a device to see more details.</b> Every device can have only one parent. Devices may "+
+                "change there parents by themselves. There is no way to force a device to a specific parent. "+
+                "(if you see more than one parent link, it may be outdated data).<br>"+
+                "You may also move devices for better visibility.<br>"+
+                "Weak and offline links are shown red. If a device label shows red, no links where found. "+
+                "No problem if a device has only 'Previous Parents' links, it may just have not send new data since some time.",
+        "de":   "<p>Du kannst auf ein Gerät klicken um mehr Details zu sehen.</p> Jedes Gerät kann nur ein Parent haben. "+
+                "Geräte können ihre Parents auch selbstständig wechseln, es gibt keine Möglichkeit ein bestimmtes "+
+                "Parent zu erzwingen. (Falls mehrere Parent Links angezeigt werden kommt das vermutlich von "+
+                "noch nicht aktualisierten Daten)<br>"+
+                "Geräte lassen sich verschieben für bessere Übersicht.<br>"+
+                "Schwache und Offline Links werden in Rot angezeigt. Wenn der Gerätename Rot dargestellt wird hat "+
+                "das Gerät keine Links. Wenn ein Gerät nur 'Letzte Parents' Links hat ist das kein Problem, es hat "+
+                "vermutlich nur seit einer Weile keine Daten geschickt.",
+        "ru":   "Device map info",
+        "pt":   "Device map info",
+        "nl":   "Device map info",
+        "fr":   "Device map info",
+        "it":   "Device map info",
+        "es":   "Device map info",
+        "pl":   "Device map info"},
+    "Siblings": {                          "en": "Siblings",                              "de": "Geschwister",                              "ru": "Siblings",                              "pt": "Siblings",                               "nl": "Siblings",                               "fr": "Siblings",                           "it": "Siblings",                                  "es": "Siblings",                              "pl": "Siblings"},
+    "Previous Parents": {                  "en": "Previous Parents",                      "de": "Letzte Parents",                           "ru": "Previous Parents",                      "pt": "Previous Parents",                       "nl": "Previous Parents",                       "fr": "Previous Parents",                   "it": "Previous Parents",                          "es": "Previous Parents",                      "pl": "Previous Parents"},
 };

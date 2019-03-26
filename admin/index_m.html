@@ -103,8 +103,43 @@
                 </div>
             </div>
             <div id="tab-map" class="col s12 page">
+
                 <div class="fixed-action-btn" style="padding-bottom: 100px">
                     <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Refresh"><i class="material-icons large">autorenew</i></a>
+                </div>
+                <div class="row">
+                    <div class="input-field input-group col s12 m3 l3">
+                        <div id="filterParentTgl" class="input-field col s12 admin-tooltip-icon" title="Show parent">
+                            <label for="filterParent" style="pointer-events: auto;"> 
+                            <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
+                                <input style="pointer-events: none;" id="filterParent" type="checkbox" class="filled-in" checked="checked"/>
+                                <span style="pointer-events: none; color:#0000ff;">Parent/Child/Unknown</span>
+                            </label>
+                        </div>
+                        <div id="filterSiblTgl" class="input-field col s12 admin-tooltip-icon" title="Show siblings">
+                            <label for="filterSibl" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterSibl" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none; color:#00bb00;" class="translate">Siblings</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-field input-group col s12 m3 l3">
+                        <div id="filterPrvChildTgl" class="input-field col s12 admin-tooltip-icon" title="Show previous parents">
+                            <label for="filterPrvChild" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterPrvChild" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none; color:#555555;" class="translate">Previous Parents</span>
+                            </label>
+                        </div>
+                        <div id="filterMeshTgl" class="input-field col s12 admin-tooltip-icon" title="Show full mesh">
+                            <label for="filterMesh" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterMesh" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none;">Mesh</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-field input-group col s12 m6 l6">
+                        <p class="translate">Device map info</p>
+                    </div>
                 </div>
                 <div id="map" class="row">
                 </div>
