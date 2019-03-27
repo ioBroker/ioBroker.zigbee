@@ -406,6 +406,10 @@ function load(settings, onChange) {
         resetConfirmation();
     });
 
+    $('#viewconfig').click(function() {
+        showViewConfig();
+    });
+
     sendTo(null, 'getGroups', {}, function (data) {
         groups = data;
         showGroups();
@@ -1240,4 +1244,8 @@ function resetConfirmation() {
             }
         });
     });
+}
+
+function showViewConfig() {
+    $('#modalviewconfig').modal('open');
 }
