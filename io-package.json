@@ -307,8 +307,10 @@
     "native": {
         "port": "",
         "panID": 6754,
+        "extPanID": null,
         "channel": 11,
-        "disableLed": false
+        "disableLed": false,
+        "precfgkey": null
     },
     "instanceObjects": [
         {
