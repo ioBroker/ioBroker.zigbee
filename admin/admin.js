@@ -693,7 +693,7 @@ function showNetworkMap(devices, map){
             edges.forEach((edgeId => {
                 const options = data.edges._data[edgeId];
                 if (select) {
-                    options.font.size = 10;
+                    options.font.size = 15;
                 } else {
                     options.font.size = 0;
                 }
