@@ -475,6 +475,10 @@ function save(callback) {
     var obj = {};
     $('.value').each(function () {
         var $this = $(this);
+        if ($this.hasClass('validate') && $this.hasClass('invalid')) {
+            showMessage('Invalid input for ' +$this.attr('id'), _('Error'));
+            return;
+        }
         if ($this.attr('type') === 'checkbox') {
             obj[$this.attr('id')] = $this.prop('checked');
         } else {
