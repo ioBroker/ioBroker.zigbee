@@ -169,7 +169,7 @@ function editName(id, name) {
 }
 
 function deleteDevice(id) {
-    sendTo(null, 'deleteDevice', {id: id}, function (msg) {
+    sendTo(namespace, 'deleteDevice', {id: id}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error.code, _('Error'), 'alert');
@@ -181,7 +181,7 @@ function deleteDevice(id) {
 }
 
 function renameDevice(id, name) {
-    sendTo(null, 'renameDevice', {id: id, name: name}, function (msg) {
+    sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -278,7 +278,7 @@ function showDevices() {
 
 function letsPairing() {
     messages = [];
-    sendTo(null, 'letsPairing', {}, function (msg) {
+    sendTo(namespace, 'letsPairing', {}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -289,7 +289,7 @@ function letsPairing() {
 
 function joinProcess(devId) {
     messages = [];
-    sendTo(null, 'letsPairing', {id: devId}, function (msg) {
+    sendTo(namespace, 'letsPairing', {id: devId}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -332,7 +332,7 @@ function pollDeviceInfo(id, card) {
 }
 
 function getDevices() {
-    sendTo(null, 'getDevices', {}, function (msg) {
+    sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -346,7 +346,7 @@ function getDevices() {
 
 function getMap() {
     $('#refresh').addClass('disabled');
-    sendTo(null, 'getMap', {}, function (msg) {
+    sendTo(namespace, 'getMap', {}, function (msg) {
         $('#refresh').removeClass('disabled');
         if (msg) {
             if (msg.error) {
@@ -363,6 +363,8 @@ function getMap() {
 function load(settings, onChange) {
     onChangeEmitter = onChange;
     if (settings.panID === undefined) settings.panID = 6754;
+    if (settings.extPanID === undefined) settings.extPanID = 'DDDDDDDDDDDDDDD';
+    if (settings.precfgkey === undefined) settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
     if (settings.channel === undefined) settings.channel = 11;
 
     // example: select elements with id=key and class=value and insert value
@@ -410,7 +412,7 @@ function load(settings, onChange) {
         showViewConfig();
     });
 
-    sendTo(null, 'getGroups', {}, function (data) {
+    sendTo(namespace, 'getGroups', {}, function (data) {
         groups = data;
         showGroups();
     });
@@ -473,6 +475,10 @@ function save(callback) {
     var obj = {};
     $('.value').each(function () {
         var $this = $(this);
+        if ($this.hasClass('validate') && $this.hasClass('invalid')) {
+            showMessage('Invalid input for ' +$this.attr('id'), _('Error'));
+            return;
+        }
         if ($this.attr('type') === 'checkbox') {
             obj[$this.attr('id')] = $this.prop('checked');
         } else {
@@ -748,7 +754,7 @@ function getComPorts(onChange) {
     // timeout = setTimeout(function () {
     //     getComPorts(onChange);
     // }, 2000);
-    sendTo(null, 'listUart', null, function (list) {
+    sendTo(namespace, 'listUart', null, function (list) {
         // if (timeout) {
         //     clearTimeout(timeout);
         //     timeout = null;
@@ -977,7 +983,7 @@ function loadDeveloperTab(onChange) {
 
     responseCodes = null;
     // load list of response codes
-    sendTo(null, 'getLibData', {key: 'respCodes'}, function (data) {
+    sendTo(namespace, 'getLibData', {key: 'respCodes'}, function (data) {
         responseCodes = data.list;
     });
 }
@@ -1020,7 +1026,7 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
     }, 15000);
 
     console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData));
-    sendTo(null, 'sendToZigbee', data, function(reply) {
+    sendTo(namespace, 'sendToZigbee', data, function(reply) {
         clearTimeout(sendTimeout);
         if (callback) {
             callback(reply);
@@ -1080,7 +1086,7 @@ function populateSelector(selectId, key, cid) {
         updateSelect(selectId, null);
         return;
     }
-    sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
+    sendTo(namespace, 'getLibData', {key: key, cid: cid}, function (data) {
         var list = data.list;
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
@@ -1199,12 +1205,12 @@ function deleteGroupConfirmation(id, name) {
 function updateGroup(id, newId, newName) {
     delete groups[id];
     groups[newId] = newName;
-    sendTo(null, 'updateGroups', groups);
+    sendTo(namespace, 'updateGroups', groups);
 }
 
 function deleteGroup(id) {
     delete groups[id];
-    sendTo(null, 'updateGroups', groups);
+    sendTo(namespace, 'updateGroups', groups);
 }
 
 function updateDev(id, newName, newGroups) {
@@ -1218,7 +1224,7 @@ function updateDev(id, newName, newGroups) {
             devGroups[id] = newGroups;
             dev.groups = newGroups;
             // save dev-groups
-            sendTo(null, 'groupDevices', devGroups, function (msg) {
+            sendTo(namespace, 'groupDevices', devGroups, function (msg) {
                 if (msg) {
                     if (msg.error) {
                         showMessage(msg.error, _('Error'), 'alert');
@@ -1235,7 +1241,7 @@ function resetConfirmation() {
     var btn = $("#modalreset .modal-content a.btn");
     btn.unbind("click");
     btn.click(function(e) {
-        sendTo(null, 'reset', {mode: e.target.id}, function (err) {
+        sendTo(namespace, 'reset', {mode: e.target.id}, function (err) {
             if (err) {
                 console.log(err);
             }
