@@ -22,7 +22,7 @@ const SerialPort = require('serialport');
 
 const groupConverters = [
     deviceMapping.toZigbeeConverters.on_off,
-    deviceMapping.toZigbeeConverters.light_brightness,
+    deviceMapping.toZigbeeConverters.light_onoff_brightness,
     deviceMapping.toZigbeeConverters.light_colortemp,
     deviceMapping.toZigbeeConverters.light_color,
 ];
