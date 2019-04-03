@@ -71,6 +71,10 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
+### 0.10.x (2019-04-03)
+* (allofmex) security update
+* (allofmex) brightness fix 
+
 ### 0.10.3 (2019-03-27)
 * fixes
 * (kirovilya) Aqara Wireless Relay Controller, Smart LED Driver
