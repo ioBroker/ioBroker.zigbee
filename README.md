@@ -77,6 +77,8 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * (asgothian) eCozy Thermostat, Nue / 3A, Gledopto GL-C-006 GL-C-009, Philips SML002, OSRAM Outdoor Lantern W RGBW, TRADFRI motion sensor
 * (arteck) sensor_86sw2 new states
 * (allofmex) Improved device configuration and network map
+* (allofmex) security update
+* (allofmex) brightness fix 
 
 ### 0.10.2 (2019-03-15)
 * some fixes
