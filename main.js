@@ -35,6 +35,7 @@ let adapter;
 let pendingDevConfigRun = null;
 let pendingDevConfigs = [];
 let configureOnMessage = false;
+let aliveStates = {};
 
 function startAdapter(options) {
     options = options || {};
@@ -86,6 +87,9 @@ function startAdapter(options) {
                 case 'EnableConfigureOnMessage':
                     EnableConfigureOnMessage(60);
                     break;
+                case 'queryConfigureOnMessage':
+                   if (obj.callback) obj.callback({ data: QueryConfigureOnMessage() });
+                   break;
                 case 'getMap':
                     if (obj && obj.message && typeof obj.message === 'object') {
                         getMap(obj.from, obj.command, obj.callback);
@@ -529,36 +533,19 @@ function getDevices(from, command, callback) {
                             });
                         }
                     }
-/////
-//adapter.log.warn("getDevices " + JSON.Stringify(device));
-/////
-/*
-                    else
-                    {
-                        var configure = -1;
-                        adapter.log.warn("a " + JSON.stringify(device))
-                        mappedModel = deviceMapping.findByZigbeeModel(device.modelId);
-                        adapter.log.warn("b "+ JSON.stringify(mappedModel))
-                        if (mappedModel && mappedModel.configure) {
-                          adapter.log.warn("c ")
-                          if (pendingDevConfigs.indexOf(device.ieeeAddr) === -1) configure = 1; else configure = 0;
-                        }
-                        adapter.log.warn("setting configure flag for "+ device.modelId + " to "+configure);
-                        devices.configured = configure;
-                    }
-*/
                 });
                 return devices;
             })
             .then(devices => {
-                adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
-                adapter.sendTo(from, command, devices, callback);
+                adapter.log.debug('getDevices result: '+ JSON.stringify(devices));
+                adapter.log.debug('getDevices aliveStates: '+ JSON.stringify(aliveStates));
+                adapter.sendTo(from, command, { devices:devices, configureOnMessage:configureOnMessage, aliveStates:aliveStates}, callback);
             })
             .catch(err => {
                 adapter.log.error('getDevices error: ' + JSON.stringify(err));
             });
     } else {
-        adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);
+        adapter.sendTo(from, command, {error: 'You need to configure the adapter!'}, callback);
     }
 }
 
@@ -770,9 +757,10 @@ function syncGroups(groups) {
 
 function EnableConfigureOnMessage(timeout)
 {
+  if (configureOnMessage) return;
   configureOnMessage = true;
   adapter.log.info("Configure on Message active for " + timeout + " sekunden")
-  setTimeout( function() { configureOnMessage = false; adapter.log.info("configure on Message closed");}, timeout * 1000); // 5 minutes
+  setTimeout( function() { configureOnMessage = false; adapter.log.info("configure on Message closed");}, timeout * 1000);
 
 }
 
@@ -1284,7 +1272,7 @@ function onDevEvent(type, devId, message, data) {
             if (configureOnMessage)
             {
               if (pendingDevConfigs.indexOf(devId) !== -1) { // device is already scheduled
-                  adapter.log.info("Attempting to configure device " + devId);
+                  adapter.log.debug("Attempting to configure device " + devId);
                   var index = pendingDevConfigs.indexOf(devId);
                   if (index > -1) {
                       pendingDevConfigs.splice(index, 1);
@@ -1314,6 +1302,7 @@ function onDevEvent(type, devId, message, data) {
             }
 
             if (message.hasOwnProperty('available')) {
+                aliveStates[devId] = message.available;
                 payload.available = message.available;
             }
 

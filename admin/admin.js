@@ -13,9 +13,11 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     responseCodes = false,
     groups = {},
     devGroups = {},
+    aliveStates = {},
+    configureOnMessageOpen = false,
     onChangeEmitter;
 
-function getCard(dev) {
+function getCard(dev, aliveState) {
     var title = dev.common.name,
         id = dev._id,
         type = dev.common.type,
@@ -35,7 +37,13 @@ function getCard(dev) {
     let infoBtn = '';
     let configureBtn = ''
     if (dev.info && dev.info.type == 'Router' || dev.info.type == 'Coordinator') {
-        routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
+      let shortid = "0x"+id.replace(namespace+'.', '');
+      routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
+      if (aliveStates.hasOwnProperty(shortid)) {
+        if (!aliveStates[shortid]) {
+          routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable red"><i class="material-icons tiny">leak_add</i></a>';
+        }
+      }
     }
     if (dev.info && dev.info.type != 'Coordinator') {
       editBtn = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
@@ -44,7 +52,25 @@ function getCard(dev) {
       infoBtn = '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
               '<i class="material-icons">info</i></a>'
     }
-    if (dev.native.configureNeeded > -1) configureBtn = (dev.native.configureNeeded>0) ? '<a name="configure" class="btn-floating waves-effect waves-light right hoverable orange"><i class="material-icons tiny">assignment_late</i></a>' : '<a name="configure" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons tiny">assignment_turned_in</i></a>';
+    let shortid = "0x"+id.replace(namespace+'.', '');
+    if (aliveStates.hasOwnProperty(shortid)) {
+      if (aliveStates[shortid]) {
+          alive = '<a class="right green">'  +
+          '<i class="material-icons tiny">cast_connected</i></a>';
+        }
+      else {
+        alive = '<a class="right red">' +
+          '<i class="material-icons tiny">cast_connected</i></a>';
+        }
+    }
+    if (dev.native.configureNeeded > -1) {
+      let color = "orange";
+      if (configureOnMessageOpen) color = "green"
+      if (dev.native.configureNeeded>0)
+        configureBtn = '<a name="configure" class="btn-floating waves-effect waves-light right hoverable ' + color + '"><i class="material-icons tiny">assignment_late</i></a>';
+      else
+        configureBtn =  '<a name="configure" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons tiny">assignment_turned_in</i></a>';
+    }
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
         info = `<p style="min-height:96px">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
@@ -231,14 +257,15 @@ function showDevices() {
     devGroups = {};
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
-//        if (d.info && d.info.type == "Coordinator") continue;
         if (d.groups && d.info && d.info.type == "Router") {
             devGroups[d._id] = d.groups;
             d.groupNames = d.groups.map(item=>{
                 return groups[item] || '';
             }).join(', ');
         }
-        var card = getCard(d);
+        console.log("id " + d._id.replace(namespace+'.', ''));
+        console.log("alive states " + JSON.stringify(aliveStates));
+        var card = getCard(d, true);
         html += card;
     }
     $('#devices').html(html);
@@ -297,8 +324,7 @@ function letsPairing() {
 }
 
 
-function EnableConfigureOnMessage()
-{
+function EnableConfigureOnMessage() {
   messages = [];
   sendTo(null, 'EnableConfigureOnMessage', {}, function (msg) {
       if (msg) {
@@ -309,6 +335,8 @@ function EnableConfigureOnMessage()
   });
 
 }
+
+
 function joinProcess(devId) {
     messages = [];
     sendTo(null, 'letsPairing', {id: devId}, function (msg) {
@@ -359,7 +387,10 @@ function getDevices() {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
             } else {
-                devices = msg;
+//                devices = msg;
+                devices = msg.devices;
+                configureOnMessageOpen = msg.configureOnMessage;
+                aliveStates = msg.aliveStates;
                 showDevices();
             }
         }
