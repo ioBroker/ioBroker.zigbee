@@ -85,7 +85,7 @@ function startAdapter(options) {
                     }
                     break;
                 case 'EnableConfigureOnMessage':
-                    EnableConfigureOnMessage(60);
+                    enableConfigureOnMessage(60);
                     break;
                 case 'queryConfigureOnMessage':
                    if (obj.callback) obj.callback({ data: QueryConfigureOnMessage() });
@@ -755,11 +755,11 @@ function syncGroups(groups) {
     Promise.all(chain);
 }
 
-function EnableConfigureOnMessage(timeout)
+function enableConfigureOnMessage(timeout)
 {
   if (configureOnMessage) return;
   configureOnMessage = true;
-  adapter.log.info("Configure on Message active for " + timeout + " sekunden")
+  adapter.log.info("Configure on Message active for " + timeout + " seconds")
   setTimeout( function() { configureOnMessage = false; adapter.log.info("configure on Message closed");}, timeout * 1000);
 
 }
@@ -802,7 +802,7 @@ function onReady() {
             }));
             scheduleDeviceConfig(device, 30 * 1000); // grant net bit time to settle first
         });
-        EnableConfigureOnMessage(300);
+        enableConfigureOnMessage(300);
         Promise.all(chain);
     });
 }
