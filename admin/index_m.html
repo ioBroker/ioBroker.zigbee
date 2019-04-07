@@ -68,6 +68,11 @@
         min-height: 18rem;
         overflow-y: scroll;
     }
+    #viewconfigbtn {
+        left: 23px;
+        width: 45px;
+        top: 120px;
+    }
 </style>
 </head>
 <body>
@@ -106,6 +111,9 @@
                 <div class="fixed-action-btn" style="padding-bottom: 100px">
                     <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Refresh"><i class="material-icons large">autorenew</i></a>
                 </div>
+                <div id="viewconfigbtn" class="fixed-action-btn top left" style="">
+                    <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translate" data-tooltip="View config"><i class="material-icons large">menu</i></a>
+                </div>
                 <div id="map" class="row">
                 </div>
             </div>
@@ -121,6 +129,13 @@
                             </ul>
                         </span>
                     </div>
+                </div>
+                <div class="row">
+                    <h6>Network</h6>
+                    <div class="input-field col s6 m3 l1">
+                        <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16" class="validate value" />
+                        <label class="translate" for="extPanID">ExtPanID</label>
+                    </div>
                     <div class="input-field col s6 m3 l1">
                         <input id="panID" type="number" min="1" max="65565" class="value" />
                         <label class="translate" for="panID">PanID</label>
@@ -130,6 +145,30 @@
                         <label class="translate" for="channel">Channel</label>
                     </div>
                     <div class="input-field col s12 m6 l3">
+                        <p>Extended PAN ID is the main network id, comparable to SSID of wifi networks. This id must never change
+                        for existing networks, else you have to reset and repair your devices. If you use multiple Zigbee adapter,
+                        you <b>must make sure</b> that they use unique ExtPanID's. Just enter 16 random hex character (a-f and 0-9).</p>
+                        <p>Pan ID is some simplified id (is used by Zigbee instead of ExtPanID wherever possible). This should be unique too.
+                        Note: Zigbee network may choose a different Pan ID than you specified here in case it detects id conflicts.</p>
+                    </div>
+                    <div class="input-field col s12 m6 l3">
+                        <p>Channel sets the used radio frequency. It may be changed to avoid conflicts with existing wifi networks.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <h6>Security</h6>
+                    <div class="input-field col s12 m6 l3">
+                        <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value"/>
+                        <label class="translate" for="precfgkey">Transport Key</label>
+                    </div>
+                    <div class="input-field col s12 m6 l3">
+                        <p>Transport Key is the network encryption key. Please choose a random key sequence <b>before</b> you
+                        pair your devices. Just enter 32 random hex character (a-f and 0-9). If you change the key later, you will have to repair your devices.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <h6>Others</h6>
+                    <div class="input-field col s12 m6 l3">
                         <input id="disableLed" type="checkbox" class="value" />
                         <label class="translate" for="disableLed">Disable LED for cc2531</label>
                     </div>
@@ -137,8 +176,6 @@
                         <input id="disableQueue" type="checkbox" class="value" />
                         <label class="translate" for="disableQueue">Disable Queue</label>
                     </div>
-                </div>
-                <div class="row">
                     <div class="input-field col s6 m3 l1">
                         <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
                     </div>
@@ -416,6 +453,48 @@
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="modalviewconfig" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h3 class="translate">Map view config</h3>
+                <div class="row">
+                    <div class="input-field input-group col s12 m6 l6">
+                        <div id="filterParentTgl" class="input-field col s12 admin-tooltip-icon" title="Show parent">
+                            <label for="filterParent" style="pointer-events: auto;"> 
+                            <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
+                                <input style="pointer-events: none;" id="filterParent" type="checkbox" class="filled-in" checked="checked"/>
+                                <span style="pointer-events: none; color:#0000ff;" class="translate">Parent/Child/Unknown</span>
+                            </label>
+                        </div>
+                        <div id="filterSiblTgl" class="input-field col s12 admin-tooltip-icon" title="Show siblings">
+                            <label for="filterSibl" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterSibl" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none; color:#00bb00;" class="translate">Siblings</span>
+                            </label>
+                        </div>
+                        <div id="filterPrvChildTgl" class="input-field col s12 admin-tooltip-icon" title="Show previous parents">
+                            <label for="filterPrvChild" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterPrvChild" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none; color:#555555;" class="translate">Previous Parents</span>
+                            </label>
+                        </div>
+                        <div id="filterMeshTgl" class="input-field col s12 admin-tooltip-icon" title="Show full mesh">
+                            <label for="filterMesh" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterMesh" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none;">Mesh</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-field input-group col s12 m6 l6">
+                        <p class="translate">Device map info</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
+                <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
             </div>
         </div>
     </div>
