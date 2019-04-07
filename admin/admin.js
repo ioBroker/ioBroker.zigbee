@@ -264,8 +264,6 @@ function showDevices() {
                 return groups[item] || '';
             }).join(', ');
         }
-        console.log("id " + d._id.replace(namespace+'.', ''));
-        console.log("alive states " + JSON.stringify(aliveStates));
         var card = getCard(d, true);
         html += card;
     }
@@ -295,7 +293,7 @@ function showDevices() {
     });
     $("a.btn-floating[name='configure']").click(function() {
         var dev_block = $(this).parents("div.device");
-        EnableConfigureOnMessage();
+        enableConfigureOnMessage();
     });
     $("a[name='d-info']").click(function(e) {
         var dev_block = $(this).parents("div.device");
@@ -325,7 +323,7 @@ function letsPairing() {
 }
 
 
-function EnableConfigureOnMessage() {
+function enableConfigureOnMessage() {
   messages = [];
   sendTo(null, 'EnableConfigureOnMessage', {}, function (msg) {
       if (msg) {
@@ -612,10 +610,6 @@ function showNetworkMap(devices, map){
             image: dev.icon,
             font: {color:'#007700'},
         };
-//        if (dev.info && dev.info.type == 'Coordinator') {
-//            node.shape = 'star';
-//            node.label = 'Coordinator';
-//        }
         return node;
     };
 
