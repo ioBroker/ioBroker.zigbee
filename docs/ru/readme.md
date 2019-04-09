@@ -1,24 +1,18 @@
 # Драйвер ioBroker для работы с Zigbee-устройствами
-
-<img src="../../admin/zigbee.png"  width="64">
-
 При помощи координатора Zigbee-сети на базе Texas Instruments SoC cc253x (и другими) создается собственная сеть, в которую подключаются zigbee-устройства. Взаимодействуя напрямую с координатором сети, драйвер позволяет управлять устройствами без дополнительных шлюзов/бриджей от производителей устройств (Xiaomi/TRADFRI/Hue). Про устройство Zigbee-сети можно прочитать [тут (на английском языке)](https://github.com/Koenkk/zigbee2mqtt/wiki/ZigBee-network). 
 
 ## Оборудование
-
 Для работы необходимо одно из перечисленных устройств, прошитое специальной ZNP-прошивкой: [cc2531, cc2530, cc2530+RF](https://github.com/Koenkk/zigbee2mqtt/wiki/Supported-sniffer-devices#zigbee-coordinator)
 
-<span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
-<span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
-<span><img src="http://img.dxcdn.com/productimages/sku_429601_2.jpg" width="100"></span>
-<span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
-
+![](img/CC2531.png)
+![](img/sku_429478_2.png)
+![](img/sku_429601_2.png)
+![](img/CC2591.png)
 Необходимое для прошивки оборудование и процесс подготовки устройства описан [тут (на английском языке)](https://github.com/Koenkk/zigbee2mqtt/wiki/Getting-started) или [тут (на русском языке)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0) 
 
 Подключенные к Zigbee-сети устройства сообщают координатору своё состояние и информируют о событиях (нажатия кнопки, обнаружение движения, изменение температуры). Эти сведения отражаются в виде объектов-состояний ioBroker. Некоторые состояния имеют обратную связь и могут отправлять команды zigbee-устройству при изменении состояния (переключение состояния розетки и лампы, изменение сцены или яркости лампы).
 
 ## Работа с драйвером
-
 Для запуска драйвера необходимо указать имя порта, на котором подключено устройство cc253x.
 Как узнать порт написано [тут (на русском языке)](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9D%D0%B0%D1%81%D1%82%D1%80%D0%BE%D0%B9%D0%BA%D0%B0-%D0%B0%D0%B4%D0%B0%D0%BF%D1%82%D0%B5%D1%80%D0%B0)
 
@@ -29,7 +23,6 @@
 Если не получается подключить устройство, то напиши issue.
 
 ## Дополнительные сведения
-
 Существует [дружественный проект](https://github.com/koenkk/zigbee2mqtt) со схожим функционалом на тех же технологиях, в котором с этими же устройствами можно работать по протоколу MQTT.
 Поэтому, если какие-либо улучшения или поддержка новых zigbee-устройств происходит в проекте Zigbee2MQTT, то можно перенести и добавить этот же функционал в этот драйвер. Если заметили это, то напиши issue - перенесем.
 
