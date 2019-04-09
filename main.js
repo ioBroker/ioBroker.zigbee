@@ -22,7 +22,7 @@ const SerialPort = require('serialport');
 
 const groupConverters = [
     deviceMapping.toZigbeeConverters.on_off,
-    deviceMapping.toZigbeeConverters.light_brightness,
+    deviceMapping.toZigbeeConverters.light_onoff_brightness,
     deviceMapping.toZigbeeConverters.light_colortemp,
     deviceMapping.toZigbeeConverters.light_color,
 ];
@@ -727,6 +727,7 @@ function syncGroups(groups) {
 }
 
 function onReady() {
+    adapter.log.info('Shepherd ready. '+JSON.stringify(zbControl.getInfo().net));
     return new Promise(function (resolve, reject) {
         resolve();
     }).then(() => {
@@ -1295,13 +1296,21 @@ function main() {
     const dbDir = utils.controllerDir + '/' + adapter.systemConfig.dataDir + adapter.namespace.replace('.', '_');
     if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
     const port = adapter.config.port;
-    const panID = parseInt(adapter.config.panID ? adapter.config.panID : 0x1a62);
-    const channel = parseInt(adapter.config.channel ? adapter.config.channel : 11);
     if (!port) {
         adapter.log.error('Serial port not selected! Go to settings page.');
         return;
     }
-    adapter.log.info('Start on port: ' + port + ' with panID ' + panID + ' channel ' + channel);
+    const createByteArray = function (hexString) {
+        for (var bytes = [], c = 0; c < hexString.length; c += 2) {
+            bytes.push(parseInt(hexString.substr(c, 2), 16));
+        }
+        return bytes;
+    }
+    const panID = parseInt(adapter.config.panID ? adapter.config.panID : 0x1a62);
+    const channel = parseInt(adapter.config.channel ? adapter.config.channel : 11);
+    const precfgkey = createByteArray(adapter.config.precfgkey ? adapter.config.precfgkey : '01030507090B0D0F00020406080A0C0D');
+    const extPanId = createByteArray(adapter.config.extPanID ? adapter.config.extPanID : 'DDDDDDDDDDDDDDDD').reverse();
+    adapter.log.info('Start on port: ' + port + ' channel ' + channel);
     adapter.log.info('Queue is: ' + !adapter.config.disableQueue);
     adapter.getState('info.groups', (err, groupsState) => {
         if (!groupsState) {
@@ -1314,11 +1323,11 @@ function main() {
     });
 
     let shepherd = new ZShepherd(port, {
-        net: {panId: panID, channelList: [channel]},
+        net: {panId: panID, channelList: [channel], precfgkey: precfgkey, extPanId: extPanId},
         sp: {baudRate: 115200, rtscts: false},
         dbPath: dbDir + '/shepherd.db'
     });
-    // create controller and handlers
+    // create controller and handlers. Note: panId may be changed automatically in case of conflicts
     zbControl = new ZigbeeController(shepherd);
     zbControl.on('log', onLog);
     zbControl.on('ready', onReady);
