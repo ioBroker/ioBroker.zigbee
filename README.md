@@ -77,6 +77,7 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * (Asgothian)Osram Gardenpole Mini
 * (Asgothian)Innr Plugs (BY 265 C, BY 165 C, RB265 
 * (Asgothian)Fix for Ikea Tradfri repeater (image)
+* (sonntam)tint enhancements
 
 ### 0.10.3 (2019-03-27)
 * fixes
