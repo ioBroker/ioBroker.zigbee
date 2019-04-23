@@ -78,6 +78,7 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * (Asgothian)Innr Plugs (BY 265 C, BY 165 C, RB265 
 * (Asgothian)Fix for Ikea Tradfri repeater (image)
 * (sonntam)tint enhancements
+* (stream2me) support for Danalock V3
 
 ### 0.10.3 (2019-03-27)
 * fixes
