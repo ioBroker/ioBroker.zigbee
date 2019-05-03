@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.10.2",
+        "version": "0.10.3",
         "news": {
+            "0.10.3": {
+                "en": "New devices and fixes"
+            },
             "0.10.2": {
                 "en": "New devices and fixes"
             },
@@ -307,8 +310,10 @@
     "native": {
         "port": "",
         "panID": 6754,
+        "extPanID": "DDDDDDDDDDDDDDD",
         "channel": 11,
-        "disableLed": false
+        "disableLed": false,
+        "precfgkey": "01030507090B0D0F00020406080A0C0D"
     },
     "instanceObjects": [
         {

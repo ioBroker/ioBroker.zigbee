@@ -9,6 +9,7 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     dialog,
     messages = [],
     map = [],
+    mapEdges = null,
     network,
     responseCodes = false,
     groups = {},
@@ -168,7 +169,7 @@ function editName(id, name) {
 }
 
 function deleteDevice(id) {
-    sendTo(null, 'deleteDevice', {id: id}, function (msg) {
+    sendTo(namespace, 'deleteDevice', {id: id}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error.code, _('Error'), 'alert');
@@ -180,7 +181,7 @@ function deleteDevice(id) {
 }
 
 function renameDevice(id, name) {
-    sendTo(null, 'renameDevice', {id: id, name: name}, function (msg) {
+    sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -277,7 +278,7 @@ function showDevices() {
 
 function letsPairing() {
     messages = [];
-    sendTo(null, 'letsPairing', {}, function (msg) {
+    sendTo(namespace, 'letsPairing', {}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -288,7 +289,7 @@ function letsPairing() {
 
 function joinProcess(devId) {
     messages = [];
-    sendTo(null, 'letsPairing', {id: devId}, function (msg) {
+    sendTo(namespace, 'letsPairing', {id: devId}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -331,7 +332,7 @@ function pollDeviceInfo(id, card) {
 }
 
 function getDevices() {
-    sendTo(null, 'getDevices', {}, function (msg) {
+    sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -345,7 +346,7 @@ function getDevices() {
 
 function getMap() {
     $('#refresh').addClass('disabled');
-    sendTo(null, 'getMap', {}, function (msg) {
+    sendTo(namespace, 'getMap', {}, function (msg) {
         $('#refresh').removeClass('disabled');
         if (msg) {
             if (msg.error) {
@@ -362,6 +363,8 @@ function getMap() {
 function load(settings, onChange) {
     onChangeEmitter = onChange;
     if (settings.panID === undefined) settings.panID = 6754;
+    if (settings.extPanID === undefined) settings.extPanID = 'DDDDDDDDDDDDDDD';
+    if (settings.precfgkey === undefined) settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
     if (settings.channel === undefined) settings.channel = 11;
 
     // example: select elements with id=key and class=value and insert value
@@ -405,7 +408,11 @@ function load(settings, onChange) {
         resetConfirmation();
     });
 
-    sendTo(null, 'getGroups', {}, function (data) {
+    $('#viewconfig').click(function() {
+        showViewConfig();
+    });
+
+    sendTo(namespace, 'getGroups', {}, function (data) {
         groups = data;
         showGroups();
     });
@@ -468,6 +475,10 @@ function save(callback) {
     var obj = {};
     $('.value').each(function () {
         var $this = $(this);
+        if ($this.hasClass('validate') && $this.hasClass('invalid')) {
+            showMessage('Invalid input for ' +$this.attr('id'), _('Error'));
+            return;
+        }
         if ($this.attr('type') === 'checkbox') {
             obj[$this.attr('id')] = $this.prop('checked');
         } else {
@@ -530,15 +541,22 @@ function showNetworkMap(devices, map){
     var nodes = {};
     // create an array with edges
     var edges = [];
-//    const mapKeys = map.keys();
+    
+    if (map.length === 0) { // first init
+        $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function() {
+            updateMapFilter();
+        });
+    }
 
-    const createNode = function(dev, nwkAddr) {
+    const createNode = function(dev, mapEntry) {
+        const extInfo = (mapEntry && mapEntry.nwkAddr) ? ' (nwkAddr: 0x'+mapEntry.nwkAddr.toString(16)+')' : '';
         const node = {
             id: dev._id,
             label: dev.common.name,
-            title: dev._id.replace(namespace+'.', '') + ' (nwkAddr: '+nwkAddr+')',
+            title: dev._id.replace(namespace+'.', '') + extInfo,
             shape: 'image',
             image: dev.icon,
+            font: {color:'#007700'},
         };
         if (dev.info && dev.info.type == 'Coordinator') {
             node.shape = 'star';
@@ -546,10 +564,21 @@ function showNetworkMap(devices, map){
         }
         return node;
     };
-
+    
     const getDevice = function(ieeeAddr) {
-        return devices.find((devInfo) => { return devInfo.info.ieeeAddr == ieeeAddr });
+        return devices.find((devInfo) => {
+            try {
+                return devInfo.info.ieeeAddr == ieeeAddr;
+            }  catch {
+                console.log("No dev with ieee " + ieeeAddr);
+            }
+        });
     }
+    
+//  @arteck map problems  
+//    const getDevice = function(ieeeAddr) {
+//        return devices.find((devInfo) => { return devInfo.info.ieeeAddr == ieeeAddr });
+//    }
     
     map.forEach((mapEntry)=>{
         const dev = getDevice(mapEntry.ieeeAddr);
@@ -560,7 +589,7 @@ function showNetworkMap(devices, map){
 
         var node;
         if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-            node = createNode(dev, mapEntry.nwkAddr);
+            node = createNode(dev, mapEntry);
             nodes[mapEntry.ieeeAddr] = node;
         }
         else {
@@ -573,10 +602,6 @@ function showNetworkMap(devices, map){
             const from = dev._id;
             var label = mapEntry.lqi.toString();
             var linkColor = '#0000ff';
-            if (mapEntry.status !== 'online' ) {
-                label = label + ' (off)';
-                linkColor = '#ff0000';
-            }
             var edge = edges.find((edge) => {
                 return (edge.to == to && edge.from == from)
             });
@@ -584,12 +609,31 @@ function showNetworkMap(devices, map){
                 return (edge.to == from && edge.from == to)
             });
 
-            var color = mapEntry.lqi > 10 ? '#0000ff' : '#ff4400';
+            if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
+                // // parent/child
+                if (mapEntry.status !== 'online' ) {
+                    label = label + ' (off)';
+                    linkColor = '#ff0000';
+                }
+                if (mapEntry.lqi < 10) {
+                    linkColor = '#ff0000';
+                }
+            } else if (mapEntry.relationship === 2) { // sibling
+                linkColor = '#00bb00';
+            } else if (mapEntry.relationship === 3 && !reverse) { // unknown
+                linkColor = '#aaaaff';
+            } else if (mapEntry.relationship === 4) { // previous child
+                linkColor = '#555555';
+            }
             if (reverse) {
                 // update reverse edge
                 edge = reverse;
                 edge.label += '\n'+label;
-                edge.arrows.from = { enabled: false, scaleFactor: 0.7 }; // start hidden if node is not selected
+                edge.arrows.from = { enabled: false, scaleFactor: 0.5 }; // start hidden if node is not selected
+                if (mapEntry.relationship == 1) { // 
+                    edge.color.color = linkColor;
+                    edge.color.highlight = linkColor;
+                }
             } else if (!edge) {
                 edge = {
                     from: from,
@@ -598,13 +642,13 @@ function showNetworkMap(devices, map){
                     font: {
                         align: 'middle', 
                         size: 0, // start hidden
-                        color: color
+                        color: linkColor
                     },
-                    arrows: { to: { enabled: false, scaleFactor: 0.7 }},
+                    arrows: { to: { enabled: false, scaleFactor: 0.5 }},
                     //arrowStrikethrough: false,
                     color: {
                         color: linkColor,
-                        opacity: 0.2, // start unselected
+                        opacity: 0, // start hidden
                         highlight: linkColor
                     },
                     chosen: {
@@ -619,7 +663,8 @@ function showNetworkMap(devices, map){
                         }
                     },
                     selectionWidth: 0,
-                    physics: false,
+                    physics: mapEntry.relationship === 1 ? true : false,
+                    relationship: mapEntry.relationship
                 };
                 edges.push(edge);
             }
@@ -631,15 +676,18 @@ function showNetworkMap(devices, map){
     devices.forEach((dev) => {
         const node = nodesArray.find((node) => { return node.id == dev._id });
         if (!node) {
-            nodesArray.push(createNode(dev));
+            const node = createNode(dev);
+            node.font = {color:'#ff0000'};
+            nodesArray.push(node);
         }
     });
 
     // create a network
     var container = document.getElementById('map');
+    mapEdges = new vis.DataSet(edges);
     var data = {
-        nodes: nodesArray,
-        edges: edges
+          nodes: nodesArray,
+          edges: mapEdges
     };
     var options = {
         autoResize: true,
@@ -662,7 +710,7 @@ function showNetworkMap(devices, map){
             edges.forEach((edgeId => {
                 const options = data.edges._data[edgeId];
                 if (select) {
-                    options.font.size = 10;
+                    options.font.size = 15;
                 } else {
                     options.font.size = 0;
                 }
@@ -678,6 +726,7 @@ function showNetworkMap(devices, map){
     network.on('selectNode', onMapSelect);
     network.on('deselectNode', onMapSelect);
     redrawMap();
+    updateMapFilter();
 }
 
 function redrawMap() {
@@ -691,11 +740,32 @@ function redrawMap() {
     }
 }
 
+function updateMapFilter() {
+    if (mapEdges == null) {
+        return;
+    }
+    const showParent = $('#filterParent').is(':checked');
+    const showSibl = $('#filterSibl').is(':checked');
+    const showPrvChild = $('#filterPrvChild').is(':checked');
+    const invisColor = $('#filterMesh').is(':checked') ? 0.2 : 0;
+    mapEdges.forEach((edge, id) => {
+        if (((edge.relationship === 0 || edge.relationship === 1) && showParent)
+                || (edge.relationship === 2 && showSibl)
+              || (edge.relationship === 3 && showParent) // ignore relationship "unknown"
+                || (edge.relationship === 4 && showPrvChild)) {
+            edge.color.opacity = 1.0;
+        } else {
+            edge.color.opacity = invisColor;
+        }
+        mapEdges.update(edge);
+    });
+}
+
 function getComPorts(onChange) {
     // timeout = setTimeout(function () {
     //     getComPorts(onChange);
     // }, 2000);
-    sendTo(null, 'listUart', null, function (list) {
+    sendTo(namespace, 'listUart', null, function (list) {
         // if (timeout) {
         //     clearTimeout(timeout);
         //     timeout = null;
@@ -924,7 +994,7 @@ function loadDeveloperTab(onChange) {
 
     responseCodes = null;
     // load list of response codes
-    sendTo(null, 'getLibData', {key: 'respCodes'}, function (data) {
+    sendTo(namespace, 'getLibData', {key: 'respCodes'}, function (data) {
         responseCodes = data.list;
     });
 }
@@ -967,7 +1037,7 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
     }, 15000);
 
     console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData));
-    sendTo(null, 'sendToZigbee', data, function(reply) {
+    sendTo(namespace, 'sendToZigbee', data, function(reply) {
         clearTimeout(sendTimeout);
         if (callback) {
             callback(reply);
@@ -1027,7 +1097,7 @@ function populateSelector(selectId, key, cid) {
         updateSelect(selectId, null);
         return;
     }
-    sendTo(null, 'getLibData', {key: key, cid: cid}, function (data) {
+    sendTo(namespace, 'getLibData', {key: key, cid: cid}, function (data) {
         var list = data.list;
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
@@ -1146,12 +1216,12 @@ function deleteGroupConfirmation(id, name) {
 function updateGroup(id, newId, newName) {
     delete groups[id];
     groups[newId] = newName;
-    sendTo(null, 'updateGroups', groups);
+    sendTo(namespace, 'updateGroups', groups);
 }
 
 function deleteGroup(id) {
     delete groups[id];
-    sendTo(null, 'updateGroups', groups);
+    sendTo(namespace, 'updateGroups', groups);
 }
 
 function updateDev(id, newName, newGroups) {
@@ -1165,7 +1235,7 @@ function updateDev(id, newName, newGroups) {
             devGroups[id] = newGroups;
             dev.groups = newGroups;
             // save dev-groups
-            sendTo(null, 'groupDevices', devGroups, function (msg) {
+            sendTo(namespace, 'groupDevices', devGroups, function (msg) {
                 if (msg) {
                     if (msg.error) {
                         showMessage(msg.error, _('Error'), 'alert');
@@ -1182,7 +1252,7 @@ function resetConfirmation() {
     var btn = $("#modalreset .modal-content a.btn");
     btn.unbind("click");
     btn.click(function(e) {
-        sendTo(null, 'reset', {mode: e.target.id}, function (err) {
+        sendTo(namespace, 'reset', {mode: e.target.id}, function (err) {
             if (err) {
                 console.log(err);
             }
@@ -1191,4 +1261,8 @@ function resetConfirmation() {
             }
         });
     });
+}
+
+function showViewConfig() {
+    $('#modalviewconfig').modal('open');
 }

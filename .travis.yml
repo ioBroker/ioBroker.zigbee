@@ -1,12 +1,14 @@
 os:
   - linux
   - osx
+  - windows
 sudo: required
 language: node_js
 node_js:
   - '6'
   - '8'
   - '10'
+  - '12'
 before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo ln -s `which node` `which node`js; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then which nodejs || which node; fi'
