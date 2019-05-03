@@ -20,7 +20,7 @@
   "dependencies": {
     "queue": "*",
     "debug": "^4.1.1",
-    "serialport": "^6.2.2",
+    "serialport": "^7.1.5",
     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/13fbc39a2a8528e4d92c1a445c555854c2abb1b5",
     "zigbee-shepherd-converters": "^8.0.14",
     "@iobroker/adapter-core": "^1.0.3"
