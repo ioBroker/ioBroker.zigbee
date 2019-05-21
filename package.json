@@ -21,8 +21,8 @@
     "queue": "*",
     "debug": "^4.1.1",
     "serialport": "^7.1.5",
-    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/c96c7f4d0daa33a3bede7f81d273631bcdb014b1",
-    "zigbee-shepherd-converters": "^9.0.10",
+    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/d7d395b02836319005960f665d99174a24b5ac3f",
+    "zigbee-shepherd-converters": "^9.0.15",
     "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
