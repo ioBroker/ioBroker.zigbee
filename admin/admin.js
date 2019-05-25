@@ -612,11 +612,23 @@ function showNetworkMap(devices, map){
         };
         return node;
     };
-
+    
     const getDevice = function(ieeeAddr) {
-        return devices.find((devInfo) => { return devInfo.info.ieeeAddr == ieeeAddr });
+        return devices.find((devInfo) => {
+            try {
+                return devInfo.info.ieeeAddr == ieeeAddr;
+            }  catch {
+                console.log("No dev with ieee " + ieeeAddr);
+            }
+        });
     }
 
+    
+//  @arteck map problems  
+//    const getDevice = function(ieeeAddr) {
+//        return devices.find((devInfo) => { return devInfo.info.ieeeAddr == ieeeAddr });
+//    }
+    
     map.forEach((mapEntry)=>{
         const dev = getDevice(mapEntry.ieeeAddr);
         if (!dev) {
