@@ -1166,6 +1166,7 @@ function syncDevStates(dev) {
             role: statedesc.role,
             min: statedesc.min,
             max: statedesc.max,
+            states: statedesc.states,
         };
         updateState(devId, statedesc.id, undefined, common);
     }
