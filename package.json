@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -20,9 +20,9 @@
   "dependencies": {
     "queue": "*",
     "debug": "^4.1.1",
-    "serialport": "^6.2.2",
-    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/1fc9189891e36a6af2fad772c57eccca56f060d4",
-    "zigbee-shepherd-converters": "^8.0.13",
+    "serialport": "^7.1.5",
+    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/13fbc39a2a8528e4d92c1a445c555854c2abb1b5",
+    "zigbee-shepherd-converters": "^8.0.14",
     "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
