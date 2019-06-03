@@ -34,6 +34,8 @@ let adapter;
 
 let pendingDevConfigRun = null;
 let pendingDevConfigs = [];
+let configureOnMessage = false;
+let aliveStates = {};
 
 function startAdapter(options) {
     options = options || {};
@@ -82,6 +84,12 @@ function startAdapter(options) {
                         getDevices(obj.from, obj.command, obj.callback);
                     }
                     break;
+                case 'EnableConfigureOnMessage':
+                    enableConfigureOnMessage(60);
+                    break;
+                case 'queryConfigureOnMessage':
+                   if (obj.callback) obj.callback({ data: QueryConfigureOnMessage() });
+                   break;
                 case 'getMap':
                     if (obj && obj.message && typeof obj.message === 'object') {
                         getMap(obj.from, obj.command, obj.callback);
@@ -367,15 +375,16 @@ function deleteDevice(from, command, msg, callback) {
 function updateDev(dev_id, dev_name, model, callback) {
     const id = '' + dev_id;
     const modelDesc = statesMapping.findModel(model);
+    const mappedModel = deviceMapping.findByZigbeeModel(model);
     const icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
     adapter.setObjectNotExists(id, {
         type: 'device',
         // actually this is an error, so device.common has no attribute type. It must be in native part
         common: {name: dev_name, type: model, icon: icon},
-        native: {id: dev_id}
+        native: {id: dev_id, configureNeeded: (mappedModel && mappedModel.configure ? 1: 0)}
     }, () => {
         // update type and icon
-        adapter.extendObject(id, {common: {type: model, icon: icon}}, callback);
+        adapter.extendObject(id, {common: {type: model, icon: icon}, native:{ configureNeeded: (mappedModel && mappedModel.configure ? 1: -1)}}, callback);
     });
 }
 
@@ -493,30 +502,50 @@ function getDevices(from, command, callback) {
                 pairedDevices.forEach((device) => {
                     const exists = devices.find((dev) => device.ieeeAddr === getZBid(dev._id));
                     if (!exists) {
-                        devices.push({
-                            _id: device.ieeeAddr,
-                            icon: 'img/unknown.png',
-                            paired: true,
-                            info: device,
-                            common: {
-                                name: undefined,
-                                type: undefined,
-                            },
-                            native: {}
-                        });
+                        if (device.type == "Coordinator") {
+                            let fwinfo = zbControl.getInfo();
+                            devices.push({
+                                _id: device.ieeeAddr,
+                                icon: 'img/coordinator.png',
+                                paired: true,
+                                configured: -1,
+                                info: device,
+                                common: {
+                                    name: fwinfo.net.state + " ("+fwinfo.net.panId+")",
+                                    type: "TI cc253x V" + fwinfo.firmware.version + " R" + fwinfo.firmware.revision,
+                                },
+                                native: {}
+                            });
+                        }
+                        else
+                        {
+                            devices.push({
+                                _id: device.ieeeAddr,
+                                icon: 'img/unknown.png',
+                                paired: true,
+                                configured: configure,
+                                info: device,
+                                common: {
+                                    name: undefined,
+                                    type: undefined,
+                                },
+                                native: {}
+                            });
+                        }
                     }
                 });
                 return devices;
             })
             .then(devices => {
-                adapter.log.debug('getDevices result: ' + JSON.stringify(devices));
-                adapter.sendTo(from, command, devices, callback);
+                adapter.log.debug('getDevices result: '+ JSON.stringify(devices));
+                adapter.log.debug('getDevices aliveStates: '+ JSON.stringify(aliveStates));
+                adapter.sendTo(from, command, { devices:devices, configureOnMessage:configureOnMessage, aliveStates:aliveStates}, callback);
             })
             .catch(err => {
                 adapter.log.error('getDevices error: ' + JSON.stringify(err));
             });
     } else {
-        adapter.sendTo(from, command, {error: 'You need save and run adapter before pairing!'}, callback);
+        adapter.sendTo(from, command, {error: 'You need to configure the adapter!'}, callback);
     }
 }
 
@@ -726,6 +755,15 @@ function syncGroups(groups) {
     Promise.all(chain);
 }
 
+function enableConfigureOnMessage(timeout)
+{
+  if (configureOnMessage) return;
+  configureOnMessage = true;
+  adapter.log.info("Configure on Message active for " + timeout + " seconds")
+  setTimeout( function() { configureOnMessage = false; adapter.log.info("configure on Message closed");}, timeout * 1000);
+
+}
+
 function onReady() {
     adapter.log.info('Shepherd ready. '+JSON.stringify(zbControl.getInfo().net));
     return new Promise(function (resolve, reject) {
@@ -764,6 +802,7 @@ function onReady() {
             }));
             scheduleDeviceConfig(device, 30 * 1000); // grant net bit time to settle first
         });
+        enableConfigureOnMessage(300);
         Promise.all(chain);
     });
 }
@@ -784,9 +823,10 @@ function getDeviceStartupLogMessage(device) {
         `${friendlyDevice.vendor} ${friendlyDevice.description} (${type})`;
 }
 
+
 function scheduleDeviceConfig(device, delay) {
     const ieeeAddr = device.ieeeAddr;
-    
+
     if (pendingDevConfigs.indexOf(ieeeAddr) !== -1) { // device is already scheduled
         return;
     }
@@ -797,21 +837,32 @@ function scheduleDeviceConfig(device, delay) {
             adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
             if (pendingDevConfigs && pendingDevConfigs.length > 0) {
                 pendingDevConfigs.forEach((ieeeAddr) => {
-                    const devToConfig = zbControl.getDevice(ieeeAddr);
-                    configureDevice(devToConfig, (ok, msg) => {
-                        if (ok) {
-                            if (msg !== false) { // false = no config needed
-                                adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
-                            }
-                            var index = pendingDevConfigs.indexOf(ieeeAddr);
-                            if (index > -1) {
-                                pendingDevConfigs.splice(index, 1);
-                            }
-                        } else {
-                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
-                            scheduleDeviceConfig(devToConfig, 300 * 1000);
-                        }
-                    });
+                    adapter.getObject(ieeeAddr.split('x')[1], function(err, obj) {
+                    if (obj && obj.native && (obj.native.configureNeeded > 0 || obj.native.configureNeeded === null))
+                    {
+                      const devToConfig = zbControl.getDevice(ieeeAddr);
+                      configureDevice(devToConfig, (ok, msg) => {
+                          if (ok) {
+                              if (msg !== false) { // false = no config needed
+                                  adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
+                              }
+                              adapter.extendObject(ieeeAddr.split('x')[1], {native: { configureNeeded: 0}} );
+                              var index = pendingDevConfigs.indexOf(ieeeAddr);
+                              if (index > -1) {
+                                  pendingDevConfigs.splice(index, 1);
+                              }
+                          } else {
+                              adapter.log.debug(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
+                              scheduleDeviceConfig(devToConfig, 300 * 1000);
+                          }
+                      });
+                    } else {
+                      var index = pendingDevConfigs.indexOf(ieeeAddr);
+                      if (index > -1) {
+                          pendingDevConfigs.splice(index, 1);
+                      }
+                    }
+                  });
                 });
             }
             if (pendingDevConfigs.length == 0) {
@@ -819,13 +870,14 @@ function scheduleDeviceConfig(device, delay) {
             } else {
                 pendingDevConfigRun = setTimeout(configCall, 300 * 1000);
             }
+
         };
-        if (!delay) { // run immediately
-            clearTimeout(pendingDevConfigRun);
-            configCall();
-        } else {
-            pendingDevConfigRun = setTimeout(configCall, delay);
-        }
+            if (!delay) { // run immediately
+                clearTimeout(pendingDevConfigRun);
+                configCall();
+            } else {
+                pendingDevConfigRun = setTimeout(configCall, delay);
+            }
     }
 }
 
@@ -1216,6 +1268,30 @@ function onDevEvent(type, devId, message, data) {
             logToPairing('Interview state: step ' + data.currentEp + '/' + data.totalEp + '. progress: ' + data.progress + '%', true);
             break;
         case 'msg':
+        // check here if we can trigger the configure immediately
+            const devToConfig = zbControl.getDevice(devId);
+            if (configureOnMessage)
+            {
+              if (pendingDevConfigs.indexOf(devId) !== -1) { // device is already scheduled
+                  adapter.log.debug("Attempting to configure device " + devId);
+                  var index = pendingDevConfigs.indexOf(devId);
+                  if (index > -1) {
+                      pendingDevConfigs.splice(index, 1);
+                  }
+
+                  configureDevice(devToConfig, (ok, msg) => {
+                      if (ok) {
+                          if (msg !== false) { // false = no config needed
+                              adapter.log.info(`Successfully configured ${devId} ${devToConfig.modelId}`);
+                              adapter.extendObject(devId.split('x')[1], {native: { configureNeeded: 0}} , function (err, obj) { if (err) { adapter.log.error(err); }});
+                          }
+                      } else {
+                        scheduleDeviceConfig(devToConfig, 300 * 1000);
+                      }
+                  });
+              }
+
+            }
             adapter.log.debug('Device ' + devId + ' incoming event:' + safeJsonStringify(message));
             // Map Zigbee modelID to vendor modelID.
             const mModel = deviceMapping.findByZigbeeModel(data.modelId);
@@ -1227,6 +1303,7 @@ function onDevEvent(type, devId, message, data) {
             }
 
             if (message.hasOwnProperty('available')) {
+                aliveStates[devId] = message.available;
                 payload.available = message.available;
             }
 

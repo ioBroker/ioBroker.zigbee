@@ -14,9 +14,11 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     responseCodes = false,
     groups = {},
     devGroups = {},
+    aliveStates = {},
+    configureOnMessageOpen = false,
     onChangeEmitter;
 
-function getCard(dev) {
+function getCard(dev, aliveState) {
     var title = dev.common.name,
         id = dev._id,
         type = dev.common.type,
@@ -32,22 +34,52 @@ function getCard(dev) {
     }
     room = rooms.join(',') || '&nbsp';
     let routeBtn = '';
-    if (dev.info && dev.info.type == 'Router') {
-        routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
+    let editBtn = '';
+    let infoBtn = '';
+    let configureBtn = ''
+    if (dev.info && dev.info.type == 'Router' || dev.info.type == 'Coordinator') {
+      let shortid = "0x"+id.replace(namespace+'.', '');
+      routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
+      if (aliveStates.hasOwnProperty(shortid)) {
+        if (!aliveStates[shortid]) {
+          routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable red"><i class="material-icons tiny">leak_add</i></a>';
+        }
+      }
     }
-
+    if (dev.info && dev.info.type != 'Coordinator') {
+      editBtn = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
+          '<i class="material-icons tiny">delete</i></a>'+'<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
+          '<i class="material-icons small">mode_edit</i></a>'
+      infoBtn = '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
+              '<i class="material-icons">info</i></a>'
+    }
+    let shortid = "0x"+id.replace(namespace+'.', '');
+    if (aliveStates.hasOwnProperty(shortid)) {
+      if (aliveStates[shortid]) {
+          alive = '<a class="right green">'  +
+          '<i class="material-icons tiny">cast_connected</i></a>';
+        }
+      else {
+        alive = '<a class="right red">' +
+          '<i class="material-icons tiny">cast_connected</i></a>';
+        }
+    }
+    if (dev.native.configureNeeded > -1) {
+      let color = "orange";
+      if (configureOnMessageOpen) color = "green"
+      if (dev.native.configureNeeded>0)
+        configureBtn = '<a name="configure" class="btn-floating waves-effect waves-light right hoverable ' + color + '"><i class="material-icons tiny">assignment_late</i></a>';
+      else
+        configureBtn =  '<a name="configure" class="btn-floating waves-effect waves-light right hoverable blue"><i class="material-icons tiny">assignment_turned_in</i></a>';
+    }
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
         info = `<p style="min-height:96px">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
-        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
-            '<i class="material-icons tiny">delete</i></a>'+
-            '<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
-                '<i class="material-icons small">mode_edit</i></a>'+routeBtn,
+        buttons = editBtn+routeBtn + configureBtn,
         card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
                     '<div class="card hoverable">'+
-                    '<div class="card-content">'+
-                        '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
-                            '<i class="material-icons">info</i></a>'+
+                    '<div class="card-content">'+ infoBtn
+                        +
                         '<span id="dName" class="card-title truncate">'+title+'</span>'+paired+
 
                         '<i class="left">'+image+'</i>'+
@@ -226,14 +258,13 @@ function showDevices() {
     devGroups = {};
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
-        if (d.info && d.info.type == "Coordinator") continue;
         if (d.groups && d.info && d.info.type == "Router") {
             devGroups[d._id] = d.groups;
             d.groupNames = d.groups.map(item=>{
                 return groups[item] || '';
             }).join(', ');
         }
-        var card = getCard(d);
+        var card = getCard(d, true);
         html += card;
     }
     $('#devices').html(html);
@@ -259,6 +290,10 @@ function showDevices() {
         if (!$('#pairing').hasClass('pulse'))
             joinProcess(getDevId(dev_block));
         showPairingProcess();
+    });
+    $("a.btn-floating[name='configure']").click(function() {
+        var dev_block = $(this).parents("div.device");
+        enableConfigureOnMessage();
     });
     $("a[name='d-info']").click(function(e) {
         var dev_block = $(this).parents("div.device");
@@ -286,6 +321,20 @@ function letsPairing() {
         }
     });
 }
+
+
+function enableConfigureOnMessage() {
+  messages = [];
+  sendTo(null, 'EnableConfigureOnMessage', {}, function (msg) {
+      if (msg) {
+          if (msg.error) {
+              showMessage(msg.error, _('Error'), 'alert');
+          }
+      }
+  });
+
+}
+
 
 function joinProcess(devId) {
     messages = [];
@@ -337,7 +386,10 @@ function getDevices() {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
             } else {
-                devices = msg;
+//                devices = msg;
+                devices = msg.devices;
+                configureOnMessageOpen = msg.configureOnMessage;
+                aliveStates = msg.aliveStates;
                 showDevices();
             }
         }
@@ -558,10 +610,6 @@ function showNetworkMap(devices, map){
             image: dev.icon,
             font: {color:'#007700'},
         };
-        if (dev.info && dev.info.type == 'Coordinator') {
-            node.shape = 'star';
-            node.label = 'Coordinator';
-        }
         return node;
     };
     
@@ -574,6 +622,7 @@ function showNetworkMap(devices, map){
             }
         });
     }
+
     
 //  @arteck map problems  
 //    const getDevice = function(ieeeAddr) {
@@ -640,7 +689,7 @@ function showNetworkMap(devices, map){
                     to: to,
                     label: label,
                     font: {
-                        align: 'middle', 
+                        align: 'middle',
                         size: 0, // start hidden
                         color: linkColor
                     },
@@ -670,7 +719,7 @@ function showNetworkMap(devices, map){
             }
         }
     });
-    
+
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
     devices.forEach((dev) => {
@@ -702,7 +751,7 @@ function showNetworkMap(devices, map){
     };
 
     network = new vis.Network(container, data, options);
-    
+
     const onMapSelect = function (event, properties, senderId) {
         // workaround for https://github.com/almende/vis/issues/4112
         // may be moved to edge.chosen.label if fixed
