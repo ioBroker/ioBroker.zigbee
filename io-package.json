@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.10.3",
+        "version": "0.10.999",
         "news": {
             "0.10.3": {
                 "en": "New devices and fixes"
