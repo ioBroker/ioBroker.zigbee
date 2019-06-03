@@ -37,14 +37,16 @@ function getCard(dev, aliveState) {
     let editBtn = '';
     let infoBtn = '';
     let configureBtn = ''
-    if (dev.info && dev.info.type == 'Router' || dev.info.type == 'Coordinator') {
-      let shortid = "0x"+id.replace(namespace+'.', '');
-      routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
-      if (aliveStates.hasOwnProperty(shortid)) {
-        if (!aliveStates[shortid]) {
-          routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable red"><i class="material-icons tiny">leak_add</i></a>';
-        }
-      }
+    if (dev.info) {
+        if (dev.info.type == 'Router' || dev.info.type == 'Coordinator') {    
+          let shortid = "0x"+id.replace(namespace+'.', '');
+          routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
+          if (aliveStates.hasOwnProperty(shortid)) {
+            if (!aliveStates[shortid]) {
+              routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable red"><i class="material-icons tiny">leak_add</i></a>';
+            }
+          }
+       }
     }
     if (dev.info && dev.info.type != 'Coordinator') {
       editBtn = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
