@@ -1355,6 +1355,7 @@ function main() {
             }
             oldErrOut(logs);
         };
+        adapter.log.info(`Lib-Versions: ZShepherd ${require('zigbee-shepherd/package.json').version}, ZSConverters ${require('zigbee-shepherd-converters/package.json').version}`);
     }
     // before start reset coordinator
     zbControl.reset('soft', (err, data) =>
