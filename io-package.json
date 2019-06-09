@@ -313,7 +313,8 @@
         "extPanID": "DDDDDDDDDDDDDDD",
         "channel": 11,
         "disableLed": false,
-        "precfgkey": "01030507090B0D0F00020406080A0C0D"
+        "precfgkey": "01030507090B0D0F00020406080A0C0D",
+        "countDown": 60
     },
     "instanceObjects": [
         {

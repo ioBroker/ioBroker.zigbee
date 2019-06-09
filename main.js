@@ -397,7 +397,15 @@ function letsPairing(from, command, message, callback) {
         }
         // allow devices to join the network within 60 secs
         logToPairing('Pairing started ' + devId, true);
-        zbControl.permitJoin(60, devId, err => {
+        
+        let cTimer = Number(adapter.config.countDown);
+        
+        if (!adapter.config.countDown
+        ||   cTimer == 0) {
+          cTimer = 60;
+        }
+
+        zbControl.permitJoin(cTimer, devId, err => {
             if (!err) {
                 // set pairing mode on
                 adapter.setState('info.pairingMode', true);

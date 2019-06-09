@@ -75,4 +75,16 @@ systemDictionary = {
     "Previous Parents": {                  "en": "Previous Parents",                      "de": "Letzte Parents",                           "ru": "Предыдущие родители",                       "pt": "Previous Parents",                       "nl": "Previous Parents",                       "fr": "Previous Parents",                   "it": "Previous Parents",                          "es": "Previous Parents",                      "pl": "Previous Parents"},
     "Parent/Child/Unknown": {              "en": "Parent/Child/Unknown",                  "de": "Parent/Child/Unknown",                     "ru": "Родитель/Ребенок",                          "pt": "Parent/Child/Unknown",                   "nl": "Parent/Child/Unknown",                   "fr": "Parent/Child/Unknown",               "it": "Parent/Child/Unknown",                      "es": "Parent/Child/Unknown",                  "pl": "Parent/Child/Unknown"},
     "Map view config": {                   "en": "Map view config",                       "de": "Map view config",                          "ru": "Настройки представления",                   "pt": "Map view config",                        "nl": "Map view config",                        "fr": "Map view config",                    "it": "Map view config",                           "es": "Map view config",                       "pl": "Map view config"},
+    "Countdown": {
+        "en": "Countdown between 0 and 255 sec",
+        "de": "Timer zwischen 0 und 255 Sek",
+        "ru": "Обратный отсчет от 0 до 255 сек",
+        "pt": "Contagem regressiva entre 0 e 255 seg",
+        "nl": "Aftellen tussen 0 en 255 sec",
+        "fr": "Compte à rebours entre 0 et 255 secondes",
+        "es": "Cuenta atrás entre 0 y 255 seg.",
+        "it": "Conto alla rovescia tra 0 e 255 sec",
+        "pl": "Odliczanie od 0 do 255 sek",
+        "zh-cn": "倒计时在0到255秒之间"
+    },
 };

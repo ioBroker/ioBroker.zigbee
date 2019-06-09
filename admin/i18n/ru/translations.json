@@ -16,5 +16,6 @@
     "Save": "Сохранить",
     "Settings": "Настройки",
     "Yes": "Да",
-    "Zigbee adapter": "Zigbee драйвер"
+    "Zigbee adapter": "Zigbee драйвер",
+    "Countdown": "Обратный отсчет от 0 до 255 сек"
 }
