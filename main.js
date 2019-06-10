@@ -1182,6 +1182,7 @@ function syncDevStates(dev) {
 
 function collectOptions(devId, modelId, callback) {
     let states;
+    let result = {};
     // find model states for options and get it values
     if (modelId === 'group') {
         states = statesMapping.groupStates.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
@@ -1189,22 +1190,21 @@ function collectOptions(devId, modelId, callback) {
         const mappedModel = deviceMapping.findByZigbeeModel(modelId);
         if (!mappedModel) {
             adapter.log.error('Unknown device model ' + modelId);
-            callback();
+            callback(result);
             return;
         }
         const stateModel = statesMapping.findModel(modelId);
         if (!stateModel) {
             adapter.log.error('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
-            callback();
+            callback(result);
             return;
         }
         states = stateModel.states.filter(statedesc => statedesc.isOption || statedesc.inOptions);
     }
     if (!states) {
-        callback();
+        callback(result);
         return;
     }
-    let result = {};
     let cnt = 0, len = states.length;
     states.forEach(statedesc => {
         const id = adapter.namespace + '.' + devId + '.' + statedesc.id;
@@ -1218,7 +1218,7 @@ function collectOptions(devId, modelId, callback) {
             }
         });
     });
-    if (!len) callback();
+    if (!len) callback(result);
 }
 
 function onDevEvent(type, devId, message, data) {
