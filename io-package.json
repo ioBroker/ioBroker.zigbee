@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.10.999",
+        "version": "0.11.0",
         "news": {
+            "0.11.0": {
+                "en": "Support both Z-Stack 1.2 and 3.0"
+            },
             "0.10.3": {
                 "en": "New devices and fixes"
             },
