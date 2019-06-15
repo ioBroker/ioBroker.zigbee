@@ -71,6 +71,10 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
+### 0.11.1 (2019-06-15)
+* fix wrong initial extPanID. Sorry that need to repairing all devices again.
+* fix code for aqara cube
+
 ### 0.11.0 (2019-06-14)
 * Support both Z-Stack 1.2 and 3.0 [coordinator firmware](https://github.com/Koenkk/Z-Stack-firmware/tree/master/coordinator)
 * Serialport 7.1.5
