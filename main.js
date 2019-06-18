@@ -397,7 +397,15 @@ function letsPairing(from, command, message, callback) {
         }
         // allow devices to join the network within 60 secs
         logToPairing('Pairing started ' + devId, true);
-        zbControl.permitJoin(60, devId, err => {
+        
+        let cTimer = Number(adapter.config.countDown);
+        
+        if (!adapter.config.countDown
+        ||   cTimer == 0) {
+          cTimer = 60;
+        }
+
+        zbControl.permitJoin(cTimer, devId, err => {
             if (!err) {
                 // set pairing mode on
                 adapter.setState('info.pairingMode', true);
@@ -973,63 +981,19 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = devEp ? devEp[epName] : null;
         const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
-        const message = converter.convert(key, preparedValue, preparedOptions, 'set');
-        if (!message) {
+        const messages = converter.convert(key, preparedValue, preparedOptions, 'set');
+        if (!messages) {
             // acknowledge state with given value
             acknowledgeState(deviceId, modelId, stateDesc, value);
             return;
         }
+        messages.forEach((message) => {
+            adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
 
-        adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
-
-        if (adapter.config.disableQueue) {
-            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
-                if (err) {
-                    // nothing to do in error case
-                } else {
-                    // acknowledge state with given value
-                    acknowledgeState(deviceId, modelId, stateDesc, value);
-                    // process sync state list
-                    processSyncStatesList(deviceId, modelId, syncStateList);
-                }
-            });
-        } else {
-            // wait a timeout for write
-            setTimeout(() => {
-                zbControl.publish(device, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
+            if (adapter.config.disableQueue) {
+                zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
                     if (err) {
                         // nothing to do in error case
-                    } else if (modelId === 'group') {
-                        // acknowledge state with given value
-                        acknowledgeState(deviceId, modelId, stateDesc, value);
-                    } else if (readAfterWriteStates.includes(key)) {
-                        // wait a timeout for read state value after write
-                        adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${message.readAfterWriteTime}`);
-                        setTimeout(() => {
-                            const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
-                            if (readMessage) {
-                                adapter.log.debug('read message: ' + safeJsonStringify(readMessage));
-                                zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType, (err, resp) => {
-                                    if (err) {
-                                        // nothing to do in error case
-                                    } else {
-                                        // read value from response
-                                        let readValue = readValueFromResponse(stateDesc, resp);
-                                        if (readValue !== undefined && readValue !== null) {
-                                            // acknowledge state with read value
-                                            acknowledgeState(deviceId, modelId, stateDesc, readValue);
-                                            // process sync state list
-                                            processSyncStatesList(deviceId, modelId, syncStateList);
-                                        }
-                                    }
-                                });
-                            } else {
-                                // acknowledge state with given value
-                                acknowledgeState(deviceId, modelId, stateDesc, value);
-                                // process sync state list
-                                processSyncStatesList(deviceId, modelId, syncStateList);
-                            }
-                        }, (message.readAfterWriteTime || 10)); // a slight offset between write and read is needed
                     } else {
                         // acknowledge state with given value
                         acknowledgeState(deviceId, modelId, stateDesc, value);
@@ -1037,8 +1001,55 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                         processSyncStatesList(deviceId, modelId, syncStateList);
                     }
                 });
-            }, changedState.timeout);
-        }
+            } else {
+                // wait a timeout for write
+                setTimeout(() => {
+                    zbControl.publish(device, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
+                        if (err) {
+                            // nothing to do in error case
+                        } else if (modelId === 'group') {
+                            // acknowledge state with given value
+                            acknowledgeState(deviceId, modelId, stateDesc, value);
+                        } else if (readAfterWriteStates.includes(key)) {
+                            // wait a timeout for read state value after write
+                            adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${message.readAfterWriteTime}`);
+                            setTimeout(() => {
+                                const readMessages = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
+                                if (readMessages) {
+                                    readMessages.forEach((readMessage) => {
+                                        adapter.log.debug('read message: ' + safeJsonStringify(readMessage));
+                                        zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType, (err, resp) => {
+                                            if (err) {
+                                                // nothing to do in error case
+                                            } else {
+                                                // read value from response
+                                                let readValue = readValueFromResponse(stateDesc, resp);
+                                                if (readValue !== undefined && readValue !== null) {
+                                                    // acknowledge state with read value
+                                                    acknowledgeState(deviceId, modelId, stateDesc, readValue);
+                                                    // process sync state list
+                                                    processSyncStatesList(deviceId, modelId, syncStateList);
+                                                }
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    // acknowledge state with given value
+                                    acknowledgeState(deviceId, modelId, stateDesc, value);
+                                    // process sync state list
+                                    processSyncStatesList(deviceId, modelId, syncStateList);
+                                }
+                            }, (message.readAfterWriteTime || 10)); // a slight offset between write and read is needed
+                        } else {
+                            // acknowledge state with given value
+                            acknowledgeState(deviceId, modelId, stateDesc, value);
+                            // process sync state list
+                            processSyncStatesList(deviceId, modelId, syncStateList);
+                        }
+                    });
+                }, changedState.timeout);
+            }
+        });
     });
 }
 
@@ -1163,6 +1174,7 @@ function syncDevStates(dev) {
             role: statedesc.role,
             min: statedesc.min,
             max: statedesc.max,
+            states: statedesc.states,
         };
         updateState(devId, statedesc.id, undefined, common);
     }
@@ -1170,6 +1182,7 @@ function syncDevStates(dev) {
 
 function collectOptions(devId, modelId, callback) {
     let states;
+    let result = {};
     // find model states for options and get it values
     if (modelId === 'group') {
         states = statesMapping.groupStates.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
@@ -1177,22 +1190,21 @@ function collectOptions(devId, modelId, callback) {
         const mappedModel = deviceMapping.findByZigbeeModel(modelId);
         if (!mappedModel) {
             adapter.log.error('Unknown device model ' + modelId);
-            callback();
+            callback(result);
             return;
         }
         const stateModel = statesMapping.findModel(modelId);
         if (!stateModel) {
             adapter.log.error('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
-            callback();
+            callback(result);
             return;
         }
         states = stateModel.states.filter(statedesc => statedesc.isOption || statedesc.inOptions);
     }
     if (!states) {
-        callback();
+        callback(result);
         return;
     }
-    let result = {};
     let cnt = 0, len = states.length;
     states.forEach(statedesc => {
         const id = adapter.namespace + '.' + devId + '.' + statedesc.id;
@@ -1206,7 +1218,7 @@ function collectOptions(devId, modelId, callback) {
             }
         });
     });
-    if (!len) callback();
+    if (!len) callback(result);
 }
 
 function onDevEvent(type, devId, message, data) {
@@ -1277,11 +1289,11 @@ function onDevEvent(type, devId, message, data) {
                 collectOptions(devId.substr(2), modelID, (options) => {
                     const payload = converter.convert(mappedModel, message, publish, options);
                     if (payload) {
-                        // Add device linkquality.
-                        if (message.linkquality) {
-                            payload.linkquality = message.linkquality;
-                        }
-                        publish(payload);
+                            // Add device linkquality.
+                            if (message.linkquality) {
+                                payload.linkquality = message.linkquality;
+                            }
+                            publish(payload);
                     }
                 });
             });
@@ -1351,6 +1363,7 @@ function main() {
             }
             oldErrOut(logs);
         };
+        adapter.log.info(`Lib-Versions: ZShepherd ${require('zigbee-shepherd/package.json').version}, ZSConverters ${require('zigbee-shepherd-converters/package.json').version}`);
     }
     // before start reset coordinator
     zbControl.reset('soft', (err, data) =>

@@ -363,7 +363,9 @@ function getMap() {
 function load(settings, onChange) {
     onChangeEmitter = onChange;
     if (settings.panID === undefined) settings.panID = 6754;
-    if (settings.extPanID === undefined) settings.extPanID = 'DDDDDDDDDDDDDDD';
+    if (settings.extPanID === undefined) settings.extPanID = 'DDDDDDDDDDDDDDDD';
+    // fix for previous wrong value
+    if (settings.extPanID === 'DDDDDDDDDDDDDDD') settings.extPanID = 'DDDDDDDDDDDDDDDD';
     if (settings.precfgkey === undefined) settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
     if (settings.channel === undefined) settings.channel = 11;
 
@@ -569,16 +571,11 @@ function showNetworkMap(devices, map){
         return devices.find((devInfo) => {
             try {
                 return devInfo.info.ieeeAddr == ieeeAddr;
-            }  catch {
+            }  catch (e) {
                 console.log("No dev with ieee " + ieeeAddr);
             }
         });
     }
-    
-//  @arteck map problems  
-//    const getDevice = function(ieeeAddr) {
-//        return devices.find((devInfo) => { return devInfo.info.ieeeAddr == ieeeAddr });
-//    }
     
     map.forEach((mapEntry)=>{
         const dev = getDevice(mapEntry.ieeeAddr);

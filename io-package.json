@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.10.3",
+        "version": "0.11.1",
         "news": {
+            "0.11.0": {
+                "en": "Support both Z-Stack 1.2 and 3.0"
+            },
             "0.10.3": {
                 "en": "New devices and fixes"
             },
@@ -310,10 +313,11 @@
     "native": {
         "port": "",
         "panID": 6754,
-        "extPanID": "DDDDDDDDDDDDDDD",
+        "extPanID": "DDDDDDDDDDDDDDDD",
         "channel": 11,
         "disableLed": false,
-        "precfgkey": "01030507090B0D0F00020406080A0C0D"
+        "precfgkey": "01030507090B0D0F00020406080A0C0D",
+        "countDown": 60
     },
     "instanceObjects": [
         {
