@@ -816,7 +816,8 @@ function scheduleDeviceConfig(device, delay) {
                                 pendingDevConfigs.splice(index, 1);
                             }
                         } else {
-                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
+                            adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
+                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec.`);
                             scheduleDeviceConfig(devToConfig, 300 * 1000);
                         }
                     });
