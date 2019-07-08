@@ -14,7 +14,8 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     responseCodes = false,
     groups = {},
     devGroups = {},
-    onChangeEmitter;
+    onChangeEmitter,
+    binding = [];
 
 function getCard(dev) {
     var title = dev.common.name,
@@ -391,6 +392,7 @@ function load(settings, onChange) {
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getMap();
+    getBinding();
     //addCard();
 
     // Signal to admin, that no changes yet
@@ -447,6 +449,10 @@ function load(settings, onChange) {
         if ($(e.target).attr("id") == 'develop') {
         	loadDeveloperTab(onChange);
         }
+    });
+
+    $('#add_binding').click(function() {
+        addBindingDialog();
     });
 }
 
@@ -1262,4 +1268,101 @@ function resetConfirmation() {
 
 function showViewConfig() {
     $('#modalviewconfig').modal('open');
+}
+
+function addBindingDialog() {
+    $("#bindingmodaledit a.btn[name='save']").unbind("click");
+    $("#bindingmodaledit a.btn[name='save']").click(function(e) {
+        var //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
+            bind_source = $('#bindingmodaledit').find("#bind_source option:selected").val(),
+            bind_source_ep = $('#bindingmodaledit').find("#bind_source_ep option:selected").val(),
+            bind_target = $('#bindingmodaledit').find("#bind_target option:selected").val(),
+            bind_target_ep = $('#bindingmodaledit').find("#bind_target_ep option:selected").val();
+        addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep);
+    });
+    $('#bindingmodaledit').modal('open');
+    Materialize.updateTextFields();
+}
+
+function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
+    sendTo(namespace, 'addBinding', {
+        bind_source: bind_source, 
+        bind_source_ep: bind_source_ep, 
+        bind_target: bind_target,
+        bind_target_ep: bind_target_ep
+    }, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            }
+        }
+    });
+}
+
+function editBindingDialog(id) {
+    $("#bindingmodaledit a.btn[name='save']").unbind("click");
+    $("#bindingmodaledit a.btn[name='save']").click(function(e) {
+        //
+    });
+    $('#bindingmodaledit').modal('open');
+    Materialize.updateTextFields();
+}
+
+function showBinding() {
+    var element = $('#binding');
+    element.find(".binding").remove();
+    if (!binding || !binding.length) return;
+    binding.forEach(b => {
+        const card = ```
+                    <div id="1111" class="binding col s12 m6 l4 xl3">
+                        <div class="card hoverable">
+                            <div class="card-content" style="padding-bottom: 0px; padding-left: 0px; padding-right: 0px;">
+                                <table style="border-collapse: separate">
+                                    <tr>
+                                        <td>
+                                            <img class="left" src="img/aqara.switch.png" width="64px">
+                                        </td>
+                                        <td>
+                                            <div class="row"><span>source:</span><span class="right">кнопка на двери при входе в дом</span></div>
+                                            <div class="row"><span>target:</span><span class="right">лампа во вдоре</span></div>
+                                        </td>
+                                        <td>
+                                            <img class="right" src="img/gledopto.png" width="64px">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="card-action">
+                                <a name="edit" class="btn blue"><i class="material-icons tiny">mode_edit</i></a>
+                                <a name="delete" class="btn right black"><i class="material-icons tiny">delete</i></a>
+                            </div>
+                        </div>
+                    </div>
+        ```
+        element.append(card);
+    });
+    
+    $("#binding a.btn[name='delete']").click(function() {
+        // const index = $(this).attr("id"),
+        //     name = groups[index];
+        // deleteGroupConfirmation(index, name);
+    });
+    $("#binding a.btn[name='edit']").click(function(e) {
+        editBindingDialog();
+    });
+}
+
+function getBinding() {
+    sendTo(namespace, 'getBinding', {}, function (msg) {
+        console.log('getBinding');
+        console.log(msg);
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            } else {
+                binding = msg;
+                showBinding();
+            }
+        }
+    });
 }

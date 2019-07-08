@@ -131,6 +131,21 @@ function startAdapter(options) {
                         adapter.sendTo(obj.from, obj.command, err, obj.callback);
                     });
                     break;
+                case 'getBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getBinding(obj.from, obj.command, obj.callback);
+                    }
+                    break;
+                case 'addBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        addBinding(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'delBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        delBinding(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
                 default:
                     adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
                     break;
@@ -376,6 +391,67 @@ function updateDev(dev_id, dev_name, model, callback) {
     }, () => {
         // update type and icon
         adapter.extendObject(id, {common: {type: model, icon: icon}}, callback);
+    });
+}
+
+function getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep) {
+    return `bind_${bind_source}_${bind_source_ep}_${bind_target}${bind_target_ep}`;
+}
+
+function addBinding(from, command, params, callback) {
+    adapter.log.debug('addBinding message: ' + JSON.stringify(params));
+    const bind_source = params.bind_source,
+          bind_source_ep = params.bind_source_ep,
+          bind_target = params.bind_target,
+          bind_target_ep = params.bind_target_ep,
+          id = getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep),
+          stateId = `info.${id}`;
+    
+    adapter.setObjectNotExists(stateId, {
+        type: 'state',
+        common: {name: id},
+    }, () => {
+        adapter.setState(stateId, JSON.stringify(params), true, () => {
+            adapter.sendTo(from, command, {}, callback);
+        });
+    });
+}
+
+function delBinding(from, command, params, callback) {
+    adapter.log.debug('delBinding message: ' + JSON.stringify(params));
+    const id = params.bind_id,
+          stateId = `info.${id}`;
+    adapter.deleteState(stateId, (err) => {
+        adapter.sendTo(from, command, {}, callback);
+    });
+}
+
+function getBinding(from, command, params, callback) {
+    const binding = [];
+    adapter.getStatesOf('info', (err, states) => {
+        if (!err && states) {
+            const chain = [];
+            states.forEach(state => {
+                if (state._id.startsWith(`${adapter.namespace}.info.bind_`)) {
+                    chain.push(new Promise(resolve => {
+                        return adapter.getStateAsync(state._id)
+                            .then(stateV => {
+                                const val = JSON.parse(stateV.val);
+                                val.id = state._id; 
+                                binding.push(val);
+                                resolve();
+                            });
+                    }));
+                }
+            });
+            Promise.all(chain).then(()=>{
+                adapter.log.debug('getBinding result: ' + JSON.stringify(binding));
+                adapter.sendTo(from, command, binding, callback);
+            });
+        } else {
+            adapter.log.debug('getBinding result: ' + JSON.stringify(binding));
+            adapter.sendTo(from, command, binding, callback);
+        }
     });
 }
 

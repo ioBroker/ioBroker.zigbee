@@ -96,6 +96,7 @@
                         <li class="tab col s2"><a id="devs" href="#tab-main" class="translate">Devices</a></li>
                         <li class="tab col s2"><a href="#tab-groups" class="translate">Groups</a></li>
                         <li class="tab col s2"><a id="tabmap" href="#tab-map" class="translate">Network map</a></li>
+                        <li class="tab col s2"><a href="#tab-binding" class="translate">Binding</a></li>
                         <li class="tab col s2"><a id="settings" href="#tab-sett" class="translate">Settings</a></li>
                         <li class="tab col s2"><a id="develop" href="#tab-dev" class="translate">Developer</a></li>
                     </ul>
@@ -378,6 +379,37 @@
                     </div>
                 </div>
             </div>
+            <div id="tab-binding" class="col s12 page">
+                <div class="fixed-action-btn" style="padding-bottom: 100px">
+                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Add binding"><i class="material-icons large">add</i></a>
+                </div>
+                <div id="binding" class="row">
+                    <div id="1111" class="binding col s12 m6 l4 xl3">
+                        <div class="card hoverable">
+                            <div class="card-content" style="padding-bottom: 0px; padding-left: 0px; padding-right: 0px;">
+                                <table style="border-collapse: separate">
+                                    <tr>
+                                        <td>
+                                            <img class="left" src="img/aqara.switch.png" width="64px">
+                                        </td>
+                                        <td>
+                                            <div class="row"><span>source:</span><span class="right">кнопка на двери при входе в дом</span></div>
+                                            <div class="row"><span>target:</span><span class="right">лампа во вдоре</span></div>
+                                        </td>
+                                        <td>
+                                            <img class="right" src="img/gledopto.png" width="64px">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="card-action">
+                                <a name="edit" class="btn blue"><i class="material-icons tiny">mode_edit</i></a>
+                                <a name="delete" class="btn right black"><i class="material-icons tiny">delete</i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -499,6 +531,47 @@
             <div class="modal-footer">
                 <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
                 <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+
+        <div id="bindingmodaledit" class="modal">
+            <div class="modal-content">
+                <div class="row">
+                    <h3 class="translate">Binding configuration</h3>
+                    <div class="row">                        
+                        <div class="col s6 input-field">
+                            <select id="bind_source" class="icons">
+                                <option value="" disabled selected>Choose your option</option>
+                                <option value="1" data-icon="img/aqara.switch.png">Значение 1</option>
+                                <option value="2" data-icon="img/ctrl_ln1.png">Значение 2</option>
+                            </select>
+                            <label for="bind_source" class="translate">Source device</label>
+                        </div>
+                        <div class="col s6 input-field">
+                            <select id="bind_source_ep" class="materialSelect">
+                                <option value="1">Значение</option>
+                            </select>
+                            <label for="bind_source_ep" class="translate">Source ep</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6 input-field">
+                            <select id="bind_target" class="icons">
+                                <option value="1" data-icon="img/gledopto.png">Значение 1</option>
+                                <option value="2" data-icon="img/FLOALT.panel.WS.png">Значение 2</option>
+                            </select>
+                            <label for="bind_target" class="translate">Target device</label>
+                        </div>
+                        <div class="col s6 input-field">
+                            <select id="bind_target_ep" class="materialSelect"><option value="1">Значение</option></select>
+                            <label for="bind_target_ep" class="translate">Target ep</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
     </div>
