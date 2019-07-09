@@ -133,7 +133,9 @@ function startAdapter(options) {
                     break;
                 case 'getBinding':
                     if (obj && obj.message && typeof obj.message === 'object') {
-                        getBinding(obj.from, obj.command, obj.callback);
+                        getBinding((binding)=>{
+                            adapter.sendTo(obj.from, obj.command, binding, obj.callback);
+                        });
                     }
                     break;
                 case 'addBinding':
@@ -426,7 +428,7 @@ function delBinding(from, command, params, callback) {
     });
 }
 
-function getBinding(from, command, params, callback) {
+function getBinding(callback) {
     const binding = [];
     adapter.getStatesOf('info', (err, states) => {
         if (!err && states) {
@@ -444,13 +446,13 @@ function getBinding(from, command, params, callback) {
                     }));
                 }
             });
-            Promise.all(chain).then(()=>{
+            return Promise.all(chain).then(() => {
                 adapter.log.debug('getBinding result: ' + JSON.stringify(binding));
-                adapter.sendTo(from, command, binding, callback);
+                callback(binding);
             });
         } else {
             adapter.log.debug('getBinding result: ' + JSON.stringify(binding));
-            adapter.sendTo(from, command, binding, callback);
+            callback(binding);
         }
     });
 }

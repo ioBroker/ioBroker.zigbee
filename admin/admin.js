@@ -1296,6 +1296,7 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
                 showMessage(msg.error, _('Error'), 'alert');
             }
         }
+        getBinding();
     });
 }
 
@@ -1313,7 +1314,7 @@ function showBinding() {
     element.find(".binding").remove();
     if (!binding || !binding.length) return;
     binding.forEach(b => {
-        const card = ```
+        const card = `
                     <div id="1111" class="binding col s12 m6 l4 xl3">
                         <div class="card hoverable">
                             <div class="card-content" style="padding-bottom: 0px; padding-left: 0px; padding-right: 0px;">
@@ -1337,8 +1338,7 @@ function showBinding() {
                                 <a name="delete" class="btn right black"><i class="material-icons tiny">delete</i></a>
                             </div>
                         </div>
-                    </div>
-        ```
+                    </div>`
         element.append(card);
     });
     
