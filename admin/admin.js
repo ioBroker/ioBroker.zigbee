@@ -340,6 +340,7 @@ function getDevices() {
             } else {
                 devices = msg;
                 showDevices();
+                getBinding();
             }
         }
     });
@@ -392,7 +393,6 @@ function load(settings, onChange) {
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getMap();
-    getBinding();
     //addCard();
 
     // Signal to admin, that no changes yet
@@ -1155,13 +1155,18 @@ function updateSelect(id, list, getText, getId, append = false) {
     mySelect.select();
 }
 
-function list2select(selector, list, selected) {
+function list2select(selector, list, selected, getText, getKey, getData) {
     var element = $(selector);
     element.empty();
     for (var j in list) {
         if (list.hasOwnProperty(j)) {
-            const cls = (selected.indexOf(j) >= 0) ? " selected" : "";
-            element.append(`<option value="${j}"${cls}>${list[j]}</option>`);
+            const optionKey = (getKey) ? getKey(j, list[j]) : j;
+            if (optionKey == null) continue;
+            const cls = (selected.indexOf(optionKey) >= 0) ? " selected" : "";
+            const optionText = (getText) ? getText(j, list[j]) : list[j];
+            if (optionText == null) continue;
+            const optionData = (getData) ? getData(j, list[j]) : '';
+            element.append(`<option value="${optionKey}"${cls} ${optionData}>${optionText}</option>`);
         }
     }
     element.select();
@@ -1270,6 +1275,150 @@ function showViewConfig() {
     $('#modalviewconfig').modal('open');
 }
 
+function prepareBindingDialog(bindObj){
+    const binddevices = devices.slice();
+    binddevices.unshift('');
+    const bind_source = (bindObj) ? [bindObj.bind_source] : [''];
+    const bind_target = (bindObj) ? [bindObj.bind_target] : [''];
+    const bind_source_ep = (bindObj) ? [bindObj.bind_source_ep] : [''];
+    const bind_target_ep = (bindObj) ? [bindObj.bind_target_ep] : [''];
+
+    $('#bind_source_ep').empty();
+    // fill device selector
+    list2select('#bind_source', binddevices, bind_source,
+        function(key, device) {
+            if (device == '') {
+                return 'Select source device';
+            }
+            if (device.hasOwnProperty('info')) {
+                if (device.info.type == 'Coordinator') {
+                    return null;
+                }
+                return device.common.name;
+            }
+            else { // fallback if device in list but not paired
+                device.common.name + ' ' +device.native.id;
+            }
+        },
+        function(key, device) {
+            if (device == '') {
+                return '';
+            } else {
+                return device._id;
+            }
+        },
+        function(key, device) {
+            if (device == '') {
+                return 'disabled';
+            } else if (device.icon) {
+                return `data-icon="${device.icon}"`;
+            } else {
+                return '';
+            }
+        },
+    );
+    $('#bind_target_ep').empty();
+    list2select('#bind_target', binddevices, bind_target,
+        function(key, device) {
+            if (device == '') {
+                return 'Select target device';
+            }
+            if (device.hasOwnProperty('info')) {
+                if (device.info.type == 'Coordinator') {
+                    return null;
+                }
+                return device.common.name;
+            }
+            else { // fallback if device in list but not paired
+                device.common.name + ' ' +device.native.id;
+            }
+        },
+        function(key, device) {
+            if (device == '') {
+                return '';
+            } else {
+                return device._id;
+            }
+        },
+        function(key, device) {
+            if (device == '') {
+                return 'disabled';
+            } else if (device.icon) {
+                return `data-icon="${device.icon}"`;
+            } else {
+                return '';
+            }
+        },
+    );
+    $('#bind_source').change(function() {
+        if (this.selectedIndex <= 0) {
+            return;
+        }
+
+        var device = devices.find(obj => {
+            return obj._id === this.value;
+        });
+
+        var epList = device ? device.info.epList : null;
+        list2select('#bind_source_ep', epList, [],
+            function(key, ep) {
+                return ep;
+            },
+            function(key, ep) {
+                return ep;
+            }
+        );
+    });
+    if (bindObj) {
+        var device = devices.find(obj => {
+            return obj._id === bindObj.bind_source;
+        });
+        var epList = device ? device.info.epList : null;
+        list2select('#bind_source_ep', epList, [bindObj.bind_source_ep],
+            function(key, ep) {
+                return ep;
+            },
+            function(key, ep) {
+                return ep;
+            }
+        );
+    }
+
+    $('#bind_target').change(function() {
+        if (this.selectedIndex <= 0) {
+            return;
+        }
+
+        var device = devices.find(obj => {
+            return obj._id === this.value;
+        });
+
+        var epList = device ? device.info.epList : null;
+        list2select('#bind_target_ep', epList, [],
+            function(key, ep) {
+                return ep;
+            },
+            function(key, ep) {
+                return ep;
+            }
+        );
+    });
+    if (bindObj) {
+        var device = devices.find(obj => {
+            return obj._id === bindObj.bind_target;
+        });
+        var epList = device ? device.info.epList : null;
+        list2select('#bind_target_ep', epList, [bindObj.bind_target_ep],
+            function(key, ep) {
+                return ep;
+            },
+            function(key, ep) {
+                return ep;
+            }
+        );
+    }
+}
+
 function addBindingDialog() {
     $("#bindingmodaledit a.btn[name='save']").unbind("click");
     $("#bindingmodaledit a.btn[name='save']").click(function(e) {
@@ -1280,6 +1429,8 @@ function addBindingDialog() {
             bind_target_ep = $('#bindingmodaledit').find("#bind_target_ep option:selected").val();
         addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep);
     });
+    prepareBindingDialog();
+
     $('#bindingmodaledit').modal('open');
     Materialize.updateTextFields();
 }
@@ -1300,11 +1451,34 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
     });
 }
 
-function editBindingDialog(id) {
+function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep) {
+    sendTo(namespace, 'editBinding', {
+        id: bind_id,
+        bind_source: bind_source, 
+        bind_source_ep: bind_source_ep, 
+        bind_target: bind_target,
+        bind_target_ep: bind_target_ep
+    }, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            }
+        }
+        getBinding();
+    });
+}
+
+function editBindingDialog(bindObj) {
     $("#bindingmodaledit a.btn[name='save']").unbind("click");
     $("#bindingmodaledit a.btn[name='save']").click(function(e) {
-        //
+        var //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
+            bind_source = $('#bindingmodaledit').find("#bind_source option:selected").val(),
+            bind_source_ep = $('#bindingmodaledit').find("#bind_source_ep option:selected").val(),
+            bind_target = $('#bindingmodaledit').find("#bind_target option:selected").val(),
+            bind_target_ep = $('#bindingmodaledit').find("#bind_target_ep option:selected").val();
+        editBinding(bindObj.id, bind_source, bind_source_ep, bind_target, bind_target_ep);
     });
+    prepareBindingDialog(bindObj);
     $('#bindingmodaledit').modal('open');
     Materialize.updateTextFields();
 }
@@ -1314,21 +1488,34 @@ function showBinding() {
     element.find(".binding").remove();
     if (!binding || !binding.length) return;
     binding.forEach(b => {
+        const bind_id = b.id,
+              bind_source = b.bind_source,
+              bind_source_ep = b.bind_source_ep,
+              bind_target = b.bind_target,
+              bind_target_ep = b.bind_target_ep;
+        const source_dev = devices.find((d) => d._id == bind_source) || {common: {name: bind_source}},
+              target_dev = devices.find((d) => d._id == bind_target) || {common: {name: bind_target}};
         const card = `
-                    <div id="1111" class="binding col s12 m6 l4 xl3">
+                    <div id="${bind_id}" class="binding col s12 m6 l4 xl3">
                         <div class="card hoverable">
-                            <div class="card-content" style="padding-bottom: 0px; padding-left: 0px; padding-right: 0px;">
+                            <div class="card-content">
                                 <table style="border-collapse: separate">
                                     <tr>
-                                        <td>
-                                            <img class="left" src="img/aqara.switch.png" width="64px">
+                                        <td style="padding: 0px">
+                                            <img class="left" src="${source_dev.icon}" width="64px">
                                         </td>
-                                        <td>
-                                            <div class="row"><span>source:</span><span class="right">кнопка на двери при входе в дом</span></div>
-                                            <div class="row"><span>target:</span><span class="right">лампа во вдоре</span></div>
+                                        <td style="padding: 0px">
+                                            <div>source:</div>
+                                            <div>${source_dev.common.name}</div>
                                         </td>
-                                        <td>
-                                            <img class="right" src="img/gledopto.png" width="64px">
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 0px">
+                                            <img class="left" src="${target_dev.icon}" width="64px">
+                                        </td>
+                                        <td style="padding: 0px">
+                                            <div>target:</div>
+                                            <div>${target_dev.common.name}}</div>
                                         </td>
                                     </tr>
                                 </table>
@@ -1343,19 +1530,20 @@ function showBinding() {
     });
     
     $("#binding a.btn[name='delete']").click(function() {
-        // const index = $(this).attr("id"),
-        //     name = groups[index];
-        // deleteGroupConfirmation(index, name);
+        const bind_id = $(this).parents('.binding')[0].id;
+        deleteBindingConfirmation(bind_id);
     });
     $("#binding a.btn[name='edit']").click(function(e) {
-        editBindingDialog();
+        const bind_id = $(this).parents('.binding')[0].id;
+        const bindObj = binding.find((b) => b.id == bind_id);
+        if (bindObj) {
+            editBindingDialog(bindObj);
+        }
     });
 }
 
 function getBinding() {
     sendTo(namespace, 'getBinding', {}, function (msg) {
-        console.log('getBinding');
-        console.log(msg);
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'), 'alert');
@@ -1364,5 +1552,26 @@ function getBinding() {
                 showBinding();
             }
         }
+    });
+}
+
+function deleteBindingConfirmation(id) {
+    var text = translateWord('Do you really want to delete binding?');
+    $('#modaldelete').find("p").text(text);
+    $("#modaldelete a.btn[name='yes']").unbind("click");
+    $("#modaldelete a.btn[name='yes']").click(function(e) {
+        deleteBinding(id);
+    });
+    $('#modaldelete').modal('open');
+}
+
+function deleteBinding(id) {
+    sendTo(namespace, 'delBinding', id, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'), 'alert');
+            }
+        }
+        getBinding();
     });
 }
