@@ -35,6 +35,13 @@ let adapter;
 let pendingDevConfigRun = null;
 let pendingDevConfigs = [];
 
+const allowedClusters = [
+    //5, // genScenes
+    6, // genOnOff
+    //8, // genLevelCtrl
+    //768, // lightingColorCtrl
+];
+
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {
@@ -421,13 +428,54 @@ function addBinding(from, command, params, callback) {
           bind_target_ep = params.bind_target_ep,
           id = getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep),
           stateId = `info.${id}`;
-    
-    adapter.setObjectNotExists(stateId, {
-        type: 'state',
-        common: {name: id},
-    }, () => {
-        adapter.setState(stateId, JSON.stringify(params), true, () => {
-            adapter.sendTo(from, command, {}, callback);
+
+    const source = zbControl.getEndpoint(`0x${extractDeviceId(bind_source)}`, parseInt(bind_source_ep)),
+          target = zbControl.getEndpoint(`0x${extractDeviceId(bind_target)}`, parseInt(bind_target_ep));
+
+    if (!source || !target) {
+        adapter.log.error('Devices not found');
+        adapter.sendTo(from, command, {error: 'Devices not found'}, callback);
+        return;
+    }
+    // Find which clusters are supported by both the source and target.
+    // Groups are assumed to support all clusters (as we don't know which devices are in)
+    const supported = target.getSimpleDesc().inClusterList.filter((cluster) => {
+        return allowedClusters.includes(cluster);
+    });
+    const clusters = source.getSimpleDesc().outClusterList.filter((cluster) => {
+        return supported.includes(cluster);
+    });
+    if (!clusters || !clusters.length) {
+        adapter.log.debug(`No bind clusters`);
+        adapter.sendTo(from, command, {error: `No bind clusters`}, callback);
+    }
+    // Bind
+    clusters.forEach((cluster) => {
+        adapter.log.debug(`Binding cluster '${cluster}' from ${bind_source}' to '${bind_target}'`);
+
+        zbControl.bind(source, cluster, target, (error) => {
+            if (error) {
+                adapter.log.error(
+                    `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+                    `'${bind_target}' (${error})`
+                );
+                adapter.sendTo(from, command, {error: `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+                `'${bind_target}' (${error})`}, callback);
+            } else {
+                adapter.log.info(
+                    `Successfully bind cluster '${cluster}' from ` +
+                    `${bind_source}' to '${bind_target}'`
+                );
+                // now set state
+                adapter.setObjectNotExists(stateId, {
+                    type: 'state',
+                    common: {name: id},
+                }, () => {
+                    adapter.setState(stateId, JSON.stringify(params), true, () => {
+                        adapter.sendTo(from, command, {}, callback);
+                    });
+                });
+            }
         });
     });
 }
@@ -453,13 +501,61 @@ function editBinding(from, command, params, callback) {
 
 function delBinding(from, command, bind_id, callback) {
     adapter.log.debug('delBinding message: ' + JSON.stringify(bind_id));
+    // const source = zbControl.getEndpoint(`0x${extractDeviceId(bind_source)}`, parseInt(bind_source_ep)),
+    //       target = zbControl.getEndpoint(`0x${extractDeviceId(bind_target)}`, parseInt(bind_target_ep));
+
+    // if (!source || !target) {
+    //     adapter.log.error('Devices not found');
+    //     adapter.sendTo(from, command, {error: 'Devices not found'}, callback);
+    //     return;
+    // }
+    // // Find which clusters are supported by both the source and target.
+    // // Groups are assumed to support all clusters (as we don't know which devices are in)
+    // const supported = target.getSimpleDesc().inClusterList.filter((cluster) => {
+    //     return allowedClusters.includes(cluster);
+    // });
+    // const clusters = source.getSimpleDesc().outClusterList.filter((cluster) => {
+    //     return supported.includes(cluster);
+    // });
+    // if (!clusters || !clusters.length) {
+    //     adapter.log.debug(`No bind clusters`);
+    //     adapter.sendTo(from, command, {error: `No bind clusters`}, callback);
+    // }
+    // // Bind
+    // clusters.forEach((cluster) => {
+    //     adapter.log.debug(`Unbiding cluster '${cluster}' from ${bind_source}' to '${bind_target}'`);
+
+    //     zbControl.unbind(source, cluster, target, (error) => {
+    //         if (error) {
+    //             adapter.log.error(
+    //                 `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+    //                 `'${bind_target}' (${error})`
+    //             );
+    //             adapter.sendTo(from, command, {error: `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+    //             `'${bind_target}' (${error})`}, callback);
+    //         } else {
+    //             adapter.log.info(
+    //                 `Successfully bind cluster '${cluster}' from ` +
+    //                 `${bind_source}' to '${bind_target}'`
+    //             );
+    //             // now del state
+    //             adapter.deleteState(null, 'info', bind_id, (err) => {
+    //                 if (err) {
+    //                     adapter.sendTo(from, command, {error: err}, callback);
+    //                 } else {
+    //                     adapter.sendTo(from, command, {}, callback);
+    //                 }
+    //             });            
+    //         }
+    //     });
+    // });
     adapter.deleteState(null, 'info', bind_id, (err) => {
         if (err) {
             adapter.sendTo(from, command, {error: err}, callback);
         } else {
             adapter.sendTo(from, command, {}, callback);
         }
-    });
+    });    
 }
 
 function getBinding(callback) {
