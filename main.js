@@ -816,7 +816,8 @@ function scheduleDeviceConfig(device, delay) {
                                 pendingDevConfigs.splice(index, 1);
                             }
                         } else {
-                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
+                            adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
+                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec.`);
                             scheduleDeviceConfig(devToConfig, 300 * 1000);
                         }
                     });
@@ -981,7 +982,8 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = devEp ? devEp[epName] : null;
         const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
-        const messages = converter.convert(key, preparedValue, preparedOptions, 'set');
+        const postfix = '';
+        const messages = converter.convert(key, preparedValue, preparedOptions, 'set', postfix, mappedModel.options || {});
         if (!messages) {
             // acknowledge state with given value
             acknowledgeState(deviceId, modelId, stateDesc, value);
@@ -1014,7 +1016,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                             // wait a timeout for read state value after write
                             adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${message.readAfterWriteTime}`);
                             setTimeout(() => {
-                                const readMessages = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
+                                const readMessages = converter.convert(stateKey, preparedValue, preparedOptions, 'get', postfix, mappedModel.options || {});
                                 if (readMessages) {
                                     readMessages.forEach((readMessage) => {
                                         adapter.log.debug('read message: ' + safeJsonStringify(readMessage));
