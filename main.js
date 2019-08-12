@@ -36,10 +36,10 @@ let pendingDevConfigRun = null;
 let pendingDevConfigs = [];
 
 const allowedClusters = [
-    //5, // genScenes
+    5, // genScenes
     6, // genOnOff
-    //8, // genLevelCtrl
-    //768, // lightingColorCtrl
+    8, // genLevelCtrl
+    768, // lightingColorCtrl
 ];
 
 function startAdapter(options) {
@@ -1010,6 +1010,12 @@ function scheduleDeviceConfig(device, delay) {
     pendingDevConfigs.unshift(ieeeAddr); // add as first in list
     if (!delay || pendingDevConfigRun == null) {
         const configCall = () => {
+            const info = zbControl.getInfo();
+            if (info.joinTimeLeft > 0) {
+                adapter.log.debug(`Skip configure in pairig time`);
+                pendingDevConfigRun = setTimeout(configCall, info.joinTimeLeft*1000);
+                return;
+            }
             adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
             if (pendingDevConfigs && pendingDevConfigs.length > 0) {
                 pendingDevConfigs.forEach((ieeeAddr) => {
