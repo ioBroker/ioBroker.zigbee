@@ -96,6 +96,7 @@
                         <li class="tab col s2"><a id="devs" href="#tab-main" class="translate">Devices</a></li>
                         <li class="tab col s2"><a href="#tab-groups" class="translate">Groups</a></li>
                         <li class="tab col s2"><a id="tabmap" href="#tab-map" class="translate">Network map</a></li>
+                        <li class="tab col s2"><a href="#tab-binding" class="translate">Binding</a></li>
                         <li class="tab col s2"><a id="settings" href="#tab-sett" class="translate">Settings</a></li>
                         <li class="tab col s2"><a id="develop" href="#tab-dev" class="translate">Developer</a></li>
                     </ul>
@@ -378,6 +379,13 @@
                     </div>
                 </div>
             </div>
+            <!-- <div id="tab-binding" class="col s12 page">
+                <div class="fixed-action-btn" style="padding-bottom: 100px">
+                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Add binding"><i class="material-icons large">add</i></a>
+                </div>
+                <div id="binding" class="row">
+                </div>
+            </div> -->
         </div>
     </div>
 
@@ -499,6 +507,42 @@
             <div class="modal-footer">
                 <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
                 <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+
+        <div id="bindingmodaledit" class="modal">
+            <div class="modal-content">
+                <div class="row">
+                    <h3 class="translate">Binding configuration</h3>
+                    <div class="row">                        
+                        <div class="col s9 input-field">
+                            <select id="bind_source" class="icons">
+                            </select>
+                            <label for="bind_source" class="translate">Source device</label>
+                        </div>
+                        <div class="col s3 input-field">
+                            <select id="bind_source_ep" class="materialSelect">
+                            </select>
+                            <label for="bind_source_ep" class="translate">Source endpoint</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s9 input-field">
+                            <select id="bind_target" class="icons">
+                            </select>
+                            <label for="bind_target" class="translate">Target device</label>
+                        </div>
+                        <div class="col s3 input-field">
+                            <select id="bind_target_ep" class="materialSelect">
+                            </select>
+                            <label for="bind_target_ep" class="translate">Target endpoint</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
     </div>

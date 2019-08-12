@@ -35,6 +35,13 @@ let adapter;
 let pendingDevConfigRun = null;
 let pendingDevConfigs = [];
 
+const allowedClusters = [
+    5, // genScenes
+    6, // genOnOff
+    8, // genLevelCtrl
+    768, // lightingColorCtrl
+];
+
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {
@@ -130,6 +137,28 @@ function startAdapter(options) {
                     zbControl.reset(obj.message.mode, function (err, data) {
                         adapter.sendTo(obj.from, obj.command, err, obj.callback);
                     });
+                    break;
+                case 'getBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getBinding((binding)=>{
+                            adapter.sendTo(obj.from, obj.command, binding, obj.callback);
+                        });
+                    }
+                    break;
+                case 'addBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        addBinding(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'delBinding':
+                    if (obj && obj.message) {
+                        delBinding(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'editBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        editBinding(obj.from, obj.command, obj.message, obj.callback);
+                    }
                     break;
                 default:
                     adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
@@ -376,6 +405,185 @@ function updateDev(dev_id, dev_name, model, callback) {
     }, () => {
         // update type and icon
         adapter.extendObject(id, {common: {type: model, icon: icon}}, callback);
+    });
+}
+
+function getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep) {
+    return `bind_${extractDeviceId(bind_source)}_${bind_source_ep}_${extractDeviceId(bind_target)}_${bind_target_ep}`;
+}
+
+function extractDeviceId(stateId) {
+    return stateId.replace(`${adapter.namespace}.`, '');
+}
+
+function extractBindId(stateId) {
+    return stateId.replace(`${adapter.namespace}.info.`, '');
+}
+
+function addBinding(from, command, params, callback) {
+    adapter.log.debug('addBinding message: ' + JSON.stringify(params));
+    const bind_source = params.bind_source,
+          bind_source_ep = params.bind_source_ep,
+          bind_target = params.bind_target,
+          bind_target_ep = params.bind_target_ep,
+          id = getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep),
+          stateId = `info.${id}`;
+
+    const source = zbControl.getEndpoint(`0x${extractDeviceId(bind_source)}`, parseInt(bind_source_ep)),
+          target = zbControl.getEndpoint(`0x${extractDeviceId(bind_target)}`, parseInt(bind_target_ep));
+
+    if (!source || !target) {
+        adapter.log.error('Devices not found');
+        adapter.sendTo(from, command, {error: 'Devices not found'}, callback);
+        return;
+    }
+    // Find which clusters are supported by both the source and target.
+    // Groups are assumed to support all clusters (as we don't know which devices are in)
+    const supported = target.getSimpleDesc().inClusterList.filter((cluster) => {
+        return allowedClusters.includes(cluster);
+    });
+    const clusters = source.getSimpleDesc().outClusterList.filter((cluster) => {
+        return supported.includes(cluster);
+    });
+    if (!clusters || !clusters.length) {
+        adapter.log.debug(`No bind clusters`);
+        adapter.sendTo(from, command, {error: `No bind clusters`}, callback);
+    }
+    // Bind
+    clusters.forEach((cluster) => {
+        adapter.log.debug(`Binding cluster '${cluster}' from ${bind_source}' to '${bind_target}'`);
+
+        zbControl.bind(source, cluster, target, (error) => {
+            if (error) {
+                adapter.log.error(
+                    `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+                    `'${bind_target}' (${error})`
+                );
+                adapter.sendTo(from, command, {error: `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+                `'${bind_target}' (${error})`}, callback);
+            } else {
+                adapter.log.info(
+                    `Successfully bind cluster '${cluster}' from ` +
+                    `${bind_source}' to '${bind_target}'`
+                );
+                // now set state
+                adapter.setObjectNotExists(stateId, {
+                    type: 'state',
+                    common: {name: id},
+                }, () => {
+                    adapter.setState(stateId, JSON.stringify(params), true, () => {
+                        adapter.sendTo(from, command, {}, callback);
+                    });
+                });
+            }
+        });
+    });
+}
+
+function editBinding(from, command, params, callback) {
+    adapter.log.debug('editBinding message: ' + JSON.stringify(params));
+    const old_id = params.id,
+          bind_source = params.bind_source,
+          bind_source_ep = params.bind_source_ep,
+          bind_target = params.bind_target,
+          bind_target_ep = params.bind_target_ep,
+          id = getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep);
+    if (old_id !== id) {
+        adapter.deleteState(null, 'info', old_id, (err) => {
+            if (err) {
+                adapter.sendTo(from, command, {error: err}, callback);
+            } else {
+                addBinding(from, command, params, callback);
+            }
+        });
+    }
+}
+
+function delBinding(from, command, bind_id, callback) {
+    adapter.log.debug('delBinding message: ' + JSON.stringify(bind_id));
+    // const source = zbControl.getEndpoint(`0x${extractDeviceId(bind_source)}`, parseInt(bind_source_ep)),
+    //       target = zbControl.getEndpoint(`0x${extractDeviceId(bind_target)}`, parseInt(bind_target_ep));
+
+    // if (!source || !target) {
+    //     adapter.log.error('Devices not found');
+    //     adapter.sendTo(from, command, {error: 'Devices not found'}, callback);
+    //     return;
+    // }
+    // // Find which clusters are supported by both the source and target.
+    // // Groups are assumed to support all clusters (as we don't know which devices are in)
+    // const supported = target.getSimpleDesc().inClusterList.filter((cluster) => {
+    //     return allowedClusters.includes(cluster);
+    // });
+    // const clusters = source.getSimpleDesc().outClusterList.filter((cluster) => {
+    //     return supported.includes(cluster);
+    // });
+    // if (!clusters || !clusters.length) {
+    //     adapter.log.debug(`No bind clusters`);
+    //     adapter.sendTo(from, command, {error: `No bind clusters`}, callback);
+    // }
+    // // Bind
+    // clusters.forEach((cluster) => {
+    //     adapter.log.debug(`Unbiding cluster '${cluster}' from ${bind_source}' to '${bind_target}'`);
+
+    //     zbControl.unbind(source, cluster, target, (error) => {
+    //         if (error) {
+    //             adapter.log.error(
+    //                 `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+    //                 `'${bind_target}' (${error})`
+    //             );
+    //             adapter.sendTo(from, command, {error: `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+    //             `'${bind_target}' (${error})`}, callback);
+    //         } else {
+    //             adapter.log.info(
+    //                 `Successfully bind cluster '${cluster}' from ` +
+    //                 `${bind_source}' to '${bind_target}'`
+    //             );
+    //             // now del state
+    //             adapter.deleteState(null, 'info', bind_id, (err) => {
+    //                 if (err) {
+    //                     adapter.sendTo(from, command, {error: err}, callback);
+    //                 } else {
+    //                     adapter.sendTo(from, command, {}, callback);
+    //                 }
+    //             });            
+    //         }
+    //     });
+    // });
+    adapter.deleteState(null, 'info', bind_id, (err) => {
+        if (err) {
+            adapter.sendTo(from, command, {error: err}, callback);
+        } else {
+            adapter.sendTo(from, command, {}, callback);
+        }
+    });    
+}
+
+function getBinding(callback) {
+    const binding = [];
+    adapter.getStatesOf('info', (err, states) => {
+        if (!err && states) {
+            const chain = [];
+            states.forEach(state => {
+                if (state._id.startsWith(`${adapter.namespace}.info.bind_`)) {
+                    chain.push(new Promise(resolve => {
+                        return adapter.getStateAsync(state._id)
+                            .then(stateV => {
+                                const val = JSON.parse(stateV.val);
+                                val.id = extractBindId(state._id);
+                                binding.push(val);
+                                resolve();
+                            });
+                    }));
+                }
+            });
+            return Promise.all(chain).then(() => {
+                adapter.log.debug('getBinding result: ' + JSON.stringify(binding));
+                callback(binding);
+            });
+        } else {
+            adapter.log.debug('getBinding result: ' + JSON.stringify(binding));
+            callback(binding);
+        }
     });
 }
 
@@ -802,6 +1010,12 @@ function scheduleDeviceConfig(device, delay) {
     pendingDevConfigs.unshift(ieeeAddr); // add as first in list
     if (!delay || pendingDevConfigRun == null) {
         const configCall = () => {
+            const info = zbControl.getInfo();
+            if (info.joinTimeLeft > 0) {
+                adapter.log.debug(`Skip configure in pairig time`);
+                pendingDevConfigRun = setTimeout(configCall, info.joinTimeLeft*1000);
+                return;
+            }
             adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
             if (pendingDevConfigs && pendingDevConfigs.length > 0) {
                 pendingDevConfigs.forEach((ieeeAddr) => {
