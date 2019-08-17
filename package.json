@@ -23,7 +23,7 @@
     "serialport": "^7.1.5",
     "zcl-id": "https://github.com/Koenkk/zcl-id/tarball/4fa75c92424cd070a3bf6e1f4640b1e3ad8f802d",
     "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd/tarball/a4c71f5715a4461be886b1abfeca09ccd7e725d8",
-    "zigbee-shepherd-converters": "https://github.com/kirovilya/zigbee-shepherd-converters/tarball/8090ad0bc5511bb09cc0e8f08a00ab8840d69041",
+    "zigbee-shepherd-converters": "https://github.com/kirovilya/zigbee-shepherd-converters/tarball/c3fbfbf5c5256312c4aa78c9effcf7990096cbf3",
     "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
