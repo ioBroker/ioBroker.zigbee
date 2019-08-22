@@ -671,7 +671,7 @@ function getDevices(from, command, callback) {
                                             groups[devInfo._id] = JSON.parse(devGroups.val);
                                         }
 				    } catch (e) {
-					    adapter.log.error('getDevices group info error: '+ JSON.stringify(e) + ' - ' JSON.stringify(devGroups));
+					    adapter.log.error('getDevices group info error: '+ JSON.stringify(e) + ' - ' + JSON.stringify(devGroups));
 				    }
                                     return res;
                                 });
