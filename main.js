@@ -664,10 +664,15 @@ function getDevices(from, command, callback) {
                         chain.push((res) => {
                             return adapter.getStateAsync(`${devInfo._id}.groups`)
                                 .then(devGroups => {
-                                    // fill groups info
-                                    if (devGroups) {
-                                        groups[devInfo._id] = JSON.parse(devGroups.val);
-                                    }
+				    try 
+				    {
+                                        // fill groups info
+                                        if (devGroups) {
+                                            groups[devInfo._id] = JSON.parse(devGroups.val);
+                                        }
+				    } catch (e) {
+					    adapter.log.error('getDevices group info error: '+ JSON.stringify(e) + ' - ' JSON.stringify(devGroups));
+				    }
                                     return res;
                                 });
                         });
