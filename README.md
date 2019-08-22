@@ -71,9 +71,31 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ## Changelog
 
-### 0.10.x (2019-04-03)
+### 0.11.2 (2019-06-29)
+* (allofmex) Hue sml sensitivity, Hue motion sensitivity
+* (arteck) Innr RB 250 C, Gledopto GL-D-003Z, GL-G-001Z, GL-FL-004TZ, Philips LPT001
+* (kirovilya) OSRAM CLA60 RGBW Z3, Xiaomi curtain ZNCLDJ11LM
+* (kirovilya) Implement a time response for some xiaomi devices
+* (arteck) Heiman smoke sensor, TRADFRI bulb E14 WS opal 600lm, Innr RB265
+
+### 0.11.1 (2019-06-15)
+* fix wrong initial extPanID. Sorry that need to repairing all devices again.
+* fix code for aqara cube
+
+### 0.11.0 (2019-06-14)
+* Support both Z-Stack 1.2 and 3.0 [coordinator firmware](https://github.com/Koenkk/Z-Stack-firmware/tree/master/coordinator)
+* Serialport 7.1.5
+* (arteck) Adjustable time for pairing
+* (kirovilya) Additional xiaomi plug states and decoupled mode for xiaomi wall switches
+* (kirovilya) New DIY devices [ZigUP](https://github.com/formtapez/ZigUP) and [DIYRUZ_R4_5](http://modkam.ru/?p=1054)
+* (arteck) JIAWEN FB56-ZCW08KU1.2, Nue / 3A FNB56-ZCW25FB1.9, HOMA1031, Trust CSW_ADUROLIGHT
 * (allofmex) security update
 * (allofmex) brightness fix 
+* (Asgothian) Osram Gardenpole Mini
+* (Asgothian) Innr Plugs (BY 265 C, BY 165 C, RB265 
+* (Asgothian) Fix for Ikea Tradfri repeater (image)
+* (sonntam) tint enhancements
+* (stream2me) support for Danalock V3
 
 ### 0.10.3 (2019-03-27)
 * fixes

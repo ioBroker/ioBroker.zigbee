@@ -16,5 +16,6 @@
     "Save": "Salvar",
     "Settings": "Ajustes",
     "Yes": "Sí",
-    "Zigbee adapter": "Adaptador zigbee"
+    "Zigbee adapter": "Adaptador zigbee",
+    "Countdown": "Cuenta atrás entre 0 y 255 seg."
 }

@@ -35,6 +35,13 @@ let adapter;
 let pendingDevConfigRun = null;
 let pendingDevConfigs = [];
 
+const allowedClusters = [
+    5, // genScenes
+    6, // genOnOff
+    8, // genLevelCtrl
+    768, // lightingColorCtrl
+];
+
 function startAdapter(options) {
     options = options || {};
     Object.assign(options, {
@@ -130,6 +137,28 @@ function startAdapter(options) {
                     zbControl.reset(obj.message.mode, function (err, data) {
                         adapter.sendTo(obj.from, obj.command, err, obj.callback);
                     });
+                    break;
+                case 'getBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        getBinding((binding)=>{
+                            adapter.sendTo(obj.from, obj.command, binding, obj.callback);
+                        });
+                    }
+                    break;
+                case 'addBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        addBinding(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'delBinding':
+                    if (obj && obj.message) {
+                        delBinding(obj.from, obj.command, obj.message, obj.callback);
+                    }
+                    break;
+                case 'editBinding':
+                    if (obj && obj.message && typeof obj.message === 'object') {
+                        editBinding(obj.from, obj.command, obj.message, obj.callback);
+                    }
                     break;
                 default:
                     adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
@@ -379,6 +408,185 @@ function updateDev(dev_id, dev_name, model, callback) {
     });
 }
 
+function getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep) {
+    return `bind_${extractDeviceId(bind_source)}_${bind_source_ep}_${extractDeviceId(bind_target)}_${bind_target_ep}`;
+}
+
+function extractDeviceId(stateId) {
+    return stateId.replace(`${adapter.namespace}.`, '');
+}
+
+function extractBindId(stateId) {
+    return stateId.replace(`${adapter.namespace}.info.`, '');
+}
+
+function addBinding(from, command, params, callback) {
+    adapter.log.debug('addBinding message: ' + JSON.stringify(params));
+    const bind_source = params.bind_source,
+          bind_source_ep = params.bind_source_ep,
+          bind_target = params.bind_target,
+          bind_target_ep = params.bind_target_ep,
+          id = getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep),
+          stateId = `info.${id}`;
+
+    const source = zbControl.getEndpoint(`0x${extractDeviceId(bind_source)}`, parseInt(bind_source_ep)),
+          target = zbControl.getEndpoint(`0x${extractDeviceId(bind_target)}`, parseInt(bind_target_ep));
+
+    if (!source || !target) {
+        adapter.log.error('Devices not found');
+        adapter.sendTo(from, command, {error: 'Devices not found'}, callback);
+        return;
+    }
+    // Find which clusters are supported by both the source and target.
+    // Groups are assumed to support all clusters (as we don't know which devices are in)
+    const supported = target.getSimpleDesc().inClusterList.filter((cluster) => {
+        return allowedClusters.includes(cluster);
+    });
+    const clusters = source.getSimpleDesc().outClusterList.filter((cluster) => {
+        return supported.includes(cluster);
+    });
+    if (!clusters || !clusters.length) {
+        adapter.log.debug(`No bind clusters`);
+        adapter.sendTo(from, command, {error: `No bind clusters`}, callback);
+    }
+    // Bind
+    clusters.forEach((cluster) => {
+        adapter.log.debug(`Binding cluster '${cluster}' from ${bind_source}' to '${bind_target}'`);
+
+        zbControl.bind(source, cluster, target, (error) => {
+            if (error) {
+                adapter.log.error(
+                    `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+                    `'${bind_target}' (${error})`
+                );
+                adapter.sendTo(from, command, {error: `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+                `'${bind_target}' (${error})`}, callback);
+            } else {
+                adapter.log.info(
+                    `Successfully bind cluster '${cluster}' from ` +
+                    `${bind_source}' to '${bind_target}'`
+                );
+                // now set state
+                adapter.setObjectNotExists(stateId, {
+                    type: 'state',
+                    common: {name: id},
+                }, () => {
+                    adapter.setState(stateId, JSON.stringify(params), true, () => {
+                        adapter.sendTo(from, command, {}, callback);
+                    });
+                });
+            }
+        });
+    });
+}
+
+function editBinding(from, command, params, callback) {
+    adapter.log.debug('editBinding message: ' + JSON.stringify(params));
+    const old_id = params.id,
+          bind_source = params.bind_source,
+          bind_source_ep = params.bind_source_ep,
+          bind_target = params.bind_target,
+          bind_target_ep = params.bind_target_ep,
+          id = getBindingId(bind_source, bind_source_ep, bind_target, bind_target_ep);
+    if (old_id !== id) {
+        adapter.deleteState(null, 'info', old_id, (err) => {
+            if (err) {
+                adapter.sendTo(from, command, {error: err}, callback);
+            } else {
+                addBinding(from, command, params, callback);
+            }
+        });
+    }
+}
+
+function delBinding(from, command, bind_id, callback) {
+    adapter.log.debug('delBinding message: ' + JSON.stringify(bind_id));
+    // const source = zbControl.getEndpoint(`0x${extractDeviceId(bind_source)}`, parseInt(bind_source_ep)),
+    //       target = zbControl.getEndpoint(`0x${extractDeviceId(bind_target)}`, parseInt(bind_target_ep));
+
+    // if (!source || !target) {
+    //     adapter.log.error('Devices not found');
+    //     adapter.sendTo(from, command, {error: 'Devices not found'}, callback);
+    //     return;
+    // }
+    // // Find which clusters are supported by both the source and target.
+    // // Groups are assumed to support all clusters (as we don't know which devices are in)
+    // const supported = target.getSimpleDesc().inClusterList.filter((cluster) => {
+    //     return allowedClusters.includes(cluster);
+    // });
+    // const clusters = source.getSimpleDesc().outClusterList.filter((cluster) => {
+    //     return supported.includes(cluster);
+    // });
+    // if (!clusters || !clusters.length) {
+    //     adapter.log.debug(`No bind clusters`);
+    //     adapter.sendTo(from, command, {error: `No bind clusters`}, callback);
+    // }
+    // // Bind
+    // clusters.forEach((cluster) => {
+    //     adapter.log.debug(`Unbiding cluster '${cluster}' from ${bind_source}' to '${bind_target}'`);
+
+    //     zbControl.unbind(source, cluster, target, (error) => {
+    //         if (error) {
+    //             adapter.log.error(
+    //                 `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+    //                 `'${bind_target}' (${error})`
+    //             );
+    //             adapter.sendTo(from, command, {error: `Failed to bind cluster '${cluster}' from ${bind_source}' to ` +
+    //             `'${bind_target}' (${error})`}, callback);
+    //         } else {
+    //             adapter.log.info(
+    //                 `Successfully bind cluster '${cluster}' from ` +
+    //                 `${bind_source}' to '${bind_target}'`
+    //             );
+    //             // now del state
+    //             adapter.deleteState(null, 'info', bind_id, (err) => {
+    //                 if (err) {
+    //                     adapter.sendTo(from, command, {error: err}, callback);
+    //                 } else {
+    //                     adapter.sendTo(from, command, {}, callback);
+    //                 }
+    //             });            
+    //         }
+    //     });
+    // });
+    adapter.deleteState(null, 'info', bind_id, (err) => {
+        if (err) {
+            adapter.sendTo(from, command, {error: err}, callback);
+        } else {
+            adapter.sendTo(from, command, {}, callback);
+        }
+    });    
+}
+
+function getBinding(callback) {
+    const binding = [];
+    adapter.getStatesOf('info', (err, states) => {
+        if (!err && states) {
+            const chain = [];
+            states.forEach(state => {
+                if (state._id.startsWith(`${adapter.namespace}.info.bind_`)) {
+                    chain.push(new Promise(resolve => {
+                        return adapter.getStateAsync(state._id)
+                            .then(stateV => {
+                                const val = JSON.parse(stateV.val);
+                                val.id = extractBindId(state._id);
+                                binding.push(val);
+                                resolve();
+                            });
+                    }));
+                }
+            });
+            return Promise.all(chain).then(() => {
+                adapter.log.debug('getBinding result: ' + JSON.stringify(binding));
+                callback(binding);
+            });
+        } else {
+            adapter.log.debug('getBinding result: ' + JSON.stringify(binding));
+            callback(binding);
+        }
+    });
+}
+
 function onPermitJoining(joinTimeLeft) {
     adapter.setState('info.pairingCountdown', joinTimeLeft);
     // repeat until 0
@@ -397,7 +605,15 @@ function letsPairing(from, command, message, callback) {
         }
         // allow devices to join the network within 60 secs
         logToPairing('Pairing started ' + devId, true);
-        zbControl.permitJoin(60, devId, err => {
+        
+        let cTimer = Number(adapter.config.countDown);
+        
+        if (!adapter.config.countDown
+        ||   cTimer == 0) {
+          cTimer = 60;
+        }
+
+        zbControl.permitJoin(cTimer, devId, err => {
             if (!err) {
                 // set pairing mode on
                 adapter.setState('info.pairingMode', true);
@@ -794,6 +1010,12 @@ function scheduleDeviceConfig(device, delay) {
     pendingDevConfigs.unshift(ieeeAddr); // add as first in list
     if (!delay || pendingDevConfigRun == null) {
         const configCall = () => {
+            const info = zbControl.getInfo();
+            if (info.joinTimeLeft > 0) {
+                adapter.log.debug(`Skip configure in pairig time`);
+                pendingDevConfigRun = setTimeout(configCall, info.joinTimeLeft*1000);
+                return;
+            }
             adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
             if (pendingDevConfigs && pendingDevConfigs.length > 0) {
                 pendingDevConfigs.forEach((ieeeAddr) => {
@@ -808,7 +1030,8 @@ function scheduleDeviceConfig(device, delay) {
                                 pendingDevConfigs.splice(index, 1);
                             }
                         } else {
-                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec`);
+                            adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
+                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec.`);
                             scheduleDeviceConfig(devToConfig, 300 * 1000);
                         }
                     });
@@ -973,63 +1196,20 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
         const ep = devEp ? devEp[epName] : null;
         const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
-        const message = converter.convert(key, preparedValue, preparedOptions, 'set');
-        if (!message) {
+        const postfix = '';
+        const messages = converter.convert(key, preparedValue, preparedOptions, 'set', postfix, mappedModel.options || {});
+        if (!messages) {
             // acknowledge state with given value
             acknowledgeState(deviceId, modelId, stateDesc, value);
             return;
         }
+        messages.forEach((message) => {
+            adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
 
-        adapter.log.debug(`publishFromState: deviceId=${deviceId}, message=${safeJsonStringify(message)}`);
-
-        if (adapter.config.disableQueue) {
-            zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
-                if (err) {
-                    // nothing to do in error case
-                } else {
-                    // acknowledge state with given value
-                    acknowledgeState(deviceId, modelId, stateDesc, value);
-                    // process sync state list
-                    processSyncStatesList(deviceId, modelId, syncStateList);
-                }
-            });
-        } else {
-            // wait a timeout for write
-            setTimeout(() => {
-                zbControl.publish(device, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
+            if (adapter.config.disableQueue) {
+                zbControl.publishDisableQueue(deviceId, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
                     if (err) {
                         // nothing to do in error case
-                    } else if (modelId === 'group') {
-                        // acknowledge state with given value
-                        acknowledgeState(deviceId, modelId, stateDesc, value);
-                    } else if (readAfterWriteStates.includes(key)) {
-                        // wait a timeout for read state value after write
-                        adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${message.readAfterWriteTime}`);
-                        setTimeout(() => {
-                            const readMessage = converter.convert(stateKey, preparedValue, preparedOptions, 'get');
-                            if (readMessage) {
-                                adapter.log.debug('read message: ' + safeJsonStringify(readMessage));
-                                zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType, (err, resp) => {
-                                    if (err) {
-                                        // nothing to do in error case
-                                    } else {
-                                        // read value from response
-                                        let readValue = readValueFromResponse(stateDesc, resp);
-                                        if (readValue !== undefined && readValue !== null) {
-                                            // acknowledge state with read value
-                                            acknowledgeState(deviceId, modelId, stateDesc, readValue);
-                                            // process sync state list
-                                            processSyncStatesList(deviceId, modelId, syncStateList);
-                                        }
-                                    }
-                                });
-                            } else {
-                                // acknowledge state with given value
-                                acknowledgeState(deviceId, modelId, stateDesc, value);
-                                // process sync state list
-                                processSyncStatesList(deviceId, modelId, syncStateList);
-                            }
-                        }, (message.readAfterWriteTime || 10)); // a slight offset between write and read is needed
                     } else {
                         // acknowledge state with given value
                         acknowledgeState(deviceId, modelId, stateDesc, value);
@@ -1037,8 +1217,55 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                         processSyncStatesList(deviceId, modelId, syncStateList);
                     }
                 });
-            }, changedState.timeout);
-        }
+            } else {
+                // wait a timeout for write
+                setTimeout(() => {
+                    zbControl.publish(device, message.cid, message.cmd, message.zclData, message.cfg, ep, message.cmdType, (err) => {
+                        if (err) {
+                            // nothing to do in error case
+                        } else if (modelId === 'group') {
+                            // acknowledge state with given value
+                            acknowledgeState(deviceId, modelId, stateDesc, value);
+                        } else if (readAfterWriteStates.includes(key)) {
+                            // wait a timeout for read state value after write
+                            adapter.log.debug(`Read timeout for cmd '${message.cmd}' is ${message.readAfterWriteTime}`);
+                            setTimeout(() => {
+                                const readMessages = converter.convert(stateKey, preparedValue, preparedOptions, 'get', postfix, mappedModel.options || {});
+                                if (readMessages) {
+                                    readMessages.forEach((readMessage) => {
+                                        adapter.log.debug('read message: ' + safeJsonStringify(readMessage));
+                                        zbControl.publish(device, readMessage.cid, readMessage.cmd, readMessage.zclData, readMessage.cfg, ep, readMessage.cmdType, (err, resp) => {
+                                            if (err) {
+                                                // nothing to do in error case
+                                            } else {
+                                                // read value from response
+                                                let readValue = readValueFromResponse(stateDesc, resp);
+                                                if (readValue !== undefined && readValue !== null) {
+                                                    // acknowledge state with read value
+                                                    acknowledgeState(deviceId, modelId, stateDesc, readValue);
+                                                    // process sync state list
+                                                    processSyncStatesList(deviceId, modelId, syncStateList);
+                                                }
+                                            }
+                                        });
+                                    });
+                                } else {
+                                    // acknowledge state with given value
+                                    acknowledgeState(deviceId, modelId, stateDesc, value);
+                                    // process sync state list
+                                    processSyncStatesList(deviceId, modelId, syncStateList);
+                                }
+                            }, (message.readAfterWriteTime || 10)); // a slight offset between write and read is needed
+                        } else {
+                            // acknowledge state with given value
+                            acknowledgeState(deviceId, modelId, stateDesc, value);
+                            // process sync state list
+                            processSyncStatesList(deviceId, modelId, syncStateList);
+                        }
+                    });
+                }, changedState.timeout);
+            }
+        });
     });
 }
 
@@ -1163,6 +1390,7 @@ function syncDevStates(dev) {
             role: statedesc.role,
             min: statedesc.min,
             max: statedesc.max,
+            states: statedesc.states,
         };
         updateState(devId, statedesc.id, undefined, common);
     }
@@ -1170,6 +1398,7 @@ function syncDevStates(dev) {
 
 function collectOptions(devId, modelId, callback) {
     let states;
+    let result = {};
     // find model states for options and get it values
     if (modelId === 'group') {
         states = statesMapping.groupStates.filter((statedesc) => statedesc.isOption || statedesc.inOptions);
@@ -1177,22 +1406,21 @@ function collectOptions(devId, modelId, callback) {
         const mappedModel = deviceMapping.findByZigbeeModel(modelId);
         if (!mappedModel) {
             adapter.log.error('Unknown device model ' + modelId);
-            callback();
+            callback(result);
             return;
         }
         const stateModel = statesMapping.findModel(modelId);
         if (!stateModel) {
             adapter.log.error('Device ' + devId + ' "' + modelId + '" not described in statesMapping.');
-            callback();
+            callback(result);
             return;
         }
         states = stateModel.states.filter(statedesc => statedesc.isOption || statedesc.inOptions);
     }
     if (!states) {
-        callback();
+        callback(result);
         return;
     }
-    let result = {};
     let cnt = 0, len = states.length;
     states.forEach(statedesc => {
         const id = adapter.namespace + '.' + devId + '.' + statedesc.id;
@@ -1206,7 +1434,7 @@ function collectOptions(devId, modelId, callback) {
             }
         });
     });
-    if (!len) callback();
+    if (!len) callback(result);
 }
 
 function onDevEvent(type, devId, message, data) {
@@ -1277,11 +1505,11 @@ function onDevEvent(type, devId, message, data) {
                 collectOptions(devId.substr(2), modelID, (options) => {
                     const payload = converter.convert(mappedModel, message, publish, options);
                     if (payload) {
-                        // Add device linkquality.
-                        if (message.linkquality) {
-                            payload.linkquality = message.linkquality;
-                        }
-                        publish(payload);
+                            // Add device linkquality.
+                            if (message.linkquality) {
+                                payload.linkquality = message.linkquality;
+                            }
+                            publish(payload);
                     }
                 });
             });
@@ -1351,6 +1579,7 @@ function main() {
             }
             oldErrOut(logs);
         };
+        adapter.log.info(`Lib-Versions: ZShepherd ${require('zigbee-shepherd/package.json').version}, ZSConverters ${require('zigbee-shepherd-converters/package.json').version}`);
     }
     // before start reset coordinator
     zbControl.reset('soft', (err, data) =>

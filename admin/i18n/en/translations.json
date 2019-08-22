@@ -16,5 +16,6 @@
     "Save": "Save",
     "Settings": "Settings",
     "Yes": "Yes",
-    "Zigbee adapter": "Zigbee adapter"
+    "Zigbee adapter": "Zigbee adapter",
+    "Countdown": "Countdown between 0 and 255 sec"
 }

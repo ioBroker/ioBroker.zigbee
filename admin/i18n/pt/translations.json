@@ -16,5 +16,6 @@
     "Save": "Salve ",
     "Settings": "Definições",
     "Yes": "sim",
-    "Zigbee adapter": "Adaptador Zigbee"
+    "Zigbee adapter": "Adaptador Zigbee",
+    "Countdown": "Contagem regressiva entre 0 e 255 seg"
 }
