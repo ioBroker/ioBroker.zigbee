@@ -15,10 +15,13 @@ const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const ZShepherd = require('zigbee-shepherd');
-const ZigbeeController = require('./lib/zigbeecontroller');
 const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require('./lib/devstates');
 const SerialPort = require('serialport');
+
+const SerialListPlugin = require('./lib/plugins/seriallist');
+const ZigbeeController = require('./lib/zigbeecontroller');
+
 
 const groupConverters = [
     deviceMapping.toZigbeeConverters.on_off,
@@ -1594,10 +1597,302 @@ function main() {
     processMessages(true);
 }
 
-// If started as allInOne/compact mode => return function to create instance
+
+class Zigbee extends utils.Adapter {
+    /**
+     * @param {Partial<ioBroker.AdapterOptions>} [options={}]
+     */
+    constructor(options) {
+        super(Object.assign({}, options, {
+            name: "zigbee",
+            systemConfig: true,
+        }));
+        this.on("ready", this.onReady.bind(this));
+        this.on("objectChange", this.onObjectChange.bind(this));
+        this.on("stateChange", this.onStateChange.bind(this));
+        this.on("message", this.onMessage.bind(this));
+        this.on("unload", this.onUnload.bind(this));
+
+        this.plugins = [
+            new SerialListPlugin(this),
+        ];
+    }
+
+    async onReady() {
+        // set connection false before connect to zigbee
+        this.setState('info.connection', false);
+        const zigbeeOptions = this.getZigbeeOptions();
+        this.zbControl = new ZigbeeController(zigbeeOptions);
+        this.zbControl.on('log', this.onLog.bind(this));
+        this.zbControl.on('ready', this.onZigbeeAdapterReady.bind(this));
+        this.zbControl.on('adapterDisconnected', this.onZigbeeAdapterDisconnected.bind(this));
+        this.zbControl.on('new', this.newDevice.bind(this));
+        this.zbControl.on('leave', this.leaveDevice.bind(this));
+        //this.zbControl.on('join', this.onPermitJoining.bind(this));
+        // zbControl.on('event', this.onDevEvent.bind(this));
+        //this.zbControl.on('event', this.onZigbeeEvent.bind(this));
+        
+        try {
+            await this.zbControl.start();
+            
+        } catch (error) {
+            this.setState('info.connection', false);
+            this.log.error(`Failed to start zigbee`);
+            if (error.stack) {
+                this.log.error(error.stack);
+            } else {
+                this.log.error(error);
+            }
+        };
+    }
+
+    async onZigbeeAdapterDisconnected() {
+        this.log.error('Adapter disconnected, stopping');
+        this.setState('info.connection', false);
+    }
+
+    async onZigbeeAdapterReady() {
+        this.log.info(`Zigbee started`);
+        this.setState('info.connection', true);
+    }
+
+    async newDevice(id, msg) {
+        let dev = this.zbControl.getDevice(id);
+        if (dev) {
+            this.log.info('new dev ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelId);
+            this.logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
+            this.updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () => {
+                this.syncDevStates(dev);
+                this.scheduleDeviceConfig(dev);
+            });
+        }
+    }
+    
+    async leaveDevice(id, msg) {
+        const devId = id.substr(2);
+        this.log.debug('Try delete dev ' + devId + ' from iobroker.');
+        this.deleteDeviceStates(devId);
+    }
+    
+
+    /** 
+     * @param {() => void} callback
+     */
+    onUnload(callback) {
+        try {
+            this.log.info("cleaned everything up...");
+            if (this.zbControl) {
+                this.zbControl.stop();
+            }
+            callback();
+        } catch (e) {
+            callback();
+        }
+    }
+
+    /**
+     * @param {string} id
+     * @param {ioBroker.Object | null | undefined} obj
+     */
+    onObjectChange(id, obj) {
+        if (obj) {
+            // The object was changed
+            this.log.info(`object ${id} changed: ${safeJsonStringify(obj)}`);
+        } else {
+            // The object was deleted
+            this.log.info(`object ${id} deleted`);
+        }
+    }
+
+    /**
+     * @param {string} id
+     * @param {ioBroker.State | null | undefined} state
+     */
+    onStateChange(id, state) {
+        if (state) {
+            // The state was changed
+            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+        } else {
+            // The state was deleted
+            this.log.info(`state ${id} deleted`);
+        }
+    }
+
+    /**
+     * @param {ioBroker.Message} obj
+     */
+    onMessage(obj) {
+        if (typeof obj === "object" && obj.message) {
+            // switch (obj.command) {
+            //     case 'send':
+            //         // e.g. send email or pushover or whatever
+            //         adapter.log.debug('send command');
+            //         // Send response in callback if required
+            //         obj.callback && adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
+            //         break;
+            //     case 'letsPairing':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             letsPairing(obj.from, obj.command, obj.message, obj.callback);
+            //         }
+            //         break;
+            //     case 'getDevices':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             getDevices(obj.from, obj.command, obj.callback);
+            //         }
+            //         break;
+            //     case 'getMap':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             getMap(obj.from, obj.command, obj.callback);
+            //         }
+            //         break;
+            //     case 'renameDevice':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             renameDevice(obj.from, obj.command, obj.message, obj.callback);
+            //         }
+            //         break;
+            //     case 'groupDevices':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             groupDevices(obj.from, obj.command, obj.message, obj.callback);
+            //         }
+            //         break;
+            //     case 'deleteDevice':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             deleteDevice(obj.from, obj.command, obj.message, obj.callback);
+            //         }
+            //         break;
+            //     case 'listUart':
+            //         if (obj.callback) {
+            //             listSerial()
+            //                 .then((ports) => {
+            //                     adapter.log.debug('List of ports: ' + JSON.stringify(ports));
+            //                     adapter.sendTo(obj.from, obj.command, ports, obj.callback);
+            //                 });
+            //         }
+            //         break;
+            //     case 'sendToZigbee':
+            //         sendToZigbee(obj);
+            //         break;
+            //     case 'getLibData':
+            //         // e.g. zcl lists
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             getLibData(obj);
+            //         }
+            //         break;
+            //     case 'updateGroups':
+            //         updateGroups(obj);
+            //         break;
+            //     case 'getGroups':
+            //         getGroups(obj);
+            //         break;
+            //     case 'reset':
+            //         zbControl.reset(obj.message.mode, function (err, data) {
+            //             adapter.sendTo(obj.from, obj.command, err, obj.callback);
+            //         });
+            //         break;
+            //     case 'getBinding':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             getBinding((binding)=>{
+            //                 adapter.sendTo(obj.from, obj.command, binding, obj.callback);
+            //             });
+            //         }
+            //         break;
+            //     case 'addBinding':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             addBinding(obj.from, obj.command, obj.message, obj.callback);
+            //         }
+            //         break;
+            //     case 'delBinding':
+            //         if (obj && obj.message) {
+            //             delBinding(obj.from, obj.command, obj.message, obj.callback);
+            //         }
+            //         break;
+            //     case 'editBinding':
+            //         if (obj && obj.message && typeof obj.message === 'object') {
+            //             editBinding(obj.from, obj.command, obj.message, obj.callback);
+            //         }
+            //         break;
+            //     default:
+            //         adapter.log.warn('Unknown message: ' + JSON.stringify(obj));
+            //         break;
+            // }
+        }
+    }
+
+    getZigbeeOptions() {
+        // file path for db
+        const dbDir = utils.controllerDir + '/' + this.systemConfig.dataDir + this.namespace.replace('.', '_');
+        if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
+        const port = this.config.port;
+        if (!port) {
+            this.log.error('Serial port not selected! Go to settings page.');
+        }
+        const createByteArray = function (hexString) {
+            for (var bytes = [], c = 0; c < hexString.length; c += 2) {
+                bytes.push(parseInt(hexString.substr(c, 2), 16));
+            }
+            return bytes;
+        }
+        const panID = parseInt(this.config.panID ? this.config.panID : 0x1a62);
+        const channel = parseInt(this.config.channel ? this.config.channel : 11);
+        const precfgkey = createByteArray(this.config.precfgkey ? this.config.precfgkey : '01030507090B0D0F00020406080A0C0D');
+        const extPanId = createByteArray(this.config.extPanID ? this.config.extPanID : 'DDDDDDDDDDDDDDDD').reverse();
+        //this.log.info('Start on port: ' + port + ' channel ' + channel);
+        //this.log.info('Queue is: ' + !this.config.disableQueue);
+        return {
+            net: {
+                panId: panID,
+                extPanId: extPanId,
+                channelList: [channel], 
+                precfgkey: precfgkey
+            },
+            sp: {
+                port: port,
+                baudRate: 115200, 
+                rtscts: false
+            },
+            dbPath: dbDir + '/shepherd.db',
+            backupPath: dbDir + '/backup.json',
+            disableLed: this.config.disableLed,
+        };
+    }
+    
+    async onLog(level, msg, data) {
+        if (msg) {
+            let logger = this.log.info;
+            switch (level) {
+                case 'error':
+                    logger = this.log.error;
+                    if (data)
+                        data = data.toString();
+                    logToPairing('Error: ' + msg + '. ' + data, true);
+                    break;
+                case 'debug':
+                    logger = this.log.debug;
+                    break;
+                case 'info':
+                    logger = this.log.info;
+                    break;
+            }
+            if (data) {
+                if (typeof data === 'string') {
+                    logger(msg + '. ' + data);
+                } else {
+                    logger(msg + '. ' + safeJsonStringify(data));
+                }
+            } else {
+                logger(msg);
+            }
+        }
+    }
+}
+
+
 if (module && module.parent) {
-    module.exports = startAdapter;
+    /**
+     * @param {Partial<ioBroker.AdapterOptions>} [options={}]
+     */
+    module.exports = (options) => new Zigbee(options);
 } else {
     // or start the instance directly
-    startAdapter();
+    new Zigbee();
 }
