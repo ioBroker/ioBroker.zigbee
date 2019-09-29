@@ -39,7 +39,7 @@ function getCard(dev) {
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var image = '<img src="' + img_src + '" width="96px">',
-        info = `<p style="min-height:96px">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
+        info = `<p style="min-height:96px" class="truncate">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
         buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
             '<i class="material-icons tiny">delete</i></a>'+
             '<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+

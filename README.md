@@ -67,9 +67,22 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 ### 1.0.0 
 
+* Powered by new zigbee-herdsman library https://github.com/Koenkk/zigbee2mqtt/issues/1888
+* Drop support NodeJS 6
 * Binding
 
 ## Changelog
+
+### 0.11.3 (2019-09-11)
+* (kirovilya) Update Z-Stack 3 compatible
+* (kirovilya) Restore lumi.sensor_ht
+* (kirovilya) OSRAM SMART+ spot GU5.3 tunable white #340
+* (allofmex) Temperature and illuminance calibration added for hue motion sensors
+* (kirovilya) new Trust lamp
+* (kirovilya) DiY 20 button keypad (http://modkam.ru/?p=1114)
+* (kirovilya) Xiaomi/Aqara: double click for b186acn01, Hold and Shake state for some switch
+* (kirovilya) Hieman HS2SK, Tuya temperature sensor
+* (kirovilya) Konke: button, temperature, contact, motion
 
 ### 0.11.2 (2019-06-29)
 * (allofmex) Hue sml sensitivity, Hue motion sensitivity
