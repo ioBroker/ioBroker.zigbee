@@ -19,7 +19,6 @@ const ZigbeeController = require('./lib/zigbeecontroller');
 const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require('./lib/devstates');
 const SerialPort = require('serialport');
-const Queue = require('queue');
 
 const groupConverters = [
     deviceMapping.toZigbeeConverters.on_off,
@@ -35,12 +34,6 @@ let adapter;
 
 let pendingDevConfigRun = null;
 let pendingDevConfigs = [];
-let configureOnMessage = true;
-
-let pendingConfigQueue = null;
-
-let configureOnMessageActive = "";
-
 
 const allowedClusters = [
     5, // genScenes
@@ -50,11 +43,6 @@ const allowedClusters = [
 ];
 
 function startAdapter(options) {
-    pendingConfigQueue = new Queue();
-    pendingConfigQueue.concurrency = 1;
-    pendingConfigQueue.timeout = 200;
-    pendingConfigQueue.autostart = true;
-//    pendingConfigQueue.start(function() { adapter.log.error("Queue ran empty"); })
     options = options || {};
     Object.assign(options, {
         name: 'zigbee',
@@ -101,12 +89,6 @@ function startAdapter(options) {
                         getDevices(obj.from, obj.command, obj.callback);
                     }
                     break;
-                    case 'EnableConfigureOnMessage':
-                        enableConfigureOnMessage(60);
-                        break;
-                    case 'queryConfigureOnMessage':
-                       if (obj.callback) obj.callback({ data: QueryConfigureOnMessage() });
-                       break;
                 case 'getMap':
                     if (obj && obj.message && typeof obj.message === 'object') {
                         getMap(obj.from, obj.command, obj.callback);
@@ -258,7 +240,7 @@ function updateStateWithTimeout(dev_id, name, value, common, timeout, outValue) 
 
 function updateState(devId, name, value, common) {
     adapter.getObject(devId, (err, obj) => {
-      if (obj) {
+        if (obj) {
             let new_common = {name: name};
             let id = devId + '.' + name;
             if (common) {
@@ -414,18 +396,15 @@ function deleteDevice(from, command, msg, callback) {
 function updateDev(dev_id, dev_name, model, callback) {
     const id = '' + dev_id;
     const modelDesc = statesMapping.findModel(model);
-    const mappedModel = deviceMapping.findByZigbeeModel(model);
     const icon = (modelDesc && modelDesc.icon) ? modelDesc.icon : 'img/unknown.png';
-    let nativeObj = { id: dev_id };
-    if (mappedModel && mappedModel.configure) nativeObj.configureNeeded = 1;
     adapter.setObjectNotExists(id, {
         type: 'device',
         // actually this is an error, so device.common has no attribute type. It must be in native part
         common: {name: dev_name, type: model, icon: icon},
-        native: nativeObj
+        native: {id: dev_id}
     }, () => {
         // update type and icon
-        adapter.extendObject(id, {common: {type: model, icon: icon} , native: nativeObj }, callback);
+        adapter.extendObject(id, {common: {type: model, icon: icon}}, callback);
     });
 }
 
@@ -566,7 +545,7 @@ function delBinding(from, command, bind_id, callback) {
     //                 } else {
     //                     adapter.sendTo(from, command, {}, callback);
     //                 }
-    //             });
+    //             });            
     //         }
     //     });
     // });
@@ -576,7 +555,7 @@ function delBinding(from, command, bind_id, callback) {
         } else {
             adapter.sendTo(from, command, {}, callback);
         }
-    });
+    });    
 }
 
 function getBinding(callback) {
@@ -626,9 +605,9 @@ function letsPairing(from, command, message, callback) {
         }
         // allow devices to join the network within 60 secs
         logToPairing('Pairing started ' + devId, true);
-
+        
         let cTimer = Number(adapter.config.countDown);
-
+        
         if (!adapter.config.countDown
         ||   cTimer == 0) {
           cTimer = 60;
@@ -685,7 +664,7 @@ function getDevices(from, command, callback) {
                         chain.push((res) => {
                             return adapter.getStateAsync(`${devInfo._id}.groups`)
                                 .then(devGroups => {
-				    try
+				    try 
 				    {
                                         // fill groups info
                                         if (devGroups) {
@@ -779,15 +758,6 @@ function leaveDevice(id, msg) {
     adapter.log.debug('Try delete dev ' + devId + ' from iobroker.');
     deleteDeviceStates(devId);
 }
-
-function enableConfigureOnMessage(timeout)
-{
-  if (configureOnMessage) return;
-  configureOnMessage = true;
-  adapter.log.info("Configure on Message active for " + timeout + " seconds")
-  setTimeout( function() { configureOnMessage = false; adapter.log.info("configure on Message closed");}, timeout * 1000);
-}
-
 
 function getLibData(obj) {
     const key = obj.message.key;
@@ -1013,7 +983,7 @@ function onReady() {
                     resolve();
                 });
             }));
-            //scheduleDeviceConfig(device, 30 * 1000); // grant net bit time to settle first
+            scheduleDeviceConfig(device, 30 * 1000); // grant net bit time to settle first
         });
         Promise.all(chain);
     });
@@ -1037,8 +1007,7 @@ function getDeviceStartupLogMessage(device) {
 
 function scheduleDeviceConfig(device, delay) {
     const ieeeAddr = device.ieeeAddr;
-    const devId = ieeeAddr.substr(2);
-adapter.log.error("Shedule device config" + JSON.stringify(device));
+    
     if (pendingDevConfigs.indexOf(ieeeAddr) !== -1) { // device is already scheduled
         return;
     }
@@ -1060,8 +1029,6 @@ adapter.log.error("Shedule device config" + JSON.stringify(device));
                         if (ok) {
                             if (msg !== false) { // false = no config needed
                                 adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
-                                adapter.extendObject(devId, { native: { configureNeeded : 0 }});
-
                             }
                             var index = pendingDevConfigs.indexOf(ieeeAddr);
                             if (index > -1) {
@@ -1069,7 +1036,8 @@ adapter.log.error("Shedule device config" + JSON.stringify(device));
                             }
                         } else {
                             adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
-                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} configure failed.`);
+                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec.`);
+                            scheduleDeviceConfig(devToConfig, 300 * 1000);
                         }
                     });
                 });
@@ -1474,52 +1442,6 @@ function collectOptions(devId, modelId, callback) {
     if (!len) callback(result);
 }
 
-function SheduleConfigureOnMessage(ieeeAddr)
-{
-  const devId = ieeeAddr.substr(2);
-  configureOnMessageActive = ieeeAddr;
-
-  adapter.getObject(devId, (err, obj) => {
-    // check if configure needed is set on the object
-    if (obj && obj.native && obj.native.configureNeeded === 1)
-    {
-      adapter.log.warn("configureOnMessage for " +  obj.native.id + " ("  + obj.native.configureNeeded+ ")");
-      pendingConfigQueue.push(function () {
-        new Promise((resolve, reject) => {
-          const devToConfig = zbControl.getDevice(ieeeAddr);
-          adapter.getObject(devId, (err, obj) => {
-            if (obj && obj.native)
-            {
-              configureDevice(devToConfig, (ok, msg) => {
-                if (ok) {
-                  if (msg !== false) { // false = no config needed
-                      adapter.log.info(`Successfully configured on message ${devId} ${devToConfig.modelId}`);
-                  }
-                  adapter.extendObject(devId, { native: { configureNeeded : 0 }},() => {
-                      configureOnMessageActive = "";
-                      resolve();
-                  });
-
-                } else {
-                  adapter.log.warn(`Configure on message ${devId} ${devToConfig.modelId} ${msg}`);
-                  configureOnMessageActive = "";
-                  resolve();
-                }
-              });
-            }
-            else {
-              configureOnMessageActive = "";
-              reject();
-            }
-          });
-        });
-      });
-    }
-    else
-      configureOnMessageActive = ""
-  })
-}
-
 function onDevEvent(type, devId, message, data) {
     switch (type) {
         case 'interview':
@@ -1530,9 +1452,8 @@ function onDevEvent(type, devId, message, data) {
             adapter.log.debug('Device ' + devId + ' incoming event:' + safeJsonStringify(message));
             // Map Zigbee modelID to vendor modelID.
             const mModel = deviceMapping.findByZigbeeModel(data.modelId);
-            if (configureOnMessageActive!= devId) {
-              SheduleConfigureOnMessage(devId);
-            }
+
+
             let payload = {};
             if (message.hasOwnProperty('linkquality')) {
                 payload.linkquality = message.linkquality;
@@ -1544,7 +1465,6 @@ function onDevEvent(type, devId, message, data) {
 
             adapter.log.debug('Publish ' + safeJsonStringify(payload));
             publishToState(devId.substr(2), data.modelId, mModel, payload);
-
             break;
 
         default:
