@@ -1467,11 +1467,11 @@ function collectOptions(devId, modelId, callback) {
 function scheduleDeviceConfigOnMessage(ieeeAddr)
 {
   if (!ObjectsToConfigure.hasOwnProperty(ieeeAddr))
-    ObjectsToConfigure[ieeeAddr] = { IsConfiguring: false }
+    ObjectsToConfigure[ieeeAddr] = { IsConfiguring: false, TryCount: 0 }
   else {
     ObjectsToConfigure[ieeeAddr].IsConfiguring = false;
   }
-  configureOnMessage = (Object.keys(ObjectsToConfigure).length >0);
+  ConfigureOnMessage = (Object.keys(ObjectsToConfigure).length >0);
 //adapter.log.warn(`scheduleDeviceConfigOnMessage ${ieeeAddr} ` + JSON.stringify(ObjectsToConfigure))
 }
 
@@ -1485,6 +1485,25 @@ async function AsyncConfigure(ieeeAddr)
       adapter.log.debug(`Async configure on ${ieeeAddr} `)
       ObjectsToConfigure[ieeeAddr].IsConfiguring = true;
       const devToConfig = zbControl.getDevice(ieeeAddr);
+      if (ObjectsToConfigure[ieeeAddr].TryCount > 2)
+      {
+        if (!ObjectsToConfigure[ieeeAddr].state) {
+        // Find a state to write, trigger writing the state
+          adapter.getStatesOf(ieeeAddr.substr(2), (err, states) => {
+              if (!err && states) {
+                let myState = null;
+                  states.forEach((state) => {
+                    if (state.common.write) {
+                      myState = state;
+                    }
+                  });
+                  if (myState) ObjectsToConfigure[ieeeAddr].state = myState;
+              }
+        //adapter.setState(id, adapter.getState(id), true);
+          });
+        }
+      }
+adapter.log.error(JSON.stringify(ObjectsToConfigure[ieeeAddr]));
       configureDevice(devToConfig, (ok, msg) => {
           if (ok) {
             if (msg === false) {
@@ -1499,6 +1518,7 @@ async function AsyncConfigure(ieeeAddr)
               adapter.log.info('configure on message disabled - everything is configured')
             }
           } else {
+              ObjectsToConfigure[ieeeAddr].TryCount++;
               adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
               adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will retry on next incoming message.`);
               ObjectsToConfigure[ieeeAddr].IsConfiguring = false;
