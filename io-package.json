@@ -308,6 +308,7 @@
         "type": "hardware",
         "materialize": true,
         "messagebox": true,
+        "stopBeforeUpdate": true,
         "dataFolder": "zigbee_%INSTANCE%"
     },
     "native": {
