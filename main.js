@@ -1441,7 +1441,10 @@ async function AsyncConfigure(ieeeAddr)
             return;
           }
         }
-        if (i % 10 > 0) return; // if 10 attempts pass without success, go to 1 in 10
+        if (i % 10 > 0) {
+	  ObjectsToConfigure[ieeeAddr].TryCount++;
+	  return; // if 10 attempts pass without success, go to 1 in 10
+	}
       }
       configureDevice(devToConfig, (ok, msg) => {
           if (ok) {
