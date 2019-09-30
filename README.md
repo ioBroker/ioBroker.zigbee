@@ -72,6 +72,8 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * Binding
 
 ## Changelog
+### 0.11.4 (2019-09-30)
+
 
 ### 0.11.3 (2019-09-11)
 * (kirovilya) Update Z-Stack 3 compatible
