@@ -72,6 +72,12 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * Binding
 
 ## Changelog
+### 0.11.4 (2019-09-30)
+* (Asgothian) Danalock V3 BTZB
+* (Asgothian) GroupErrorInGetDevices
+* (Asgothian) new Dev Innr RB 245
+* (Asgothian) new Dev RS 225
+* (Asgothian) new Dev Heiman COSensor
 
 ### 0.11.4 (2019-09-30)
 
