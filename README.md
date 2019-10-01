@@ -81,15 +81,6 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * (Asgothian) Improved device configuration method
 * (Stabilostil) Fix for install error if running zigbee-adapter is updated
 
-### 0.11.4 (2019-09-30)
-
-* (Asgothian) Danalock V3 BTZB
-* (Asgothian) GroupErrorInGetDevices
-* (Asgothian) new Dev Innr RB 245
-* (Asgothian) new Dev RS 225
-* (Asgothian) new Dev Heiman COSensor
-* (Asgothian) Change of device configuration mode.
-
 ### 0.11.3 (2019-09-11)
 * (kirovilya) Update Z-Stack 3 compatible
 * (kirovilya) Restore lumi.sensor_ht
