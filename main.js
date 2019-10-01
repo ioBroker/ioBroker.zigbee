@@ -32,8 +32,8 @@ let devNum = 0;
 let zbControl;
 let adapter;
 
-let pendingDevConfigRun = null;
-let pendingDevConfigs = [];
+let ObjectsToConfigure = {};
+let configureOnMessage = true;
 
 const allowedClusters = [
     5, // genScenes
@@ -54,9 +54,6 @@ function startAdapter(options) {
                 if (zbControl) {
                     zbControl.stop();
                     zbControl = undefined;
-                }
-                if (pendingDevConfigRun != null) {
-                    clearTimeout(pendingDevConfigRun);
                 }
                 callback();
             } catch (e) {
@@ -545,7 +542,7 @@ function delBinding(from, command, bind_id, callback) {
     //                 } else {
     //                     adapter.sendTo(from, command, {}, callback);
     //                 }
-    //             });            
+    //             });
     //         }
     //     });
     // });
@@ -555,7 +552,7 @@ function delBinding(from, command, bind_id, callback) {
         } else {
             adapter.sendTo(from, command, {}, callback);
         }
-    });    
+    });
 }
 
 function getBinding(callback) {
@@ -605,9 +602,9 @@ function letsPairing(from, command, message, callback) {
         }
         // allow devices to join the network within 60 secs
         logToPairing('Pairing started ' + devId, true);
-        
+
         let cTimer = Number(adapter.config.countDown);
-        
+
         if (!adapter.config.countDown
         ||   cTimer == 0) {
           cTimer = 60;
@@ -664,15 +661,15 @@ function getDevices(from, command, callback) {
                         chain.push((res) => {
                             return adapter.getStateAsync(`${devInfo._id}.groups`)
                                 .then(devGroups => {
-				    try 
-				    {
+                                    try
+                                    {
                                         // fill groups info
                                         if (devGroups) {
                                             groups[devInfo._id] = JSON.parse(devGroups.val);
                                         }
-				    } catch (e) {
-					    adapter.log.error('getDevices group info error: '+ JSON.stringify(e) + ' - ' + JSON.stringify(devGroups));
-				    }
+                                    } catch (e) {
+                                      adapter.log.error('getDevices group info error: '+ JSON.stringify(e) + ' - ' + JSON.stringify(devGroups));
+                                    }
                                     return res;
                                 });
                         });
@@ -748,9 +745,23 @@ function newDevice(id, msg) {
         logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
         updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () => {
             syncDevStates(dev);
-            scheduleDeviceConfig(dev);
+// get set to configure the device, IF it needs configuring
+            const ieeeAddr = dev.ieeeAddr;
+            const mappedModel = deviceMapping.findByZigbeeModel(dev.modelId);
+
+            if (CheckForConfigure(dev)) {
+              scheduleDeviceConfigOnMessage(dev.ieeeAddr);
+// trigger initial configure attempt, earliest one second after the zigbee Network is closed.
+              setTimeout(AsyncConfigure, (zbControl.getInfo().joinTimeLeft+1)*1000);
+            }
         });
     }
+}
+
+function CheckForConfigure(dev)
+{
+  const mappedModel = deviceMapping.findByZigbeeModel(dev.modelId);
+  return (mappedModel && mappedModel.configure);
 }
 
 function leaveDevice(id, msg) {
@@ -975,7 +986,10 @@ function onReady() {
         activeDevices.forEach(device => {
             devNum = devNum + 1;
             adapter.log.info(devNum + ' ' + getDeviceStartupLogMessage(device));
-
+            if (CheckForConfigure(device)) {
+              scheduleDeviceConfigOnMessage(device.ieeeAddr);
+              setTimeout(function() { AsyncConfigure(device.ieeeAddr); }, (devNum +10) * 1000);
+            }
             // update dev and states
             chain.push(new Promise((resolve, reject) => {
                 updateDev(device.ieeeAddr.substr(2), device.modelId, device.modelId, () => {
@@ -983,7 +997,6 @@ function onReady() {
                     resolve();
                 });
             }));
-            scheduleDeviceConfig(device, 30 * 1000); // grant net bit time to settle first
         });
         Promise.all(chain);
     });
@@ -1005,57 +1018,6 @@ function getDeviceStartupLogMessage(device) {
         `${friendlyDevice.vendor} ${friendlyDevice.description} (${type})`;
 }
 
-function scheduleDeviceConfig(device, delay) {
-    const ieeeAddr = device.ieeeAddr;
-    
-    if (pendingDevConfigs.indexOf(ieeeAddr) !== -1) { // device is already scheduled
-        return;
-    }
-    adapter.log.debug(`Schedule device config for ${ieeeAddr} ${device.modelId}`);
-    pendingDevConfigs.unshift(ieeeAddr); // add as first in list
-    if (!delay || pendingDevConfigRun == null) {
-        const configCall = () => {
-            const info = zbControl.getInfo();
-            if (info.joinTimeLeft > 0) {
-                adapter.log.debug(`Skip configure in pairig time`);
-                pendingDevConfigRun = setTimeout(configCall, info.joinTimeLeft*1000);
-                return;
-            }
-            adapter.log.debug(`Pending device configs: `+JSON.stringify(pendingDevConfigs));
-            if (pendingDevConfigs && pendingDevConfigs.length > 0) {
-                pendingDevConfigs.forEach((ieeeAddr) => {
-                    const devToConfig = zbControl.getDevice(ieeeAddr);
-                    configureDevice(devToConfig, (ok, msg) => {
-                        if (ok) {
-                            if (msg !== false) { // false = no config needed
-                                adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
-                            }
-                            var index = pendingDevConfigs.indexOf(ieeeAddr);
-                            if (index > -1) {
-                                pendingDevConfigs.splice(index, 1);
-                            }
-                        } else {
-                            adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
-                            adapter.log.warn(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet, will try again in latest 300 sec.`);
-                            scheduleDeviceConfig(devToConfig, 300 * 1000);
-                        }
-                    });
-                });
-            }
-            if (pendingDevConfigs.length == 0) {
-                pendingDevConfigRun = null;
-            } else {
-                pendingDevConfigRun = setTimeout(configCall, 300 * 1000);
-            }
-        };
-        if (!delay) { // run immediately
-            clearTimeout(pendingDevConfigRun);
-            configCall();
-        } else {
-            pendingDevConfigRun = setTimeout(configCall, delay);
-        }
-    }
-}
 
 function configureDevice(device, callback) {
     // Configure reporting for this device.
@@ -1442,6 +1404,72 @@ function collectOptions(devId, modelId, callback) {
     if (!len) callback(result);
 }
 
+function scheduleDeviceConfigOnMessage(ieeeAddr)
+{
+  if (!ObjectsToConfigure.hasOwnProperty(ieeeAddr))
+    ObjectsToConfigure[ieeeAddr] = { IsConfiguring: false, TryCount: 0 }
+  else {
+    ObjectsToConfigure[ieeeAddr].IsConfiguring = false;
+  }
+  if (!configureOnMessage) {
+    if (Object.keys(ObjectsToConfigure).length >0) {
+      configureOnMessage = true;
+      adapter.log.info('Found device which needs configuring - configure on message activated')
+    }
+  }
+}
+
+async function AsyncConfigure(ieeeAddr)
+{
+  if (ObjectsToConfigure[ieeeAddr])
+  {
+    if (!ObjectsToConfigure[ieeeAddr].IsConfiguring)
+    {
+      adapter.log.debug(`Async configure on ${ieeeAddr} `)
+      ObjectsToConfigure[ieeeAddr].IsConfiguring = true;
+      const devToConfig = zbControl.getDevice(ieeeAddr);
+      let i = ObjectsToConfigure[ieeeAddr].TryCount
+      if (i > 10)
+      {
+        if (i>100)
+        {
+          adapter.log.warn(`Unable to configure ${ieeeAddr}: ${devToConfig.modelId} in 20 attempts - giving up.`)
+          delete ObjectsToConfigure[ieeeAddr];
+          if (Object.keys(ObjectsToConfigure).length < 1) {
+            configureOnMessage = false; // we configured everything, no need for longer checks
+            adapter.log.info('configure on message disabled - everything is configured')
+            return;
+          }
+        }
+        if (i % 10 > 0) {
+	  ObjectsToConfigure[ieeeAddr].TryCount++;
+	  return; // if 10 attempts pass without success, go to 1 in 10
+	}
+      }
+      configureDevice(devToConfig, (ok, msg) => {
+          if (ok) {
+            if (msg === false) {
+              adapter.log.warn(`Unneeded configure attempt on ${ieeeAddr} ${devToConfig.modelId}`)
+              delete ObjectsToConfigure[ieeeAddr];
+              return;
+            }
+            adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
+            delete ObjectsToConfigure[ieeeAddr];
+            if (Object.keys(ObjectsToConfigure).length < 1) {
+              configureOnMessage = false; // we configured everything, no need for longer checks
+              adapter.log.info('configure on message disabled - everything is configured')
+            }
+          } else {
+              ObjectsToConfigure[ieeeAddr].TryCount++;
+              adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
+              adapter.log.info(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet (${ObjectsToConfigure[ieeeAddr].TryCount}), will retry on next incoming message.`);
+              ObjectsToConfigure[ieeeAddr].IsConfiguring = false;
+          }
+      });
+    }
+  }
+}
+
 function onDevEvent(type, devId, message, data) {
     switch (type) {
         case 'interview':
@@ -1465,6 +1493,10 @@ function onDevEvent(type, devId, message, data) {
 
             adapter.log.debug('Publish ' + safeJsonStringify(payload));
             publishToState(devId.substr(2), data.modelId, mModel, payload);
+
+            if (configureOnMessage) { // configure device when a message is received
+              AsyncConfigure(devId);
+            }
             break;
 
         default:
