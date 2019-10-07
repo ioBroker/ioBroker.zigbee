@@ -1161,7 +1161,9 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         }
 
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
-        const ep = devEp ? devEp[epName] : null;
+        let ep = devEp ? devEp[epName] : null;
+        ep = (!ep && devEp) ? devEp[''] : ep;
+        ep = (!ep && devEp) ? devEp['default'] : ep;
         const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
         const postfix = '';
         const messages = converter.convert(key, preparedValue, preparedOptions, 'set', postfix, mappedModel.options || {});
