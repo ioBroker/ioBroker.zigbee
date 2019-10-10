@@ -180,7 +180,6 @@ function processMessages(ignore) {
     });
 }
 
-
 // Because the only one port is occupied by first instance, the changes to other devices will be send with messages
 function processMessage(message) {
     if (typeof message === 'string') {
