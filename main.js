@@ -326,7 +326,7 @@ function groupDevices(from, command, devGroups, callback) {
             adapter.setState(id, JSON.stringify(groups), true);
             const sysid = j.replace(adapter.namespace + '.', '0x');
             zbControl.removeDevFromAllGroups(sysid, () => {
-                groups.forEach(groupId => {
+                groups.forEach((groupId) => {
                     zbControl.addDevToGroup(sysid, groupId);
                 });
             });
@@ -1230,6 +1230,8 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                             // process sync state list
                             processSyncStatesList(deviceId, modelId, syncStateList);
                         }
+                    }, {
+                        priority: 100
                     });
                 }, changedState.timeout);
             }
