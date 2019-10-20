@@ -14,6 +14,7 @@
         "no-prototype-builtins": "off",
         "max-len": ["error", { "code": 140 }],
         "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
-        "camelcase": ["error", {"properties": "always"}]
+        "camelcase": ["error", {"properties": "always"}],
+        "comma-dangle": ["error", "only-multiline"]
     }
 }
