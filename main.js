@@ -15,7 +15,9 @@ const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const ZShepherd = require('zigbee-shepherd');
-const ZigbeeController = require('./lib/zigbeecontroller');
+const controllerModule = require('./lib/zigbeecontroller');
+const ZigbeeController = controllerModule.ZigbeeController;
+const prio = controllerModule.prio;
 const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require('./lib/devstates');
 const SerialPort = require('serialport');
@@ -1231,7 +1233,7 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                             processSyncStatesList(deviceId, modelId, syncStateList);
                         }
                     }, {
-                        priority: 100
+                        priority: prio.high
                     });
                 }, changedState.timeout);
             }
