@@ -72,6 +72,15 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 * Binding
 
 ## Changelog
+### 0.11.5 (2019-10-26)
+* (allofmex) Improved publish-to-zigbee queue
+* (arteck) Gledopto GL-B-001Z
+* (kirovilya) iHORN Temperature & humidity sensor
+* (kirovilya) Trust ZLED-TUNE9, DIYRuZ contact, Lonsonho Plug
+* (kirovilya) IKEA driver 30W
+* (allofmex) Hue Smart Plug
+* (arteck) LST004
+
 ### 0.11.4 (2019-09-30)
 * (Asgothian) Danalock V3 BTZB
 * (Asgothian) GroupErrorInGetDevices
