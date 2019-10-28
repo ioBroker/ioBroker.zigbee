@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "0.11.3",
+  "version": "0.11.5",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -18,7 +18,7 @@
     "node": ">=6"
   },
   "dependencies": {
-    "queue": "*",
+    "better-queue": "*",
     "debug": "^4.1.1",
     "serialport": "^7.1.5",
     "zigbee-herdsman": "^0.6.11",
@@ -31,7 +31,10 @@
     "chai": "^4.2.0",
     "gulp": "^4.0.0",
     "mocha": "^6.0.2",
-    "@iobroker/testing": "^1.1.10"
+    "@iobroker/testing": "^1.1.10",
+    "eslint": "*",
+    "eslint-config-google": "*",
+    "lint-diff": "*"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
