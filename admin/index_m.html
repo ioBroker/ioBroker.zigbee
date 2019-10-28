@@ -6,8 +6,10 @@
 
 <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"/>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"/> -->
+<script type="text/javascript" src="vis-network.min.js"></script>
+<link rel="stylesheet" type="text/css" href="vis-network.min.css"/>
 
 <!-- these files always have to be included -->
 <script type="text/javascript" src="../../js/translate.js"></script>
@@ -109,7 +111,7 @@
                 </div>
             </div>
             <div id="tab-map" class="col s12 page">
-                <div class="fixed-action-btn" style="padding-bottom: 100px">
+                <div class="fixed-action-btn" style="margin-bottom: 100px">
                     <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Refresh"><i class="material-icons large">autorenew</i></a>
                 </div>
                 <div id="viewconfigbtn" class="fixed-action-btn top left" style="">

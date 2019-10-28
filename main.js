@@ -8,15 +8,15 @@
 /*jslint node: true */
 'use strict';
 
+//const debug = require("debug");
+//debug.enable('zigbee*');
 //process.env.DEBUG = 'zigbee*,cc-znp*';
 
 const safeJsonStringify = require('./lib/json');
-// you have to require the utils module and call adapter function
 const fs = require('fs');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
-
-const SerialListPlugin = require('./lib/plugins/seriallist');
-const CommandsPlugin = require('./lib/plugins/commands');
+const SerialListPlugin = require('./lib/seriallist');
+const CommandsPlugin = require('./lib/commands');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
 
@@ -43,22 +43,7 @@ class Zigbee extends utils.Adapter {
     }
 
     async onReady() {
-        //if (this.log.level === 'debug') {
-            // const oldStdOut = process.stdout.write.bind(process.stdout);
-            // const oldErrOut = process.stderr.write.bind(process.stderr);
-            // process.stdout.write = function (logs) {
-            //     if (this.log && this.log.debug) {
-            //         this.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm, ""));
-            //     }
-            //     oldStdOut(logs);
-            // };
-            // process.stderr.write = function (logs) {
-            //     if (this.log && this.log.debug) {
-            //         this.log.debug(logs.replace(/(\r\n\t|\n|\r\t)/gm, ""));
-            //     }
-            //     oldErrOut(logs);
-            // };
-        //}
+        this.subscribeStates('*');
         // set connection false before connect to zigbee
         this.setState('info.connection', false);
         const zigbeeOptions = this.getZigbeeOptions();
@@ -71,10 +56,15 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('pairing', this.onPairing.bind(this));
         this.zbController.on('event', this.onZigbeeEvent.bind(this));
         this.zbController.on('msg', this.onZigbeeEvent.bind(this));
-        
+
+        this.reconnectCounter = 1;
+        this.doConnect();
+    }
+
+    async doConnect() {
         try {
             this.log.info(`Starting Zigbee...`);
-            await this.zbController.start();    
+            await this.zbController.start();
         } catch (error) {
             this.setState('info.connection', false);
             this.log.error(`Failed to start Zigbee`);
@@ -83,48 +73,166 @@ class Zigbee extends utils.Adapter {
             } else {
                 this.log.error(error);
             }
+            if (this.reconnectCounter > 0) {
+                this.tryToReconnect();
+            }
         };
     }
 
     onZigbeeAdapterDisconnected() {
+        this.reconnectCounter = 5;
         this.log.error('Adapter disconnected, stopping');
         this.setState('info.connection', false);
         this.callPluginMethod('stop');
+        this.tryToReconnect();
+    }
+
+    tryToReconnect() {
+        this.reconnectTimer = setTimeout(()=>{
+            this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
+            this.reconnectCounter -= 1;
+            this.doConnect();
+        }, 10*1000); // every 10 seconds
     }
 
     onZigbeeAdapterReady() {
+        if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         this.log.info(`Zigbee started`);
         this.setState('info.connection', true);
         this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
-    onZigbeeEvent(type, devId, message, data){
-        this.log.debug(`Type ${type} device ${devId} incoming event: ${safeJsonStringify(message)}`);
+    onZigbeeEvent(type, entity, message){
+        this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
+        const device = entity.device,
+              mappedModel = entity.mapped,
+              modelID = device.modelID,
+              cluster = message.cluster,
+              devId = device.ieeeAddr.substr(2);
+        if (!mappedModel) {
+            return;
+        }
+        let converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
+            (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
+        if (!converters.length && type === 'readRsp') {
+            converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
+                (c.type instanceof Array) ? c.type.includes('attReport') : c.type === 'attReport'));
+        }
+        if (!converters.length) {
+            this.log.debug(
+                `No converter available for '${mappedModel.model}' with cluster '${cluster}' and type '${type}'`
+            );
+            return;
+        }
+
+        converters.forEach((converter) => {
+            const publish = (payload) => {
+                // Don't cache messages with click and action.
+                const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
+                this.log.debug(`Publish ${safeJsonStringify(payload)}`);
+                if (payload) {
+                	if (message.linkquality) {
+                        payload.linkquality = message.linkquality;
+                    }
+                    this.stController.publishToState(devId, modelID, payload);
+                }
+            };
+
+            this.stController.collectOptions(devId, modelID, (options) => {
+                const payload = converter.convert(mappedModel, message, publish, options);
+                if (payload) {
+                    // Add device linkquality.
+                    publish(payload);
+                }
+            });
+        });
     }
 
-    publishFromState(deviceId, modelId, stateKey, state, options){
+    acknowledgeState(deviceId, modelId, stateDesc, value) {
+        if (modelId === 'group') {
+            let stateId = this.namespace + '.group_' + deviceId + '.' + stateDesc.id;
+            this.setState(stateId, value, true);
+        } else {
+            let stateId = this.namespace + '.' + deviceId.replace('0x', '') + '.' + stateDesc.id;
+            this.setState(stateId, value, true);
+        }
+    }
 
+    async publishFromState(deviceId, modelId, stateModel, stateList, options){
+        this.log.debug(`State changes. dev: ${deviceId} model: ${modelId} states: ${safeJsonStringify(stateList)} opt: ${safeJsonStringify(options)}`);
+        const entity = await this.zbController.resolveEntity(deviceId);
+        this.log.debug(`entity: ${safeJsonStringify(entity)}`);
+        const mappedModel = entity.mapped;
+
+        stateList.forEach(async(changedState) => {
+            const stateDesc = changedState.stateDesc;
+            const value = changedState.value;
+    
+            if (stateDesc.isOption) {
+                // acknowledge state with given value
+                this.acknowledgeState(deviceId, modelId, stateDesc, value);
+                return;
+            }
+    
+            const converter = mappedModel.toZigbee.find((c) => c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id));
+            if (!converter) {
+                this.log.error(`No converter available for '${mappedModel.model}' with key '${stateKey}'`);
+                return;
+            }
+    
+            const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
+            const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
+    
+            let syncStateList = [];
+            if (stateModel.syncStates) {
+                stateModel.syncStates.forEach((syncFunct) => {
+                    const res = syncFunct(stateDesc, value, options);
+                    if (res) {
+                        syncStateList = syncStateList.concat(res);
+                    }
+                });
+            }
+    
+            const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
+            const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
+            this.log.debug(`convert ${key}, ${preparedValue}, ${safeJsonStringify(preparedOptions)}`);
+            const setentity = await this.zbController.resolveEntity(deviceId, epName);
+            this.log.debug(`setentity: ${safeJsonStringify(setentity)}`);
+            const meta = {
+                endpoint_name: '',
+                options: preparedOptions,
+                device: setentity.device,
+                mapped: mappedModel,
+            };
+            try {
+                const result = await converter.convertSet(setentity.endpoint, key, preparedValue, meta);
+                this.log.debug(`convert result ${safeJsonStringify(result)}`);
+
+                this.acknowledgeState(deviceId, modelId, stateDesc, value);
+            } catch(error) {
+                this.log.error(`Error on send command: ${error.stack}`);
+            }
+        });
     }
 
     newDevice(entity) {
-        //let dev = this.zbController.getDevice(id);
+        this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
         const dev = entity.device;
         if (dev) {
-            this.log.debug('new dev ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelId);
-            this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${dev.modelId}`, true);
-            this.updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () => {
-                this.syncDevStates(dev);
-                this.scheduleDeviceConfig(dev);
+            this.log.debug('new devive ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelID);
+            this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${dev.modelID}`, true);
+            this.stController.updateDev(dev.ieeeAddr.substr(2), dev.modelID, dev.modelID, () => {
+                this.stController.syncDevStates(dev);
             });
         }
     }
     
-    leaveDevice(entity) {
-        const dev = entity.device;
-        if (dev) {
-            const devId = id.substr(2);
-            this.log.debug('Try delete dev ' + devId + ' from iobroker.');
-            this.deleteDeviceStates(devId);
+    leaveDevice(ieeeAddr) {
+        this.log.debug(`Leave device event: ${ieeeAddr}`);
+        if (ieeeAddr) {
+            const devId = ieeeAddr.substr(2);
+            this.log.debug('Delete device ' + devId + ' from iobroker.');
+            this.stController.deleteDeviceStates(devId);
         }
     }
 
@@ -132,7 +240,11 @@ class Zigbee extends utils.Adapter {
         for (const plugin of this.plugins) {
             if (plugin[method]) {
                 try {
-                    plugin[method](...parameters);
+                    if (parameters !== undefined) {
+                        plugin[method](...parameters);
+                    } else {
+                        plugin[method]();
+                    }
                 } catch (error) {
                     this.log.error(`Failed to call '${plugin.constructor.name}' '${method}' (${error.stack})`);
                     throw error;
@@ -144,15 +256,17 @@ class Zigbee extends utils.Adapter {
     /** 
      * @param {() => void} callback
      */
-    onUnload(callback) {
+    async onUnload(callback) {
         try {
             this.log.info("cleaned everything up...");
+            if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
             this.callPluginMethod('stop');
-            if (this.zbControl) {
-                this.zbControl.stop();
+            if (this.zbController) {
+                await this.zbController.stop();
             }
             callback();
-        } catch (e) {
+        } catch (error) {
+            this.log.error(`Unload error (${error.stack})`);
             callback();
         }
     }
@@ -175,8 +289,6 @@ class Zigbee extends utils.Adapter {
         const channel = parseInt(this.config.channel ? this.config.channel : 11);
         const precfgkey = createByteArray(this.config.precfgkey ? this.config.precfgkey : '01030507090B0D0F00020406080A0C0D');
         const extPanId = createByteArray(this.config.extPanID ? this.config.extPanID : 'DDDDDDDDDDDDDDDD').reverse();
-        //this.log.info('Start on port: ' + port + ' channel ' + channel);
-        //this.log.info('Queue is: ' + !this.config.disableQueue);
         return {
             net: {
                 panId: panID,

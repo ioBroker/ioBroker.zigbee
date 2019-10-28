@@ -8,9 +8,10 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     devices = [],
     dialog,
     messages = [],
-    map = [],
+    map = {},
     mapEdges = null,
     network,
+    networkEvents,
     responseCodes = false,
     groups = {},
     devGroups = {},
@@ -33,7 +34,7 @@ function getCard(dev) {
     }
     room = rooms.join(',') || '&nbsp';
     let routeBtn = '';
-    if (dev.info && dev.info.type == 'Router') {
+    if (dev.info && dev.info._type == 'Router') {
         routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
     }
 
@@ -153,7 +154,7 @@ function deleteConfirmation(id, name) {
 function editName(id, name) {
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find("input[id='d_name']").val(name);
-    if (dev.info.type == "Router") {
+    if (dev.info._type == "Router") {
         list2select('#d_groups', groups, devGroups[id] || []);
         $("#d_groups").parent().parent().removeClass('hide');
     } else {
@@ -227,8 +228,8 @@ function showDevices() {
     devGroups = {};
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
-        if (d.info && d.info.type == "Coordinator") continue;
-        if (d.groups && d.info && d.info.type == "Router") {
+        if (d.info && d.info._type == "Coordinator") continue;
+        if (d.groups && d.info && d.info._type == "Router") {
             devGroups[d._id] = d.groups;
             d.groupNames = d.groups.map(item=>{
                 return groups[item] || '';
@@ -496,8 +497,13 @@ function save(callback) {
     callback(obj);
 }
 
+
+function getDevId(adapterDevId) {
+    return adapterDevId.split('.').slice(0,3).join('.');
+}
+
 // subscribe to changes
-socket.emit('subscribe', namespace + '.info.*');
+socket.emit('subscribe', namespace + '.*');
 socket.emit('subscribeObjects', namespace + '.*');
 
 // react to changes
@@ -522,6 +528,9 @@ socket.on('stateChange', function (id, state) {
         } else if (id.match(/\.info\.pairingMessage$/)) {
             messages.push(state.val);
             showMessages();
+        } else {
+        	const devId = getDevId(id);
+        	putEventToNode(devId);
         }
     }
 });
@@ -540,6 +549,24 @@ socket.emit('getObject', 'system.config', function (err, res) {
 });
 
 
+function putEventToNode(devId) {
+	if (network) {
+		const nodesArray = Object.values(network.body.data.nodes._data);
+		const node = nodesArray.find((node) => { return node.id == devId });
+		if (node) {
+			const exists = networkEvents.find((event) => {
+				return event.node == node.id;
+			});
+			if (!exists) {
+				networkEvents.push({node: node.id, radius: 0, forward: true});
+			// } else {
+			// 	exists.radius = 0;
+			// 	exists.forward = true;
+			}
+		}
+	}
+}
+
 function getNetworkInfo(devId, networkmap){
     return networkmap.find((info) => info.ieeeAddr == devId);
 }
@@ -550,14 +577,14 @@ function showNetworkMap(devices, map){
     // create an array with edges
     var edges = [];
     
-    if (map.length === 0) { // first init
+    if (map.lqis == undefined || map.lqis.length === 0) { // first init
         $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function() {
             updateMapFilter();
         });
     }
 
     const createNode = function(dev, mapEntry) {
-        const extInfo = (mapEntry && mapEntry.nwkAddr) ? ' (nwkAddr: 0x'+mapEntry.nwkAddr.toString(16)+')' : '';
+        const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const node = {
             id: dev._id,
             label: dev.common.name,
@@ -566,7 +593,7 @@ function showNetworkMap(devices, map){
             image: dev.icon,
             font: {color:'#007700'},
         };
-        if (dev.info && dev.info.type == 'Coordinator') {
+        if (dev.info && dev.info._type == 'Coordinator') {
             node.shape = 'star';
             node.label = 'Coordinator';
         }
@@ -578,66 +605,125 @@ function showNetworkMap(devices, map){
             try {
                 return devInfo.info.ieeeAddr == ieeeAddr;
             }  catch (e) {
-                console.log("No dev with ieee " + ieeeAddr);
+                //console.log("No dev with ieee " + ieeeAddr);
+            }
+        });
+    }
+
+    const getDeviceByNetwork = function(nwk) {
+        return devices.find((devInfo) => {
+            try {
+                return devInfo.info._networkAddress == nwk;
+            }  catch (e) {
+                //console.log("No dev with nwkAddr " + nwk);
             }
         });
     }
     
-    map.forEach((mapEntry)=>{
-        const dev = getDevice(mapEntry.ieeeAddr);
-        if (!dev) {
-            console.log("No dev with ieee "+mapEntry.ieeeAddr);
-            return;
-        }
-
-        var node;
-        if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-            node = createNode(dev, mapEntry);
-            nodes[mapEntry.ieeeAddr] = node;
-        }
-        else {
-            node = nodes[mapEntry.ieeeAddr];
-        }
-
-        if (dev.info) {
-            const parentDev = getDevice(mapEntry.parent);
-            const to = parentDev ? parentDev._id : undefined;
-            const from = dev._id;
-            var label = mapEntry.lqi.toString();
-            var linkColor = '#0000ff';
-            var edge = edges.find((edge) => {
-                return (edge.to == to && edge.from == from)
-            });
-            var reverse = edges.find((edge) => {
-                return (edge.to == from && edge.from == to)
-            });
-
-            if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
-                // // parent/child
-                if (mapEntry.status !== 'online' ) {
-                    label = label + ' (off)';
-                    linkColor = '#ff0000';
-                }
-                if (mapEntry.lqi < 10) {
-                    linkColor = '#ff0000';
-                }
-            } else if (mapEntry.relationship === 2) { // sibling
-                linkColor = '#00bb00';
-            } else if (mapEntry.relationship === 3 && !reverse) { // unknown
-                linkColor = '#aaaaff';
-            } else if (mapEntry.relationship === 4) { // previous child
-                linkColor = '#555555';
+    if (map.lqis) {
+        map.lqis.forEach((mapEntry)=>{
+            const dev = getDevice(mapEntry.ieeeAddr);
+            if (!dev) {
+                //console.log("No dev with ieee "+mapEntry.ieeeAddr);
+                return;
             }
-            if (reverse) {
-                // update reverse edge
-                edge = reverse;
-                edge.label += '\n'+label;
-                edge.arrows.from = { enabled: false, scaleFactor: 0.5 }; // start hidden if node is not selected
-                if (mapEntry.relationship == 1) { // 
-                    edge.color.color = linkColor;
-                    edge.color.highlight = linkColor;
+
+            var node;
+            if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
+                node = createNode(dev, mapEntry);
+                nodes[mapEntry.ieeeAddr] = node;
+            }
+            else {
+                node = nodes[mapEntry.ieeeAddr];
+            }
+
+            if (dev.info) {
+                const parentDev = getDevice(mapEntry.parent);
+                const to = parentDev ? parentDev._id : undefined;
+                const from = dev._id;
+                var label = mapEntry.lqi.toString();
+                var linkColor = '#0000ff';
+                var edge = edges.find((edge) => {
+                    return (edge.to == to && edge.from == from)
+                });
+                var reverse = edges.find((edge) => {
+                    return (edge.to == from && edge.from == to)
+                });
+
+                if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
+                    // // parent/child
+                    if (mapEntry.status !== 'online' ) {
+                        label = label + ' (off)';
+                        linkColor = '#ff0000';
+                    }
+                    if (mapEntry.lqi < 10) {
+                        linkColor = '#ff0000';
+                    }
+                } else if (mapEntry.relationship === 2) { // sibling
+                    linkColor = '#00bb00';
+                } else if (mapEntry.relationship === 3 && !reverse) { // unknown
+                    linkColor = '#aaaaff';
+                } else if (mapEntry.relationship === 4) { // previous child
+                    linkColor = '#555555';
                 }
-            } else if (!edge) {
+                if (reverse) {
+                    // update reverse edge
+                    edge = reverse;
+                    edge.label += '\n'+label;
+                    edge.arrows.from = { enabled: false, scaleFactor: 0.5 }; // start hidden if node is not selected
+                    if (mapEntry.relationship == 1) { // 
+                        edge.color.color = linkColor;
+                        edge.color.highlight = linkColor;
+                    }
+                } else if (!edge) {
+                    edge = {
+                        from: from,
+                        to: to,
+                        label: label,
+                        font: {
+                            align: 'middle', 
+                            size: 0, // start hidden
+                            color: linkColor
+                        },
+                        arrows: { to: { enabled: false, scaleFactor: 0.5 }},
+                        //arrowStrikethrough: false,
+                        color: {
+                            color: linkColor,
+                            opacity: 0, // start hidden
+                            highlight: linkColor
+                        },
+                        chosen: {
+                            edge: function(values, id, selected, hovering) {
+                                values.opacity = 1.0;
+                                values.toArrow = true; // always existing
+                                values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
+                            },
+                            label: function(values, id, selected, hovering) {
+                            // see onMapSelect workaround
+    //                        values.size = 10;
+                            }
+                        },
+                        selectionWidth: 0,
+                        physics: mapEntry.relationship === 1 ? true : false,
+                        relationship: mapEntry.relationship
+                    };
+                    edges.push(edge);
+                }
+            }
+        });
+    }
+
+    // routing
+    if (map.routing) {
+        map.routing.forEach((route)=>{
+            if (!route.nextHop) return;
+            const routeSource = getDeviceByNetwork(route.nextHop);
+            const routeDest = getDeviceByNetwork(route.destination);
+            if (routeSource && routeDest) {
+                const to = routeDest._id;
+                const from = routeSource._id;
+                const label = route.status;
+                const linkColor = '#ff00ff';
                 edge = {
                     from: from,
                     to: to,
@@ -651,9 +737,10 @@ function showNetworkMap(devices, map){
                     //arrowStrikethrough: false,
                     color: {
                         color: linkColor,
-                        opacity: 0, // start hidden
+                        //opacity: 0, // start hidden
                         highlight: linkColor
                     },
+                    dashes: true,
                     chosen: {
                         edge: function(values, id, selected, hovering) {
                             values.opacity = 1.0;
@@ -662,17 +749,16 @@ function showNetworkMap(devices, map){
                         },
                         label: function(values, id, selected, hovering) {
                         // see onMapSelect workaround
-//                        values.size = 10;
+    //                        values.size = 10;
                         }
                     },
                     selectionWidth: 0,
-                    physics: mapEntry.relationship === 1 ? true : false,
-                    relationship: mapEntry.relationship
+                    physics: false,
                 };
                 edges.push(edge);
             }
-        }
-    });
+        });
+    }
     
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
@@ -725,11 +811,73 @@ function showNetworkMap(devices, map){
             doSelection(false, event.previousSelection.edges, this.body.data);
         }
         doSelection(true, event.edges, this.body.data);
+
+        // if (event.nodes) {
+        //     event.nodes.forEach((node)=>{
+        //         //const options = network.clustering.findNode[node];
+        //         network.clustering.updateClusteredNode(
+        //             node, {size: 50}
+        //         );
+        //     });
+        // }
     }
     network.on('selectNode', onMapSelect);
     network.on('deselectNode', onMapSelect);
     redrawMap();
     updateMapFilter();
+
+
+    // functions to animate:
+    networkEvents = [];
+    var updateFrameVar = setInterval(function() { updateFrameTimer(); }, 60);
+
+    function updateFrameTimer() {
+        if (networkEvents.length > 0) {
+            network.redraw();
+            const toDelete = [];
+            networkEvents.forEach((event, index)=>{
+                if (event.radius >= 1) {
+                    toDelete.push(index);
+                } else {
+                    event.radius += 0.08;
+                }
+                // if (event.radius >= 0) {
+                // 	if (event.forward) {
+                // 		event.radius += 0.08;
+                // 	} else {
+                //     	event.radius -= 0.08;
+                //     }
+                //     if (event.radius > 1 && event.forward) {
+                //     	event.forward = false;
+                //     }
+                // } else {
+                //     toDelete.push(index);
+                // }
+            });
+            toDelete.forEach((index)=>{
+            	networkEvents.splice(index, 1);
+            });
+        }
+    }
+      
+    network.on("beforeDrawing", function(ctx) {
+        if (networkEvents.length > 0) {
+            networkEvents.forEach((event)=>{
+                const inode = event.node;
+                var nodePosition = network.getPositions();
+                event.radius = (event.radius > 1) ? 1 : event.radius;
+                const cap = Math.cos(event.radius*Math.PI/2);
+                var colorCircle = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
+                var colorBorder = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
+                ctx.strokeStyle = colorCircle;
+                ctx.fillStyle = colorBorder;
+                var radius = Math.abs(100 * Math.sin(event.radius));
+                ctx.circle(nodePosition[inode].x, nodePosition[inode].y, radius);
+                ctx.fill();
+                ctx.stroke();
+            });
+        };
+    });
 }
 
 function redrawMap() {
