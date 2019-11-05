@@ -10,13 +10,15 @@
 
 //const debug = require("debug");
 //debug.enable('zigbee*');
-//process.env.DEBUG = 'zigbee*,cc-znp*';
 
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const SerialListPlugin = require('./lib/seriallist');
 const CommandsPlugin = require('./lib/commands');
+const GroupsPlugin = require('./lib/groups');
+const NetworkMapPlugin = require('./lib/networkmap');
+const DeveloperPlugin = require('./lib/developer');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
 
@@ -39,6 +41,9 @@ class Zigbee extends utils.Adapter {
         this.plugins = [
             new SerialListPlugin(this),
             new CommandsPlugin(this),
+            new GroupsPlugin(this),
+            new NetworkMapPlugin(this),
+            new DeveloperPlugin(this),
         ];
     }
 

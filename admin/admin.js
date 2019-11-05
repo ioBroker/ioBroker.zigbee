@@ -945,10 +945,10 @@ function loadDeveloperTab(onChange) {
     updateSelect('#dev', devices,
             function(key, device) {
                 if (device.hasOwnProperty('info')) {
-                    if (device.info.type == 'Coordinator') {
+                    if (device.info._type == 'Coordinator') {
                         return null;
                     }
-                    return device.info.manufName +' '+ device.common.name;
+                    return `${device.common.name} (${device.info._modelID})`;
                 }
                 else { // fallback if device in list but not paired
                     device.common.name + ' ' +device.native.id;
@@ -1041,13 +1041,13 @@ function loadDeveloperTab(onChange) {
                 return obj._id === this.value;
             });
 
-            var epList = device ? device.info.epList : null;
+            var epList = device ? device.info._endpoints : null;
             updateSelect('#ep', epList,
                     function(key, ep) {
-                        return ep;
+                        return ep.ID;
                     },
                     function(key, ep) {
-                        return ep;
+                        return ep.ID;
             });
             setExpertData('devId', this.value);
             setExpertData('ep', $('#ep-selector').val(), false);
@@ -1253,19 +1253,26 @@ function populateSelector(selectId, key, cid) {
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
                     function(index, attr) {
-                        return attr.attrName + ' ('+attr.attrId +', type '+attr.dataType+')';
+                        return index + ' ('+attr.ID +', type '+attr.type+')';
                     },
                     function(index, attr) {
-                        return attr.attrId;
+                        return attr.ID;
                     });
-        }
-        else {
+        } else if (key === 'typeList') {
             updateSelect(selectId, list,
                     function(name, val) {
                         return name +' ('+val+')';
                     },
                     function(name, val) {
                         return val;
+                    });
+        } else {
+            updateSelect(selectId, list,
+                    function(name, val) {
+                        return name +' ('+val.ID+')';
+                    },
+                    function(name, val) {
+                        return val.ID;
                     });
         }
     });
