@@ -165,6 +165,9 @@ class Zigbee extends utils.Adapter {
 
     async publishFromState(deviceId, modelId, stateModel, stateList, options){
         this.log.debug(`State changes. dev: ${deviceId} model: ${modelId} states: ${safeJsonStringify(stateList)} opt: ${safeJsonStringify(options)}`);
+        if (modelId == 'group') {
+            deviceId = parseInt(deviceId);
+        }
         const entity = await this.zbController.resolveEntity(deviceId);
         this.log.debug(`entity: ${safeJsonStringify(entity)}`);
         const mappedModel = entity.mapped;
@@ -189,7 +192,7 @@ class Zigbee extends utils.Adapter {
             const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
     
             let syncStateList = [];
-            if (stateModel.syncStates) {
+            if (stateModel && stateModel.syncStates) {
                 stateModel.syncStates.forEach((syncFunct) => {
                     const res = syncFunct(stateDesc, value, options);
                     if (res) {
@@ -197,20 +200,28 @@ class Zigbee extends utils.Adapter {
                     }
                 });
             }
-    
+
             const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
             const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
             this.log.debug(`convert ${key}, ${preparedValue}, ${safeJsonStringify(preparedOptions)}`);
-            const setentity = await this.zbController.resolveEntity(deviceId, epName);
-            this.log.debug(`setentity: ${safeJsonStringify(setentity)}`);
+                
+            let target;
+            if (modelId === 'group') {
+                target = entity.mapped;
+            } else {
+                target = await this.zbController.resolveEntity(deviceId, epName);
+                target = target.endpoint;
+            }
+            this.log.debug(`target: ${safeJsonStringify(target)}`);
             const meta = {
                 endpoint_name: '',
                 options: preparedOptions,
-                device: setentity.device,
+                device: entity.device,
                 mapped: mappedModel,
+                message: {[key]: preparedValue},
             };
             try {
-                const result = await converter.convertSet(setentity.endpoint, key, preparedValue, meta);
+                const result = await converter.convertSet(target, key, preparedValue, meta);
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
 
                 this.acknowledgeState(deviceId, modelId, stateDesc, value);

@@ -1392,7 +1392,7 @@ function updateDev(id, newName, newGroups) {
     if (dev && dev.common.name != newName) {
         renameDevice(id, newName);
     }
-    if (dev.info.type == "Router") {
+    if (dev.info._type == "Router") {
         const oldGroups = devGroups[id] || [];
         if (oldGroups.toString() != newGroups.toString()) {
             devGroups[id] = newGroups;
@@ -1446,7 +1446,7 @@ function prepareBindingDialog(bindObj){
                 return 'Select source device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.type == 'Coordinator') {
+                if (device.info._type == 'Coordinator') {
                     return null;
                 }
                 return device.common.name;
@@ -1479,7 +1479,7 @@ function prepareBindingDialog(bindObj){
                 return 'Select target device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.type == 'Coordinator') {
+                if (device.info._type == 'Coordinator') {
                     return null;
                 }
                 return device.common.name;
