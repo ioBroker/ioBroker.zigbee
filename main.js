@@ -289,7 +289,8 @@ class Zigbee extends utils.Adapter {
 
     getZigbeeOptions() {
         // file path for db
-        const dbDir = utils.controllerDir + '/' + this.systemConfig.dataDir + this.namespace.replace('.', '_');
+        const dataDir = (this.systemConfig) ? this.systemConfig.dataDir : '';
+        const dbDir = utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_');
         if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
         const port = this.config.port;
         if (!port) {
