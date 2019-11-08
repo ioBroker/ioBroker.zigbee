@@ -34,13 +34,22 @@ function getCard(dev) {
     }
     room = rooms.join(',') || '&nbsp';
     let routeBtn = '';
-    if (dev.info && dev.info._type == 'Router') {
+    if (dev.info && dev.info.device._type == 'Router') {
         routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
     }
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    var image = `<img src="${img_src}" width="96px">`,
-        info = `<p style="min-height:96px" class="truncate">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
+    var image = `<img src="${img_src}" width="88px">`,
+        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+                    <ul>
+        				<li><span style="display: inline-block; width: 50px">ieee:</span><span>${id.replace(namespace+'.', '')}</span></li>
+        				<li><span style="display: inline-block; width: 50px">nwk:</span><span>323423</span></li>
+        				<li><span style="display: inline-block; width: 50px">model:</span><span>${type}</span></li>
+        				<li><span style="display: inline-block; width: 50px">vendor:</span><span>fdfawer</span></li>
+        				<li><span style="display: inline-block; width: 50px">support:</span><span>sdfgsg ergw erg wergewr</span></li>
+        				<li><span style="display: inline-block; width: 50px">group:</span><span>${dev.groupNames || ''}</span></li>
+        			</ul>
+        		</div>`,
         buttons = `<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">
             <i class="material-icons tiny">delete</i></a>
             <a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">
@@ -171,7 +180,7 @@ function deleteConfirmation(id, name) {
 function editName(id, name) {
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find("input[id='d_name']").val(name);
-    if (dev.info._type == "Router") {
+    if (dev.info.device._type == "Router") {
         list2select('#d_groups', groups, devGroups[id] || []);
         $("#d_groups").parent().parent().removeClass('hide');
     } else {
@@ -245,8 +254,8 @@ function showDevices() {
     devGroups = {};
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
-        if (d.info && d.info._type == "Coordinator") continue;
-        if (d.groups && d.info && d.info._type == "Router") {
+        if (d.info && d.info.device._type == "Coordinator") continue;
+        if (d.groups && d.info && d.info.device._type == "Router") {
             devGroups[d._id] = d.groups;
             d.groupNames = d.groups.map(item=>{
                 return groups[item] || '';
@@ -585,7 +594,7 @@ function putEventToNode(devId) {
 }
 
 function getNetworkInfo(devId, networkmap){
-    return networkmap.find((info) => info.ieeeAddr == devId);
+    return networkmap.find((info) => info.device.ieeeAddr == devId);
 }
 
 function showNetworkMap(devices, map){
@@ -610,7 +619,7 @@ function showNetworkMap(devices, map){
             image: dev.icon,
             font: {color:'#007700'},
         };
-        if (dev.info && dev.info._type == 'Coordinator') {
+        if (dev.info && dev.info.device._type == 'Coordinator') {
             node.shape = 'star';
             node.label = 'Coordinator';
         }
@@ -620,7 +629,7 @@ function showNetworkMap(devices, map){
     const getDevice = function(ieeeAddr) {
         return devices.find((devInfo) => {
             try {
-                return devInfo.info.ieeeAddr == ieeeAddr;
+                return devInfo.info.device.ieeeAddr == ieeeAddr;
             }  catch (e) {
                 //console.log("No dev with ieee " + ieeeAddr);
             }
@@ -630,7 +639,7 @@ function showNetworkMap(devices, map){
     const getDeviceByNetwork = function(nwk) {
         return devices.find((devInfo) => {
             try {
-                return devInfo.info._networkAddress == nwk;
+                return devInfo.info.device._networkAddress == nwk;
             }  catch (e) {
                 //console.log("No dev with nwkAddr " + nwk);
             }
@@ -962,7 +971,7 @@ function loadDeveloperTab(onChange) {
     updateSelect('#dev', devices,
             function(key, device) {
                 if (device.hasOwnProperty('info')) {
-                    if (device.info._type == 'Coordinator') {
+                    if (device.info.device._type == 'Coordinator') {
                         return null;
                     }
                     return `${device.common.name} (${device.info._modelID})`;
@@ -1058,7 +1067,7 @@ function loadDeveloperTab(onChange) {
                 return obj._id === this.value;
             });
 
-            var epList = device ? device.info._endpoints : null;
+            var epList = device ? device.info.device._endpoints : null;
             updateSelect('#ep', epList,
                     function(key, ep) {
                         return ep.ID;
@@ -1409,7 +1418,7 @@ function updateDev(id, newName, newGroups) {
     if (dev && dev.common.name != newName) {
         renameDevice(id, newName);
     }
-    if (dev.info._type == "Router") {
+    if (dev.info.device._type == "Router") {
         const oldGroups = devGroups[id] || [];
         if (oldGroups.toString() != newGroups.toString()) {
             devGroups[id] = newGroups;
@@ -1463,7 +1472,7 @@ function prepareBindingDialog(bindObj){
                 return 'Select source device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info._type == 'Coordinator') {
+                if (device.info.device._type == 'Coordinator') {
                     return null;
                 }
                 return device.common.name;
@@ -1496,7 +1505,7 @@ function prepareBindingDialog(bindObj){
                 return 'Select target device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info._type == 'Coordinator') {
+                if (device.info.device._type == 'Coordinator') {
                     return null;
                 }
                 return device.common.name;
