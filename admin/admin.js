@@ -39,49 +39,66 @@ function getCard(dev) {
     }
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    var image = '<img src="' + img_src + '" width="96px">',
+    var image = `<img src="${img_src}" width="96px">`,
         info = `<p style="min-height:96px" class="truncate">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
-        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
-            '<i class="material-icons tiny">delete</i></a>'+
-            '<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
-                '<i class="material-icons small">mode_edit</i></a>'+routeBtn,
-        card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
-                    '<div class="card hoverable">'+
-                    '<div class="card-content">'+
-                        '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
-                            '<i class="material-icons">info</i></a>'+
-                        '<span id="dName" class="card-title truncate">'+title+'</span>'+paired+
-
-                        '<i class="left">'+image+'</i>'+
-                        info+
-                        buttons+
-                    '</div>'+
-                    '<div class="card-action">'+room+'</div>'+
-                    '<div class="card-reveal" name="edit">'+
-                        '<span class="card-title grey-text text-darken-4">Edit device name</span>'+
-                        '<div class="input-field">'+
-                            '<input id="dNameInput" type="text" class="value validate">'+
-                            '<label for="dNameInput" class="translate">Enter new name</label>'+
-                        '</div>'+
-                        '<span class="right">'+
-                            '<a name="done" class="waves-effect waves-green btn green">'+
-                            '<i class="material-icons">done</i></a>'+
-                            '<a name="close" class="waves-effect waves-red btn-flat">'+
-                            '<i class="material-icons">close</i></a>'+
-                        '</span>'+
-                    '</div>'+
-                    '<div class="card-reveal" name="d-info">'+
-                        '<span class="right">'+
-                            '<a name="close" class="waves-effect waves-red btn-flat top right">'+
-                            '<i class="material-icons">close</i></a>'+
-                        '</span>'+
-                        '<span class="card-title grey-text text-darken-4 translate">Device details</span>'+
-                        '<div id="d-infos">'+
-                            'loading...'+
-                        '</div>'+
-                    '</div>'+
-                    '</div>'+
-                '</div>';
+        buttons = `<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">
+            <i class="material-icons tiny">delete</i></a>
+            <a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">
+                <i class="material-icons small">mode_edit</i></a>${routeBtn}`,
+        card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+                  <div class="card hoverable">
+                    <div class="card-content zcard">
+                        <!--a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;"--!>
+                        <div class="top right small" style="border-radius: 50%">
+                            <div><i class="material-icons icon-green">check_circle</i></div>
+                            <div><i class="material-icons">network_check</i><div class="center" style="font-size:0.7em">50</div></div>
+                            <div><i class="material-icons">battery_std</i><div class="center" style="font-size:0.7em">100%</div></div>
+                        </div>
+                        <!--/a--!>
+                        <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                        <i class="left">${image}</i>
+                        ${info}<!--${buttons}--!>
+                        <div class="footer right-align"></div>
+                    </div>
+                    <div class="card-action">
+	                    <div class="card-reveal-buttons">
+	                    	<button class="left small-button m">
+	                    		<i class="material-icons">info</i>
+	                    	</button>
+	                    	<span class="left" style="padding-top:8px">${room}</span>
+	                    	<button class="right small-button">
+	                    		<i class="material-icons">delete</i>
+	                    	</button>
+	                    	<button class="right small-button">
+	                    		<i class="material-icons">edit</i>
+	                    	</button>
+	                	</div>
+	                </div>
+                    <div class="card-reveal" name="edit">
+                        <span class="card-title grey-text text-darken-4">Edit device name</span>
+                        <div class="input-field">
+                            <input id="dNameInput" type="text" class="value validate">
+                            <label for="dNameInput" class="translate">Enter new name</label>
+                        </div>
+                        <span class="right">
+                            <a name="done" class="waves-effect waves-green btn green">
+                            <i class="material-icons">done</i></a>
+                            <a name="close" class="waves-effect waves-red btn-flat">
+                            <i class="material-icons">close</i></a>
+                        </span>
+                    </div>
+                    <div class="card-reveal" name="d-info">
+                        <span class="right">
+                            <a name="close" class="waves-effect waves-red btn-flat top right">
+                            <i class="material-icons">close</i></a>
+                        </span>
+                        <span class="card-title grey-text text-darken-4 translate">Device details</span>
+                        <div id="d-infos">
+                        	loading...
+                        </div>
+                    </div>
+                  </div>
+                </div>`;
     return card;
 }
 
