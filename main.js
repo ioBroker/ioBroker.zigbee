@@ -15,7 +15,9 @@ const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const ZShepherd = require('zigbee-shepherd');
-const ZigbeeController = require('./lib/zigbeecontroller');
+const controllerModule = require('./lib/zigbeecontroller');
+const ZigbeeController = controllerModule.ZigbeeController;
+const prio = controllerModule.prio;
 const deviceMapping = require('zigbee-shepherd-converters');
 const statesMapping = require('./lib/devstates');
 const SerialPort = require('serialport');
@@ -32,7 +34,7 @@ let devNum = 0;
 let zbControl;
 let adapter;
 
-let ObjectsToConfigure = {};
+const objectsToConfigure = {};
 let configureOnMessage = true;
 
 const allowedClusters = [
@@ -180,7 +182,6 @@ function processMessages(ignore) {
     });
 }
 
-
 // Because the only one port is occupied by first instance, the changes to other devices will be send with messages
 function processMessage(message) {
     if (typeof message === 'string') {
@@ -327,7 +328,7 @@ function groupDevices(from, command, devGroups, callback) {
             adapter.setState(id, JSON.stringify(groups), true);
             const sysid = j.replace(adapter.namespace + '.', '0x');
             zbControl.removeDevFromAllGroups(sysid, () => {
-                groups.forEach(groupId => {
+                groups.forEach((groupId) => {
                     zbControl.addDevToGroup(sysid, groupId);
                 });
             });
@@ -745,21 +746,17 @@ function newDevice(id, msg) {
         logToPairing('New device joined ' + dev.ieeeAddr + ' model ' + dev.modelId, true);
         updateDev(dev.ieeeAddr.substr(2), dev.modelId, dev.modelId, () => {
             syncDevStates(dev);
-// get set to configure the device, IF it needs configuring
-            const ieeeAddr = dev.ieeeAddr;
-            const mappedModel = deviceMapping.findByZigbeeModel(dev.modelId);
 
-            if (CheckForConfigure(dev)) {
-              scheduleDeviceConfigOnMessage(dev.ieeeAddr);
-// trigger initial configure attempt, earliest one second after the zigbee Network is closed.
-              setTimeout(AsyncConfigure, (zbControl.getInfo().joinTimeLeft+1)*1000);
+            if (checkForConfigure(dev)) {
+                scheduleDeviceConfigOnMessage(dev.ieeeAddr);
+                // trigger initial configure attempt, earliest one second after the zigbee Network is closed.
+                setTimeout(asyncConfigure, (zbControl.getInfo().joinTimeLeft+1)*1000);
             }
         });
     }
 }
 
-function CheckForConfigure(dev)
-{
+function checkForConfigure(dev) {
   const mappedModel = deviceMapping.findByZigbeeModel(dev.modelId);
   return (mappedModel && mappedModel.configure);
 }
@@ -986,9 +983,9 @@ function onReady() {
         activeDevices.forEach(device => {
             devNum = devNum + 1;
             adapter.log.info(devNum + ' ' + getDeviceStartupLogMessage(device));
-            if (CheckForConfigure(device)) {
-              scheduleDeviceConfigOnMessage(device.ieeeAddr);
-              setTimeout(function() { AsyncConfigure(device.ieeeAddr); }, (devNum +10) * 1000);
+            if (checkForConfigure(device)) {
+                scheduleDeviceConfigOnMessage(device.ieeeAddr);
+                setTimeout(function() {asyncConfigure(device.ieeeAddr);}, (devNum +10) * 1000);
             }
             // update dev and states
             chain.push(new Promise((resolve, reject) => {
@@ -1161,7 +1158,9 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
         }
 
         const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
-        const ep = devEp ? devEp[epName] : null;
+        let ep = devEp ? devEp[epName] : null;
+        ep = (!ep && devEp) ? devEp[''] : ep;
+        ep = (!ep && devEp) ? devEp['default'] : ep;
         const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
         const postfix = '';
         const messages = converter.convert(key, preparedValue, preparedOptions, 'set', postfix, mappedModel.options || {});
@@ -1229,6 +1228,8 @@ function publishFromState(deviceId, modelId, stateKey, state, options) {
                             // process sync state list
                             processSyncStatesList(deviceId, modelId, syncStateList);
                         }
+                    }, {
+                        priority: prio.high
                     });
                 }, changedState.timeout);
             }
@@ -1404,153 +1405,148 @@ function collectOptions(devId, modelId, callback) {
     if (!len) callback(result);
 }
 
-function scheduleDeviceConfigOnMessage(ieeeAddr)
-{
-  if (!ObjectsToConfigure.hasOwnProperty(ieeeAddr))
-    ObjectsToConfigure[ieeeAddr] = { IsConfiguring: false, TryCount: 0 }
-  else {
-    ObjectsToConfigure[ieeeAddr].IsConfiguring = false;
-  }
-  if (!configureOnMessage) {
-    if (Object.keys(ObjectsToConfigure).length >0) {
-      configureOnMessage = true;
-      adapter.log.info('Found device which needs configuring - configure on message activated')
+function scheduleDeviceConfigOnMessage(ieeeAddr) {
+    if (!objectsToConfigure.hasOwnProperty(ieeeAddr)) {
+        objectsToConfigure[ieeeAddr] = {isConfiguring: false, tryCount: 0};
+    } else {
+        objectsToConfigure[ieeeAddr].isConfiguring = false;
     }
-  }
+    if (!configureOnMessage) {
+        if (Object.keys(objectsToConfigure).length >0) {
+            configureOnMessage = true;
+            adapter.log.info('Found device which needs configuring - configure on message activated');
+        }
+    }
 }
 
-async function AsyncConfigure(ieeeAddr)
-{
-  if (ObjectsToConfigure[ieeeAddr])
-  {
-    if (!ObjectsToConfigure[ieeeAddr].IsConfiguring)
-    {
-      adapter.log.debug(`Async configure on ${ieeeAddr} `)
-      ObjectsToConfigure[ieeeAddr].IsConfiguring = true;
-      const devToConfig = zbControl.getDevice(ieeeAddr);
-      let i = ObjectsToConfigure[ieeeAddr].TryCount
-      if (i > 10)
-      {
-        if (i>100)
-        {
-          adapter.log.warn(`Unable to configure ${ieeeAddr}: ${devToConfig.modelId} in 20 attempts - giving up.`)
-          delete ObjectsToConfigure[ieeeAddr];
-          if (Object.keys(ObjectsToConfigure).length < 1) {
-            configureOnMessage = false; // we configured everything, no need for longer checks
-            adapter.log.info('configure on message disabled - everything is configured')
-            return;
-          }
+async function asyncConfigure(ieeeAddr) {
+    if (objectsToConfigure[ieeeAddr]) {
+        if (!objectsToConfigure[ieeeAddr].isConfiguring) {
+            adapter.log.debug(`Async configure on ${ieeeAddr}`);
+            objectsToConfigure[ieeeAddr].isConfiguring = true;
+            const devToConfig = zbControl.getDevice(ieeeAddr);
+            const i = objectsToConfigure[ieeeAddr].tryCount;
+            if (i > 10) {
+                if (i > 100) {
+                    adapter.log.warn(`Unable to configure ${ieeeAddr}: ${devToConfig.modelId} in 20 attempts - giving up.`);
+                    delete objectsToConfigure[ieeeAddr];
+                    if (Object.keys(objectsToConfigure).length < 1) {
+                        configureOnMessage = false; // we configured everything, no need for longer checks
+                        adapter.log.info('Configure on message disabled - everything is configured');
+                        return;
+                    }
+                }
+                if (i % 10 > 0) {
+                    objectsToConfigure[ieeeAddr].tryCount++;
+                    return; // if 10 attempts pass without success, go to 1 in 10
+                }
+            }
+            configureDevice(devToConfig, (ok, msg) => {
+                if (ok) {
+                    if (msg === false) { // is no error, just feedback that device does not need configuration
+                        adapter.log.debug(`Dev ${ieeeAddr} ${devToConfig.modelId} does not need to be configured.`);
+                        delete objectsToConfigure[ieeeAddr];
+                        return;
+                    }
+                    adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
+                    delete objectsToConfigure[ieeeAddr];
+                    if (Object.keys(objectsToConfigure).length < 1) {
+                        configureOnMessage = false; // we configured everything, no need for longer checks
+                        adapter.log.info('Configure on message disabled - everything is configured');
+                    }
+                } else {
+                    objectsToConfigure[ieeeAddr].tryCount++;
+                    adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
+                    adapter.log.info(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet `+
+                        `(${objectsToConfigure[ieeeAddr].tryCount}), will retry on next incoming message.`);
+                    objectsToConfigure[ieeeAddr].isConfiguring = false;
+                }
+            });
         }
-        if (i % 10 > 0) {
-	  ObjectsToConfigure[ieeeAddr].TryCount++;
-	  return; // if 10 attempts pass without success, go to 1 in 10
-	}
-      }
-      configureDevice(devToConfig, (ok, msg) => {
-          if (ok) {
-            if (msg === false) {
-              adapter.log.warn(`Unneeded configure attempt on ${ieeeAddr} ${devToConfig.modelId}`)
-              delete ObjectsToConfigure[ieeeAddr];
-              return;
-            }
-            adapter.log.info(`Successfully configured ${ieeeAddr} ${devToConfig.modelId}`);
-            delete ObjectsToConfigure[ieeeAddr];
-            if (Object.keys(ObjectsToConfigure).length < 1) {
-              configureOnMessage = false; // we configured everything, no need for longer checks
-              adapter.log.info('configure on message disabled - everything is configured')
-            }
-          } else {
-              ObjectsToConfigure[ieeeAddr].TryCount++;
-              adapter.log.debug(`Configure ${ieeeAddr} ${devToConfig.modelId} ${msg}`);
-              adapter.log.info(`Dev ${ieeeAddr} ${devToConfig.modelId} not configured yet (${ObjectsToConfigure[ieeeAddr].TryCount}), will retry on next incoming message.`);
-              ObjectsToConfigure[ieeeAddr].IsConfiguring = false;
-          }
-      });
     }
-  }
 }
 
 function onDevEvent(type, devId, message, data) {
     switch (type) {
-        case 'interview':
-            adapter.log.debug('Device ' + devId + ' try to connect ' + safeJsonStringify(data));
-            logToPairing('Interview state: step ' + data.currentEp + '/' + data.totalEp + '. progress: ' + data.progress + '%', true);
-            break;
-        case 'msg':
-            adapter.log.debug('Device ' + devId + ' incoming event:' + safeJsonStringify(message));
-            // Map Zigbee modelID to vendor modelID.
-            const mModel = deviceMapping.findByZigbeeModel(data.modelId);
+    case 'interview':
+        adapter.log.debug('Device ' + devId + ' try to connect ' + safeJsonStringify(data));
+        logToPairing('Interview state: step ' + data.currentEp + '/' + data.totalEp + '. progress: ' + data.progress + '%', true);
+        break;
+    case 'msg':
+        adapter.log.debug('Device ' + devId + ' incoming event:' + safeJsonStringify(message));
+        // Map Zigbee modelID to vendor modelID.
+        const mModel = deviceMapping.findByZigbeeModel(data.modelId);
 
 
-            let payload = {};
-            if (message.hasOwnProperty('linkquality')) {
-                payload.linkquality = message.linkquality;
-            }
+        let payload = {};
+        if (message.hasOwnProperty('linkquality')) {
+            payload.linkquality = message.linkquality;
+        }
 
-            if (message.hasOwnProperty('available')) {
-                payload.available = message.available;
-            }
+        if (message.hasOwnProperty('available')) {
+            payload.available = message.available;
+        }
 
-            adapter.log.debug('Publish ' + safeJsonStringify(payload));
-            publishToState(devId.substr(2), data.modelId, mModel, payload);
+        adapter.log.debug('Publish ' + safeJsonStringify(payload));
+        publishToState(devId.substr(2), data.modelId, mModel, payload);
 
-            if (configureOnMessage) { // configure device when a message is received
-              AsyncConfigure(devId);
-            }
-            break;
+        if (configureOnMessage) { // configure device when a message is received
+            asyncConfigure(devId);
+        }
+        break;
 
-        default:
-            adapter.log.debug('Device ' + devId + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
+    default:
+        adapter.log.debug('Device ' + devId + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
 
-            // ignore if remaining time is set in event, cause that's just an intermediate value
-            if (message.data.data && message.data.data.remainingTime) {
-                adapter.log.debug('Found remaining time ' + message.data.data.remainingTime + ', so skip event');
-                return;
-            }
+        // ignore if remaining time is set in event, cause that's just an intermediate value
+        if (message.data.data && message.data.data.remainingTime) {
+            adapter.log.debug('Found remaining time ' + message.data.data.remainingTime + ', so skip event');
+            return;
+        }
 
-            // Map Zigbee modelID to vendor modelID.
-            const modelID = data.modelId;
-            const mappedModel = deviceMapping.findByZigbeeModel(modelID);
-            // Find a conveter for this message.
-            const cid = data.cid;
-            if (!mappedModel) {
-                adapter.log.error('Unknown device model ' + modelID + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
-                return;
-            }
-            let converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
-                (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
-            if (!converters.length && type === 'readRsp') {
-                converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
-                    (c.type instanceof Array) ? c.type.includes('attReport') : c.type === 'attReport'));
-            }
-            if (!converters.length) {
-                adapter.log.debug(
-                    `No converter available for '${mappedModel.model}' with cid '${cid}' and type '${type}'`
-                );
-                return;
-            }
-            converters.forEach((converter) => {
-                const publish = (payload) => {
-                    // Don't cache messages with click and action.
-                    const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
-                    adapter.log.debug('Publish ' + safeJsonStringify(payload));
-                    if (payload) {
-                      publishToState(devId.substr(2), modelID, mappedModel, payload);
-                    }
-                };
+        // Map Zigbee modelID to vendor modelID.
+        const modelID = data.modelId;
+        const mappedModel = deviceMapping.findByZigbeeModel(modelID);
+        // Find a conveter for this message.
+        const cid = data.cid;
+        if (!mappedModel) {
+            adapter.log.error('Unknown device model ' + modelID + ' emit event ' + type + ' with data:' + safeJsonStringify(message.data));
+            return;
+        }
+        let converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
+            (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
+        if (!converters.length && type === 'readRsp') {
+            converters = mappedModel.fromZigbee.filter(c => c.cid === cid && (
+                (c.type instanceof Array) ? c.type.includes('attReport') : c.type === 'attReport'));
+        }
+        if (!converters.length) {
+            adapter.log.debug(
+                `No converter available for '${mappedModel.model}' with cid '${cid}' and type '${type}'`
+            );
+            return;
+        }
+        converters.forEach((converter) => {
+            const publish = (payload) => {
+                // Don't cache messages with click and action.
+                const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
+                adapter.log.debug('Publish ' + safeJsonStringify(payload));
+                if (payload) {
+                  publishToState(devId.substr(2), modelID, mappedModel, payload);
+                }
+            };
 
-                collectOptions(devId.substr(2), modelID, (options) => {
-                    const payload = converter.convert(mappedModel, message, publish, options);
-                    if (payload) {
-                            // Add device linkquality.
-                            if (message.linkquality) {
-                                payload.linkquality = message.linkquality;
-                            }
-                            publish(payload);
-                    }
-                });
+            collectOptions(devId.substr(2), modelID, (options) => {
+                const payload = converter.convert(mappedModel, message, publish, options);
+                if (payload) {
+                        // Add device linkquality.
+                        if (message.linkquality) {
+                            payload.linkquality = message.linkquality;
+                        }
+                        publish(payload);
+                }
             });
-            break;
+        });
+        break;
     }
 }
 
