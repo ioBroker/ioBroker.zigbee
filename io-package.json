@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.11.4",
+        "version": "0.11.5",
         "news": {
+            "0.11.5": {
+                "en": "New devices and fixes"
+            },
             "0.11.0": {
                 "en": "Support both Z-Stack 1.2 and 3.0"
             },
@@ -308,6 +311,7 @@
         "type": "hardware",
         "materialize": true,
         "messagebox": true,
+        "stopBeforeUpdate": true,
         "dataFolder": "zigbee_%INSTANCE%"
     },
     "native": {
