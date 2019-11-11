@@ -39,15 +39,18 @@ function getCard(dev) {
     }
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    var image = `<img src="${img_src}" width="88px">`,
+    var rid = id.split('.').join('_');
+    var image = `<img src="${img_src}" width="80px">`,
+    	nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+    	battery = (dev.battery) ? `<div class="col tool"><i class="material-icons">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+    	lq = (dev.link_quality) ? `<div class="col tool"><i class="material-icons">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-        				<li><span style="display: inline-block; width: 50px">ieee:</span><span>${id.replace(namespace+'.', '')}</span></li>
-        				<li><span style="display: inline-block; width: 50px">nwk:</span><span>323423</span></li>
-        				<li><span style="display: inline-block; width: 50px">model:</span><span>${type}</span></li>
-        				<li><span style="display: inline-block; width: 50px">vendor:</span><span>fdfawer</span></li>
-        				<li><span style="display: inline-block; width: 50px">support:</span><span>sdfgsg ergw erg wergewr</span></li>
-        				<li><span style="display: inline-block; width: 50px">group:</span><span>${dev.groupNames || ''}</span></li>
+        				<li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
+        				<li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
+        				<li><span class="label">model:</span><span>${type}</span></li>
+        				<li><span class="label">vendor:</span><span>${dev.vendor}</span></li>
+        				<li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
         			</ul>
         		</div>`,
         buttons = `<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">
@@ -58,11 +61,11 @@ function getCard(dev) {
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <!--a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;"--!>
-                        <div class="top right small" style="border-radius: 50%">
-                            <div><i class="material-icons icon-green">check_circle</i></div>
-                            <div><i class="material-icons">network_check</i><div class="center" style="font-size:0.7em">50</div></div>
-                            <div><i class="material-icons">battery_std</i><div class="center" style="font-size:0.7em">100%</div></div>
-                        </div>
+                        <span class="top right small" style="border-radius: 50%">
+                            ${battery}
+                            ${lq}
+                            <div class="col tool"><i class="material-icons icon-green">check_circle</i></div>
+                        </span>
                         <!--/a--!>
                         <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
                         <i class="left">${image}</i>
@@ -71,15 +74,15 @@ function getCard(dev) {
                     </div>
                     <div class="card-action">
 	                    <div class="card-reveal-buttons">
-	                    	<button class="left small-button m">
-	                    		<i class="material-icons">info</i>
+	                    	<button name="info" class="left btn-flat btn-small">
+	                    		<i class="material-icons icon-blue">info</i>
 	                    	</button>
 	                    	<span class="left" style="padding-top:8px">${room}</span>
-	                    	<button class="right small-button">
-	                    		<i class="material-icons">delete</i>
+	                    	<button name="delete" class="right btn-flat btn-small">
+	                    		<i class="material-icons icon-black">delete</i>
 	                    	</button>
-	                    	<button class="right small-button">
-	                    		<i class="material-icons">edit</i>
+	                    	<button name="edit" class="right btn-flat btn-small">
+	                    		<i class="material-icons icon-green">edit</i>
 	                    	</button>
 	                	</div>
 	                </div>
@@ -96,7 +99,7 @@ function getCard(dev) {
                             <i class="material-icons">close</i></a>
                         </span>
                     </div>
-                    <div class="card-reveal" name="d-info">
+                    <div class="card-reveal" name="info">
                         <span class="right">
                             <a name="close" class="waves-effect waves-red btn-flat top right">
                             <i class="material-icons">close</i></a>
@@ -126,7 +129,7 @@ function openReval(e, id, name){
         $cardReveal.find("input").val(name);
         Materialize.updateTextFields();
     }
-    else if ($revealName == "d-info") {
+    else if ($revealName == "info") {
         pollDeviceInfo(id, $card);
     }
 
@@ -180,7 +183,7 @@ function deleteConfirmation(id, name) {
 function editName(id, name) {
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find("input[id='d_name']").val(name);
-    if (dev.info.device._type == "Router") {
+    if (dev.info && dev.info.device._type == "Router") {
         list2select('#d_groups', groups, devGroups[id] || []);
         $("#d_groups").parent().parent().removeClass('hide');
     } else {
@@ -255,7 +258,8 @@ function showDevices() {
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
         if (d.info && d.info.device._type == "Coordinator") continue;
-        if (d.groups && d.info && d.info.device._type == "Router") {
+        //if (d.groups && d.info && d.info.device._type == "Router") {
+        if (d.groups) {
             devGroups[d._id] = d.groups;
             d.groupNames = d.groups.map(item=>{
                 return groups[item] || '';
@@ -272,11 +276,11 @@ function showDevices() {
     const getDevId = function(dev_block) {
         return dev_block.attr("id");
     };
-    $("a.btn-floating[name='delete']").click(function() {
+    $(".card-reveal-buttons button[name='delete']").click(function() {
         var dev_block = $(this).parents("div.device");
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
-    $("a.btn-floating[name='edit']").click(function(e) {
+    $(".card-reveal-buttons button[name='edit']").click(function(e) {
         var dev_block = $(this).parents("div.device"),
             id = getDevId(dev_block),
             name = getDevName(dev_block);
@@ -288,7 +292,7 @@ function showDevices() {
             joinProcess(getDevId(dev_block));
         showPairingProcess();
     });
-    $("a[name='d-info']").click(function(e) {
+    $(".card-reveal-buttons button[name='info']").click(function(e) {
         var dev_block = $(this).parents("div.device");
         openReval(e, getDevId(dev_block), getDevName(dev_block));
     });
@@ -557,6 +561,15 @@ socket.on('stateChange', function (id, state) {
         } else {
         	const devId = getDevId(id);
         	putEventToNode(devId);
+        	var rid = id.split('.').join('_');
+        	if (id.match(/\.link_quality$/)) {
+        		// update link_quality
+        		$(`#${rid}`).text(state.val);
+        	}
+        	if (id.match(/\.battery$/)) {
+        		// update battery
+        		$(`#${rid}`).text(state.val);
+        	}
         }
     }
 });
