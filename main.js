@@ -61,6 +61,7 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('pairing', this.onPairing.bind(this));
         this.zbController.on('event', this.onZigbeeEvent.bind(this));
         this.zbController.on('msg', this.onZigbeeEvent.bind(this));
+        this.zbController.on('publish', this.publishToState.bind(this));
 
         this.reconnectCounter = 1;
         this.doConnect();
@@ -139,7 +140,7 @@ class Zigbee extends utils.Adapter {
                 	if (message.linkquality) {
                         payload.linkquality = message.linkquality;
                     }
-                    this.stController.publishToState(devId, modelID, payload);
+                    this.publishToState(devId, modelID, payload);
                 }
             };
 
@@ -151,6 +152,10 @@ class Zigbee extends utils.Adapter {
                 }
             });
         });
+    }
+
+    publishToState(devId, modelID, payload) {
+    	this.stController.publishToState(devId, modelID, payload);
     }
 
     acknowledgeState(deviceId, modelId, stateDesc, value) {
