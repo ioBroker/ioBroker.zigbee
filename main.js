@@ -28,7 +28,7 @@ class Zigbee extends utils.Adapter {
      * @param {Partial<ioBroker.AdapterOptions>} [options={}]
      */
     constructor(options) {
-        super(Object.assign({}, options, {
+        super(Object.assign(options || {}, {
             name: "zigbee",
             systemConfig: true,
         }));
