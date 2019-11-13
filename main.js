@@ -296,7 +296,7 @@ class Zigbee extends utils.Adapter {
         // file path for db
         const dataDir = (this.systemConfig) ? this.systemConfig.dataDir : '';
         const dbDir = utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_');
-        if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
+        if (this.systemConfig && !fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
         const port = this.config.port;
         if (!port) {
             this.log.error('Serial port not selected! Go to settings page.');
