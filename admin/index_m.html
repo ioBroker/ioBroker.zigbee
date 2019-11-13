@@ -198,27 +198,54 @@
                 </div>
                 <div class="row">
                     <h6>Network</h6>
-                    <div class="input-field col s6 m3 l1">
-                        <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16" class="validate value" />
-                        <label class="translate" for="extPanID">ExtPanID</label>
+                    <div class="row">
+                        <div class="input-field col s12 m6 l3">
+                            <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16" class="validate value" />
+                            <label class="translate" for="extPanID">ExtPanID</label>
+                        </div>
+                        <div class="input-field col s12 m6 l3">
+                            <p>Extended PAN ID is the main network id, comparable to SSID of wifi networks. This id must never change
+                            for existing networks, else you have to reset and repair your devices. If you use multiple Zigbee adapter,
+                            you <b>must make sure</b> that they use unique ExtPanID's. Just enter 16 random hex character (a-f and 0-9).</p>
+                        </div>
                     </div>
-                    <div class="input-field col s6 m3 l1">
-                        <input id="panID" type="number" min="1" max="65565" class="value" />
-                        <label class="translate" for="panID">PanID</label>
+                    <div class="row">
+                        <div class="input-field col s12 m6 l3">
+                            <input id="panID" type="number" min="1" max="65565" class="value" />
+                            <label class="translate" for="panID">PanID</label>
+                        </div>
+                        <div class="input-field col s12 m6 l3">
+                            <p>Pan ID is some simplified id (is used by Zigbee instead of ExtPanID wherever possible). This should be unique too.
+                            Note: Zigbee network may choose a different Pan ID than you specified here in case it detects id conflicts.</p>
+                        </div>
+                        
                     </div>
-                    <div class="input-field col s6 m3 l1">
-                        <input id="channel" type="number" min="1" max="65565" class="value" />
-                        <label class="translate" for="channel">Channel</label>
-                    </div>
-                    <div class="input-field col s12 m6 l3">
-                        <p>Extended PAN ID is the main network id, comparable to SSID of wifi networks. This id must never change
-                        for existing networks, else you have to reset and repair your devices. If you use multiple Zigbee adapter,
-                        you <b>must make sure</b> that they use unique ExtPanID's. Just enter 16 random hex character (a-f and 0-9).</p>
-                        <p>Pan ID is some simplified id (is used by Zigbee instead of ExtPanID wherever possible). This should be unique too.
-                        Note: Zigbee network may choose a different Pan ID than you specified here in case it detects id conflicts.</p>
-                    </div>
-                    <div class="input-field col s12 m6 l3">
-                        <p>Channel sets the used radio frequency. It may be changed to avoid conflicts with existing wifi networks.</p>
+                    <div class="row">
+                        <div class="input-field col s12 m6 l3">
+                            <select id="channel" class="value">
+                                <option value="" disabled selected class="translate">Choose channell</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                            </select>
+                            <label class="translate">Channel</label>
+                        </div>
+                        <div class="input-field col s12 m6 l3">
+                            <p>Channel sets the used radio frequency. It may be changed to avoid conflicts with existing wifi networks.</p>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
