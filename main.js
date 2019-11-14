@@ -118,16 +118,23 @@ class Zigbee extends utils.Adapter {
         if (!mappedModel) {
             return;
         }
+        // always publish link_quality
+        if (message.linkquality) {
+            this.publishToState(devId, modelID, {linkquality: message.linkquality});
+        }
+        
         let converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
             (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
-        if (!converters.length && type === 'readRsp') {
+        if (!converters.length && type === 'readResponse') {
             converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
-                (c.type instanceof Array) ? c.type.includes('attReport') : c.type === 'attReport'));
+                (c.type instanceof Array) ? c.type.includes('attributeReport') : c.type === 'attributeReport'));
         }
         if (!converters.length) {
-            this.log.debug(
-                `No converter available for '${mappedModel.model}' with cluster '${cluster}' and type '${type}'`
-            );
+            if (type != 'readResponse') {
+                this.log.debug(
+                    `No converter available for '${mappedModel.model}' with cluster '${cluster}' and type '${type}'`
+                );
+            }
             return;
         }
 
@@ -137,9 +144,6 @@ class Zigbee extends utils.Adapter {
                 const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
                 this.log.debug(`Publish ${safeJsonStringify(payload)}`);
                 if (payload) {
-                	if (message.linkquality) {
-                        payload.linkquality = message.linkquality;
-                    }
                     this.publishToState(devId, modelID, payload);
                 }
             };
