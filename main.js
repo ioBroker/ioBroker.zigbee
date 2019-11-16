@@ -172,6 +172,12 @@ class Zigbee extends utils.Adapter {
         }
     }
 
+    processSyncStatesList(deviceId, modelId, syncStateList) {
+        syncStateList.forEach((syncState) => {
+            this.acknowledgeState(deviceId, modelId, syncState.stateDesc, syncState.value);
+        });
+    }
+
     async publishFromState(deviceId, modelId, stateModel, stateList, options){
         this.log.debug(`State changes. dev: ${deviceId} model: ${modelId} states: ${safeJsonStringify(stateList)} opt: ${safeJsonStringify(options)}`);
         if (modelId == 'group') {
@@ -188,6 +194,8 @@ class Zigbee extends utils.Adapter {
             if (stateDesc.isOption) {
                 // acknowledge state with given value
                 this.acknowledgeState(deviceId, modelId, stateDesc, value);
+                // process sync state list
+                this.processSyncStatesList(deviceId, modelId, syncStateList);
                 return;
             }
     
@@ -234,6 +242,8 @@ class Zigbee extends utils.Adapter {
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
 
                 this.acknowledgeState(deviceId, modelId, stateDesc, value);
+                // process sync state list
+                this.processSyncStatesList(deviceId, modelId, syncStateList);
             } catch(error) {
                 this.log.error(`Error on send command: ${error.stack}`);
             }
@@ -260,6 +270,8 @@ class Zigbee extends utils.Adapter {
             this.stController.deleteDeviceStates(devId);
         }
     }
+
+
 
     callPluginMethod(method, parameters) {
         for (const plugin of this.plugins) {
