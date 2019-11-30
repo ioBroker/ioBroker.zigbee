@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "1.0.0a",
+  "version": "1.0.0-a",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
