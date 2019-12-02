@@ -122,7 +122,7 @@ class Zigbee extends utils.Adapter {
         if (message.linkquality) {
             this.publishToState(devId, modelID, {linkquality: message.linkquality});
         }
-        
+
         let converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
             (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
         if (!converters.length && type === 'readResponse') {
@@ -190,7 +190,7 @@ class Zigbee extends utils.Adapter {
         stateList.forEach(async(changedState) => {
             const stateDesc = changedState.stateDesc;
             const value = changedState.value;
-    
+
             if (stateDesc.isOption) {
                 // acknowledge state with given value
                 this.acknowledgeState(deviceId, modelId, stateDesc, value);
@@ -198,16 +198,16 @@ class Zigbee extends utils.Adapter {
                 this.processSyncStatesList(deviceId, modelId, syncStateList);
                 return;
             }
-    
+
             const converter = mappedModel.toZigbee.find((c) => c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id));
             if (!converter) {
                 this.log.error(`No converter available for '${mappedModel.model}' with key '${stateKey}'`);
                 return;
             }
-    
+
             const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
             const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
-    
+
             let syncStateList = [];
             if (stateModel && stateModel.syncStates) {
                 stateModel.syncStates.forEach((syncFunct) => {
@@ -221,7 +221,7 @@ class Zigbee extends utils.Adapter {
             const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
             const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
             this.log.debug(`convert ${key}, ${preparedValue}, ${safeJsonStringify(preparedOptions)}`);
-                
+
             let target;
             if (modelId === 'group') {
                 target = entity.mapped;
@@ -261,7 +261,7 @@ class Zigbee extends utils.Adapter {
             });
         }
     }
-    
+
     leaveDevice(ieeeAddr) {
         this.log.debug(`Leave device event: ${ieeeAddr}`);
         if (ieeeAddr) {
@@ -290,7 +290,7 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    /** 
+    /**
      * @param {() => void} callback
      */
     async onUnload(callback) {
@@ -331,12 +331,12 @@ class Zigbee extends utils.Adapter {
             net: {
                 panId: panID,
                 extPanId: extPanId,
-                channelList: [channel], 
+                channelList: [channel],
                 precfgkey: precfgkey
             },
             sp: {
                 port: port,
-                baudRate: 115200, 
+                baudRate: 115200,
                 rtscts: false
             },
             dbPath: dbDir + '/shepherd.db',
@@ -363,7 +363,7 @@ class Zigbee extends utils.Adapter {
     logToPairing(message) {
         this.setState('info.pairingMessage', message);
     }
-    
+
     onLog(level, msg, data) {
         if (msg) {
             let logger = this.log.info;
@@ -379,6 +379,9 @@ class Zigbee extends utils.Adapter {
                     break;
                 case 'info':
                     logger = this.log.info;
+                    break;
+                case 'warn':
+                    logger = this.log.warn;
                     break;
             }
             if (data) {

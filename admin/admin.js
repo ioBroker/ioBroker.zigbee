@@ -615,7 +615,7 @@ function showNetworkMap(devices, map){
     var nodes = {};
     // create an array with edges
     var edges = [];
-    
+
     if (map.lqis == undefined || map.lqis.length === 0) { // first init
         $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function() {
             updateMapFilter();
@@ -638,7 +638,7 @@ function showNetworkMap(devices, map){
         }
         return node;
     };
-    
+
     const getDevice = function(ieeeAddr) {
         return devices.find((devInfo) => {
             try {
@@ -658,7 +658,7 @@ function showNetworkMap(devices, map){
             }
         });
     }
-    
+
     if (map.lqis) {
         map.lqis.forEach((mapEntry)=>{
             const dev = getDevice(mapEntry.ieeeAddr);
@@ -710,7 +710,7 @@ function showNetworkMap(devices, map){
                     edge = reverse;
                     edge.label += '\n'+label;
                     edge.arrows.from = { enabled: false, scaleFactor: 0.5 }; // start hidden if node is not selected
-                    if (mapEntry.relationship == 1) { // 
+                    if (mapEntry.relationship == 1) { //
                         edge.color.color = linkColor;
                         edge.color.highlight = linkColor;
                     }
@@ -720,7 +720,7 @@ function showNetworkMap(devices, map){
                         to: to,
                         label: label,
                         font: {
-                            align: 'middle', 
+                            align: 'middle',
                             size: 0, // start hidden
                             color: linkColor
                         },
@@ -768,7 +768,7 @@ function showNetworkMap(devices, map){
                     to: to,
                     label: label,
                     font: {
-                        align: 'middle', 
+                        align: 'middle',
                         size: 0, // start hidden
                         color: linkColor
                     },
@@ -798,7 +798,7 @@ function showNetworkMap(devices, map){
             }
         });
     }
-    
+
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
     devices.forEach((dev) => {
@@ -830,7 +830,7 @@ function showNetworkMap(devices, map){
     };
 
     network = new vis.Network(container, data, options);
-    
+
     const onMapSelect = function (event, properties, senderId) {
         // workaround for https://github.com/almende/vis/issues/4112
         // may be moved to edge.chosen.label if fixed
@@ -898,7 +898,7 @@ function showNetworkMap(devices, map){
             });
         }
     }
-      
+
     network.on("beforeDrawing", function(ctx) {
         if (networkEvents.length > 0) {
             networkEvents.forEach((event)=>{
@@ -1227,6 +1227,8 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
     }, 15000);
 
     console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData));
+    addDevLog({msg:'Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData)});
+
     sendTo(namespace, 'sendToZigbee', data, function(reply) {
         clearTimeout(sendTimeout);
         if (callback) {
@@ -1631,8 +1633,8 @@ function addBindingDialog() {
 
 function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
     sendTo(namespace, 'addBinding', {
-        bind_source: bind_source, 
-        bind_source_ep: bind_source_ep, 
+        bind_source: bind_source,
+        bind_source_ep: bind_source_ep,
         bind_target: bind_target,
         bind_target_ep: bind_target_ep
     }, function (msg) {
@@ -1648,8 +1650,8 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
 function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep) {
     sendTo(namespace, 'editBinding', {
         id: bind_id,
-        bind_source: bind_source, 
-        bind_source_ep: bind_source_ep, 
+        bind_source: bind_source,
+        bind_source_ep: bind_source_ep,
         bind_target: bind_target,
         bind_target_ep: bind_target_ep
     }, function (msg) {
@@ -1722,7 +1724,7 @@ function showBinding() {
                     </div>`
         element.append(card);
     });
-    
+
     $("#binding a.btn[name='delete']").click(function() {
         const bind_id = $(this).parents('.binding')[0].id;
         deleteBindingConfirmation(bind_id);
