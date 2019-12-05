@@ -19,6 +19,7 @@ const CommandsPlugin = require('./lib/commands');
 const GroupsPlugin = require('./lib/groups');
 const NetworkMapPlugin = require('./lib/networkmap');
 const DeveloperPlugin = require('./lib/developer');
+const BindingPlugin = require('./lib/binding');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
 
@@ -44,6 +45,7 @@ class Zigbee extends utils.Adapter {
             new GroupsPlugin(this),
             new NetworkMapPlugin(this),
             new DeveloperPlugin(this),
+            new BindingPlugin(this),
         ];
     }
 
