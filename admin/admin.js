@@ -42,6 +42,7 @@ function getCard(dev) {
     var rid = id.split('.').join('_');
     var image = `<img src="${img_src}" width="80px">`,
     	nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+    	status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
     	battery = (dev.battery) ? `<div class="col tool"><i class="material-icons">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
     	lq = (dev.link_quality) ? `<div class="col tool"><i class="material-icons">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
@@ -64,7 +65,7 @@ function getCard(dev) {
                         <span class="top right small" style="border-radius: 50%">
                             ${battery}
                             ${lq}
-                            <div class="col tool"><i class="material-icons icon-green">check_circle</i></div>
+                            ${status}
                         </span>
                         <!--/a--!>
                         <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
@@ -345,17 +346,11 @@ function pollDeviceInfo(id, card) {
 
         let html = '<ul>';
         if (reply.msg) {
-            for (var i=0; i<reply.msg.length; i++) {
-                var attr = reply.msg[i];
-                if (attr.status != '0') {
-                    continue; // unsupAttr,...
-                }
-                if (attr.attrId == '16384') {//swBuildId
-                    html += '<li>Firmware Version: '+attr.attrData+'</li>';
-                }
-                else if (attr.attrId == '3') {//hwVersion
-                    html += '<li>Hardware Version: '+attr.attrData+'</li>';
-                }
+            if (reply.msg['swBuildId']) {//swBuildId
+                html += '<li>Firmware Version: '+reply.msg.swBuildId+'</li>';
+            }
+        	if (reply.msg['hwVersion']) {//hwVersion
+                html += '<li>Hardware Version: '+reply.msg.hwVersion+'</li>';
             }
         }
         html += '</ul>';
@@ -1555,7 +1550,7 @@ function prepareBindingDialog(bindObj){
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.epList : null;
+        var epList = device ? device.info.endpoint : null;
         list2select('#bind_source_ep', epList, [],
             function(key, ep) {
                 return ep;
@@ -1569,7 +1564,7 @@ function prepareBindingDialog(bindObj){
         var device = devices.find(obj => {
             return obj._id === bindObj.bind_source;
         });
-        var epList = device ? device.info.epList : null;
+        var epList = device ? device.info.endpoint : null;
         list2select('#bind_source_ep', epList, [bindObj.bind_source_ep],
             function(key, ep) {
                 return ep;
@@ -1589,7 +1584,7 @@ function prepareBindingDialog(bindObj){
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.epList : null;
+        var epList = device ? device.info.endpoint : null;
         list2select('#bind_target_ep', epList, [],
             function(key, ep) {
                 return ep;
@@ -1603,7 +1598,7 @@ function prepareBindingDialog(bindObj){
         var device = devices.find(obj => {
             return obj._id === bindObj.bind_target;
         });
-        var epList = device ? device.info.epList : null;
+        var epList = device ? device.info.endpoint : null;
         list2select('#bind_target_ep', epList, [bindObj.bind_target_ep],
             function(key, ep) {
                 return ep;
