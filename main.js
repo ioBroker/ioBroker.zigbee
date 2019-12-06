@@ -273,8 +273,6 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-
-
     callPluginMethod(method, parameters) {
         for (const plugin of this.plugins) {
             if (plugin[method]) {
