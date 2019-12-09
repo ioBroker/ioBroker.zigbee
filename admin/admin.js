@@ -1550,13 +1550,13 @@ function prepareBindingDialog(bindObj){
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.endpoint : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_source_ep', epList, [],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     });
@@ -1564,13 +1564,13 @@ function prepareBindingDialog(bindObj){
         var device = devices.find(obj => {
             return obj._id === bindObj.bind_source;
         });
-        var epList = device ? device.info.endpoint : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_source_ep', epList, [bindObj.bind_source_ep],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     }
@@ -1584,13 +1584,13 @@ function prepareBindingDialog(bindObj){
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.endpoint : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_target_ep', epList, [],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     });
@@ -1598,13 +1598,13 @@ function prepareBindingDialog(bindObj){
         var device = devices.find(obj => {
             return obj._id === bindObj.bind_target;
         });
-        var epList = device ? device.info.endpoint : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_target_ep', epList, [bindObj.bind_target_ep],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     }

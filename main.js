@@ -238,6 +238,7 @@ class Zigbee extends utils.Adapter {
                 device: entity.device,
                 mapped: mappedModel,
                 message: {[key]: preparedValue},
+                logger: this.log,
             };
             try {
                 const result = await converter.convertSet(target, key, preparedValue, meta);
