@@ -198,6 +198,14 @@
                     <div class="input-field col s12 m6 l3">
                         <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
                     </div>
+                    <div class="input-field col s12 m6 l3 col-transmitPower">
+                        <select  class="value" id="transmitPower">
+                            <option value="-22" class="translate">low</option>
+                            <option value="0" class="translate">norm</option>
+                            <option value="19" class="translate">high</option>                        
+                        </select>
+                        <label class="translate" for="transmitPower">transmitPower</label>
+                    </div>                                     
                 </div>
                 <div class="row">
                     <h6>Network</h6>
@@ -271,16 +279,7 @@
                     <div class="input-field col s12 m6 l3 col-disableQueue">
                         <input id="disableQueue" type="checkbox" class="value" />
                         <label class="translate" for="disableQueue">Disable Queue</label>
-                    </div>
-                    
-                    <div class="input-field col s12 m6 l3 col-transmitPower">
-                        <select  class="value" id="transmitPower">
-                            <option value="-22" class="translate">low</option>
-                            <option value="0" class="translate">norm</option>
-                            <option value="19" class="translate">high</option>                        
-                        </select>
-                        <label class="translate" for="transmitPower">transmit Power:</label>
-                    </div>                 
+                    </div>                                       
                 </div>
             </div>
             <div id="tab-dev" class="col s12 page">
@@ -300,8 +299,8 @@
                             <a href="https://docs.smartthings.com/en/latest/device-type-developers-guide/zigbee-primer.html" target="_blank">here</a>
                             and in <a href="https://www.nxp.com/docs/en/user-guide/JN-UG-3115.pdf" target="_blank">ZigBee Cluster Library</a>.
                             </p>
-                            <p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-shepherd-converters" target="_blank">
-                            zigbee-shepherd-converters</a>) to make it available for other user too. 
+                            <p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-herdsman-converters" target="_blank">
+                            zigbee-herdsman-converters</a>) to make it available for other user too. 
                             </p>
                         </div>
                         <div class="col s8">
