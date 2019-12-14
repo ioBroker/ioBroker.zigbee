@@ -17,5 +17,6 @@
     "Settings": "Ajustes",
     "Yes": "Sí",
     "Zigbee adapter": "Adaptador zigbee",
-    "Countdown": "Cuenta atrás entre 0 y 255 seg."
+    "Countdown": "Cuenta atrás entre 0 y 255 seg.",
+    "transmitPower": "transmitir potencia"
 }

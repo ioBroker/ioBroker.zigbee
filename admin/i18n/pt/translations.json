@@ -17,5 +17,6 @@
     "Settings": "Definições",
     "Yes": "sim",
     "Zigbee adapter": "Adaptador Zigbee",
-    "Countdown": "Contagem regressiva entre 0 e 255 seg"
+    "Countdown": "Contagem regressiva entre 0 e 255 seg",
+    "transmitPower": "Potência de transmissão"
 }

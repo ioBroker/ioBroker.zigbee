@@ -17,5 +17,6 @@
     "Settings": "Настройки",
     "Yes": "Да",
     "Zigbee adapter": "Zigbee драйвер",
-    "Countdown": "Обратный отсчет от 0 до 255 сек"
+    "Countdown": "Обратный отсчет от 0 до 255 сек",
+    "transmitPower": "Мощность передачи"
 }
