@@ -17,19 +17,7 @@
     "Settings": "Paramètres",
     "Yes": "Oui",
     "Zigbee adapter": "Adaptateur Zigbee",
-    "Countdown": "Compte à rebours entre 0 et 255 secondes"
+    "Countdown": "Compte à rebours entre 0 et 255 secondes",
+    "transmitPower": "Puissance de transmission"
 }
 
-
-
-
-        "ru":"Countdown": "Обратный отсчет от 0 до 255 сек",
-        "pt":"Countdown": "Contagem regressiva entre 0 e 255 seg",
-        "nl":"Countdown": "Aftellen tussen 0 en 255 sec",
-        "fr":"Countdown": "Compte à rebours entre 0 et 255 secondes",
-        "es":"Countdown": "Cuenta atrás entre 0 y 255 seg.",
-        "it":"Countdown": "Conto alla rovescia tra 0 e 255 sec",
-        "pl":"Countdown": "Odliczanie od 0 do 255 sek",
-        "zh-cn":"Countdown": "倒计时在0到255秒之间"
-    }
-}

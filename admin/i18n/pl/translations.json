@@ -17,5 +17,6 @@
     "Settings": "Ustawienia",
     "Yes": "tak",
     "Zigbee adapter": "Adapter Zigbee",
-    "Countdown": "Czas od 0 do 255 sek"
+    "Countdown": "Czas od 0 do 255 sek",
+    "transmitPower": "Moc nadawania"
 }

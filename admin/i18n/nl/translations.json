@@ -17,5 +17,7 @@
     "Settings": "instellingen",
     "Yes": "Ja",
     "Zigbee adapter": "Zigbee-adapter",
-    "Countdown": "Aftellen tussen 0 en 255 sec"
+    "Countdown": "Aftellen tussen 0 en 255 sec",
+    "transmitPower": "zendvermogen"
 }
+
