@@ -343,6 +343,7 @@ class Zigbee extends utils.Adapter {
             dbPath: dbDir + '/shepherd.db',
             backupPath: dbDir + '/backup.json',
             disableLed: this.config.disableLed,
+            transmitPower: this.config.transmitPower,
         };
     }
 
