@@ -204,7 +204,7 @@ function deleteDevice(id) {
     sendTo(namespace, 'deleteDevice', {id: id}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error.code, _('Error'), 'alert');
+                showMessage(msg.error.code, _('Error'));
             } else {
                 getDevices();
             }
@@ -216,7 +216,7 @@ function renameDevice(id, name) {
     sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             } else {
                 getDevices();
             }
@@ -314,7 +314,7 @@ function letsPairing() {
     sendTo(namespace, 'letsPairing', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
     });
@@ -325,7 +325,7 @@ function joinProcess(devId) {
     sendTo(namespace, 'letsPairing', {id: devId}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
     });
@@ -362,7 +362,7 @@ function getDevices() {
     sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             } else {
                 devices = msg;
                 showDevices();
@@ -378,7 +378,7 @@ function getMap() {
         $('#refresh').removeClass('disabled');
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             } else {
                 map = msg;
                 showNetworkMap(devices, map);
@@ -1437,7 +1437,7 @@ function updateDev(id, newName, newGroups) {
             sendTo(namespace, 'groupDevices', devGroups, function (msg) {
                 if (msg) {
                     if (msg.error) {
-                        showMessage(msg.error, _('Error'), 'alert');
+                        showMessage(msg.error, _('Error'));
                     }
                 }
             });
@@ -1550,13 +1550,13 @@ function prepareBindingDialog(bindObj){
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.endpoint : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_source_ep', epList, [],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     });
@@ -1564,13 +1564,13 @@ function prepareBindingDialog(bindObj){
         var device = devices.find(obj => {
             return obj._id === bindObj.bind_source;
         });
-        var epList = device ? device.info.endpoint : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_source_ep', epList, [bindObj.bind_source_ep],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     }
@@ -1584,13 +1584,13 @@ function prepareBindingDialog(bindObj){
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.endpoint : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_target_ep', epList, [],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     });
@@ -1598,13 +1598,13 @@ function prepareBindingDialog(bindObj){
         var device = devices.find(obj => {
             return obj._id === bindObj.bind_target;
         });
-        var epList = device ? device.info.endpoint : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_target_ep', epList, [bindObj.bind_target_ep],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     }
@@ -1635,7 +1635,7 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
     }, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
         getBinding();
@@ -1652,7 +1652,7 @@ function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_tar
     }, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
         getBinding();
@@ -1689,42 +1689,41 @@ function showBinding() {
         const card = `
                     <div id="${bind_id}" class="binding col s12 m6 l4 xl3">
                         <div class="card hoverable">
-                            <div class="card-content">
-                                <table style="border-collapse: separate">
-                                    <tr>
-                                        <td style="padding: 0px">
-                                            <img class="left" src="${source_dev.icon}" width="64px">
-                                        </td>
-                                        <td style="padding: 0px">
-                                            <div>source:</div>
-                                            <div>${source_dev.common.name}</div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 0px">
-                                            <img class="left" src="${target_dev.icon}" width="64px">
-                                        </td>
-                                        <td style="padding: 0px">
-                                            <div>target:</div>
-                                            <div>${target_dev.common.name}}</div>
-                                        </td>
-                                    </tr>
-                                </table>
+                            <div class="card-content zcard">
+                                <span class="card-title truncate">${source_dev.common.name}</span>
+                                <i class="left"><img src="${source_dev.icon}" width="64px"></i>
+                                <i class="right"><img src="${target_dev.icon}" width="64px"></i>
+                                <div style="min-height:72px; font-size: 0.8em" class="truncate">
+                                    <ul>
+                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace+'.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
+                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace+'.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-action">
-                                <a name="edit" class="btn blue"><i class="material-icons tiny">mode_edit</i></a>
-                                <a name="delete" class="btn right black"><i class="material-icons tiny">delete</i></a>
+                                <div class="card-reveal-buttons zcard">
+                                    <span class="card-title truncate">${target_dev.common.name}
+                                        <button name="delete" class="right btn-flat btn-small">
+                                            <i class="material-icons icon-black">delete</i>
+                                        </button>
+                                        <button name="edit" class="right btn-flat btn-small">
+                                            <i class="material-icons icon-green">edit</i>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>`
         element.append(card);
     });
 
-    $("#binding a.btn[name='delete']").click(function() {
+    $("#binding button[name='delete']").click(function() {
         const bind_id = $(this).parents('.binding')[0].id;
         deleteBindingConfirmation(bind_id);
     });
-    $("#binding a.btn[name='edit']").click(function(e) {
+    $("#binding button[name='edit']").click(function(e) {
         const bind_id = $(this).parents('.binding')[0].id;
         const bindObj = binding.find((b) => b.id == bind_id);
         if (bindObj) {
@@ -1737,7 +1736,7 @@ function getBinding() {
     sendTo(namespace, 'getBinding', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             } else {
                 binding = msg;
                 showBinding();
@@ -1760,7 +1759,7 @@ function deleteBinding(id) {
     sendTo(namespace, 'delBinding', id, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
         getBinding();

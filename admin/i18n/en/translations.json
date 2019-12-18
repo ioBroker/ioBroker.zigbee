@@ -17,5 +17,6 @@
     "Settings": "Settings",
     "Yes": "Yes",
     "Zigbee adapter": "Zigbee adapter",
-    "Countdown": "Countdown between 0 and 255 sec"
+    "Countdown": "Countdown between 0 and 255 sec",
+    "transmitPower": "transmit Power"
 }

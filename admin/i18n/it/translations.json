@@ -17,5 +17,6 @@
     "Settings": "impostazioni",
     "Yes": "sì",
     "Zigbee adapter": "Adattatore Zigbee",
-    "Countdown": "Conto alla rovescia tra 0 e 255 sec"
+    "Countdown": "Conto alla rovescia tra 0 e 255 sec",
+    "transmitPower": "trasmettere potenza"
 }

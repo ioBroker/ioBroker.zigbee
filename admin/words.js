@@ -87,4 +87,17 @@ systemDictionary = {
         "pl": "Odliczanie od 0 do 255 sek",
         "zh-cn": "倒计时在0到255秒之间"
     },
+    "transmitPower": {
+        "en": "CC1352P and CC26X2R1 transmit Power",
+        "de": "CC1352P and CC26X2R1 Sendeleistung",
+        "ru": "CC1352P and CC26X2R1 Мощность передачи",
+        "pt": "CC1352P and CC26X2R1 Potência de transmissão",
+        "nl": "CC1352P and CC26X2R1 zendvermogen",
+        "fr": "CC1352P and CC26X2R1 Puissance de transmission",
+        "it": "CC1352P and CC26X2R1 trasmettere potenza",
+        "es": "CC1352P and CC26X2R1 transmitir potencia",
+        "pl": "CC1352P and CC26X2R1 Moc nadawania",
+        "zh-cn": "CC1352P ,CC26X2R1 发射功率"
+    } 
+
 };
