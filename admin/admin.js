@@ -129,8 +129,7 @@ function openReval(e, id, name){
     if ($revealName == "edit") {
         $cardReveal.find("input").val(name);
         Materialize.updateTextFields();
-    }
-    else if ($revealName == "info") {
+    } else if ($revealName == "info") {
         pollDeviceInfo(id, $card);
     }
 
@@ -332,6 +331,7 @@ function joinProcess(devId) {
 }
 
 function pollDeviceInfo(id, card) {
+    card.find('#d-infos').html('Waiting for device...');
     sendToZigbee(id, null, 'genBasic', 'read', 'foundation',
             [ {attrId: 'swBuildId'}, {attrId: 'hwVersion'}],
             null, function (reply) {
@@ -344,17 +344,21 @@ function pollDeviceInfo(id, card) {
             return;
         }
 
-        let html = '<ul>';
-        if (reply.msg) {
-            if (reply.msg['swBuildId']) {//swBuildId
-                html += '<li>Firmware Version: '+reply.msg.swBuildId+'</li>';
-            }
-        	if (reply.msg['hwVersion']) {//hwVersion
-                html += '<li>Hardware Version: '+reply.msg.hwVersion+'</li>';
-            }
+        if (reply.error){
+            infoNode.html('Error '+reply.error+'<br><span class="blue-grey-text">'+reply.msg+'</span>');
+        } else {
+            let html = '<ul>';
+            if (reply.msg) {
+                if (reply.msg['swBuildId']) {//swBuildId
+                    html += '<li>Firmware Version: '+reply.msg.swBuildId+'</li>';
+                }
+                if (reply.msg['hwVersion']) {//hwVersion
+                    html += '<li>Hardware Version: '+reply.msg.hwVersion+'</li>';
+                }
+            } 
+            html += '</ul>';
+            infoNode.html(html);
         }
-        html += '</ul>';
-        infoNode.html(html);
     });
 }
 
@@ -982,7 +986,7 @@ function loadDeveloperTab(onChange) {
                     if (device.info.device._type == 'Coordinator') {
                         return null;
                     }
-                    return `${device.common.name} (${device.info._modelID})`;
+                    return `${device.common.name} (${device.info.name})`;
                 }
                 else { // fallback if device in list but not paired
                     device.common.name + ' ' +device.native.id;
@@ -1222,7 +1226,6 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
     }, 15000);
 
     console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData));
-    addDevLog({msg:'Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData)});
 
     sendTo(namespace, 'sendToZigbee', data, function(reply) {
         clearTimeout(sendTimeout);
@@ -1288,11 +1291,11 @@ function populateSelector(selectId, key, cid) {
         var list = data.list;
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
-                    function(index, attr) {
-                        return index + ' ('+attr.ID +', type '+attr.type+')';
+                    function(attrName, attr) {
+                        return attrName + ' ('+attr.ID +', type '+attr.type+')';
                     },
-                    function(index, attr) {
-                        return attr.ID;
+                    function(attrName, attr) {
+                        return attrName;
                     });
         } else if (key === 'typeList') {
             updateSelect(selectId, list,
@@ -1304,11 +1307,11 @@ function populateSelector(selectId, key, cid) {
                     });
         } else {
             updateSelect(selectId, list,
-                    function(name, val) {
-                        return name +' ('+val.ID+')';
+                    function(propName, propInfo) {
+                        return propName +' ('+propInfo.ID+')';
                     },
-                    function(name, val) {
-                        return val.ID;
+                    function(propName, propInfo) {
+                        return propName;
                     });
         }
     });
