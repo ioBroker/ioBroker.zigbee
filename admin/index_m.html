@@ -344,6 +344,17 @@
                                 "cfg": { "manufCode": 4107, "manufSpec": 1}}<br>
                                 (You may use selectors together with expert mode to get prepared JSON)</div>
                             </li>
+                            <li>
+                                <div class="collapsible-header">Configure reporting</div>
+                                <div class="collapsible-body">Example (Expert Mode):<br>
+                                <b>JSON:</b> { "devId": "zigbee.0.yourDevId",
+                                "ep": "2", "cid": "msTemperatureMeasurement", "cmd": "configReport", "cmdType": "foundation",<br>
+                                "zclData": [{<br>
+                                "attribute": "measuredValue", <br>"minimumReportInterval": 1, <br>"maximumReportInterval": 600,<br>
+                                "reportableChange": 1 }],<br>
+                                "cfg": null}
+                                </div>
+                            </li>
                             </ul>
                             </div>
                         </div>
