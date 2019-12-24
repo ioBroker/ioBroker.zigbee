@@ -333,7 +333,7 @@ function joinProcess(devId) {
 function pollDeviceInfo(id, card) {
     card.find('#d-infos').html('Waiting for device...');
     sendToZigbee(id, null, 'genBasic', 'read', 'foundation',
-            [ {attrId: 'swBuildId'}, {attrId: 'hwVersion'}],
+            {'swBuildId':null, 'hwVersion':null},
             null, function (reply) {
         let infoNode = card.find('#d-infos');
         if (reply.hasOwnProperty('localErr')) {
@@ -987,8 +987,7 @@ function loadDeveloperTab(onChange) {
                         return null;
                     }
                     return `${device.common.name} (${device.info.name})`;
-                }
-                else { // fallback if device in list but not paired
+                } else { // fallback if device in list but not paired
                     device.common.name + ' ' +device.native.id;
                 }
             },
@@ -1014,6 +1013,16 @@ function loadDeveloperTab(onChange) {
     populateSelector('#type', 'typeList', this.value);
 
     if (responseCodes == false) {
+        const getValue = function() { // convert to number if needed
+            var attrData = $('#value-input').val();
+            if (attrData.startsWith('"') && attrData.endsWith('"')) {
+                attrData = attrData.substr(1, attrData.length -2);
+            } else {
+                const numValue = Number(attrData);
+                attrData = !isNaN(numValue) ? numValue : attrData;
+            }
+            return attrData;
+        };
         const prepareData = function () {
             var data = {
                     devId: $('#dev-selector option:selected').val(),
@@ -1021,12 +1030,13 @@ function loadDeveloperTab(onChange) {
                     cid: $('#cid-selector option:selected').val(),
                     cmd: $('#cmd-selector option:selected').val(),
                     cmdType: $('#cmd-type-selector').val(),
-                    zclData: {attrId: $('#attrid-selector').val()},
+                    zclData: {
+                        [$('#attrid-selector').val()]: {},
+                    },
                     cfg: null,
             };
             if ($("#value-needed").is(':checked')) {
-                data.zclData.dataType = $('#type-selector option:selected').val();
-                data.zclData.attrData = $('#value-input').val();
+                data.zclData[$('#attrid-selector').val()] = getValue();
             }
             return data;
         };
@@ -1048,22 +1058,21 @@ function loadDeveloperTab(onChange) {
                 data = prepareExpertData();
                 // https://stackoverflow.com/a/6394168/6937282
                 const assignVal = function index(obj,is, value) {
-                    if (typeof is == 'string')
+                    if (typeof is == 'string') {
                         return index(obj,is.split('.'), value);
-                    else if (is.length==1 && value!==undefined) {
-                        if (value == null)
+                    } else if (is.length==1 && value!==undefined) {
+                        if (value == null) {
                             return delete obj[is[0]];
-                        else
+                        } else {
                             return obj[is[0]] = value;
-                    }
-                    else if (is.length==0)
+                        }
+                    } else if (is.length==0) {
                         return obj;
-                    else
+                    } else
                         return index(obj[is[0]],is.slice(1), value);
                 }
                 assignVal(data, prop, value);
-            }
-            else {
+            } else {
                 data = prepareData();
             }
             $('#expert-json').val(JSON.stringify(data, null, 4));
@@ -1107,8 +1116,7 @@ function loadDeveloperTab(onChange) {
         $('#cmd-type-selector').change(function() {
             if (this.value == "foundation") {
                 populateSelector('#cmd', 'cmdListFoundation');
-            }
-            else if (this.value == "functional") {
+            } else if (this.value == "functional") {
                 var cid = $('#cid-selector option:selected').val();
                 populateSelector('#cmd', 'cmdListFunctional', cid);
             }
@@ -1119,38 +1127,34 @@ function loadDeveloperTab(onChange) {
             setExpertData('cmd', this.value);
         });
         $('#attrid-selector').change(function() {
-            setExpertData('zclData.attrId', this.value);
-        });
-        $('#type-selector').change(function() {
-            setExpertData('zclData.dataType', this.value);
+            setExpertData('zclData', {[this.value]:{}});
         });
 
         // value selector checkbox
         $('#value-needed').change(function() {
+            var attr = $('#attrid-selector').val();
+            var attrData = null;
             if (this.checked === true) {
-                $('#type-selector, #value-input').removeAttr('disabled');
-                setExpertData('zclData.dataType', $('#type-selector').val());
-                setExpertData('zclData.attrData', $('#value-input').val());
+                $('#value-input').removeAttr('disabled');
+                attrData = getValue();
+            } else {
+                $('#value-input').attr('disabled', 'disabled');
             }
-            else {
-                $('#type-selector, #value-input').attr('disabled', 'disabled');
-                setExpertData('zclData.dataType', null);
-                setExpertData('zclData.attrData', null);
-            }
+            setExpertData('zclData.'+attr, attrData);
             $('#type-selector').select();
             Materialize.updateTextFields();
         });
 
         $('#value-input').keyup(function() {
-            setExpertData('zclData.attrData', this.value);
+            var attr = $('#attrid-selector').val();
+            setExpertData('zclData.'+attr, getValue());
         });
 
         $('#expert-mode').change(function() {
             if (this.checked === true) {
                 setExpertData();
                 $('#expert-json-box').css('display', 'inline-block');
-            }
-            else {
+            } else {
                 $('#expert-json-box').css('display', 'none');
             }
             $('#type-selector').select();
@@ -1161,19 +1165,16 @@ function loadDeveloperTab(onChange) {
             var data;
             if ($('#expert-mode').is(':checked')) {
                 data = prepareExpertData();
-            }
-            else {
+            } else {
                 data = prepareData();
             }
             sendToZigbee(data.devId, data.ep, data.cid, data.cmd, data.cmdType, data.zclData, data.cfg, function (reply) {
                 console.log('Reply from zigbee: '+ JSON.stringify(reply));
                 if (reply.hasOwnProperty("localErr")) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
-                }
-                else if (reply.hasOwnProperty('localStatus')) {
+                } else if (reply.hasOwnProperty('localStatus')) {
                     showDevRunInfo(reply.localErr, reply.errMsg);
-                }
-                else {
+                } else {
                     addDevLog(reply);
                     showDevRunInfo('OK', 'Finished.');
                 }
