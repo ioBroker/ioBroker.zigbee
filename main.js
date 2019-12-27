@@ -240,6 +240,9 @@ class Zigbee extends utils.Adapter {
                 message: {[key]: preparedValue},
                 logger: this.log,
             };
+            if (preparedOptions.hasOwnProperty('state')) {
+                meta.state = preparedOptions.state;
+            }
             try {
                 const result = await converter.convertSet(target, key, preparedValue, meta);
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
