@@ -103,10 +103,14 @@ class Zigbee extends utils.Adapter {
         }, 10*1000); // every 10 seconds
     }
 
-    onZigbeeAdapterReady() {
+    async onZigbeeAdapterReady() {
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         this.log.info(`Zigbee started`);
         this.setState('info.connection', true);
+        const devices = await this.zbController.getClients(false);
+        for (const device of devices) {
+            this.stController.syncDevStates(device);
+        }
         this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
