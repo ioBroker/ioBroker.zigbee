@@ -199,13 +199,14 @@
                         <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
                     </div>
                     <div class="input-field col s12 m6 l3 col-transmitPower">
-                        <select  class="value" id="transmitPower">
-                            <option value="-22" class="translate">low</option>
-                            <option value="0" class="translate">norm</option>
-                            <option value="19" class="translate">high</option>                        
+                        <select id="transmitPower" class="value" >
+                            <option value="" disabled selected class="translate">transmitPower</option>
+                            <option value="-22">low</option>
+                            <option value="0">norm</option>
+                            <option value="19">high</option>
                         </select>
                         <label class="translate" for="transmitPower">transmitPower</label>
-                    </div>                                     
+                    </div>           
                 </div>
                 <div class="row">
                     <h6>Network</h6>
@@ -319,7 +320,7 @@
                                 <div class="collapsible-body"><b>Device:</b> SML001, <b>Endpoint:</b> 2,
                                 <b>ClusterId:</b> msOccupancySensing (1030), <b>Command Type: </b>Foundation,
                                 <b>Command:</b> write (2), <b>AttributeId:</b> 
-                                pirOToUDelay (16, type 33), <b>Value:</b> 55, <b>Type:</b> uint16 (33)<br>
+                                pirOToUDelay (16, type 33), <b>Value:</b> 55<br>
                                 => (You set the timeout until motion detector changes from occupied not unoccupied,
                                 test it be <b>reading</b> same attribute)
                                 </div>
@@ -337,14 +338,22 @@
                             </li>
                             <li>
                                 <div class="collapsible-header">Expert Mode</div>
-                                <div class="collapsible-body">This is an example for Hue Motion Detector.
-                                Some of it's attributes cannot be accessed the standard way.<br>
+                                <div class="collapsible-body">Example:<br>
                                 <b>JSON:</b> { "devId": "zigbee.0.yourDevId",
-                                "ep": "2", "cid": "1030", "cmd": "0", "cmdType": "foundation", "zclData": { "attrId": "48" },
-                                "cfg": { "manufCode": 4107, "manufSpec": 1}}<br> 
-                                => Read attribute 48. Note "cfg" section, if you try to read same attribute without cfg
-                                settings, the sensor will reply "unsupAttribute"!<br>
+                                "ep": "2", "cid": "msOccupancySensing", "cmd": "write", "cmdType": "foundation", "zclData": { "pirOToUDelay": 30 },
+                                "cfg": { "manufCode": 4107, "manufSpec": 1}}<br>
                                 (You may use selectors together with expert mode to get prepared JSON)</div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header">Configure reporting</div>
+                                <div class="collapsible-body">Example (Expert Mode):<br>
+                                <b>JSON:</b> { "devId": "zigbee.0.yourDevId",
+                                "ep": "2", "cid": "msTemperatureMeasurement", "cmd": "configReport", "cmdType": "foundation",<br>
+                                "zclData": [{<br>
+                                "attribute": "measuredValue", <br>"minimumReportInterval": 1, <br>"maximumReportInterval": 600,<br>
+                                "reportableChange": 1 }],<br>
+                                "cfg": null}
+                                </div>
                             </li>
                             </ul>
                             </div>
@@ -352,7 +361,7 @@
                     </div>
                     <div class="col s9">
                         <div class="row">
-                            <div class="input-field col s4">
+                            <div class="input-field col s8">
                                 <select id ="dev-selector">
                                 <option value="" disabled selected>Select a device</option>
                                 </select>
@@ -391,26 +400,20 @@
                                     <option value="" disabled selected>Select Attribute</option>
                                     </select>
                                     <label for="attrid-selector">Attribute Id</label>
+                                </div>
+                                <div class="col s8">
+                                    <div class="input-field col s5 offset-s1 admin-tooltip-icon" title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
+                                        <label for="value-needed" style="pointer-events: auto;">
+                                        <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
+                                            <input style="pointer-events: none;" id="value-needed" type="checkbox" class="filled-in"/>
+                                            <span style="pointer-events: none;">Needs value</span>
+                                        </label>
+                                    </div>
+                                    <div class="input-field col s6 admin-tooltip-icon" title="The value to send to your device (use douple-quotes if a number is a string).">
+                                        <input id ="value-input" disabled placeholder="0">
+                                        <label for="value-input">Value</label>
+                                    </div>
                                 </div> 
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s3 offset-s1 admin-tooltip-icon" title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
-                                    <label for="value-needed" style="pointer-events: auto;">
-                                    <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
-                                        <input style="pointer-events: none;" id="value-needed" type="checkbox" class="filled-in"/>
-                                        <span style="pointer-events: none;">Needs value</span>
-                                    </label>
-                                </div>
-                                <div class="input-field col s4 admin-tooltip-icon" title="The value to send to your device.">
-                                    <input id ="value-input" disabled placeholder="0">
-                                    <label for="value-input">Value</label>
-                                </div>
-                                <div class="input-field col s4 admin-tooltip-icon" title="The data type of your value (String, Integer,...)">
-                                    <select id ="type-selector" disabled>
-                                    <option value="" disabled selected>Select Type</option>
-                                    </select>
-                                    <label for="type-selector">Type Id</label>
-                                </div>
                             </div>
                         </div>
                     </div>
