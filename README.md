@@ -64,14 +64,24 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
 ## Plan
+## Changelog  
+### 1.0.0-b
+* device-Info page corr
+* dev-Tab corr
+* states list on adapter start
+* Eurotronic corr
+* Device Ping 
+
 
 ### 1.0.0
-
 * Powered by new zigbee-herdsman library https://github.com/Koenkk/zigbee2mqtt/issues/1888
 * Drop support NodeJS 6
 * Binding
 
-## Changelog
+## Changelog  
+
+### freeze shepherd
+
 ### 0.11.5 (2019-10-26)
 * (allofmex) Improved publish-to-zigbee queue
 * (arteck) Gledopto GL-B-001Z
