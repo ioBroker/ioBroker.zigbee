@@ -19,8 +19,8 @@ For work, you need one of the following devices, flashed with a special ZNP firm
 <span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429601_2.jpg" width="100"></span>
 <span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/CC2538_CC2592_PA.png" width="100"></span>
-<span><img src="http://img.dxcdn.com/productimages/cc26x2r.png" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2538_CC2592_PA.png" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2531.png" width="100"></span>
 
 The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
 
