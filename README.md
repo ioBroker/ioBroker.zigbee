@@ -7,7 +7,7 @@
 
 [![NPM](https://nodei.co/npm/iobroker.zigbee.png?downloads=true)](https://nodei.co/npm/iobroker.zigbee/)
 
-## ioBroker Zigbee adapter for Xiaomi (and other) devices via cc2531/cc2530
+## ioBroker Zigbee adapter for Xiaomi (and other) devices via cc2531/cc2530 and new cc26x2r and cc2538_cc2592_PA
 
 With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others), it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
@@ -20,7 +20,7 @@ For work, you need one of the following devices, flashed with a special ZNP firm
 <span><img src="http://img.dxcdn.com/productimages/sku_429601_2.jpg" width="100"></span>
 <span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
 <span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/CC2538_CC2592_PA.png" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/cc26x2r.png" width="100"></span>
+<span><img src="http://img.dxcdn.com/productimages/cc26x2r.png" width="100"></span>
 
 The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
 
