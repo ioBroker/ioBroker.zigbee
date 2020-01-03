@@ -1528,8 +1528,12 @@ function prepareBindingDialog(bindObj){
             }
         },
     );
+    const bindtargets = binddevices.slice();
+    for (var key in groups) {
+        bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
+    }
     $('#bind_target_ep').empty();
-    list2select('#bind_target', binddevices, bind_target,
+    list2select('#bind_target', bindtargets, bind_target,
         function(key, device) {
             if (device == '') {
                 return 'Select target device';
@@ -1555,9 +1559,10 @@ function prepareBindingDialog(bindObj){
                     return null;
                 }
                 return device.common.name;
-            }
-            else { // fallback if device in list but not paired
-                device.common.name + ' ' +device.native.id;
+            } else {
+                if (device.hasOwnProperty('groupId')) {
+                    return device.groupName;
+                }
             }
         },
         function(key, device) {
@@ -1721,14 +1726,15 @@ function showBinding() {
               bind_target = b.bind_target,
               bind_target_ep = b.bind_target_ep;
         const source_dev = devices.find((d) => d._id == bind_source) || {common: {name: bind_source}},
-              target_dev = devices.find((d) => d._id == bind_target) || {common: {name: bind_target}};
+              target_dev = devices.find((d) => d._id == bind_target) || {common: {name: bind_target}},
+              target_icon = (target_dev.icon) ? `<img src="${target_dev.icon}" width="64px">` : "";
         const card = `
                     <div id="${bind_id}" class="binding col s12 m6 l4 xl3">
                         <div class="card hoverable">
                             <div class="card-content zcard">
                                 <span class="card-title truncate">${source_dev.common.name}</span>
                                 <i class="left"><img src="${source_dev.icon}" width="64px"></i>
-                                <i class="right"><img src="${target_dev.icon}" width="64px"></i>
+                                <i class="right">${target_icon}</i>
                                 <div style="min-height:72px; font-size: 0.8em" class="truncate">
                                     <ul>
                                         <li><span class="label">source:</span><span>0x${bind_source.replace(namespace+'.', '')}</span></li>
