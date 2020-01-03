@@ -539,6 +539,7 @@ socket.emit('subscribeObjects', namespace + '.*');
 socket.on('stateChange', function (id, state) {
     // only watch our own states
     if (id.substring(0, namespaceLen) !== namespace) return;
+    //console.log('stateChange', id, state);
     if (state) {
         if (id.match(/\.info\.pairingMode$/)) {
             if (state.val) {
@@ -575,8 +576,17 @@ socket.on('stateChange', function (id, state) {
 
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
+    //console.log('objectChange', id, obj);
     if (obj && obj.type == "device" && obj.common.type !== 'group') {
         getDevices();
+    }
+    if (!obj) {
+        // delete state or device
+        const elems = id.split('.');
+        //console.log('elems', elems);
+        if (elems.length === 3) {
+            getDevices();
+        }
     }
 });
 socket.emit('getObject', 'system.config', function (err, res) {
@@ -1479,6 +1489,9 @@ function prepareBindingDialog(bindObj){
     const bind_target_ep = (bindObj) ? [bindObj.bind_target_ep] : [''];
 
     $('#bind_source_ep').empty();
+
+    // 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
+    const allowClusters = [6, 8, 768];
     // fill device selector
     list2select('#bind_source', binddevices, bind_source,
         function(key, device) {
@@ -1487,6 +1500,22 @@ function prepareBindingDialog(bindObj){
             }
             if (device.hasOwnProperty('info')) {
                 if (device.info.device._type == 'Coordinator') {
+                    return null;
+                }
+                // check for output clusters
+                var allow = false;
+                for (const cluster of allowClusters) {
+                    for (const ep of device.info.endpoints) {
+                        if (ep.outputClusters.includes(cluster)) {
+                            allow = true;
+                            break;
+                        }
+                    }
+                    if (allow) {
+                        break;
+                    }
+                }
+                if (!allow) {
                     return null;
                 }
                 return device.common.name;
@@ -1520,6 +1549,22 @@ function prepareBindingDialog(bindObj){
             }
             if (device.hasOwnProperty('info')) {
                 if (device.info.device._type == 'Coordinator') {
+                    return null;
+                }
+                // check for input clusters
+                var allow = false;
+                for (const cluster of allowClusters) {
+                    for (const ep of device.info.endpoints) {
+                        if (ep.inputClusters.includes(cluster)) {
+                            allow = true;
+                            break;
+                        }
+                    }
+                    if (allow) {
+                        break;
+                    }
+                }
+                if (!allow) {
                     return null;
                 }
                 return device.common.name;
