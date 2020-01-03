@@ -66,22 +66,12 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
-## Plan
 ## Changelog  
-### 1.0.0-b
-* device-Info page corr
-* dev-Tab corr
-* states list on adapter start
-* Eurotronic corr
-* Device Ping 
-
-
-### 1.0.0
-* Powered by new zigbee-herdsman library https://github.com/Koenkk/zigbee2mqtt/issues/1888
-* Drop support NodeJS 6
+### 1.0.0-c
 * Binding
-
-## Changelog  
+* Powered by new [zigbee-herdsman](https://github.com/Koenkk/zigbee-herdsman) library and new [converters database](https://github.com/Koenkk/zigbee-herdsman-converters)
+* Drop support NodeJS 6
+* Serialport 8.0.5 (in zigbee-herdsman)
 
 ### freeze shepherd
 
