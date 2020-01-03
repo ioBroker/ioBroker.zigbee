@@ -87,19 +87,6 @@ function getCard(dev) {
 	                    	</button>
 	                	</div>
 	                </div>
-                    <div class="card-reveal" name="edit">
-                        <span class="card-title grey-text text-darken-4">Edit device name</span>
-                        <div class="input-field">
-                            <input id="dNameInput" type="text" class="value validate">
-                            <label for="dNameInput" class="translate">Enter new name</label>
-                        </div>
-                        <span class="right">
-                            <a name="done" class="waves-effect waves-green btn green">
-                            <i class="material-icons">done</i></a>
-                            <a name="close" class="waves-effect waves-red btn-flat">
-                            <i class="material-icons">close</i></a>
-                        </span>
-                    </div>
                     <div class="card-reveal" name="info">
                         <span class="right">
                             <a name="close" class="waves-effect waves-red btn-flat top right">
