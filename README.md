@@ -7,18 +7,20 @@
 
 [![NPM](https://nodei.co/npm/iobroker.zigbee.png?downloads=true)](https://nodei.co/npm/iobroker.zigbee/)
 
-## ioBroker Zigbee adapter for Xiaomi (and other) devices via cc2531/cc2530
+## ioBroker Zigbee adapter for Xiaomi (and other) devices via cc2531/cc2530 and new cc26x2r and cc2538_cc2592_PA
 
 With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others), it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
 
-For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc2530 + RF](https://github.com/Koenkk/zigbee2mqtt/wiki/Supported-sniffer-devices#zigbee-coordinator)
+For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc2530 + RF, cc26x2r, cc2538_cc2592_PA ](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429601_2.jpg" width="100"></span>
 <span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
+<span><img src="docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
+<span><img src="docs/de/img/cc26x2r.PNG" width="100"></span>
 
 The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
 
@@ -28,7 +30,8 @@ The devices connected to the Zigbee-network and inform the coordinator of their 
 
 ![](https://raw.githubusercontent.com/kirovilya/files/master/config.PNG)
 
-To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2531 or `/dev/ttyUSB0` for the UART-connection cc2530. For Windows this will be the COM port number.
+To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2xxx or `/dev/ttyUSB0` for the UART-connection cc2530 or you find with ls -l /dev/serial/by-id the device direct.
+For Windows this will be the COM port number.
 
 To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
 To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0)
@@ -64,14 +67,24 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
 ## Plan
+## Changelog  
+### 1.0.0-b
+* device-Info page corr
+* dev-Tab corr
+* states list on adapter start
+* Eurotronic corr
+* Device Ping 
+
 
 ### 1.0.0
-
 * Powered by new zigbee-herdsman library https://github.com/Koenkk/zigbee2mqtt/issues/1888
 * Drop support NodeJS 6
 * Binding
 
-## Changelog
+## Changelog  
+
+### freeze shepherd
+
 ### 0.11.5 (2019-10-26)
 * (allofmex) Improved publish-to-zigbee queue
 * (arteck) Gledopto GL-B-001Z
