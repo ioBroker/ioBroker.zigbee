@@ -22,7 +22,7 @@
     "debug": "^4.1.1",
     "zigbee-herdsman": "^0.12.27",
     "zigbee-herdsman-converters": "^11.1.66",
-    "@iobroker/adapter-core": "^2.0.0"
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
   "devDependencies": {

@@ -14,7 +14,6 @@
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
-const path = require("path");
 const SerialListPlugin = require('./lib/seriallist');
 const CommandsPlugin = require('./lib/commands');
 const GroupsPlugin = require('./lib/groups');
@@ -319,8 +318,8 @@ class Zigbee extends utils.Adapter {
 
     getZigbeeOptions() {
         // file path for db
-        const dataDir = utils.getAbsoluteDefaultDataDir();
-        const dbDir = path.join(dataDir, this.namespace.replace('.', '_'));
+        const dataDir = (this.systemConfig) ? this.systemConfig.dataDir : '';
+        const dbDir = utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_');
         if (this.systemConfig && !fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
         const port = this.config.port;
         if (!port) {
