@@ -33,6 +33,8 @@ The devices connected to the Zigbee-network and inform the coordinator of their 
 To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2xxx or `/dev/ttyUSB0` for the UART-connection cc2530 or you find with ls -l /dev/serial/by-id the device direct.
 For Windows this will be the COM port number.
 
+Now you can also use tcp connection for cases using esp8266 as serial-bridge. For example `tpc://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
+
 To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
 To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0)
 
@@ -48,6 +50,10 @@ It is a Zigbee feature, intended for example to switch bulbs synchronized. Assig
 ![](docs/tutorial/groups-2.png)
 
 Note: Not all devices support groups (not supported by end devices like sensors).
+
+### Binding
+
+https://www.zigbee2mqtt.io/information/binding
 
 ### Developer Tab
 
@@ -66,12 +72,15 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
-## Changelog  
-### 1.0.0-c
-* Binding
+## Changelog
+
+### 1.0.0-c (2020-*-*)
 * Powered by new [zigbee-herdsman](https://github.com/Koenkk/zigbee-herdsman) library and new [converters database](https://github.com/Koenkk/zigbee-herdsman-converters)
 * Drop support NodeJS 6
 * Serialport 8.0.5 (in zigbee-herdsman)
+* More new devices
+* Some design update
+* Binding
 
 ### freeze shepherd
 
@@ -248,7 +257,7 @@ Other changes:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018-2019 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2020 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
