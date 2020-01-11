@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.11.5",
+        "version": "1.0.0-c",
         "news": {
             "0.11.5": {
                 "en": "New devices and fixes"
@@ -206,54 +206,6 @@
                 "es": "Configuración de PanID",
                 "pl": "Konfiguracja PanID",
                 "zh-cn": "PanID配置"
-            },
-            "0.5.5": {
-                "en": "Return runing on NodeJS 4.x",
-                "ru": "Вернул работу в NodeJS 4.x",
-                "de": "Laufen auf NodeJS 4.x zurück",
-                "pt": "Retornar a execução no NodeJS 4.x",
-                "nl": "Retour runing op NodeJS 4.x",
-                "fr": "Retour en cours d'exécution sur NodeJS 4.x",
-                "it": "Ritorna il run su NodeJS 4.x",
-                "es": "Ejecución de retorno en NodeJS 4.x",
-                "pl": "Zwraca runing na NodeJS 4.x",
-                "zh-cn": "返回在NodeJS 4.x上运行"
-            },
-            "0.5.4": {
-                "en": "Public version",
-                "ru": "Публичная версия",
-                "de": "Öffentliche Version",
-                "pt": "Versão pública",
-                "nl": "Openbare versie",
-                "fr": "Version publique",
-                "it": "Versione pubblica",
-                "es": "Versión pública",
-                "pl": "Wersja publiczna",
-                "zh-cn": "公开版"
-            },
-            "0.5.0": {
-                "en": "Refactoring version",
-                "ru": "Реструктурированная версия",
-                "de": "Refactoring-Version",
-                "pt": "Versão de refatoração",
-                "nl": "De versie reviseren",
-                "fr": "Refactoring version",
-                "it": "Versione di refactoring",
-                "es": "Versión refactorización",
-                "pl": "Wersja refaktoryzująca",
-                "zh-cn": "重构版本"
-            },
-            "0.1.0": {
-                "en": "Alpha-version",
-                "ru": "Альфа-версия",
-                "de": "Alpha-Version",
-                "pt": "Versão alfa",
-                "nl": "Alpha-versie",
-                "fr": "Version alpha",
-                "it": "Alpha-versione",
-                "es": "Versión alfa",
-                "pl": "Wersja alfa",
-                "zh-cn": "阿尔法版本"
             }
         },
         "title": "Zigbee",
