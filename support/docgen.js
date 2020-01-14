@@ -4,8 +4,8 @@
  */
 
 const deviceMapping = require('../lib/devstates').devices;
-const deviceMappingConverters = require('zigbee-shepherd-converters').devices;
-const findByZigbeeModel = require('zigbee-shepherd-converters').findByZigbeeModel;
+const deviceMappingConverters = require('zigbee-herdsman-converters').devices;
+const findByZigbeeModel = require('zigbee-herdsman-converters').findByZigbeeModel;
 const fs = require('fs');
 const outputdir = process.argv[2];
 
