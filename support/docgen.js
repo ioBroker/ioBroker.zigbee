@@ -3,7 +3,7 @@
  * 
  */
 
-const deviceMapping = require('../lib/devstates').devices;
+const deviceMapping = require('../lib/devices').devices;
 const deviceMappingConverters = require('zigbee-herdsman-converters').devices;
 const findByZigbeeModel = require('zigbee-herdsman-converters').findByZigbeeModel;
 const fs = require('fs');
