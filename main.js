@@ -255,7 +255,8 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 this.processSyncStatesList(deviceId, modelId, syncStateList);
             } catch(error) {
-                this.log.error(`Error on send to ${deviceId} command: ${error.stack}`);
+        //        this.log.error(`Error on send to ${deviceId} command: ${error.stack}`);
+                this.log.error(`Error on send to ${deviceId} problem on set state `);
             }
         });
     }
@@ -264,7 +265,7 @@ class Zigbee extends utils.Adapter {
         this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
         const dev = entity.device;
         if (dev) {
-            this.log.debug('new devive ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelID);
+            this.log.debug('new device ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelID);
             this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${dev.modelID}`, true);
             this.stController.updateDev(dev.ieeeAddr.substr(2), dev.modelID, dev.modelID, () => {
                 this.stController.syncDevStates(dev);

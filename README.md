@@ -22,7 +22,7 @@ For work, you need one of the following devices, flashed with a special ZNP firm
 <span><img src="docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
 <span><img src="docs/de/img/cc26x2r.PNG" width="100"></span>
 
-The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
+The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
 
 The devices connected to the Zigbee-network and inform the coordinator of their status and events (button presses, motion detection, temperature change). This information is reflected in the ioBroker object-states. Some ioBroker states have feedback and send commands to the zigbee-device when the value changes (switching the state of the outlet or lamp, changing the scene or the brightness of the lamp).
 
@@ -36,7 +36,7 @@ For Windows this will be the COM port number.
 Now you can also use tcp connection for cases using esp8266 as serial-bridge. For example `tpc://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
 
 To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
-To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0)
+To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html)
 
 After successful pairing, the device appears in the configuration panel. If the device appears in the configuration panel but has the type "undefined", then this is an unknown device and can not be work with it. If the device is in the list of available devices, but added as "undefined", then try to remove the device and add it again.
 
@@ -50,6 +50,9 @@ It is a Zigbee feature, intended for example to switch bulbs synchronized. Assig
 ![](docs/tutorial/groups-2.png)
 
 Note: Not all devices support groups (not supported by end devices like sensors).
+
+### Network Map
+
 
 ### Binding
 
@@ -66,7 +69,7 @@ There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with simila
 
 There are knowledge bases that can be useful for working with Zigbee-devices and equipment:
 * in English https://www.zigbee2mqtt.io/
-* in Russian https://github.com/kirovilya/ioBroker.zigbee/wiki
+* in Russian https://myzigbee.ru/
 
 ## Supported devices
 
