@@ -255,7 +255,8 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 this.processSyncStatesList(deviceId, modelId, syncStateList);
             } catch(error) {
-                this.log.error(`Error on send to ${deviceId} command: ${error.stack}`);
+        //        this.log.error(`Error on send to ${deviceId} command: ${error.stack}`);
+                this.log.error(`Error on send to ${deviceId} problem on set state `);
             }
         });
     }
