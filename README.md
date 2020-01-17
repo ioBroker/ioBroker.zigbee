@@ -33,7 +33,7 @@ The devices connected to the Zigbee-network and inform the coordinator of their 
 To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2xxx or `/dev/ttyUSB0` for the UART-connection cc2530 or you find with ls -l /dev/serial/by-id the device direct.
 For Windows this will be the COM port number.
 
-Now you can also use tcp connection for cases using esp8266 as serial-bridge. For example `tpc://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
+Now you can also use tcp connection for cases using esp8266 as serial-bridge. For example `tcp://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
 
 To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
 To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html)
