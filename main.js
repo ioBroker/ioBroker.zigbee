@@ -121,7 +121,7 @@ class Zigbee extends utils.Adapter {
               modelID = device.modelID,
               cluster = message.cluster,
               devId = device.ieeeAddr.substr(2),
-              meta = {device: data.device};
+              meta = {device: device};
         if (!mappedModel) {
             return;
         }
