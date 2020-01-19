@@ -120,7 +120,8 @@ class Zigbee extends utils.Adapter {
               mappedModel = entity.mapped,
               modelID = device.modelID,
               cluster = message.cluster,
-              devId = device.ieeeAddr.substr(2);
+              devId = device.ieeeAddr.substr(2),
+              meta = {device: device};
         if (!mappedModel) {
             return;
         }
@@ -155,7 +156,7 @@ class Zigbee extends utils.Adapter {
             };
 
             this.stController.collectOptions(devId, modelID, (options) => {
-                const payload = converter.convert(mappedModel, message, publish, options);
+                const payload = converter.convert(mappedModel, message, publish, options, meta);
                 if (payload) {
                     // Add device linkquality.
                     publish(payload);
