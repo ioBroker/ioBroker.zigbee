@@ -7,20 +7,22 @@
 
 [![NPM](https://nodei.co/npm/iobroker.zigbee.png?downloads=true)](https://nodei.co/npm/iobroker.zigbee/)
 
-## ioBroker Zigbee adapter for Xiaomi (and other) devices via cc2531/cc2530
+## ioBroker Zigbee adapter for Xiaomi (and other) devices via cc2531/cc2530 and new cc26x2r and cc2538_cc2592_PA
 
 With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others), it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
 
-For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc2530 + RF](https://github.com/Koenkk/zigbee2mqtt/wiki/Supported-sniffer-devices#zigbee-coordinator)
+For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc2530 + RF, cc26x2r, cc2538_cc2592_PA ](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429601_2.jpg" width="100"></span>
 <span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
+<span><img src="docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
+<span><img src="docs/de/img/cc26x2r.PNG" width="100"></span>
 
-The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0)
+The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
 
 The devices connected to the Zigbee-network and inform the coordinator of their status and events (button presses, motion detection, temperature change). This information is reflected in the ioBroker object-states. Some ioBroker states have feedback and send commands to the zigbee-device when the value changes (switching the state of the outlet or lamp, changing the scene or the brightness of the lamp).
 
@@ -28,10 +30,13 @@ The devices connected to the Zigbee-network and inform the coordinator of their 
 
 ![](https://raw.githubusercontent.com/kirovilya/files/master/config.PNG)
 
-To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2531 or `/dev/ttyUSB0` for the UART-connection cc2530. For Windows this will be the COM port number.
+To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2xxx or `/dev/ttyUSB0` for the UART-connection cc2530 or you find with ls -l /dev/serial/by-id the device direct.
+For Windows this will be the COM port number.
+
+Now you can also use tcp connection for cases using esp8266 as serial-bridge. For example `tcp://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
 
 To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
-To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html) or [here (in Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki#%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B8%D0%B2%D0%B0%D0%B5%D0%BC%D1%8B%D0%B5-%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2%D0%B0)
+To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html)
 
 After successful pairing, the device appears in the configuration panel. If the device appears in the configuration panel but has the type "undefined", then this is an unknown device and can not be work with it. If the device is in the list of available devices, but added as "undefined", then try to remove the device and add it again.
 
@@ -46,6 +51,13 @@ It is a Zigbee feature, intended for example to switch bulbs synchronized. Assig
 
 Note: Not all devices support groups (not supported by end devices like sensors).
 
+### Network Map
+
+
+### Binding
+
+https://www.zigbee2mqtt.io/information/binding
+
 ### Developer Tab
 
 This is a tool for advanced users to test currently unsupported devices or enhance this adapters functionality. More instructions can be found on tab.
@@ -57,21 +69,30 @@ There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with simila
 
 There are knowledge bases that can be useful for working with Zigbee-devices and equipment:
 * in English https://www.zigbee2mqtt.io/
-* in Russian https://github.com/kirovilya/ioBroker.zigbee/wiki
+* in Russian https://myzigbee.ru/
 
 ## Supported devices
 
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
-## Plan
+## Donate
 
-### 1.0.0
-
-* Powered by new zigbee-herdsman library https://github.com/Koenkk/zigbee2mqtt/issues/1888
-* Drop support NodeJS 6
-* Binding
+You can thank the authors by these links:
+* to Kirov Ilya https://www.paypal.me/goofyk
+* to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
 
 ## Changelog
+
+### 1.0.0-c (2020-*-*)
+* Powered by new [zigbee-herdsman](https://github.com/Koenkk/zigbee-herdsman) library and new [converters database](https://github.com/Koenkk/zigbee-herdsman-converters)
+* Drop support NodeJS 6
+* Serialport 8.0.5 (in zigbee-herdsman)
+* More new devices
+* Some design update
+* Binding
+
+### freeze shepherd
+
 ### 0.11.5 (2019-10-26)
 * (allofmex) Improved publish-to-zigbee queue
 * (arteck) Gledopto GL-B-001Z
@@ -245,7 +266,7 @@ Other changes:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018-2019 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2020 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

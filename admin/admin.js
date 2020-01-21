@@ -8,9 +8,10 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     devices = [],
     dialog,
     messages = [],
-    map = [],
+    map = {},
     mapEdges = null,
     network,
+    networkEvents,
     responseCodes = false,
     groups = {},
     devGroups = {},
@@ -33,54 +34,71 @@ function getCard(dev) {
     }
     room = rooms.join(',') || '&nbsp';
     let routeBtn = '';
-    if (dev.info && dev.info.type == 'Router') {
+    if (dev.info && dev.info.device._type == 'Router') {
         routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
     }
 
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    var image = '<img src="' + img_src + '" width="96px">',
-        info = `<p style="min-height:96px" class="truncate">${type}<br>${id.replace(namespace+'.', '')}<br>${dev.groupNames || ''}</p>`,
-        buttons = '<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">'+
-            '<i class="material-icons tiny">delete</i></a>'+
-            '<a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">'+
-                '<i class="material-icons small">mode_edit</i></a>'+routeBtn,
-        card = '<div id="' + id + '" class="device col s12 m6 l4 xl3">'+
-                    '<div class="card hoverable">'+
-                    '<div class="card-content">'+
-                        '<a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;">'+
-                            '<i class="material-icons">info</i></a>'+
-                        '<span id="dName" class="card-title truncate">'+title+'</span>'+paired+
-
-                        '<i class="left">'+image+'</i>'+
-                        info+
-                        buttons+
-                    '</div>'+
-                    '<div class="card-action">'+room+'</div>'+
-                    '<div class="card-reveal" name="edit">'+
-                        '<span class="card-title grey-text text-darken-4">Edit device name</span>'+
-                        '<div class="input-field">'+
-                            '<input id="dNameInput" type="text" class="value validate">'+
-                            '<label for="dNameInput" class="translate">Enter new name</label>'+
-                        '</div>'+
-                        '<span class="right">'+
-                            '<a name="done" class="waves-effect waves-green btn green">'+
-                            '<i class="material-icons">done</i></a>'+
-                            '<a name="close" class="waves-effect waves-red btn-flat">'+
-                            '<i class="material-icons">close</i></a>'+
-                        '</span>'+
-                    '</div>'+
-                    '<div class="card-reveal" name="d-info">'+
-                        '<span class="right">'+
-                            '<a name="close" class="waves-effect waves-red btn-flat top right">'+
-                            '<i class="material-icons">close</i></a>'+
-                        '</span>'+
-                        '<span class="card-title grey-text text-darken-4 translate">Device details</span>'+
-                        '<div id="d-infos">'+
-                            'loading...'+
-                        '</div>'+
-                    '</div>'+
-                    '</div>'+
-                '</div>';
+    var rid = id.split('.').join('_');
+    var image = `<img src="${img_src}" width="80px">`,
+    	nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+    	status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
+    	battery = (dev.battery) ? `<div class="col tool"><i class="material-icons">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+    	lq = (dev.link_quality) ? `<div class="col tool"><i class="material-icons">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+                    <ul>
+        				<li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
+        				<li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
+        				<li><span class="label">model:</span><span>${type}</span></li>
+        				<li><span class="label">vendor:</span><span>${dev.vendor}</span></li>
+        				<li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
+        			</ul>
+        		</div>`,
+        buttons = `<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">
+            <i class="material-icons tiny">delete</i></a>
+            <a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">
+                <i class="material-icons small">mode_edit</i></a>${routeBtn}`,
+        card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+                  <div class="card hoverable">
+                    <div class="card-content zcard">
+                        <!--a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;"--!>
+                        <span class="top right small" style="border-radius: 50%">
+                            ${battery}
+                            ${lq}
+                            ${status}
+                        </span>
+                        <!--/a--!>
+                        <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                        <i class="left">${image}</i>
+                        ${info}<!--${buttons}--!>
+                        <div class="footer right-align"></div>
+                    </div>
+                    <div class="card-action">
+	                    <div class="card-reveal-buttons">
+	                    	<button name="info" class="left btn-flat btn-small">
+	                    		<i class="material-icons icon-blue">info</i>
+	                    	</button>
+	                    	<span class="left" style="padding-top:8px">${room}</span>
+	                    	<button name="delete" class="right btn-flat btn-small">
+	                    		<i class="material-icons icon-black">delete</i>
+	                    	</button>
+	                    	<button name="edit" class="right btn-flat btn-small">
+	                    		<i class="material-icons icon-green">edit</i>
+	                    	</button>
+	                	</div>
+	                </div>
+                    <div class="card-reveal" name="info">
+                        <span class="right">
+                            <a name="close" class="waves-effect waves-red btn-flat top right">
+                            <i class="material-icons">close</i></a>
+                        </span>
+                        <span class="card-title grey-text text-darken-4 translate">Device details</span>
+                        <div id="d-infos">
+                        	loading...
+                        </div>
+                    </div>
+                  </div>
+                </div>`;
     return card;
 }
 
@@ -98,8 +116,7 @@ function openReval(e, id, name){
     if ($revealName == "edit") {
         $cardReveal.find("input").val(name);
         Materialize.updateTextFields();
-    }
-    else if ($revealName == "d-info") {
+    } else if ($revealName == "info") {
         pollDeviceInfo(id, $card);
     }
 
@@ -153,7 +170,7 @@ function deleteConfirmation(id, name) {
 function editName(id, name) {
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find("input[id='d_name']").val(name);
-    if (dev.info.type == "Router") {
+    if (dev.info && dev.info.device._type == "Router") {
         list2select('#d_groups', groups, devGroups[id] || []);
         $("#d_groups").parent().parent().removeClass('hide');
     } else {
@@ -173,7 +190,7 @@ function deleteDevice(id) {
     sendTo(namespace, 'deleteDevice', {id: id}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error.code, _('Error'), 'alert');
+                showMessage(msg.error.code, _('Error'));
             } else {
                 getDevices();
             }
@@ -185,7 +202,7 @@ function renameDevice(id, name) {
     sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             } else {
                 getDevices();
             }
@@ -227,8 +244,9 @@ function showDevices() {
     devGroups = {};
     for (var i=0;i < devices.length; i++) {
         var d = devices[i];
-        if (d.info && d.info.type == "Coordinator") continue;
-        if (d.groups && d.info && d.info.type == "Router") {
+        if (d.info && d.info.device._type == "Coordinator") continue;
+        //if (d.groups && d.info && d.info.device._type == "Router") {
+        if (d.groups) {
             devGroups[d._id] = d.groups;
             d.groupNames = d.groups.map(item=>{
                 return groups[item] || '';
@@ -245,11 +263,11 @@ function showDevices() {
     const getDevId = function(dev_block) {
         return dev_block.attr("id");
     };
-    $("a.btn-floating[name='delete']").click(function() {
+    $(".card-reveal-buttons button[name='delete']").click(function() {
         var dev_block = $(this).parents("div.device");
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
-    $("a.btn-floating[name='edit']").click(function(e) {
+    $(".card-reveal-buttons button[name='edit']").click(function(e) {
         var dev_block = $(this).parents("div.device"),
             id = getDevId(dev_block),
             name = getDevName(dev_block);
@@ -261,7 +279,7 @@ function showDevices() {
             joinProcess(getDevId(dev_block));
         showPairingProcess();
     });
-    $("a[name='d-info']").click(function(e) {
+    $(".card-reveal-buttons button[name='info']").click(function(e) {
         var dev_block = $(this).parents("div.device");
         openReval(e, getDevId(dev_block), getDevName(dev_block));
     });
@@ -282,7 +300,7 @@ function letsPairing() {
     sendTo(namespace, 'letsPairing', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
     });
@@ -293,15 +311,16 @@ function joinProcess(devId) {
     sendTo(namespace, 'letsPairing', {id: devId}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
     });
 }
 
 function pollDeviceInfo(id, card) {
+    card.find('#d-infos').html('Waiting for device...');
     sendToZigbee(id, null, 'genBasic', 'read', 'foundation',
-            [ {attrId: 'swBuildId'}, {attrId: 'hwVersion'}],
+            {'swBuildId':null, 'hwVersion':null},
             null, function (reply) {
         let infoNode = card.find('#d-infos');
         if (reply.hasOwnProperty('localErr')) {
@@ -312,23 +331,21 @@ function pollDeviceInfo(id, card) {
             return;
         }
 
-        let html = '<ul>';
-        if (reply.msg) {
-            for (var i=0; i<reply.msg.length; i++) {
-                var attr = reply.msg[i];
-                if (attr.status != '0') {
-                    continue; // unsupAttr,...
+        if (reply.error){
+            infoNode.html('Error '+reply.error+'<br><span class="blue-grey-text">'+reply.msg+'</span>');
+        } else {
+            let html = '<ul>';
+            if (reply.msg) {
+                if (reply.msg['swBuildId']) {//swBuildId
+                    html += '<li>Firmware Version: '+reply.msg.swBuildId+'</li>';
                 }
-                if (attr.attrId == '16384') {//swBuildId
-                    html += '<li>Firmware Version: '+attr.attrData+'</li>';
+                if (reply.msg['hwVersion']) {//hwVersion
+                    html += '<li>Hardware Version: '+reply.msg.hwVersion+'</li>';
                 }
-                else if (attr.attrId == '3') {//hwVersion
-                    html += '<li>Hardware Version: '+attr.attrData+'</li>';
-                }
-            }
+            } 
+            html += '</ul>';
+            infoNode.html(html);
         }
-        html += '</ul>';
-        infoNode.html(html);
     });
 }
 
@@ -336,7 +353,7 @@ function getDevices() {
     sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             } else {
                 devices = msg;
                 showDevices();
@@ -352,7 +369,7 @@ function getMap() {
         $('#refresh').removeClass('disabled');
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             } else {
                 map = msg;
                 showNetworkMap(devices, map);
@@ -496,14 +513,20 @@ function save(callback) {
     callback(obj);
 }
 
+
+function getDevId(adapterDevId) {
+    return adapterDevId.split('.').slice(0,3).join('.');
+}
+
 // subscribe to changes
-socket.emit('subscribe', namespace + '.info.*');
+socket.emit('subscribe', namespace + '.*');
 socket.emit('subscribeObjects', namespace + '.*');
 
 // react to changes
 socket.on('stateChange', function (id, state) {
     // only watch our own states
     if (id.substring(0, namespaceLen) !== namespace) return;
+    //console.log('stateChange', id, state);
     if (state) {
         if (id.match(/\.info\.pairingMode$/)) {
             if (state.val) {
@@ -522,14 +545,35 @@ socket.on('stateChange', function (id, state) {
         } else if (id.match(/\.info\.pairingMessage$/)) {
             messages.push(state.val);
             showMessages();
+        } else {
+        	const devId = getDevId(id);
+        	putEventToNode(devId);
+        	var rid = id.split('.').join('_');
+        	if (id.match(/\.link_quality$/)) {
+        		// update link_quality
+        		$(`#${rid}`).text(state.val);
+        	}
+        	if (id.match(/\.battery$/)) {
+        		// update battery
+        		$(`#${rid}`).text(state.val);
+        	}
         }
     }
 });
 
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
+    //console.log('objectChange', id, obj);
     if (obj && obj.type == "device" && obj.common.type !== 'group') {
         getDevices();
+    }
+    if (!obj) {
+        // delete state or device
+        const elems = id.split('.');
+        //console.log('elems', elems);
+        if (elems.length === 3) {
+            getDevices();
+        }
     }
 });
 socket.emit('getObject', 'system.config', function (err, res) {
@@ -540,8 +584,26 @@ socket.emit('getObject', 'system.config', function (err, res) {
 });
 
 
+function putEventToNode(devId) {
+	if (network) {
+		const nodesArray = Object.values(network.body.data.nodes._data);
+		const node = nodesArray.find((node) => { return node.id == devId });
+		if (node) {
+			const exists = networkEvents.find((event) => {
+				return event.node == node.id;
+			});
+			if (!exists) {
+				networkEvents.push({node: node.id, radius: 0, forward: true});
+			// } else {
+			// 	exists.radius = 0;
+			// 	exists.forward = true;
+			}
+		}
+	}
+}
+
 function getNetworkInfo(devId, networkmap){
-    return networkmap.find((info) => info.ieeeAddr == devId);
+    return networkmap.find((info) => info.device.ieeeAddr == devId);
 }
 
 function showNetworkMap(devices, map){
@@ -549,15 +611,15 @@ function showNetworkMap(devices, map){
     var nodes = {};
     // create an array with edges
     var edges = [];
-    
-    if (map.length === 0) { // first init
+
+    if (map.lqis == undefined || map.lqis.length === 0) { // first init
         $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function() {
             updateMapFilter();
         });
     }
 
     const createNode = function(dev, mapEntry) {
-        const extInfo = (mapEntry && mapEntry.nwkAddr) ? ' (nwkAddr: 0x'+mapEntry.nwkAddr.toString(16)+')' : '';
+        const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const node = {
             id: dev._id,
             label: dev.common.name,
@@ -566,84 +628,143 @@ function showNetworkMap(devices, map){
             image: dev.icon,
             font: {color:'#007700'},
         };
-        if (dev.info && dev.info.type == 'Coordinator') {
+        if (dev.info && dev.info.device._type == 'Coordinator') {
             node.shape = 'star';
             node.label = 'Coordinator';
         }
         return node;
     };
-    
+
     const getDevice = function(ieeeAddr) {
         return devices.find((devInfo) => {
             try {
-                return devInfo.info.ieeeAddr == ieeeAddr;
+                return devInfo.info.device.ieeeAddr == ieeeAddr;
             }  catch (e) {
-                console.log("No dev with ieee " + ieeeAddr);
+                //console.log("No dev with ieee " + ieeeAddr);
             }
         });
     }
-    
-    map.forEach((mapEntry)=>{
-        const dev = getDevice(mapEntry.ieeeAddr);
-        if (!dev) {
-            console.log("No dev with ieee "+mapEntry.ieeeAddr);
-            return;
-        }
 
-        var node;
-        if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-            node = createNode(dev, mapEntry);
-            nodes[mapEntry.ieeeAddr] = node;
-        }
-        else {
-            node = nodes[mapEntry.ieeeAddr];
-        }
-
-        if (dev.info) {
-            const parentDev = getDevice(mapEntry.parent);
-            const to = parentDev ? parentDev._id : undefined;
-            const from = dev._id;
-            var label = mapEntry.lqi.toString();
-            var linkColor = '#0000ff';
-            var edge = edges.find((edge) => {
-                return (edge.to == to && edge.from == from)
-            });
-            var reverse = edges.find((edge) => {
-                return (edge.to == from && edge.from == to)
-            });
-
-            if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
-                // // parent/child
-                if (mapEntry.status !== 'online' ) {
-                    label = label + ' (off)';
-                    linkColor = '#ff0000';
-                }
-                if (mapEntry.lqi < 10) {
-                    linkColor = '#ff0000';
-                }
-            } else if (mapEntry.relationship === 2) { // sibling
-                linkColor = '#00bb00';
-            } else if (mapEntry.relationship === 3 && !reverse) { // unknown
-                linkColor = '#aaaaff';
-            } else if (mapEntry.relationship === 4) { // previous child
-                linkColor = '#555555';
+    const getDeviceByNetwork = function(nwk) {
+        return devices.find((devInfo) => {
+            try {
+                return devInfo.info.device._networkAddress == nwk;
+            }  catch (e) {
+                //console.log("No dev with nwkAddr " + nwk);
             }
-            if (reverse) {
-                // update reverse edge
-                edge = reverse;
-                edge.label += '\n'+label;
-                edge.arrows.from = { enabled: false, scaleFactor: 0.5 }; // start hidden if node is not selected
-                if (mapEntry.relationship == 1) { // 
-                    edge.color.color = linkColor;
-                    edge.color.highlight = linkColor;
+        });
+    }
+
+    if (map.lqis) {
+        map.lqis.forEach((mapEntry)=>{
+            const dev = getDevice(mapEntry.ieeeAddr);
+            if (!dev) {
+                //console.log("No dev with ieee "+mapEntry.ieeeAddr);
+                return;
+            }
+
+            var node;
+            if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
+                node = createNode(dev, mapEntry);
+                nodes[mapEntry.ieeeAddr] = node;
+            }
+            else {
+                node = nodes[mapEntry.ieeeAddr];
+            }
+
+            if (dev.info) {
+                const parentDev = getDevice(mapEntry.parent);
+                const to = parentDev ? parentDev._id : undefined;
+                const from = dev._id;
+                var label = mapEntry.lqi.toString();
+                var linkColor = '#0000ff';
+                var edge = edges.find((edge) => {
+                    return (edge.to == to && edge.from == from)
+                });
+                var reverse = edges.find((edge) => {
+                    return (edge.to == from && edge.from == to)
+                });
+
+                if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
+                    // // parent/child
+                    if (mapEntry.status !== 'online' ) {
+                        label = label + ' (off)';
+                        linkColor = '#ff0000';
+                    }
+                    if (mapEntry.lqi < 10) {
+                        linkColor = '#ff0000';
+                    }
+                } else if (mapEntry.relationship === 2) { // sibling
+                    linkColor = '#00bb00';
+                } else if (mapEntry.relationship === 3 && !reverse) { // unknown
+                    linkColor = '#aaaaff';
+                } else if (mapEntry.relationship === 4) { // previous child
+                    linkColor = '#555555';
                 }
-            } else if (!edge) {
+                if (reverse) {
+                    // update reverse edge
+                    edge = reverse;
+                    edge.label += '\n'+label;
+                    edge.arrows.from = { enabled: false, scaleFactor: 0.5 }; // start hidden if node is not selected
+                    if (mapEntry.relationship == 1) { //
+                        edge.color.color = linkColor;
+                        edge.color.highlight = linkColor;
+                    }
+                } else if (!edge) {
+                    edge = {
+                        from: from,
+                        to: to,
+                        label: label,
+                        font: {
+                            align: 'middle',
+                            size: 0, // start hidden
+                            color: linkColor
+                        },
+                        arrows: { to: { enabled: false, scaleFactor: 0.5 }},
+                        //arrowStrikethrough: false,
+                        color: {
+                            color: linkColor,
+                            opacity: 0, // start hidden
+                            highlight: linkColor
+                        },
+                        chosen: {
+                            edge: function(values, id, selected, hovering) {
+                                values.opacity = 1.0;
+                                values.toArrow = true; // always existing
+                                values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
+                            },
+                            label: function(values, id, selected, hovering) {
+                            // see onMapSelect workaround
+    //                        values.size = 10;
+                            }
+                        },
+                        selectionWidth: 0,
+                        physics: mapEntry.relationship === 1 ? true : false,
+                        relationship: mapEntry.relationship
+                    };
+                    edges.push(edge);
+                }
+            }
+        });
+    }
+
+    // routing
+    if (map.routing) {
+        map.routing.forEach((route)=>{
+            if (!route.nextHop) return;
+            const routeSource = getDeviceByNetwork(route.nextHop);
+            const routeDest = getDeviceByNetwork(route.destination);
+            if (routeSource && routeDest) {
+                const to = routeDest._id;
+                const from = routeSource._id;
+                const label = route.status;
+                const linkColor = '#ff00ff';
                 edge = {
                     from: from,
                     to: to,
                     label: label,
                     font: {
-                        align: 'middle', 
+                        align: 'middle',
                         size: 0, // start hidden
                         color: linkColor
                     },
@@ -651,9 +772,10 @@ function showNetworkMap(devices, map){
                     //arrowStrikethrough: false,
                     color: {
                         color: linkColor,
-                        opacity: 0, // start hidden
+                        //opacity: 0, // start hidden
                         highlight: linkColor
                     },
+                    dashes: true,
                     chosen: {
                         edge: function(values, id, selected, hovering) {
                             values.opacity = 1.0;
@@ -662,18 +784,17 @@ function showNetworkMap(devices, map){
                         },
                         label: function(values, id, selected, hovering) {
                         // see onMapSelect workaround
-//                        values.size = 10;
+    //                        values.size = 10;
                         }
                     },
                     selectionWidth: 0,
-                    physics: mapEntry.relationship === 1 ? true : false,
-                    relationship: mapEntry.relationship
+                    physics: false,
                 };
                 edges.push(edge);
             }
-        }
-    });
-    
+        });
+    }
+
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
     devices.forEach((dev) => {
@@ -705,7 +826,7 @@ function showNetworkMap(devices, map){
     };
 
     network = new vis.Network(container, data, options);
-    
+
     const onMapSelect = function (event, properties, senderId) {
         // workaround for https://github.com/almende/vis/issues/4112
         // may be moved to edge.chosen.label if fixed
@@ -725,11 +846,73 @@ function showNetworkMap(devices, map){
             doSelection(false, event.previousSelection.edges, this.body.data);
         }
         doSelection(true, event.edges, this.body.data);
+
+        // if (event.nodes) {
+        //     event.nodes.forEach((node)=>{
+        //         //const options = network.clustering.findNode[node];
+        //         network.clustering.updateClusteredNode(
+        //             node, {size: 50}
+        //         );
+        //     });
+        // }
     }
     network.on('selectNode', onMapSelect);
     network.on('deselectNode', onMapSelect);
     redrawMap();
     updateMapFilter();
+
+
+    // functions to animate:
+    networkEvents = [];
+    var updateFrameVar = setInterval(function() { updateFrameTimer(); }, 60);
+
+    function updateFrameTimer() {
+        if (networkEvents.length > 0) {
+            network.redraw();
+            const toDelete = [];
+            networkEvents.forEach((event, index)=>{
+                if (event.radius >= 1) {
+                    toDelete.push(index);
+                } else {
+                    event.radius += 0.08;
+                }
+                // if (event.radius >= 0) {
+                // 	if (event.forward) {
+                // 		event.radius += 0.08;
+                // 	} else {
+                //     	event.radius -= 0.08;
+                //     }
+                //     if (event.radius > 1 && event.forward) {
+                //     	event.forward = false;
+                //     }
+                // } else {
+                //     toDelete.push(index);
+                // }
+            });
+            toDelete.forEach((index)=>{
+            	networkEvents.splice(index, 1);
+            });
+        }
+    }
+
+    network.on("beforeDrawing", function(ctx) {
+        if (networkEvents.length > 0) {
+            networkEvents.forEach((event)=>{
+                const inode = event.node;
+                var nodePosition = network.getPositions();
+                event.radius = (event.radius > 1) ? 1 : event.radius;
+                const cap = Math.cos(event.radius*Math.PI/2);
+                var colorCircle = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
+                var colorBorder = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
+                ctx.strokeStyle = colorCircle;
+                ctx.fillStyle = colorBorder;
+                var radius = Math.abs(100 * Math.sin(event.radius));
+                ctx.circle(nodePosition[inode].x, nodePosition[inode].y, radius);
+                ctx.fill();
+                ctx.stroke();
+            });
+        };
+    });
 }
 
 function redrawMap() {
@@ -797,12 +980,11 @@ function loadDeveloperTab(onChange) {
     updateSelect('#dev', devices,
             function(key, device) {
                 if (device.hasOwnProperty('info')) {
-                    if (device.info.type == 'Coordinator') {
+                    if (device.info.device._type == 'Coordinator') {
                         return null;
                     }
-                    return device.info.manufName +' '+ device.common.name;
-                }
-                else { // fallback if device in list but not paired
+                    return `${device.common.name} (${device.info.name})`;
+                } else { // fallback if device in list but not paired
                     device.common.name + ' ' +device.native.id;
                 }
             },
@@ -828,6 +1010,16 @@ function loadDeveloperTab(onChange) {
     populateSelector('#type', 'typeList', this.value);
 
     if (responseCodes == false) {
+        const getValue = function() { // convert to number if needed
+            var attrData = $('#value-input').val();
+            if (attrData.startsWith('"') && attrData.endsWith('"')) {
+                attrData = attrData.substr(1, attrData.length -2);
+            } else {
+                const numValue = Number(attrData);
+                attrData = !isNaN(numValue) ? numValue : attrData;
+            }
+            return attrData;
+        };
         const prepareData = function () {
             var data = {
                     devId: $('#dev-selector option:selected').val(),
@@ -835,12 +1027,13 @@ function loadDeveloperTab(onChange) {
                     cid: $('#cid-selector option:selected').val(),
                     cmd: $('#cmd-selector option:selected').val(),
                     cmdType: $('#cmd-type-selector').val(),
-                    zclData: {attrId: $('#attrid-selector').val()},
+                    zclData: {
+                        [$('#attrid-selector').val()]: {},
+                    },
                     cfg: null,
             };
             if ($("#value-needed").is(':checked')) {
-                data.zclData.dataType = $('#type-selector option:selected').val();
-                data.zclData.attrData = $('#value-input').val();
+                data.zclData[$('#attrid-selector').val()] = getValue();
             }
             return data;
         };
@@ -862,22 +1055,21 @@ function loadDeveloperTab(onChange) {
                 data = prepareExpertData();
                 // https://stackoverflow.com/a/6394168/6937282
                 const assignVal = function index(obj,is, value) {
-                    if (typeof is == 'string')
+                    if (typeof is == 'string') {
                         return index(obj,is.split('.'), value);
-                    else if (is.length==1 && value!==undefined) {
-                        if (value == null)
+                    } else if (is.length==1 && value!==undefined) {
+                        if (value == null) {
                             return delete obj[is[0]];
-                        else
+                        } else {
                             return obj[is[0]] = value;
-                    }
-                    else if (is.length==0)
+                        }
+                    } else if (is.length==0) {
                         return obj;
-                    else
+                    } else
                         return index(obj[is[0]],is.slice(1), value);
                 }
                 assignVal(data, prop, value);
-            }
-            else {
+            } else {
                 data = prepareData();
             }
             $('#expert-json').val(JSON.stringify(data, null, 4));
@@ -893,13 +1085,13 @@ function loadDeveloperTab(onChange) {
                 return obj._id === this.value;
             });
 
-            var epList = device ? device.info.epList : null;
+            var epList = device ? device.info.device._endpoints : null;
             updateSelect('#ep', epList,
                     function(key, ep) {
-                        return ep;
+                        return ep.ID;
                     },
                     function(key, ep) {
-                        return ep;
+                        return ep.ID;
             });
             setExpertData('devId', this.value);
             setExpertData('ep', $('#ep-selector').val(), false);
@@ -921,8 +1113,7 @@ function loadDeveloperTab(onChange) {
         $('#cmd-type-selector').change(function() {
             if (this.value == "foundation") {
                 populateSelector('#cmd', 'cmdListFoundation');
-            }
-            else if (this.value == "functional") {
+            } else if (this.value == "functional") {
                 var cid = $('#cid-selector option:selected').val();
                 populateSelector('#cmd', 'cmdListFunctional', cid);
             }
@@ -933,38 +1124,34 @@ function loadDeveloperTab(onChange) {
             setExpertData('cmd', this.value);
         });
         $('#attrid-selector').change(function() {
-            setExpertData('zclData.attrId', this.value);
-        });
-        $('#type-selector').change(function() {
-            setExpertData('zclData.dataType', this.value);
+            setExpertData('zclData', {[this.value]:{}});
         });
 
         // value selector checkbox
         $('#value-needed').change(function() {
+            var attr = $('#attrid-selector').val();
+            var attrData = null;
             if (this.checked === true) {
-                $('#type-selector, #value-input').removeAttr('disabled');
-                setExpertData('zclData.dataType', $('#type-selector').val());
-                setExpertData('zclData.attrData', $('#value-input').val());
+                $('#value-input').removeAttr('disabled');
+                attrData = getValue();
+            } else {
+                $('#value-input').attr('disabled', 'disabled');
             }
-            else {
-                $('#type-selector, #value-input').attr('disabled', 'disabled');
-                setExpertData('zclData.dataType', null);
-                setExpertData('zclData.attrData', null);
-            }
+            setExpertData('zclData.'+attr, attrData);
             $('#type-selector').select();
             Materialize.updateTextFields();
         });
 
         $('#value-input').keyup(function() {
-            setExpertData('zclData.attrData', this.value);
+            var attr = $('#attrid-selector').val();
+            setExpertData('zclData.'+attr, getValue());
         });
 
         $('#expert-mode').change(function() {
             if (this.checked === true) {
                 setExpertData();
                 $('#expert-json-box').css('display', 'inline-block');
-            }
-            else {
+            } else {
                 $('#expert-json-box').css('display', 'none');
             }
             $('#type-selector').select();
@@ -975,19 +1162,16 @@ function loadDeveloperTab(onChange) {
             var data;
             if ($('#expert-mode').is(':checked')) {
                 data = prepareExpertData();
-            }
-            else {
+            } else {
                 data = prepareData();
             }
             sendToZigbee(data.devId, data.ep, data.cid, data.cmd, data.cmdType, data.zclData, data.cfg, function (reply) {
                 console.log('Reply from zigbee: '+ JSON.stringify(reply));
                 if (reply.hasOwnProperty("localErr")) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
-                }
-                else if (reply.hasOwnProperty('localStatus')) {
+                } else if (reply.hasOwnProperty('localStatus')) {
                     showDevRunInfo(reply.localErr, reply.errMsg);
-                }
-                else {
+                } else {
                     addDevLog(reply);
                     showDevRunInfo('OK', 'Finished.');
                 }
@@ -1040,6 +1224,7 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
     }, 15000);
 
     console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData));
+
     sendTo(namespace, 'sendToZigbee', data, function(reply) {
         clearTimeout(sendTimeout);
         if (callback) {
@@ -1104,20 +1289,27 @@ function populateSelector(selectId, key, cid) {
         var list = data.list;
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
-                    function(index, attr) {
-                        return attr.attrName + ' ('+attr.attrId +', type '+attr.dataType+')';
+                    function(attrName, attr) {
+                        return attrName + ' ('+attr.ID +', type '+attr.type+')';
                     },
-                    function(index, attr) {
-                        return attr.attrId;
+                    function(attrName, attr) {
+                        return attrName;
                     });
-        }
-        else {
+        } else if (key === 'typeList') {
             updateSelect(selectId, list,
                     function(name, val) {
                         return name +' ('+val+')';
                     },
                     function(name, val) {
                         return val;
+                    });
+        } else {
+            updateSelect(selectId, list,
+                    function(propName, propInfo) {
+                        return propName +' ('+propInfo.ID+')';
+                    },
+                    function(propName, propInfo) {
+                        return propName;
                     });
         }
     });
@@ -1237,7 +1429,7 @@ function updateDev(id, newName, newGroups) {
     if (dev && dev.common.name != newName) {
         renameDevice(id, newName);
     }
-    if (dev.info.type == "Router") {
+    if (dev.info.device._type == "Router") {
         const oldGroups = devGroups[id] || [];
         if (oldGroups.toString() != newGroups.toString()) {
             devGroups[id] = newGroups;
@@ -1246,7 +1438,7 @@ function updateDev(id, newName, newGroups) {
             sendTo(namespace, 'groupDevices', devGroups, function (msg) {
                 if (msg) {
                     if (msg.error) {
-                        showMessage(msg.error, _('Error'), 'alert');
+                        showMessage(msg.error, _('Error'));
                     }
                 }
             });
@@ -1284,6 +1476,9 @@ function prepareBindingDialog(bindObj){
     const bind_target_ep = (bindObj) ? [bindObj.bind_target_ep] : [''];
 
     $('#bind_source_ep').empty();
+
+    // 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
+    const allowClusters = [6, 8, 768];
     // fill device selector
     list2select('#bind_source', binddevices, bind_source,
         function(key, device) {
@@ -1291,7 +1486,23 @@ function prepareBindingDialog(bindObj){
                 return 'Select source device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.type == 'Coordinator') {
+                if (device.info.device._type == 'Coordinator') {
+                    return null;
+                }
+                // check for output clusters
+                var allow = false;
+                for (const cluster of allowClusters) {
+                    for (const ep of device.info.endpoints) {
+                        if (ep.outputClusters.includes(cluster)) {
+                            allow = true;
+                            break;
+                        }
+                    }
+                    if (allow) {
+                        break;
+                    }
+                }
+                if (!allow) {
                     return null;
                 }
                 return device.common.name;
@@ -1317,20 +1528,41 @@ function prepareBindingDialog(bindObj){
             }
         },
     );
+    const bindtargets = binddevices.slice();
+    for (var key in groups) {
+        bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
+    }
     $('#bind_target_ep').empty();
-    list2select('#bind_target', binddevices, bind_target,
+    list2select('#bind_target', bindtargets, bind_target,
         function(key, device) {
             if (device == '') {
                 return 'Select target device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.type == 'Coordinator') {
+                if (device.info.device._type == 'Coordinator') {
+                    return null;
+                }
+                // check for input clusters
+                var allow = false;
+                for (const cluster of allowClusters) {
+                    for (const ep of device.info.endpoints) {
+                        if (ep.inputClusters.includes(cluster)) {
+                            allow = true;
+                            break;
+                        }
+                    }
+                    if (allow) {
+                        break;
+                    }
+                }
+                if (!allow) {
                     return null;
                 }
                 return device.common.name;
-            }
-            else { // fallback if device in list but not paired
-                device.common.name + ' ' +device.native.id;
+            } else {
+                if (device.hasOwnProperty('groupId')) {
+                    return device.groupName;
+                }
             }
         },
         function(key, device) {
@@ -1359,13 +1591,13 @@ function prepareBindingDialog(bindObj){
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.epList : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_source_ep', epList, [],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     });
@@ -1373,13 +1605,13 @@ function prepareBindingDialog(bindObj){
         var device = devices.find(obj => {
             return obj._id === bindObj.bind_source;
         });
-        var epList = device ? device.info.epList : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_source_ep', epList, [bindObj.bind_source_ep],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     }
@@ -1393,13 +1625,13 @@ function prepareBindingDialog(bindObj){
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.epList : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_target_ep', epList, [],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     });
@@ -1407,13 +1639,13 @@ function prepareBindingDialog(bindObj){
         var device = devices.find(obj => {
             return obj._id === bindObj.bind_target;
         });
-        var epList = device ? device.info.epList : null;
+        var epList = device ? device.info.endpoints : null;
         list2select('#bind_target_ep', epList, [bindObj.bind_target_ep],
             function(key, ep) {
-                return ep;
+                return ep.ID;
             },
             function(key, ep) {
-                return ep;
+                return ep.ID;
             }
         );
     }
@@ -1437,14 +1669,14 @@ function addBindingDialog() {
 
 function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
     sendTo(namespace, 'addBinding', {
-        bind_source: bind_source, 
-        bind_source_ep: bind_source_ep, 
+        bind_source: bind_source,
+        bind_source_ep: bind_source_ep,
         bind_target: bind_target,
         bind_target_ep: bind_target_ep
     }, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
         getBinding();
@@ -1454,14 +1686,14 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
 function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep) {
     sendTo(namespace, 'editBinding', {
         id: bind_id,
-        bind_source: bind_source, 
-        bind_source_ep: bind_source_ep, 
+        bind_source: bind_source,
+        bind_source_ep: bind_source_ep,
         bind_target: bind_target,
         bind_target_ep: bind_target_ep
     }, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
         getBinding();
@@ -1494,46 +1726,46 @@ function showBinding() {
               bind_target = b.bind_target,
               bind_target_ep = b.bind_target_ep;
         const source_dev = devices.find((d) => d._id == bind_source) || {common: {name: bind_source}},
-              target_dev = devices.find((d) => d._id == bind_target) || {common: {name: bind_target}};
+              target_dev = devices.find((d) => d._id == bind_target) || {common: {name: bind_target}},
+              target_icon = (target_dev.icon) ? `<img src="${target_dev.icon}" width="64px">` : "";
         const card = `
                     <div id="${bind_id}" class="binding col s12 m6 l4 xl3">
                         <div class="card hoverable">
-                            <div class="card-content">
-                                <table style="border-collapse: separate">
-                                    <tr>
-                                        <td style="padding: 0px">
-                                            <img class="left" src="${source_dev.icon}" width="64px">
-                                        </td>
-                                        <td style="padding: 0px">
-                                            <div>source:</div>
-                                            <div>${source_dev.common.name}</div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 0px">
-                                            <img class="left" src="${target_dev.icon}" width="64px">
-                                        </td>
-                                        <td style="padding: 0px">
-                                            <div>target:</div>
-                                            <div>${target_dev.common.name}}</div>
-                                        </td>
-                                    </tr>
-                                </table>
+                            <div class="card-content zcard">
+                                <span class="card-title truncate">${source_dev.common.name}</span>
+                                <i class="left"><img src="${source_dev.icon}" width="64px"></i>
+                                <i class="right">${target_icon}</i>
+                                <div style="min-height:72px; font-size: 0.8em" class="truncate">
+                                    <ul>
+                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace+'.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
+                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace+'.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-action">
-                                <a name="edit" class="btn blue"><i class="material-icons tiny">mode_edit</i></a>
-                                <a name="delete" class="btn right black"><i class="material-icons tiny">delete</i></a>
+                                <div class="card-reveal-buttons zcard">
+                                    <span class="card-title truncate">${target_dev.common.name}
+                                        <button name="delete" class="right btn-flat btn-small">
+                                            <i class="material-icons icon-black">delete</i>
+                                        </button>
+                                        <button name="edit" class="right btn-flat btn-small">
+                                            <i class="material-icons icon-green">edit</i>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>`
         element.append(card);
     });
-    
-    $("#binding a.btn[name='delete']").click(function() {
+
+    $("#binding button[name='delete']").click(function() {
         const bind_id = $(this).parents('.binding')[0].id;
         deleteBindingConfirmation(bind_id);
     });
-    $("#binding a.btn[name='edit']").click(function(e) {
+    $("#binding button[name='edit']").click(function(e) {
         const bind_id = $(this).parents('.binding')[0].id;
         const bindObj = binding.find((b) => b.id == bind_id);
         if (bindObj) {
@@ -1546,7 +1778,7 @@ function getBinding() {
     sendTo(namespace, 'getBinding', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             } else {
                 binding = msg;
                 showBinding();
@@ -1569,7 +1801,7 @@ function deleteBinding(id) {
     sendTo(namespace, 'delBinding', id, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'), 'alert');
+                showMessage(msg.error, _('Error'));
             }
         }
         getBinding();

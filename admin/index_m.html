@@ -6,8 +6,10 @@
 
 <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
 <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"/>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"/> -->
+<script type="text/javascript" src="vis-network.min.js"></script>
+<link rel="stylesheet" type="text/css" href="vis-network.min.css"/>
 
 <!-- these files always have to be included -->
 <script type="text/javascript" src="../../js/translate.js"></script>
@@ -73,6 +75,65 @@
         width: 45px;
         top: 120px;
     }
+    .m .card .zcard {
+        padding: 10px;
+    }
+    .m .zcard .card-title {
+        font-size: 16px;
+        font-weight: 300;
+    }
+    .card-action .card-reveal-buttons {
+        left: 0;
+        position: absolute;
+        border: none;
+        bottom: 0;
+        height: 50px;
+        background: #fff;
+        right: 0;
+        /*text-align: right;*/
+        padding: 10px;
+    }
+    .card-action i {
+        font-size: 1.7em;
+    }
+    .card-action button {
+        margin-right: 5px;
+    }
+    .small-button {
+        background: #fff;
+        color: #0e2e4a;
+        padding: 1px 0 0 0;
+        cursor: pointer;
+        transition: .2s linear;
+    }
+    .small-button, .small-button-empty {
+        width: 24px;
+        margin: 0 1px 0 0;
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        border: 0;
+        border-radius: 2px;
+    }
+    i.icon-green {
+        color: green;
+    }
+    i.icon-black {
+        color: black;
+    }
+    i.icon-blue {
+        color: blue;
+    }
+    .m .btn-small.btn-flat {
+        padding: 0 4px;
+    }
+    .m .row .col.tool {
+        padding: 0 .1rem;
+    }
+    .m span.label {
+        display: inline-block;
+        width: 50px;
+    }
 </style>
 </head>
 <body>
@@ -96,7 +157,7 @@
                         <li class="tab col s2"><a id="devs" href="#tab-main" class="translate">Devices</a></li>
                         <li class="tab col s2"><a href="#tab-groups" class="translate">Groups</a></li>
                         <li class="tab col s2"><a id="tabmap" href="#tab-map" class="translate">Network map</a></li>
-                        <!-- <li class="tab col s2"><a href="#tab-binding" class="translate">Binding</a></li> -->
+                        <li class="tab col s2"><a href="#tab-binding" class="translate">Binding</a></li>
                         <li class="tab col s2"><a id="settings" href="#tab-sett" class="translate">Settings</a></li>
                         <li class="tab col s2"><a id="develop" href="#tab-dev" class="translate">Developer</a></li>
                     </ul>
@@ -105,11 +166,11 @@
         </div>
         <div id="tabs" class="tabs-content row">
             <div id="tab-main" class="col s12 page active">
-                <div id="devices" class="row">
+                <div id="devices" style="margin-bottom: 50px" class="row">
                 </div>
             </div>
             <div id="tab-map" class="col s12 page">
-                <div class="fixed-action-btn" style="padding-bottom: 100px">
+                <div class="fixed-action-btn" style="margin-bottom: 100px">
                     <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Refresh"><i class="material-icons large">autorenew</i></a>
                 </div>
                 <div id="viewconfigbtn" class="fixed-action-btn top left" style="">
@@ -134,30 +195,69 @@
                         <input id="countDown" type="number" min="0" max="255" class="value" />
                         <label class="translate" for="countDown">Countdown</label>
                     </div>
+                    <div class="input-field col s12 m6 l3">
+                        <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
+                    </div>
+                    <div class="input-field col s12 m6 l3 col-transmitPower">
+                        <select id="transmitPower" class="value" >
+                            <option value="" disabled selected class="translate">transmitPower</option>
+                            <option value="-22">low</option>
+                            <option value="0">norm</option>
+                            <option value="19">high</option>
+                        </select>
+                        <label class="translate" for="transmitPower">transmitPower</label>
+                    </div>           
                 </div>
                 <div class="row">
                     <h6>Network</h6>
-                    <div class="input-field col s6 m3 l1">
-                        <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16" class="validate value" />
-                        <label class="translate" for="extPanID">ExtPanID</label>
+                    <div class="row">
+                        <div class="input-field col s12 m6 l3">
+                            <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16" class="validate value" />
+                            <label class="translate" for="extPanID">ExtPanID</label>
+                        </div>
+                        <div class="input-field col s12 m6 l3">
+                            <p>Extended PAN ID is the main network id, comparable to SSID of wifi networks. This id must never change
+                            for existing networks, else you have to reset and repair your devices. If you use multiple Zigbee adapter,
+                            you <b>must make sure</b> that they use unique ExtPanID's. Just enter 16 random hex character (a-f and 0-9).</p>
+                        </div>
                     </div>
-                    <div class="input-field col s6 m3 l1">
-                        <input id="panID" type="number" min="1" max="65565" class="value" />
-                        <label class="translate" for="panID">PanID</label>
+                    <div class="row">
+                        <div class="input-field col s12 m6 l3">
+                            <input id="panID" type="number" min="1" max="65565" class="value" />
+                            <label class="translate" for="panID">PanID</label>
+                        </div>
+                        <div class="input-field col s12 m6 l3">
+                            <p>Pan ID is some simplified id (is used by Zigbee instead of ExtPanID wherever possible). This should be unique too.
+                            Note: Zigbee network may choose a different Pan ID than you specified here in case it detects id conflicts.</p>
+                        </div>
+                        
                     </div>
-                    <div class="input-field col s6 m3 l1">
-                        <input id="channel" type="number" min="1" max="65565" class="value" />
-                        <label class="translate" for="channel">Channel</label>
-                    </div>
-                    <div class="input-field col s12 m6 l3">
-                        <p>Extended PAN ID is the main network id, comparable to SSID of wifi networks. This id must never change
-                        for existing networks, else you have to reset and repair your devices. If you use multiple Zigbee adapter,
-                        you <b>must make sure</b> that they use unique ExtPanID's. Just enter 16 random hex character (a-f and 0-9).</p>
-                        <p>Pan ID is some simplified id (is used by Zigbee instead of ExtPanID wherever possible). This should be unique too.
-                        Note: Zigbee network may choose a different Pan ID than you specified here in case it detects id conflicts.</p>
-                    </div>
-                    <div class="input-field col s12 m6 l3">
-                        <p>Channel sets the used radio frequency. It may be changed to avoid conflicts with existing wifi networks.</p>
+                    <div class="row">
+                        <div class="input-field col s12 m6 l3">
+                            <select id="channel" class="value">
+                                <option value="" disabled selected class="translate">Choose channell</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                            </select>
+                            <label class="translate">Channel</label>
+                        </div>
+                        <div class="input-field col s12 m6 l3">
+                            <p>Channel sets the used radio frequency. It may be changed to avoid conflicts with existing wifi networks.</p>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -173,17 +273,14 @@
                 </div>
                 <div class="row">
                     <h6>Others</h6>
-                    <div class="input-field col s12 m6 l3">
+                    <div class="input-field col s12 m6 l3 col-disableLed">
                         <input id="disableLed" type="checkbox" class="value" />
                         <label class="translate" for="disableLed">Disable LED for cc2531</label>
                     </div>
-                    <div class="input-field col s6 m3 l1">
+                    <div class="input-field col s12 m6 l3 col-disableQueue">
                         <input id="disableQueue" type="checkbox" class="value" />
                         <label class="translate" for="disableQueue">Disable Queue</label>
-                    </div>
-                    <div class="input-field col s6 m3 l1">
-                        <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
-                    </div>
+                    </div>                                       
                 </div>
             </div>
             <div id="tab-dev" class="col s12 page">
@@ -203,8 +300,8 @@
                             <a href="https://docs.smartthings.com/en/latest/device-type-developers-guide/zigbee-primer.html" target="_blank">here</a>
                             and in <a href="https://www.nxp.com/docs/en/user-guide/JN-UG-3115.pdf" target="_blank">ZigBee Cluster Library</a>.
                             </p>
-                            <p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-shepherd-converters" target="_blank">
-                            zigbee-shepherd-converters</a>) to make it available for other user too. 
+                            <p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-herdsman-converters" target="_blank">
+                            zigbee-herdsman-converters</a>) to make it available for other user too. 
                             </p>
                         </div>
                         <div class="col s8">
@@ -223,7 +320,7 @@
                                 <div class="collapsible-body"><b>Device:</b> SML001, <b>Endpoint:</b> 2,
                                 <b>ClusterId:</b> msOccupancySensing (1030), <b>Command Type: </b>Foundation,
                                 <b>Command:</b> write (2), <b>AttributeId:</b> 
-                                pirOToUDelay (16, type 33), <b>Value:</b> 55, <b>Type:</b> uint16 (33)<br>
+                                pirOToUDelay (16, type 33), <b>Value:</b> 55<br>
                                 => (You set the timeout until motion detector changes from occupied not unoccupied,
                                 test it be <b>reading</b> same attribute)
                                 </div>
@@ -241,14 +338,22 @@
                             </li>
                             <li>
                                 <div class="collapsible-header">Expert Mode</div>
-                                <div class="collapsible-body">This is an example for Hue Motion Detector.
-                                Some of it's attributes cannot be accessed the standard way.<br>
+                                <div class="collapsible-body">Example:<br>
                                 <b>JSON:</b> { "devId": "zigbee.0.yourDevId",
-                                "ep": "2", "cid": "1030", "cmd": "0", "cmdType": "foundation", "zclData": { "attrId": "48" },
-                                "cfg": { "manufCode": 4107, "manufSpec": 1}}<br> 
-                                => Read attribute 48. Note "cfg" section, if you try to read same attribute without cfg
-                                settings, the sensor will reply "unsupAttribute"!<br>
+                                "ep": "2", "cid": "msOccupancySensing", "cmd": "write", "cmdType": "foundation", "zclData": { "pirOToUDelay": 30 },
+                                "cfg": { "manufCode": 4107, "manufSpec": 1}}<br>
                                 (You may use selectors together with expert mode to get prepared JSON)</div>
+                            </li>
+                            <li>
+                                <div class="collapsible-header">Configure reporting</div>
+                                <div class="collapsible-body">Example (Expert Mode):<br>
+                                <b>JSON:</b> { "devId": "zigbee.0.yourDevId",
+                                "ep": "2", "cid": "msTemperatureMeasurement", "cmd": "configReport", "cmdType": "foundation",<br>
+                                "zclData": [{<br>
+                                "attribute": "measuredValue", <br>"minimumReportInterval": 1, <br>"maximumReportInterval": 600,<br>
+                                "reportableChange": 1 }],<br>
+                                "cfg": null}
+                                </div>
                             </li>
                             </ul>
                             </div>
@@ -256,7 +361,7 @@
                     </div>
                     <div class="col s9">
                         <div class="row">
-                            <div class="input-field col s4">
+                            <div class="input-field col s8">
                                 <select id ="dev-selector">
                                 <option value="" disabled selected>Select a device</option>
                                 </select>
@@ -295,26 +400,20 @@
                                     <option value="" disabled selected>Select Attribute</option>
                                     </select>
                                     <label for="attrid-selector">Attribute Id</label>
+                                </div>
+                                <div class="col s8">
+                                    <div class="input-field col s5 offset-s1 admin-tooltip-icon" title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
+                                        <label for="value-needed" style="pointer-events: auto;">
+                                        <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
+                                            <input style="pointer-events: none;" id="value-needed" type="checkbox" class="filled-in"/>
+                                            <span style="pointer-events: none;">Needs value</span>
+                                        </label>
+                                    </div>
+                                    <div class="input-field col s6 admin-tooltip-icon" title="The value to send to your device (use douple-quotes if a number is a string).">
+                                        <input id ="value-input" disabled placeholder="0">
+                                        <label for="value-input">Value</label>
+                                    </div>
                                 </div> 
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s3 offset-s1 admin-tooltip-icon" title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
-                                    <label for="value-needed" style="pointer-events: auto;">
-                                    <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
-                                        <input style="pointer-events: none;" id="value-needed" type="checkbox" class="filled-in"/>
-                                        <span style="pointer-events: none;">Needs value</span>
-                                    </label>
-                                </div>
-                                <div class="input-field col s4 admin-tooltip-icon" title="The value to send to your device.">
-                                    <input id ="value-input" disabled placeholder="0">
-                                    <label for="value-input">Value</label>
-                                </div>
-                                <div class="input-field col s4 admin-tooltip-icon" title="The data type of your value (String, Integer,...)">
-                                    <select id ="type-selector" disabled>
-                                    <option value="" disabled selected>Select Type</option>
-                                    </select>
-                                    <label for="type-selector">Type Id</label>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -379,13 +478,13 @@
                     </div>
                 </div>
             </div>
-            <!-- <div id="tab-binding" class="col s12 page">
-                <div class="fixed-action-btn" style="padding-bottom: 100px">
+            <div id="tab-binding" class="col s12 page">
+                <div class="fixed-action-btn" style="margin-bottom: 100px">
                     <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Add binding"><i class="material-icons large">add</i></a>
                 </div>
                 <div id="binding" class="row">
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 
