@@ -181,7 +181,7 @@
             </div>
             <div id="tab-sett" class="col s12 page">
                 <div id="sett" class="row">
-                    <div class="input-field input-group col s12 m6 l3">
+                    <div class="input-field input-group col s12 m6 l4">
                         <input id="port" type="text" class="value validate"/>
                         <label for="port" class="translate">COM port name</label>                            
                         <span class="suffix">
@@ -191,49 +191,37 @@
                             </ul>
                         </span>
                     </div>
-                    <div class="input-field col s3 m3 11">
-                        <input id="countDown" type="number" min="0" max="255" class="value" />
+                    <div class="input-field col s6 m3 l3">
+                        <input id="countDown" type="number" min="0" max="180" class="value" />
                         <label class="translate" for="countDown">Countdown</label>
                     </div>
-                    <div class="input-field col s12 m6 l3">
-                        <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
-                    </div>
-                    <div class="input-field col s12 m6 l3 col-transmitPower">
-                        <select id="transmitPower" class="value" >
-                            <option value="" disabled selected class="translate">transmitPower</option>
-                            <option value="-22">low</option>
-                            <option value="0">norm</option>
-                            <option value="19">high</option>
-                        </select>
-                        <label class="translate" for="transmitPower">transmitPower</label>
-                    </div>           
                 </div>
                 <div class="row">
                     <h6>Network</h6>
                     <div class="row">
-                        <div class="input-field col s12 m6 l3">
+                        <div class="input-field col s12 m6 l4">
                             <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16" class="validate value" />
                             <label class="translate" for="extPanID">ExtPanID</label>
                         </div>
-                        <div class="input-field col s12 m6 l3">
+                        <div class="input-field col s12 m6 l8">
                             <p>Extended PAN ID is the main network id, comparable to SSID of wifi networks. This id must never change
                             for existing networks, else you have to reset and repair your devices. If you use multiple Zigbee adapter,
                             you <b>must make sure</b> that they use unique ExtPanID's. Just enter 16 random hex character (a-f and 0-9).</p>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="input-field col s12 m6 l3">
+                        <div class="input-field col s12 m6 l4">
                             <input id="panID" type="number" min="1" max="65565" class="value" />
                             <label class="translate" for="panID">PanID</label>
                         </div>
-                        <div class="input-field col s12 m6 l3">
+                        <div class="input-field col s12 m6 l8">
                             <p>Pan ID is some simplified id (is used by Zigbee instead of ExtPanID wherever possible). This should be unique too.
                             Note: Zigbee network may choose a different Pan ID than you specified here in case it detects id conflicts.</p>
                         </div>
                         
                     </div>
                     <div class="row">
-                        <div class="input-field col s12 m6 l3">
+                        <div class="input-field col s12 m6 l4">
                             <select id="channel" class="value">
                                 <option value="" disabled selected class="translate">Choose channell</option>
                                 <option value="11">11</option>
@@ -255,32 +243,37 @@
                             </select>
                             <label class="translate">Channel</label>
                         </div>
-                        <div class="input-field col s12 m6 l3">
+                        <div class="input-field col s12 m6 l8">
                             <p>Channel sets the used radio frequency. It may be changed to avoid conflicts with existing wifi networks.</p>
                         </div>
                     </div>
-                </div>
-                <div class="row">
-                    <h6>Security</h6>
-                    <div class="input-field col s12 m6 l3">
+                    <div class="input-field col s12 m6 l4">
                         <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value"/>
                         <label class="translate" for="precfgkey">Transport Key</label>
                     </div>
-                    <div class="input-field col s12 m6 l3">
+                    <div class="input-field col s12 m6 l8">
                         <p>Transport Key is the network encryption key. Please choose a random key sequence <b>before</b> you
                         pair your devices. Just enter 32 random hex character (a-f and 0-9). If you change the key later, you will have to repair your devices.</p>
                     </div>
                 </div>
                 <div class="row">
                     <h6>Others</h6>
-                    <div class="input-field col s12 m6 l3 col-disableLed">
+                    <div class="input-field col s12 m6 l4 col-disableLed">
                         <input id="disableLed" type="checkbox" class="value" />
                         <label class="translate" for="disableLed">Disable LED for cc2531</label>
                     </div>
-                    <div class="input-field col s12 m6 l3 col-disableQueue">
-                        <input id="disableQueue" type="checkbox" class="value" />
-                        <label class="translate" for="disableQueue">Disable Queue</label>
-                    </div>                                       
+                    <div class="input-field col s12 m6 l8 col-transmitPower">
+                        <select id="transmitPower" class="value" >
+                            <option value="" disabled selected class="translate">transmitPower</option>
+                            <option value="-22">low</option>
+                            <option value="0">norm</option>
+                            <option value="19">high</option>
+                        </select>
+                        <label class="translate" for="transmitPower">transmitPower</label>
+                    </div>           
+                    <div class="input-field col s12 m6 l6">
+                        <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
+                    </div>
                 </div>
             </div>
             <div id="tab-dev" class="col s12 page">
