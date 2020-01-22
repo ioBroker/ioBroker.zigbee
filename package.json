@@ -21,7 +21,7 @@
     "better-queue": "*",
     "debug": "^4.1.1",
     "zigbee-herdsman": "^0.12.34",
-    "zigbee-herdsman-converters": "^12.0.0",
+    "zigbee-herdsman-converters": "^12.0.3",
     "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
