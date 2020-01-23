@@ -28,7 +28,7 @@ The devices connected to the Zigbee-network and inform the coordinator of their 
 
 ## Work with adapter
 
-![](https://raw.githubusercontent.com/kirovilya/files/master/config.PNG)
+![](docs/tutorial/zigbee.png)
 
 To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2xxx or `/dev/ttyUSB0` for the UART-connection cc2530 or you find with ls -l /dev/serial/by-id the device direct.
 For Windows this will be the COM port number.
