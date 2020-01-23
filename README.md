@@ -83,7 +83,10 @@ You can thank the authors by these links:
 
 ## Changelog
 
-### 1.0.0 (2020-01-23)
+### 1.0.1 (2020-01-23)
+* fix for old z-stack firmware
+
+### 1.0.0 (2020-01-22)
 * Powered by new [zigbee-herdsman](https://github.com/Koenkk/zigbee-herdsman) library and new [converters database](https://github.com/Koenkk/zigbee-herdsman-converters)
 * Drop support NodeJS 6
 * Serialport 8.0.5 (in zigbee-herdsman)
