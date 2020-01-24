@@ -18,6 +18,36 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     onChangeEmitter,
     binding = [];
 
+function getDeviceByID(ID) {
+    return devices.find((devInfo) => {
+        try {
+            return devInfo._id == ID;
+        }  catch (e) {
+            //console.log("No dev with ieee " + ieeeAddr);
+        }
+    });
+}
+
+function getDevice(ieeeAddr) {
+    return devices.find((devInfo) => {
+        try {
+            return devInfo.info.device.ieeeAddr == ieeeAddr;
+        }  catch (e) {
+            //console.log("No dev with ieee " + ieeeAddr);
+        }
+    });
+}
+
+function getDeviceByNetwork(nwk) {
+    return devices.find((devInfo) => {
+        try {
+            return devInfo.info.device._networkAddress == nwk;
+        }  catch (e) {
+            //console.log("No dev with nwkAddr " + nwk);
+        }
+    });
+}
+
 function getCard(dev) {
     var title = dev.common.name,
         id = dev._id,
@@ -58,6 +88,7 @@ function getCard(dev) {
             <i class="material-icons tiny">delete</i></a>
             <a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">
                 <i class="material-icons small">mode_edit</i></a>${routeBtn}`,
+        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
         card = `<div id="${id}" class="device col s12 m6 l4 xl3">
                   <div class="card hoverable">
                     <div class="card-content zcard">
@@ -75,9 +106,7 @@ function getCard(dev) {
                     </div>
                     <div class="card-action">
 	                    <div class="card-reveal-buttons">
-	                    	<button name="info" class="left btn-flat btn-small">
-	                    		<i class="material-icons icon-blue">info</i>
-	                    	</button>
+	                    	${infoBtn}
 	                    	<span class="left" style="padding-top:8px">${room}</span>
 	                    	<button name="delete" class="right btn-flat btn-small">
 	                    		<i class="material-icons icon-black">delete</i>
@@ -318,6 +347,7 @@ function joinProcess(devId) {
 }
 
 function pollDeviceInfo(id, card) {
+    /*
     card.find('#d-infos').html('Waiting for device...');
     sendToZigbee(id, null, 'genBasic', 'read', 'foundation',
             {'swBuildId':null, 'hwVersion':null},
@@ -347,6 +377,11 @@ function pollDeviceInfo(id, card) {
             infoNode.html(html);
         }
     });
+    */
+    const dev = getDeviceByID(id);
+    const infoNode = card.find('#d-infos');
+    const info = genDevInfo(dev);
+    infoNode.html(info);
 }
 
 function getDevices() {
@@ -634,26 +669,6 @@ function showNetworkMap(devices, map){
         }
         return node;
     };
-
-    const getDevice = function(ieeeAddr) {
-        return devices.find((devInfo) => {
-            try {
-                return devInfo.info.device.ieeeAddr == ieeeAddr;
-            }  catch (e) {
-                //console.log("No dev with ieee " + ieeeAddr);
-            }
-        });
-    }
-
-    const getDeviceByNetwork = function(nwk) {
-        return devices.find((devInfo) => {
-            try {
-                return devInfo.info.device._networkAddress == nwk;
-            }  catch (e) {
-                //console.log("No dev with nwkAddr " + nwk);
-            }
-        });
-    }
 
     if (map.lqis) {
         map.lqis.forEach((mapEntry)=>{
@@ -1806,4 +1821,69 @@ function deleteBinding(id) {
         }
         getBinding();
     });
+}
+
+function genDevInfo(device) {
+    //console.log(device);
+    const dev = (device && device.info) ? device.info.device : undefined;
+    const mapped = (device && device.info) ? device.info.mapped : undefined;
+    if (!dev) return `<div class="truncate">No info</div>`;
+    const genRow = function(name, value) {
+        if (value === undefined) {
+            return '';
+        } else {
+            return `<li><span class="labelinfo">${name}:</span><span>${value}</span></li>`;
+        }
+    }
+    const mappedInfo = (mapped === undefined) ? '' : 
+        `<div style="font-size: 0.8em">
+            <ul>
+                ${genRow('model', mapped.model)}
+                ${genRow('vendor', mapped.vendor)}
+                ${genRow('description', mapped.description)}
+                ${genRow('supports', mapped.supports)}
+            </ul>
+        </div>`;
+    let epInfo = '';
+    for (var epind in dev._endpoints) {
+        const ep = dev._endpoints[epind];
+        epInfo += 
+            `<div style="font-size: 0.8em" class="truncate">
+                <ul>
+                    ${genRow('endpoint', ep.ID)}
+                    ${genRow('profile', ep.profileID)}
+                    ${genRow('input clusters', ep.inputClusters)}
+                    ${genRow('output clusters', ep.outputClusters)}
+                </ul>
+            </div>`;
+    }
+    const info = 
+        `<div class="col s12 m12 l12 xl12">
+        ${mappedInfo}
+        </div>
+        <div class="col s12 m12 l12 xl12">
+            <div style="font-size: 0.8em" class="truncate">
+                <ul>
+                    ${genRow('model', dev._modelID)}
+                    ${genRow('type', dev._type)}
+                    ${genRow('ieee', dev.ieeeAddr)}
+                    ${genRow('nwk', dev._networkAddress)}
+                    ${genRow('manuf id', dev._manufacturerID)}
+                    ${genRow('manufacturer', dev._manufacturerName)}
+                    ${genRow('power', dev._powerSource)}
+                    ${genRow('app version', dev._applicationVersion)}
+                    ${genRow('hard version', dev._hardwareVersion)}
+                    ${genRow('zcl version', dev._zclVersion)}
+                    ${genRow('stack version', dev._stackVersion)}
+                    ${genRow('date code', dev._dateCode)}
+                    ${genRow('build', dev._softwareBuildID)}
+                    ${genRow('interviewed', dev._interviewCompleted)}
+                    ${genRow('configured', (dev.meta.configured === 1))}
+                </ul>
+            </div>
+        </div>
+        <div class="col s12 m12 l12 xl12">
+        ${epInfo}
+        </div>`;
+    return info;
 }
