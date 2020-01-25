@@ -817,6 +817,9 @@ function showNetworkMap(devices, map){
         if (!node) {
             const node = createNode(dev);
             node.font = {color:'#ff0000'};
+            if (dev.info && dev.info.device._type == 'Coordinator') {
+                node.font = {color:'#000000'};
+            }
             nodesArray.push(node);
         }
     });
@@ -931,7 +934,7 @@ function showNetworkMap(devices, map){
 }
 
 function redrawMap() {
-    if (network != undefined) {
+    if (network != undefined && devices.length > 0) {
         var width = $('.adapter-body').width(),
             height = $('.adapter-body').height()-128;
         network.setSize(width, height);
