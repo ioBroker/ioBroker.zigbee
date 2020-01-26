@@ -138,6 +138,11 @@
         display: inline-block;
         width: 80px;
     }
+    .forcedelete {
+        float: left;
+        padding-left: 1rem;
+        padding-top: 1rem;
+    }
 </style>
 </head>
 <body>
@@ -534,6 +539,10 @@
                 <p>A bunch of text</p>
             </div>
             <div class="modal-footer">
+                <div id="forcediv" class="hide forcedelete">
+                    <input id="force" type="checkbox" class="value" />
+                    <label class="translate" for="force">Force delete (for lost devices)</label>
+                </div>
                 <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>

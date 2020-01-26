@@ -189,9 +189,12 @@ function closeReval(e, id, name){
 function deleteConfirmation(id, name) {
     var text = translateWord('Do you really want to delete device') + ' "'+name+'" ('+id+')?';
     $('#modaldelete').find("p").text(text);
+    $('#force').prop('checked', false);
+    $('#forcediv').removeClass('hide');
     $("#modaldelete a.btn[name='yes']").unbind("click");
     $("#modaldelete a.btn[name='yes']").click(function(e) {
-        deleteDevice(id);
+        const force = $('#force').prop('checked');
+        deleteDevice(id, force);
     });
     $('#modaldelete').modal('open');
 }
@@ -215,8 +218,8 @@ function editName(id, name) {
     Materialize.updateTextFields();
 }
 
-function deleteDevice(id) {
-    sendTo(namespace, 'deleteDevice', {id: id}, function (msg) {
+function deleteDevice(id, force) {
+    sendTo(namespace, 'deleteDevice', {id: id, force: force}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error.code, _('Error'));
@@ -1423,6 +1426,7 @@ function editGroupName(id, name) {
 function deleteGroupConfirmation(id, name) {
     var text = translateWord('Do you really whant to delete group') + ' "'+name+'" ('+id+')?';
     $('#modaldelete').find("p").text(text);
+    $('#forcediv').addClass('hide');
     $("#modaldelete a.btn[name='yes']").unbind("click");
     $("#modaldelete a.btn[name='yes']").click(function(e) {
         deleteGroup(id);
@@ -1808,6 +1812,8 @@ function getBinding() {
 function deleteBindingConfirmation(id) {
     var text = translateWord('Do you really want to delete binding?');
     $('#modaldelete').find("p").text(text);
+    //$('#forcediv').removeClass('hide');
+    $('#forcediv').addClass('hide');
     $("#modaldelete a.btn[name='yes']").unbind("click");
     $("#modaldelete a.btn[name='yes']").click(function(e) {
         deleteBinding(id);
