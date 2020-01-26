@@ -1844,7 +1844,7 @@ function genDevInfo(device) {
             return `<li><span class="labelinfo">${name}:</span><span>${value}</span></li>`;
         }
     }
-    const mappedInfo = (mapped === undefined) ? '' : 
+    const mappedInfo = (!mapped) ? '' : 
         `<div style="font-size: 0.8em">
             <ul>
                 ${genRow('model', mapped.model)}
