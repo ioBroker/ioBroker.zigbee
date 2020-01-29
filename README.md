@@ -83,6 +83,16 @@ You can thank the authors by these links:
 
 ## Changelog
 
+### 1.0.2 (2020-01-29)
+* (kirovilya) All button events for Aqara Opple switch
+* (ma-john) OSRAM PAR16 RGBW Z3
+* (arteck) Phillips LWA004
+* (MiniMe6666) Heiman SmokeSendor-N-3.0
+* (kirovilya) Force remove device
+* (kirovilya) Fix some networkmap bugs
+* (kirovilya) Extended info button
+* (kirovilya) Long press for WXKG01LM
+
 ### 1.0.1 (2020-01-23)
 * fix for old z-stack firmware
 
