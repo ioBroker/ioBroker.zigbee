@@ -244,6 +244,7 @@ class Zigbee extends utils.Adapter {
                 mapped: mappedModel,
                 message: {[key]: preparedValue},
                 logger: this.log,
+                state: {},
             };
             if (preparedOptions.hasOwnProperty('state')) {
                 meta.state = preparedOptions.state;
@@ -256,8 +257,7 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 this.processSyncStatesList(deviceId, modelId, syncStateList);
             } catch(error) {
-        //        this.log.error(`Error on send to ${deviceId} command: ${error.stack}`);
-                this.log.error(`Error on send to ${deviceId} problem on set state `);
+                this.log.error(`Error on send command to ${deviceId}. Error: ${error.stack}`);
             }
         });
     }

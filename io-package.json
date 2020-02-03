@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.0.0-d",
+        "version": "1.0.2",
         "news": {
+            "1.0.0": {
+                "en": "Powered by Zigbee-Herdsman"
+            },
             "0.11.5": {
                 "en": "New devices and fixes"
             },
@@ -194,18 +197,6 @@
                 "es": "Actualizar estados en el inicio del adaptador",
                 "pl": "Zaktualizuj stany na początku adaptera",
                 "zh-cn": "适配器启动时更新状态"
-            },
-            "0.5.6": {
-                "en": "PanID configuration",
-                "ru": "Настройка PanID для сети",
-                "de": "PanID-Konfiguration",
-                "pt": "Configuração PanID",
-                "nl": "PanID-configuratie",
-                "fr": "Configuration PanID",
-                "it": "Configurazione PanID",
-                "es": "Configuración de PanID",
-                "pl": "Konfiguracja PanID",
-                "zh-cn": "PanID配置"
             }
         },
         "title": "Zigbee",
