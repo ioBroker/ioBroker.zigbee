@@ -255,7 +255,8 @@
         "materialize": true,
         "messagebox": true,
         "stopBeforeUpdate": true,
-        "dataFolder": "zigbee_%INSTANCE%"
+        "dataFolder": "zigbee_%INSTANCE%",
+        "compact": true
     },
     "native": {
         "port": "",
