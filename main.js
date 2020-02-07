@@ -244,6 +244,7 @@ class Zigbee extends utils.Adapter {
                 mapped: mappedModel,
                 message: {[key]: preparedValue},
                 logger: this.log,
+                state: {},
             };
             if (preparedOptions.hasOwnProperty('state')) {
                 meta.state = preparedOptions.state;

@@ -28,7 +28,7 @@ The devices connected to the Zigbee-network and inform the coordinator of their 
 
 ## Work with adapter
 
-![](https://raw.githubusercontent.com/kirovilya/files/master/config.PNG)
+![](docs/tutorial/zigbee.png)
 
 To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2xxx or `/dev/ttyUSB0` for the UART-connection cc2530 or you find with ls -l /dev/serial/by-id the device direct.
 For Windows this will be the COM port number.
@@ -83,7 +83,20 @@ You can thank the authors by these links:
 
 ## Changelog
 
-### 1.0.0-c (2020-*-*)
+### 1.0.2 (2020-01-29)
+* (kirovilya) All button events for Aqara Opple switch
+* (ma-john) OSRAM PAR16 RGBW Z3
+* (arteck) Phillips LWA004
+* (MiniMe6666) Heiman SmokeSendor-N-3.0
+* (kirovilya) Force remove device
+* (kirovilya) Fix some networkmap bugs
+* (kirovilya) Extended info button
+* (kirovilya) Long press for WXKG01LM
+
+### 1.0.1 (2020-01-23)
+* fix for old z-stack firmware
+
+### 1.0.0 (2020-01-22)
 * Powered by new [zigbee-herdsman](https://github.com/Koenkk/zigbee-herdsman) library and new [converters database](https://github.com/Koenkk/zigbee-herdsman-converters)
 * Drop support NodeJS 6
 * Serialport 8.0.5 (in zigbee-herdsman)
