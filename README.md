@@ -83,6 +83,17 @@ You can thank the authors by these links:
 
 ## Changelog
 
+###
+* (Tw1nh34d) Hornbach FLAIR LED
+* (asgothian) Hue smart button, Heiman smoke sensor
+* (kirovilya) Philips LTC014, LTC015
+* (kirovilya) Power states for QBKG11LM
+* (Garfonso) Change role for occupancy state to 'sensor.motion'
+* (kirovilya) Change illuminance state to illuminance_lux (for lux value)
+* (arteck) Philips LCF002
+* (arteck) TRADFRI open/close remote
+* (kirovilya) Tuya sensor TS0201
+
 ### 1.0.2 (2020-01-29)
 * (kirovilya) All button events for Aqara Opple switch
 * (ma-john) OSRAM PAR16 RGBW Z3
