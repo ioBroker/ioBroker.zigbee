@@ -83,7 +83,7 @@ You can thank the authors by these links:
 
 ## Changelog
 
-###
+### 1.0.3 (2020-02-09)
 * (Tw1nh34d) Hornbach FLAIR LED
 * (asgothian) Hue smart button, Heiman smoke sensor
 * (kirovilya) Philips LTC014, LTC015
