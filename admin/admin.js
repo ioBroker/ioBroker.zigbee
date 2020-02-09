@@ -31,7 +31,7 @@ function getDeviceByID(ID) {
 function getDevice(ieeeAddr) {
     return devices.find((devInfo) => {
         try {
-            return devInfo.info.device.ieeeAddr == ieeeAddr;
+            return devInfo.info.device._ieeeAddr == ieeeAddr;
         }  catch (e) {
             //console.log("No dev with ieee " + ieeeAddr);
         }
