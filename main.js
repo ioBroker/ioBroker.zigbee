@@ -109,7 +109,9 @@ class Zigbee extends utils.Adapter {
         this.setState('info.connection', true);
         const devices = await this.zbController.getClients(false);
         for (const device of devices) {
-            this.stController.syncDevStates(device);
+            this.stController.updateDev(device.ieeeAddr.substr(2), device.modelID, device.modelID, () => {
+                  this.stController.syncDevStates(device);
+            });
         }
         this.callPluginMethod('start', [this.zbController, this.stController]);
     }
