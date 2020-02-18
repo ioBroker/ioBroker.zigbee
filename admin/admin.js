@@ -16,7 +16,8 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     groups = {},
     devGroups = {},
     onChangeEmitter,
-    binding = [];
+    binding = [],
+    cidList;
 
 function getDeviceByID(ID) {
     return devices.find((devInfo) => {
@@ -501,6 +502,10 @@ function load(settings, onChange) {
 
     $('#add_binding').click(function() {
         addBindingDialog();
+    });
+
+    sendTo(namespace, 'getLibData', {key: 'cidList'}, function (data) {
+        cidList = data.list;
     });
 }
 
@@ -1825,6 +1830,15 @@ function deleteBinding(id) {
     });
 }
 
+function findClName(id) {
+    for (let key in cidList) {
+        if (cidList.hasOwnProperty(key) && cidList[key].ID == id) {
+            return `${key} (${id})`;
+        }
+    }
+    return id;
+}
+
 function genDevInfo(device) {
     //console.log(device);
     const dev = (device && device.info) ? device.info.device : undefined;
@@ -1835,6 +1849,18 @@ function genDevInfo(device) {
             return '';
         } else {
             return `<li><span class="labelinfo">${name}:</span><span>${value}</span></li>`;
+        }
+    }
+    const genRowValues = function(name, value) {
+        if (value === undefined) {
+            return '';
+        } else {
+            let label = `${name}:`;
+            return value.map((val) => {
+                const row = `<li><span class="labelinfo">${label}</span><span>${val}</span></li>`;
+                label = '';
+                return row;
+            }).join('');
         }
     }
     const mappedInfo = (!mapped) ? '' : 
@@ -1854,8 +1880,8 @@ function genDevInfo(device) {
                 <ul>
                     ${genRow('endpoint', ep.ID)}
                     ${genRow('profile', ep.profileID)}
-                    ${genRow('input clusters', ep.inputClusters)}
-                    ${genRow('output clusters', ep.outputClusters)}
+                    ${genRowValues('input clusters', ep.inputClusters.map(findClName))}
+                    ${genRowValues('output clusters', ep.outputClusters.map(findClName))}
                 </ul>
             </div>`;
     }
