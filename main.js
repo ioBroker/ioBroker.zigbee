@@ -109,7 +109,9 @@ class Zigbee extends utils.Adapter {
         this.setState('info.connection', true);
         const devices = await this.zbController.getClients(false);
         for (const device of devices) {
-            this.stController.syncDevStates(device);
+            this.stController.updateDev(device.ieeeAddr.substr(2), device.modelID, device.modelID, () => {
+                  this.stController.syncDevStates(device);
+            });
         }
         this.callPluginMethod('start', [this.zbController, this.stController]);
     }
@@ -266,11 +268,16 @@ class Zigbee extends utils.Adapter {
         this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
         const dev = entity.device;
         if (dev) {
-            this.log.debug('new device ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelID);
-            this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${dev.modelID}`, true);
-            this.stController.updateDev(dev.ieeeAddr.substr(2), dev.modelID, dev.modelID, () => {
-                this.stController.syncDevStates(dev);
-            });
+          this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
+            if (obj) {
+            } else {
+              this.log.debug('new device ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelID);
+              this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${dev.modelID}`, true);
+              this.stController.updateDev(dev.ieeeAddr.substr(2), dev.modelID, dev.modelID, () => {
+                  this.stController.syncDevStates(dev);
+                });
+              }
+           });
         }
     }
 

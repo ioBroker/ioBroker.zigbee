@@ -16,7 +16,8 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     groups = {},
     devGroups = {},
     onChangeEmitter,
-    binding = [];
+    binding = [],
+    cidList;
 
 function getDeviceByID(ID) {
     return devices.find((devInfo) => {
@@ -31,7 +32,7 @@ function getDeviceByID(ID) {
 function getDevice(ieeeAddr) {
     return devices.find((devInfo) => {
         try {
-            return devInfo.info.device.ieeeAddr == ieeeAddr;
+            return devInfo.info.device._ieeeAddr == ieeeAddr;
         }  catch (e) {
             //console.log("No dev with ieee " + ieeeAddr);
         }
@@ -63,11 +64,6 @@ function getCard(dev) {
         }
     }
     room = rooms.join(',') || '&nbsp';
-    let routeBtn = '';
-    if (dev.info && dev.info.device._type == 'Router') {
-        routeBtn = '<a name="join" class="btn-floating waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></a>';
-    }
-
     var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     var rid = id.split('.').join('_');
     var image = `<img src="${img_src}" width="80px">`,
@@ -84,10 +80,7 @@ function getCard(dev) {
         				<li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
         			</ul>
         		</div>`,
-        buttons = `<a name="delete" class="btn-floating waves-effect waves-light right hoverable black">
-            <i class="material-icons tiny">delete</i></a>
-            <a name="edit" class="btn-floating waves-effect waves-light right hoverable blue small">
-                <i class="material-icons small">mode_edit</i></a>${routeBtn}`,
+        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
         card = `<div id="${id}" class="device col s12 m6 l4 xl3">
                   <div class="card hoverable">
@@ -101,7 +94,7 @@ function getCard(dev) {
                         <!--/a--!>
                         <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
                         <i class="left">${image}</i>
-                        ${info}<!--${buttons}--!>
+                        ${info}
                         <div class="footer right-align"></div>
                     </div>
                     <div class="card-action">
@@ -114,6 +107,7 @@ function getCard(dev) {
 	                    	<button name="edit" class="right btn-flat btn-small">
 	                    		<i class="material-icons icon-green">edit</i>
 	                    	</button>
+                            ${permitJoinBtn}
 	                	</div>
 	                </div>
                     <div class="card-reveal" name="info">
@@ -305,7 +299,7 @@ function showDevices() {
             name = getDevName(dev_block);
         editName(id, name);
     });
-    $("a.btn-floating[name='join']").click(function() {
+    $("button.btn-floating[name='join']").click(function() {
         var dev_block = $(this).parents("div.device");
         if (!$('#pairing').hasClass('pulse'))
             joinProcess(getDevId(dev_block));
@@ -508,6 +502,10 @@ function load(settings, onChange) {
 
     $('#add_binding').click(function() {
         addBindingDialog();
+    });
+
+    sendTo(namespace, 'getLibData', {key: 'cidList'}, function (data) {
+        cidList = data.list;
     });
 }
 
@@ -1832,6 +1830,15 @@ function deleteBinding(id) {
     });
 }
 
+function findClName(id) {
+    for (let key in cidList) {
+        if (cidList.hasOwnProperty(key) && cidList[key].ID == id) {
+            return `${key} (${id})`;
+        }
+    }
+    return id;
+}
+
 function genDevInfo(device) {
     //console.log(device);
     const dev = (device && device.info) ? device.info.device : undefined;
@@ -1842,6 +1849,18 @@ function genDevInfo(device) {
             return '';
         } else {
             return `<li><span class="labelinfo">${name}:</span><span>${value}</span></li>`;
+        }
+    }
+    const genRowValues = function(name, value) {
+        if (value === undefined) {
+            return '';
+        } else {
+            let label = `${name}:`;
+            return value.map((val) => {
+                const row = `<li><span class="labelinfo">${label}</span><span>${val}</span></li>`;
+                label = '';
+                return row;
+            }).join('');
         }
     }
     const mappedInfo = (!mapped) ? '' : 
@@ -1861,8 +1880,8 @@ function genDevInfo(device) {
                 <ul>
                     ${genRow('endpoint', ep.ID)}
                     ${genRow('profile', ep.profileID)}
-                    ${genRow('input clusters', ep.inputClusters)}
-                    ${genRow('output clusters', ep.outputClusters)}
+                    ${genRowValues('input clusters', ep.inputClusters.map(findClName))}
+                    ${genRowValues('output clusters', ep.outputClusters.map(findClName))}
                 </ul>
             </div>`;
     }

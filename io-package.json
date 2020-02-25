@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.0.2",
+        "version": "1.0.3",
         "news": {
             "1.0.0": {
                 "en": "Powered by Zigbee-Herdsman"
@@ -255,7 +255,8 @@
         "materialize": true,
         "messagebox": true,
         "stopBeforeUpdate": true,
-        "dataFolder": "zigbee_%INSTANCE%"
+        "dataFolder": "zigbee_%INSTANCE%",
+        "compact": true
     },
     "native": {
         "port": "",

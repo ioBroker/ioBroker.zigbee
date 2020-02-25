@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "zigbee-herdsman": "^0.12.42",
-    "zigbee-herdsman-converters": "^12.0.12",
+    "zigbee-herdsman": "^0.12.52",
+    "zigbee-herdsman-converters": "^12.0.26",
     "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
