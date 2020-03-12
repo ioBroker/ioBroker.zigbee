@@ -240,7 +240,7 @@ class Zigbee extends utils.Adapter {
             }
             this.log.debug(`target: ${safeJsonStringify(target)}`);
             const meta = {
-                endpoint_name: '',
+                endpoint_name: epName,
                 options: preparedOptions,
                 device: entity.device,
                 mapped: mappedModel,
