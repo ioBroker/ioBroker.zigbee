@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.0.3",
+        "version": "1.0.4",
         "news": {
             "1.0.0": {
                 "en": "Powered by Zigbee-Herdsman"

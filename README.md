@@ -83,6 +83,33 @@ You can thank the authors by these links:
 
 ## Changelog
 
+### 1.0.4 (2020-03-14)
+* (kirovilya) Philips Hue Adore Bathroom Mirror Light
+* (kirovilya) Oujiabao Gas and carbon monoxide alarm
+* (kirovilya) Tuya SOS button
+* (Erdnuss3003) Schwaiger ZBT-DIMLight-GLS0800
+* (arteck) Smart Home Pty FB56-ZCW11HG1.4, LXT56-LS27LX1.7
+* (arteck) Xiaomi plug lumi.plug.mmeu01
+* (arteck) Innr RS 228 T, RS 230 C
+* (arteck) Gledopto GL-MC-001, GL-D-003ZS
+* (allmyjoes) Bitron AV2010/21A
+* (arteck) Osram Panel TW 595 UGR22
+* (kirovilya) IKEA SURTE door WS 38x64
+* (andigandi) Philips Hue LCG002, Hue LTG002
+* (arteck) iCasa ICZB-FC
+* (arteck) Osram A60 DIM Z3
+* (arteck) Paulmann 371000001
+* (DaCHRIS) Osram PAR16 DIM Z3
+* (DaCHRIS) Philips LWG001
+* (DaCHRIS) Illuminize 511.202
+* (SchumyHao) TERNCY-SD01 knob dimmer
+* (SchumyHao) Xiaomi lumi.lock.aq1
+* (kirovilya) New eWeLink devices: button, TH sensor, contact sensor, motion sensor
+* (kirovilya) Allow pairing to routers (again)
+* (Erdnuss3003) Philips Hue LCT021
+* (root) Trust ZWLD-100 water leak sensor
+* (smartpran) Bitron AV2010/32
+
 ### 1.0.3 (2020-02-09)
 * (Tw1nh34d) Hornbach FLAIR LED
 * (asgothian) Hue smart button, Heiman smoke sensor
