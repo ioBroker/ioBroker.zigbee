@@ -101,6 +101,7 @@ function getCard(dev) {
 	                    <div class="card-reveal-buttons">
 	                    	${infoBtn}
 	                    	<span class="left" style="padding-top:8px">${room}</span>
+                            <span class="left fw_info"></span>
 	                    	<button name="delete" class="right btn-flat btn-small">
 	                    		<i class="material-icons icon-black">delete</i>
 	                    	</button>
@@ -321,6 +322,50 @@ function showDevices() {
     translateAll();
 }
 
+function checkFwUpdate() {
+    const deviceCards = getDeviceCards();
+    const getFwInfoNode = function(deviceCard) {
+        return deviceCard.find('.fw_info');
+    };
+    const createBtn = function(icon, hint, disabled, color) {
+        const disabledAttr = disabled ? '[disabled]="true"' : '';
+        if (!color) {
+            color = !disabled ? 'icon-green' : '';
+        }
+        return `<button name="fw_update" class="left btn-flat btn-small" title="${hint}" ${disabledAttr}>
+            <i class="material-icons ${color}">${icon}</i></button>`;
+    };
+    const callback = function(msg) {
+        if (msg) {
+            const deviceCard = getDeviceCard(msg.device);
+            const devId = getDevId(deviceCard.attr("id"));
+            const fwInfoNode = getFwInfoNode(deviceCard);
+            if (msg.status == 'available') {
+                fwInfoNode.html(createBtn('system_update', 'Click to start firmware update', false));
+                $(fwInfoNode).find("button[name='fw_update']").click(function(e) {
+                    fwInfoNode.html(createBtn('check_circle', 'Firmware update started, check progress in logs.', true, 'icon-blue'));
+                    sendTo(namespace, 'startOta', {devId: devId}, function(msg) {
+                        fwInfoNode.html(createBtn('check_circle', 'Finished, see logs.', true));
+                        console.log(msg);
+                    });
+                });
+            } else if (msg.status == 'not_available') {
+                fwInfoNode.html(createBtn('check_circle', 'Up-to-date', true));
+            } else if (msg.status == 'fail') {
+                fwInfoNode.html(createBtn('check_circle', 'Firmware check failed, '+msg.msg, true, 'icon-red'));
+            } else {
+                fwInfoNode.html(createBtn('not_interested', 'No firmware update available', true));
+            }
+        }
+    };
+    for (var i=0;i < deviceCards.length; i++) {
+        const deviceCard = $(deviceCards[i]);
+        const devId = getDevId(deviceCard.attr("id"));
+        getFwInfoNode(deviceCard).html('<span class="left" style="padding-top:8px">checking...</span>');
+        sendTo(namespace, 'checkOtaAvail', {devId: devId}, callback);
+    }
+}
+
 function letsPairing() {
     messages = [];
     sendTo(namespace, 'letsPairing', {}, function (msg) {
@@ -395,6 +440,17 @@ function getDevices() {
     });
 }
 
+function getDeviceCards() {
+    return $('#devices .device');
+}
+
+function getDeviceCard(devId) {
+    if (devId.startsWith('0x')) {
+        devId = devId.substr(2, devId.length);
+    }
+    return $('#devices').find(`div[id='${namespace}.${devId}']`);
+}
+
 function getMap() {
     $('#refresh').addClass('disabled');
     sendTo(namespace, 'getMap', {}, function (msg) {
@@ -447,6 +503,9 @@ function load(settings, onChange) {
     // Signal to admin, that no changes yet
     onChange(false);
 
+    $('#fw_check_btn').click(function() {
+        checkFwUpdate();
+    });
     $('#pairing').click(function() {
         if (!$('#pairing').hasClass('pulse'))
             letsPairing();
@@ -483,6 +542,7 @@ function load(settings, onChange) {
         $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
         $('.collapsible').collapsible();
+        $('.tooltipped').tooltip();
     });
 
     var text = $('#pairing').attr('data-tooltip');
