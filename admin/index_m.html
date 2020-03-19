@@ -124,6 +124,9 @@
     i.icon-blue {
         color: blue;
     }
+    i.icon-red {
+        color: red;
+    }
     .m .btn-small.btn-flat {
         padding: 0 4px;
     }
@@ -159,7 +162,14 @@
                         <h5 class="translate center-align">Zigbee adapter</h5>
                     </div>
                     <ul id="nav-mobile" class="right">
-                        <li><a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></li>
+                        <li>
+                            <a id="fw_check_btn" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Check firmware updates">
+                            <i class="material-icons large">system_update</i></a>
+                        </li>
+                        <li>
+                            <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!">
+                            <i class="material-icons large">leak_add</i></a>
+                        </li>
                     </ul>
                 </div>
                 <div class="nav-content">
