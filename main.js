@@ -345,6 +345,7 @@ class Zigbee extends utils.Adapter {
         const channel = parseInt(this.config.channel ? this.config.channel : 11);
         const precfgkey = createByteArray(this.config.precfgkey ? this.config.precfgkey : '01030507090B0D0F00020406080A0C0D');
         const extPanId = createByteArray(this.config.extPanID ? this.config.extPanID : 'DDDDDDDDDDDDDDDD').reverse();
+        const adapterType = this.config.adapterType || 'zstack';
         return {
             net: {
                 panId: panID,
@@ -355,7 +356,8 @@ class Zigbee extends utils.Adapter {
             sp: {
                 port: port,
                 baudRate: 115200,
-                rtscts: false
+                rtscts: false,
+                adapter: adapterType,
             },
             dbPath: dbDir + '/shepherd.db',
             backupPath: dbDir + '/backup.json',

@@ -265,7 +265,8 @@
         "channel": 11,
         "disableLed": false,
         "precfgkey": "01030507090B0D0F00020406080A0C0D",
-        "countDown": 60
+        "countDown": 60,
+        "adapterType": "zstack"
     },
     "instanceObjects": [
         {
