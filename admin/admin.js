@@ -85,7 +85,6 @@ function getCard(dev) {
         card = `<div id="${id}" class="device col s12 m6 l4 xl3">
                   <div class="card hoverable">
                     <div class="card-content zcard">
-                        <!--a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;"--!>
                         <span class="top right small" style="border-radius: 50%">
                             ${battery}
                             ${lq}
@@ -111,16 +110,6 @@ function getCard(dev) {
                             ${permitJoinBtn}
 	                	</div>
 	                </div>
-                    <div class="card-reveal" name="info">
-                        <span class="right">
-                            <a name="close" class="waves-effect waves-red btn-flat top right">
-                            <i class="material-icons">close</i></a>
-                        </span>
-                        <span class="card-title grey-text text-darken-4 translate">Device details</span>
-                        <div id="d-infos">
-                        	loading...
-                        </div>
-                    </div>
                   </div>
                 </div>`;
     return card;
@@ -140,8 +129,6 @@ function openReval(e, id, name){
     if ($revealName == "edit") {
         $cardReveal.find("input").val(name);
         Materialize.updateTextFields();
-    } else if ($revealName == "info") {
-        pollDeviceInfo(id, $card);
     }
 
     $card.css('overflow', 'hidden');
@@ -308,7 +295,7 @@ function showDevices() {
     });
     $(".card-reveal-buttons button[name='info']").click(function(e) {
         var dev_block = $(this).parents("div.device");
-        openReval(e, getDevId(dev_block), getDevName(dev_block));
+        showDevInfo(getDevId(dev_block));
     });
     $("a.btn[name='done']").click(function(e) {
         var dev_block = $(this).parents("div.device");
@@ -388,43 +375,6 @@ function joinProcess(devId) {
     });
 }
 
-function pollDeviceInfo(id, card) {
-    /*
-    card.find('#d-infos').html('Waiting for device...');
-    sendToZigbee(id, null, 'genBasic', 'read', 'foundation',
-            {'swBuildId':null, 'hwVersion':null},
-            null, function (reply) {
-        let infoNode = card.find('#d-infos');
-        if (reply.hasOwnProperty('localErr')) {
-            infoNode.html('No device details available<br><span class="blue-grey-text">(' +reply.localErr+ ')</span>');
-            return;
-        }
-        if (reply.hasOwnProperty('localStatus')) {
-            return;
-        }
-
-        if (reply.error){
-            infoNode.html('Error '+reply.error+'<br><span class="blue-grey-text">'+reply.msg+'</span>');
-        } else {
-            let html = '<ul>';
-            if (reply.msg) {
-                if (reply.msg['swBuildId']) {//swBuildId
-                    html += '<li>Firmware Version: '+reply.msg.swBuildId+'</li>';
-                }
-                if (reply.msg['hwVersion']) {//hwVersion
-                    html += '<li>Hardware Version: '+reply.msg.hwVersion+'</li>';
-                }
-            } 
-            html += '</ul>';
-            infoNode.html(html);
-        }
-    });
-    */
-    const dev = getDeviceByID(id);
-    const infoNode = card.find('#d-infos');
-    const info = genDevInfo(dev);
-    infoNode.html(info);
-}
 
 function getDevices() {
     sendTo(namespace, 'getDevices', {}, function (msg) {
@@ -1924,7 +1874,7 @@ function genDevInfo(device) {
         }
     }
     const mappedInfo = (!mapped) ? '' : 
-        `<div style="font-size: 0.8em">
+        `<div style="font-size: 0.9em">
             <ul>
                 ${genRow('model', mapped.model)}
                 ${genRow('vendor', mapped.vendor)}
@@ -1936,7 +1886,7 @@ function genDevInfo(device) {
     for (var epind in dev._endpoints) {
         const ep = dev._endpoints[epind];
         epInfo += 
-            `<div style="font-size: 0.8em" class="truncate">
+            `<div style="font-size: 0.9em" class="truncate">
                 <ul>
                     ${genRow('endpoint', ep.ID)}
                     ${genRow('profile', ep.profileID)}
@@ -1946,11 +1896,10 @@ function genDevInfo(device) {
             </div>`;
     }
     const info = 
-        `<div class="col s12 m12 l12 xl12">
-        ${mappedInfo}
-        </div>
-        <div class="col s12 m12 l12 xl12">
-            <div style="font-size: 0.8em" class="truncate">
+        `<div class="col s12 m6 l6 xl6">
+            ${mappedInfo}
+            <div class="divider"></div>
+            <div style="font-size: 0.9em" class="truncate">
                 <ul>
                     ${genRow('model', dev._modelID)}
                     ${genRow('type', dev._type)}
@@ -1970,8 +1919,14 @@ function genDevInfo(device) {
                 </ul>
             </div>
         </div>
-        <div class="col s12 m12 l12 xl12">
+        <div class="col s12 m6 l6 xl6">
         ${epInfo}
         </div>`;
     return info;
+}
+
+function showDevInfo(id){
+    const info = genDevInfo(getDeviceByID(id));
+    $('#devinfo').html(info);
+    $('#modaldevinfo').modal('open');
 }
