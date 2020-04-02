@@ -49,6 +49,22 @@ function getDeviceByNetwork(nwk) {
     });
 }
 
+function getBatteryCls(value) {
+    if (value) {
+        if (value < 50) return 'icon-red';
+        if (value < 80) return 'icon-orange';
+    }
+    return '';
+}
+
+function getLQICls(value) {
+    if (value) {
+        if (value < 20) return 'icon-red';
+        if (value < 50) return 'icon-orange';
+    }
+    return '';
+}
+
 function getCard(dev) {
     var title = dev.common.name,
         id = dev._id,
@@ -69,8 +85,10 @@ function getCard(dev) {
     var image = `<img src="${img_src}" width="80px">`,
     	nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
     	status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
-    	battery = (dev.battery) ? `<div class="col tool"><i class="material-icons">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-    	lq = (dev.link_quality) ? `<div class="col tool"><i class="material-icons">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        battery_cls = getBatteryCls(dev.battery),
+        lqi_cls = getLQICls(dev.link_quality),
+    	battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+    	lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
         				<li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
@@ -597,10 +615,12 @@ socket.on('stateChange', function (id, state) {
         	var rid = id.split('.').join('_');
         	if (id.match(/\.link_quality$/)) {
         		// update link_quality
+                $(`#${rid}_icon`).removeClass("icon-red icon-orange").addClass(getLQICls(state.val));
         		$(`#${rid}`).text(state.val);
         	}
         	if (id.match(/\.battery$/)) {
         		// update battery
+                $(`#${rid}_icon`).removeClass("icon-red icon-orange").addClass(getBatteryCls(state.val));
         		$(`#${rid}`).text(state.val);
         	}
         }
