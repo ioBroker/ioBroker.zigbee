@@ -247,7 +247,12 @@
             "zigbee",
             "xiaomi",
             "cc2531",
-            "cc2530"
+            "cc2530",
+            "cc2538",
+            "cc2652",
+            "deconz",
+            "conbee",
+            "raspbee"
         ],
         "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "loglevel": "info",

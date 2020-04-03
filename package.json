@@ -38,9 +38,13 @@
   "keywords": [
     "ioBroker",
     "zigbee",
-    "xiaomi",
     "cc2531",
-    "zigbee-shepherd"
+    "cc2530",
+    "cc2538",
+    "cc2652",
+    "deconz",
+    "conbee",
+    "raspbee"
   ],
   "license": "MIT",
   "main": "main.js",

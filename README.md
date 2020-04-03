@@ -7,13 +7,15 @@
 
 [![NPM](https://nodei.co/npm/iobroker.zigbee.png?downloads=true)](https://nodei.co/npm/iobroker.zigbee/)
 
-## ioBroker Zigbee adapter for Xiaomi (and other) devices via cc2531/cc2530 and new cc26x2r and cc2538_cc2592_PA
+## ioBroker adapter for Zigbee devices via TI cc2531/cc2530/cc26x2r/cc2538 and deCONZ ConBee/RaspBee.
 
-With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others), it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
+With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others models) or deCONZ ConBee/RaspBee modules, it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
 
-For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc2530 + RF, cc26x2r, cc2538_cc2592_PA ](https://github.com/Koenkk/Z-Stack-firmware)
+### Texas Instruments SoC
+
+For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc26x2r, cc2538](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
@@ -24,21 +26,31 @@ For work, you need one of the following devices, flashed with a special ZNP firm
 
 The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
 
-The devices connected to the Zigbee-network and inform the coordinator of their status and events (button presses, motion detection, temperature change). This information is reflected in the ioBroker object-states. Some ioBroker states have feedback and send commands to the zigbee-device when the value changes (switching the state of the outlet or lamp, changing the scene or the brightness of the lamp).
+### Dresden Elektronik SoC
+
+<span><img src="docs/en/img/deconz.png"></span>
+
+ConBee I
+ConBee II
+RaspBee
+
 
 ## Work with adapter
 
 ![](docs/tutorial/zigbee.png)
 
-To start the driver, you must specify the name of the port on which the cc253x device is connected. Usually this is the port `/dev/ttyACM0` for cc2xxx or `/dev/ttyUSB0` for the UART-connection cc2530 or you find with ls -l /dev/serial/by-id the device direct.
+To start the driver, you must specify the name of the port on which the Zigbee-module (stick) is connected. Usually this is the port `/dev/ttyACM0` or `/dev/ttyUSB0` for the UART-connection. Or you can find with ls -l /dev/serial/by-id the device direct.
+
 For Windows this will be the COM port number.
 
-Now you can also use tcp connection for cases using esp8266 as serial-bridge. For example `tcp://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
+Starting from version 1.0.0 you can also use *tcp connection* for cases using esp8266 (or other microcontrollers) as serial-bridge. For example `tcp://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
 
 To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
 To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html)
 
 After successful pairing, the device appears in the configuration panel. If the device appears in the configuration panel but has the type "undefined", then this is an unknown device and can not be work with it. If the device is in the list of available devices, but added as "undefined", then try to remove the device and add it again.
+
+The devices connected to the Zigbee-network and inform the coordinator of their status and events (button presses, motion detection, temperature change). This information is reflected in the ioBroker object-states. Some ioBroker states have feedback and send commands to the zigbee-device when the value changes (switching the state of the outlet or lamp, changing the scene or the brightness of the lamp).
 
 ### Device Groups
 You may create groups of devices.
@@ -82,6 +94,11 @@ You can thank the authors by these links:
 * to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
 
 ## Changelog
+
+### 1.1.0 (2020-04-)
+* ConBee/RaspBee support
+* OTA update for some devices (IKEA, OSRAM and other)
+* Touchlink reset and join
 
 ### 1.0.4 (2020-03-14)
 * (kirovilya) Philips Hue Adore Bathroom Mirror Light
