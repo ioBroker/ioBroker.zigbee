@@ -382,6 +382,17 @@ function letsPairing() {
     });
 }
 
+function touchlinkReset() {
+    messages = [];
+    sendTo(namespace, 'touchlinkReset', {}, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            }
+        }
+    });
+}
+
 function joinProcess(devId) {
     messages = [];
     sendTo(namespace, 'letsPairing', {id: devId}, function (msg) {
@@ -473,6 +484,10 @@ function load(settings, onChange) {
 
     $('#fw_check_btn').click(function() {
         checkFwUpdate();
+    });
+    $('#touchlink_btn').click(function() {
+        touchlinkReset();
+        showPairingProcess();
     });
     $('#pairing').click(function() {
         if (!$('#pairing').hasClass('pulse'))
