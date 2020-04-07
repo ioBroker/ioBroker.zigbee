@@ -247,7 +247,12 @@
             "zigbee",
             "xiaomi",
             "cc2531",
-            "cc2530"
+            "cc2530",
+            "cc2538",
+            "cc2652",
+            "deconz",
+            "conbee",
+            "raspbee"
         ],
         "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "loglevel": "info",
@@ -265,7 +270,8 @@
         "channel": 11,
         "disableLed": false,
         "precfgkey": "01030507090B0D0F00020406080A0C0D",
-        "countDown": 60
+        "countDown": 60,
+        "adapterType": "zstack"
     },
     "instanceObjects": [
         {

@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "zigbee-herdsman": "0.12.68",
-    "zigbee-herdsman-converters": "12.0.58",
+    "zigbee-herdsman": "0.12.74",
+    "zigbee-herdsman-converters": "12.0.66",
     "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
@@ -38,9 +38,13 @@
   "keywords": [
     "ioBroker",
     "zigbee",
-    "xiaomi",
     "cc2531",
-    "zigbee-shepherd"
+    "cc2530",
+    "cc2538",
+    "cc2652",
+    "deconz",
+    "conbee",
+    "raspbee"
   ],
   "license": "MIT",
   "main": "main.js",

@@ -49,6 +49,22 @@ function getDeviceByNetwork(nwk) {
     });
 }
 
+function getBatteryCls(value) {
+    if (value) {
+        if (value < 50) return 'icon-red';
+        if (value < 80) return 'icon-orange';
+    }
+    return '';
+}
+
+function getLQICls(value) {
+    if (value) {
+        if (value < 20) return 'icon-red';
+        if (value < 50) return 'icon-orange';
+    }
+    return '';
+}
+
 function getCard(dev) {
     var title = dev.common.name,
         id = dev._id,
@@ -69,8 +85,10 @@ function getCard(dev) {
     var image = `<img src="${img_src}" width="80px">`,
     	nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
     	status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
-    	battery = (dev.battery) ? `<div class="col tool"><i class="material-icons">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-    	lq = (dev.link_quality) ? `<div class="col tool"><i class="material-icons">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        battery_cls = getBatteryCls(dev.battery),
+        lqi_cls = getLQICls(dev.link_quality),
+    	battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+    	lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
         				<li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
@@ -85,7 +103,6 @@ function getCard(dev) {
         card = `<div id="${id}" class="device col s12 m6 l4 xl3">
                   <div class="card hoverable">
                     <div class="card-content zcard">
-                        <!--a name="d-info" class="top right hoverable small" style="border-radius: 50%; cursor: pointer;"--!>
                         <span class="top right small" style="border-radius: 50%">
                             ${battery}
                             ${lq}
@@ -111,16 +128,6 @@ function getCard(dev) {
                             ${permitJoinBtn}
 	                	</div>
 	                </div>
-                    <div class="card-reveal" name="info">
-                        <span class="right">
-                            <a name="close" class="waves-effect waves-red btn-flat top right">
-                            <i class="material-icons">close</i></a>
-                        </span>
-                        <span class="card-title grey-text text-darken-4 translate">Device details</span>
-                        <div id="d-infos">
-                        	loading...
-                        </div>
-                    </div>
                   </div>
                 </div>`;
     return card;
@@ -140,8 +147,6 @@ function openReval(e, id, name){
     if ($revealName == "edit") {
         $cardReveal.find("input").val(name);
         Materialize.updateTextFields();
-    } else if ($revealName == "info") {
-        pollDeviceInfo(id, $card);
     }
 
     $card.css('overflow', 'hidden');
@@ -308,7 +313,7 @@ function showDevices() {
     });
     $(".card-reveal-buttons button[name='info']").click(function(e) {
         var dev_block = $(this).parents("div.device");
-        openReval(e, getDevId(dev_block), getDevName(dev_block));
+        showDevInfo(getDevId(dev_block));
     });
     $("a.btn[name='done']").click(function(e) {
         var dev_block = $(this).parents("div.device");
@@ -377,6 +382,17 @@ function letsPairing() {
     });
 }
 
+function touchlinkReset() {
+    messages = [];
+    sendTo(namespace, 'touchlinkReset', {}, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            }
+        }
+    });
+}
+
 function joinProcess(devId) {
     messages = [];
     sendTo(namespace, 'letsPairing', {id: devId}, function (msg) {
@@ -388,43 +404,6 @@ function joinProcess(devId) {
     });
 }
 
-function pollDeviceInfo(id, card) {
-    /*
-    card.find('#d-infos').html('Waiting for device...');
-    sendToZigbee(id, null, 'genBasic', 'read', 'foundation',
-            {'swBuildId':null, 'hwVersion':null},
-            null, function (reply) {
-        let infoNode = card.find('#d-infos');
-        if (reply.hasOwnProperty('localErr')) {
-            infoNode.html('No device details available<br><span class="blue-grey-text">(' +reply.localErr+ ')</span>');
-            return;
-        }
-        if (reply.hasOwnProperty('localStatus')) {
-            return;
-        }
-
-        if (reply.error){
-            infoNode.html('Error '+reply.error+'<br><span class="blue-grey-text">'+reply.msg+'</span>');
-        } else {
-            let html = '<ul>';
-            if (reply.msg) {
-                if (reply.msg['swBuildId']) {//swBuildId
-                    html += '<li>Firmware Version: '+reply.msg.swBuildId+'</li>';
-                }
-                if (reply.msg['hwVersion']) {//hwVersion
-                    html += '<li>Hardware Version: '+reply.msg.hwVersion+'</li>';
-                }
-            } 
-            html += '</ul>';
-            infoNode.html(html);
-        }
-    });
-    */
-    const dev = getDeviceByID(id);
-    const infoNode = card.find('#d-infos');
-    const info = genDevInfo(dev);
-    infoNode.html(info);
-}
 
 function getDevices() {
     sendTo(namespace, 'getDevices', {}, function (msg) {
@@ -505,6 +484,10 @@ function load(settings, onChange) {
 
     $('#fw_check_btn').click(function() {
         checkFwUpdate();
+    });
+    $('#touchlink_btn').click(function() {
+        touchlinkReset();
+        showPairingProcess();
     });
     $('#pairing').click(function() {
         if (!$('#pairing').hasClass('pulse'))
@@ -647,10 +630,12 @@ socket.on('stateChange', function (id, state) {
         	var rid = id.split('.').join('_');
         	if (id.match(/\.link_quality$/)) {
         		// update link_quality
+                $(`#${rid}_icon`).removeClass("icon-red icon-orange").addClass(getLQICls(state.val));
         		$(`#${rid}`).text(state.val);
         	}
         	if (id.match(/\.battery$/)) {
         		// update battery
+                $(`#${rid}_icon`).removeClass("icon-red icon-orange").addClass(getBatteryCls(state.val));
         		$(`#${rid}`).text(state.val);
         	}
         }
@@ -1924,7 +1909,7 @@ function genDevInfo(device) {
         }
     }
     const mappedInfo = (!mapped) ? '' : 
-        `<div style="font-size: 0.8em">
+        `<div style="font-size: 0.9em">
             <ul>
                 ${genRow('model', mapped.model)}
                 ${genRow('vendor', mapped.vendor)}
@@ -1936,7 +1921,7 @@ function genDevInfo(device) {
     for (var epind in dev._endpoints) {
         const ep = dev._endpoints[epind];
         epInfo += 
-            `<div style="font-size: 0.8em" class="truncate">
+            `<div style="font-size: 0.9em" class="truncate">
                 <ul>
                     ${genRow('endpoint', ep.ID)}
                     ${genRow('profile', ep.profileID)}
@@ -1946,11 +1931,10 @@ function genDevInfo(device) {
             </div>`;
     }
     const info = 
-        `<div class="col s12 m12 l12 xl12">
-        ${mappedInfo}
-        </div>
-        <div class="col s12 m12 l12 xl12">
-            <div style="font-size: 0.8em" class="truncate">
+        `<div class="col s12 m6 l6 xl6">
+            ${mappedInfo}
+            <div class="divider"></div>
+            <div style="font-size: 0.9em" class="truncate">
                 <ul>
                     ${genRow('model', dev._modelID)}
                     ${genRow('type', dev._type)}
@@ -1970,8 +1954,14 @@ function genDevInfo(device) {
                 </ul>
             </div>
         </div>
-        <div class="col s12 m12 l12 xl12">
+        <div class="col s12 m6 l6 xl6">
         ${epInfo}
         </div>`;
     return info;
+}
+
+function showDevInfo(id){
+    const info = genDevInfo(getDeviceByID(id));
+    $('#devinfo').html(info);
+    $('#modaldevinfo').modal('open');
 }

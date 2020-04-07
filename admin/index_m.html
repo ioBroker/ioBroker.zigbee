@@ -127,6 +127,9 @@
     i.icon-red {
         color: red;
     }
+    i.icon-orange {
+        color: orange;
+    }
     .m .btn-small.btn-flat {
         padding: 0 4px;
     }
@@ -139,7 +142,7 @@
     }
     .m span.labelinfo {
         display: inline-block;
-        width: 80px;
+        width: 100px;
         font-weight: bold;
     }
     .forcedelete {
@@ -163,11 +166,15 @@
                     </div>
                     <ul id="nav-mobile" class="right">
                         <li>
-                            <a id="fw_check_btn" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Check firmware updates">
-                            <i class="material-icons large">system_update</i></a>
+                            <a id="fw_check_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" title="Check firmware updates">
+                            <i class="material-icons large icon-blue">system_update</i></a>
                         </li>
                         <li>
-                            <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!">
+                            <a id="touchlink_btn" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" title="Touchlink reset and pairing">
+                            <i class="material-icons large">wifi_tethering</i></a>
+                        </li>
+                        <li>
+                            <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" title="Let's pairing!">
                             <i class="material-icons large">leak_add</i></a>
                         </li>
                     </ul>
@@ -191,10 +198,10 @@
             </div>
             <div id="tab-map" class="col s12 page">
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
-                    <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Refresh"><i class="material-icons large">autorenew</i></a>
+                    <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" title="Refresh"><i class="material-icons large">autorenew</i></a>
                 </div>
                 <div id="viewconfigbtn" class="fixed-action-btn top left" style="">
-                    <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translate" data-tooltip="View config"><i class="material-icons large">menu</i></a>
+                    <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translate" title="View config"><i class="material-icons large">menu</i></a>
                 </div>
                 <div id="map" class="row">
                 </div>
@@ -210,6 +217,14 @@
                             <ul id='ports' class='dropdown-content'>
                             </ul>
                         </span>
+                    </div>
+                    <div class="input-field col s12 m6 l4">
+                        <select id="adapterType" class="value">
+                            <option value="" disabled selected class="translate">Choose type</option>
+                            <option value="zstack">TI Z-Stack/CCxxxx</option>
+                            <option value="deconz">Deconz/Conbee</option>
+                        </select>
+                        <label class="translate">Type</label>
                     </div>
                     <div class="input-field col s6 m3 l3">
                         <input id="countDown" type="number" min="0" max="180" class="value" />
@@ -458,7 +473,7 @@
                             </div>
                             <div class="card-action">
                                 <a id="dev-send-btn" class="waves-effect waves-light white-text btn-large tooltipped"
-                                data-position="bottom" data-tooltip="Send data to zigbee">Run</a>
+                                data-position="bottom" title="Send data to zigbee">Run</a>
                             </div>
                         </div>
                     </div>
@@ -493,7 +508,7 @@
             </div>
             <div id="tab-binding" class="col s12 page">
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
-                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Add binding"><i class="material-icons large">add</i></a>
+                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" title="Add binding"><i class="material-icons large">add</i></a>
                 </div>
                 <div id="binding" class="row">
                 </div>
@@ -661,6 +676,19 @@
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
+
+        <div id="modaldevinfo" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h3 class="translate">Device information</h3>
+                <div id="devinfo" class="row">
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+
     </div>
 </body>
 
