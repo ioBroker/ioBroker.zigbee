@@ -96,9 +96,11 @@ You can thank the authors by these links:
 ## Changelog
 
 ### 1.1.0 (2020-04-)
+new Zigbee-herdsman features:
 * ConBee/RaspBee support
-* OTA update for some devices (IKEA, OSRAM and other)
-* Touchlink reset and join
+* OTA update for some devices (IKEA, OSRAM and other) https://github.com/Koenkk/zigbee2mqtt/issues/2921
+* Touchlink reset and join https://github.com/Koenkk/zigbee2mqtt/issues/2396
+* Green Power support https://github.com/Koenkk/zigbee2mqtt/issues/3322
 
 ### 1.0.4 (2020-03-14)
 * (kirovilya) Philips Hue Adore Bathroom Mirror Light
