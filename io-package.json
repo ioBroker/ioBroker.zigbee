@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.0.4",
+        "version": "1.1.0",
         "news": {
+            "1.1.0": {
+                "en": "New features and experimental deConz/Conbee support"
+            },
             "1.0.0": {
                 "en": "Powered by Zigbee-Herdsman"
             },

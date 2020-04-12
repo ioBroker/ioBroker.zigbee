@@ -28,6 +28,8 @@ The necessary equipment for the firmware and the device preparation process are 
 
 ### Dresden Elektronik SoC
 
+(experimental support)
+
 <span><img src="docs/en/img/deconz.png"></span>
 
 ConBee I
@@ -95,12 +97,12 @@ You can thank the authors by these links:
 
 ## Changelog
 
-### 1.1.0 (2020-04-)
+### 1.1.0 (2020-04-12)
 new Zigbee-herdsman features:
-* ConBee/RaspBee support https://github.com/Koenkk/zigbee-herdsman/issues/72
+* ConBee/RaspBee (experimental support) https://github.com/Koenkk/zigbee-herdsman/issues/72
 * OTA update for some devices (IKEA, OSRAM and other) https://github.com/Koenkk/zigbee2mqtt/issues/2921
 * Touchlink reset and join https://github.com/Koenkk/zigbee2mqtt/issues/2396
-* Green Power support https://github.com/Koenkk/zigbee2mqtt/issues/3322
+* Green Power devices support https://github.com/Koenkk/zigbee2mqtt/issues/3322
 
 * (peterfido) iCasa KPD14S und KPD18S hinzu
 * (kirovilya) Moes Zigbee Thermostatic Radiator
