@@ -103,7 +103,6 @@ new Zigbee-herdsman features:
 * OTA update for some devices (IKEA, OSRAM and other) https://github.com/Koenkk/zigbee2mqtt/issues/2921
 * Touchlink reset and join https://github.com/Koenkk/zigbee2mqtt/issues/2396
 * Green Power devices support https://github.com/Koenkk/zigbee2mqtt/issues/3322
-
 * (peterfido) iCasa KPD14S und KPD18S hinzu
 * (kirovilya) Moes Zigbee Thermostatic Radiator
 * (kirovilya) LifeControl power plug MCLH-03, bulb MCLH-02, water leak MCLH-07, door sensor MCLH-04
