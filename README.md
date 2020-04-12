@@ -102,6 +102,25 @@ new Zigbee-herdsman features:
 * Touchlink reset and join https://github.com/Koenkk/zigbee2mqtt/issues/2396
 * Green Power support https://github.com/Koenkk/zigbee2mqtt/issues/3322
 
+* (peterfido) iCasa KPD14S und KPD18S hinzu
+* (kirovilya) Moes Zigbee Thermostatic Radiator
+* (kirovilya) LifeControl power plug MCLH-03, bulb MCLH-02, water leak MCLH-07, door sensor MCLH-04
+* (kirovilya) Philips LCT002, LCT011, LTW015, LWG004
+* (kirovilya) Gledopto GL-C-007 with with channel
+* (MultivitaminJuice) Iluminize 511.040
+* (Sacred-Shadow) Bitron 902010/24
+* (kirovilya) Color indication of LQI and Battery icon
+* (kirovilya) Device info modal dialog
+* (arteck) Philips LCT026
+* (obakuhl) Improvements Osram switch mini
+* (arteck) Nue / 3A FB56+ZSW1GKJ2.5, LXN-1S27LX1.0
+* (agross) Philips Signe Floor and Table
+* (arteck) TRADFRI bulb E14 WS 470lm, OSRAM PAR16 TW Z3
+* (kirovilya) Smart remote controller (4 buttons)
+* (allofmex) OTA updates
+* (kirovilya) Aqara opple change mode keys (for binding)
+* (palsch) Heiman HS2WD-E siren
+
 ### 1.0.4 (2020-03-14)
 * (kirovilya) Philips Hue Adore Bathroom Mirror Light
 * (kirovilya) Oujiabao Gas and carbon monoxide alarm
