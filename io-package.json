@@ -6,6 +6,9 @@
             "1.1.0": {
                 "en": "New features and experimental deConz/Conbee support"
             },
+            "1.0.4": {
+                "en": "New devices and fixes"
+            },
             "1.0.0": {
                 "en": "Powered by Zigbee-Herdsman"
             },
