@@ -97,6 +97,12 @@ You can thank the authors by these links:
 
 ## Changelog
 
+### 1.1.1 (2020-04-17)
+* (kirovilya) Critical. Fixed error starting adapter if cc-chip was only flashed
+* (kirovilya) Nue/3A FNB56-ZSW02LX2.0
+* (Strunzdesign) Added missing raw button events for Philips Hue Smart Button ROM001
+* (Sacred-Shadow) Fix Color for Outdoor Lantern W RGBW OSRAM
+
 ### 1.1.0 (2020-04-12)
 new Zigbee-herdsman features:
 * ConBee/RaspBee (experimental support) https://github.com/Koenkk/zigbee-herdsman/issues/72
