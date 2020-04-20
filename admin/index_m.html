@@ -150,6 +150,18 @@
         padding-left: 1rem;
         padding-top: 1rem;
     }
+    .modal-header {
+        position: relative;
+        height: 50px;
+        padding: 20px 20px 5px 20px;
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+    .m .modal.modal-fixed-footer.modal-fixed-header .modal-content{
+        height: calc(100% - 140px)!important;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
 </style>
 </head>
 <body>
@@ -677,9 +689,11 @@
             </div>
         </div>
 
-        <div id="modaldevinfo" class="modal modal-fixed-footer">
-            <div class="modal-content">
+        <div id="modaldevinfo" class="modal modal-fixed-footer modal-fixed-header">
+            <div class="modal-header">
                 <h3 class="translate">Device information</h3>
+            </div>
+            <div class="modal-content">
                 <div id="devinfo" class="row">
                     
                 </div>

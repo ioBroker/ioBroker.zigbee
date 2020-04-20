@@ -28,6 +28,8 @@ The necessary equipment for the firmware and the device preparation process are 
 
 ### Dresden Elektronik SoC
 
+(experimental support)
+
 <span><img src="docs/en/img/deconz.png"></span>
 
 ConBee I
@@ -95,10 +97,36 @@ You can thank the authors by these links:
 
 ## Changelog
 
-### 1.1.0 (2020-04-)
-* ConBee/RaspBee support
-* OTA update for some devices (IKEA, OSRAM and other)
-* Touchlink reset and join
+### 1.1.1 (2020-04-17)
+* (kirovilya) Critical. Fixed error starting adapter if cc-chip was only flashed
+* (kirovilya) Nue/3A FNB56-ZSW02LX2.0
+* (Strunzdesign) Added missing raw button events for Philips Hue Smart Button ROM001
+* (Sacred-Shadow) Fix Color for Outdoor Lantern W RGBW OSRAM
+
+### 1.1.0 (2020-04-12)
+new Zigbee-herdsman features:
+* ConBee/RaspBee (experimental support) https://github.com/Koenkk/zigbee-herdsman/issues/72
+* OTA update for some devices (IKEA, OSRAM and other) https://github.com/Koenkk/zigbee2mqtt/issues/2921
+* Touchlink reset and join https://github.com/Koenkk/zigbee2mqtt/issues/2396
+* Green Power devices support https://github.com/Koenkk/zigbee2mqtt/issues/3322
+* (peterfido) iCasa KPD14S und KPD18S hinzu
+* (kirovilya) Moes Zigbee Thermostatic Radiator
+* (kirovilya) LifeControl power plug MCLH-03, bulb MCLH-02, water leak MCLH-07, door sensor MCLH-04
+* (kirovilya) Philips LCT002, LCT011, LTW015, LWG004
+* (kirovilya) Gledopto GL-C-007 with with channel
+* (MultivitaminJuice) Iluminize 511.040
+* (Sacred-Shadow) Bitron 902010/24
+* (kirovilya) Color indication of LQI and Battery icon
+* (kirovilya) Device info modal dialog
+* (arteck) Philips LCT026
+* (obakuhl) Improvements Osram switch mini
+* (arteck) Nue / 3A FB56+ZSW1GKJ2.5, LXN-1S27LX1.0
+* (agross) Philips Signe Floor and Table
+* (arteck) TRADFRI bulb E14 WS 470lm, OSRAM PAR16 TW Z3
+* (kirovilya) Smart remote controller (4 buttons)
+* (allofmex) OTA updates
+* (kirovilya) Aqara opple change mode keys (for binding)
+* (palsch) Heiman HS2WD-E siren
 
 ### 1.0.4 (2020-03-14)
 * (kirovilya) Philips Hue Adore Bathroom Mirror Light

@@ -19,6 +19,11 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     binding = [],
     cidList;
 
+const savedSettings = [
+    'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower', 
+    'adapterType',
+];
+
 function getDeviceByID(ID) {
     return devices.find((devInfo) => {
         try {
@@ -457,6 +462,7 @@ function load(settings, onChange) {
 
     // example: select elements with id=key and class=value and insert value
     for (var key in settings) {
+        if (savedSettings.indexOf(key) === -1) continue;
         // example: select elements with id=key and class=value and insert value
         var value = $('#' + key + '.value');
         if (value.attr('type') === 'checkbox') {
@@ -579,6 +585,7 @@ function save(callback) {
     var obj = {};
     $('.value').each(function () {
         var $this = $(this);
+        if (savedSettings.indexOf($this.attr('id')) === -1) return;
         if ($this.hasClass('validate') && $this.hasClass('invalid')) {
             showMessage('Invalid input for ' +$this.attr('id'), _('Error'));
             return;
