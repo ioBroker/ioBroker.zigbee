@@ -88,7 +88,8 @@
         "disableLed": false,
         "precfgkey": "01030507090B0D0F00020406080A0C0D",
         "countDown": 60,
-        "adapterType": "zstack"
+        "adapterType": "zstack",
+        "debugHerdsman": false
     },
     "instanceObjects": [
         {

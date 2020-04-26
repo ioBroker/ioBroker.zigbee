@@ -21,7 +21,7 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower', 
-    'adapterType',
+    'adapterType', 'debugHerdsman',
 ];
 
 function getDeviceByID(ID) {
