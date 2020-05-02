@@ -8,8 +8,8 @@
 /*jslint node: true */
 'use strict';
 
-//const debug = require("debug");
-//debug.enable('zigbee*');
+const debug = require("debug");
+let originalLogMethod = debug.log;
 
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
@@ -50,7 +50,16 @@ class Zigbee extends utils.Adapter {
         ];
     }
 
+    debugLog (data) {
+        this.log.debug(data.slice(data.indexOf('zigbee-herdsman')));
+    }
+
     async onReady() {
+        if (this.config.debugHerdsman) {
+            debug.log = this.debugLog.bind(this);
+            debug.enable('zigbee-herdsman*');
+        }
+
         this.subscribeStates('*');
         // set connection false before connect to zigbee
         this.setState('info.connection', false);
@@ -313,6 +322,11 @@ class Zigbee extends utils.Adapter {
      */
     async onUnload(callback) {
         try {
+            if (this.config.debugHerdsman) {
+                debug.disable();
+                debug.log = originalLogMethod;
+            }
+
             this.log.info("cleaned everything up...");
             if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
             this.callPluginMethod('stop');
