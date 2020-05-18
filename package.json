@@ -19,8 +19,8 @@
   },
   "dependencies": {
     "debug": "^4.1.1",
-    "zigbee-herdsman": "0.12.88",
-    "zigbee-herdsman-converters": "12.0.89",
+    "zigbee-herdsman": "0.12.90",
+    "zigbee-herdsman-converters": "12.0.90",
     "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
