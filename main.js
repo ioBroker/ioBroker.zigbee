@@ -107,8 +107,17 @@ class Zigbee extends utils.Adapter {
 
     tryToReconnect() {
         this.reconnectTimer = setTimeout(()=>{
-            this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
-            this.reconnectCounter -= 1;
+            if (this.config.port.indexOf('tcp://') !== -1) {
+                // Controller connect though WiFi.
+                // Unlikely USB dongle, connection broken may only caused user unpluged the dongle,
+                // WiFi connected gateway is possible that device connection is broken caused by
+                // AP issue or Zigbee gateway power is turned off unexpectedly.
+                // So try to reconnect gateway every 10 seconds all the time.
+                this.log.info(`Try to reconnect.`);
+            } else {
+                this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
+                this.reconnectCounter -= 1;
+            }
             this.doConnect();
         }, 10*1000); // every 10 seconds
     }
