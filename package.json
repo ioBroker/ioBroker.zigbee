@@ -1,10 +1,12 @@
 {
+  "name": "iobroker.zigbee",
+  "version": "1.1.1",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
   },
   "bugs": {
-    "url": "https://github.com/kirovilya/ioBroker.zigbee/issues"
+    "url": "https://github.com/ioBroker/ioBroker.zigbee/issues"
   },
   "contributors": [
     {
@@ -12,36 +14,51 @@
       "email": "kirovilya@gmail.com"
     }
   ],
+  "engines": {
+    "node": ">=8"
+  },
   "dependencies": {
-    "debug": "*",
-    "zigbee-shepherd": "https://github.com/kirovilya/zigbee-shepherd",
-    "zigbee-shepherd-converters": "^2.0.4"
+    "debug": "^4.1.1",
+    "zigbee-herdsman": "0.12.90",
+    "zigbee-herdsman-converters": "12.0.90",
+    "@iobroker/adapter-core": "^1.0.3"
   },
   "description": "Zigbee devices",
   "devDependencies": {
-    "gulp": "^3.9.1",
-    "mocha": "^4.1.0",
-    "chai": "^4.1.2"
+    "axios": "^0.18.0",
+    "chai": "^4.2.0",
+    "gulp": "^4.0.0",
+    "mocha": "^6.0.2",
+    "@iobroker/testing": "^1.1.10",
+    "eslint": "*",
+    "eslint-config-google": "*",
+    "lint-diff": "*"
   },
-  "homepage": "https://github.com/kirovilya/ioBroker.zigbee",
+  "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
     "ioBroker",
     "zigbee",
-    "xiaomi",
     "cc2531",
-    "zigbee-shepherd"
+    "cc2530",
+    "cc2538",
+    "cc2652",
+    "deconz",
+    "conbee",
+    "raspbee"
   ],
   "license": "MIT",
   "main": "main.js",
-  "name": "iobroker.zigbee",
   "optionalDependencies": {},
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kirovilya/ioBroker.zigbee.git"
+    "url": "git+https://github.com/ioBroker/ioBroker.zigbee.git"
   },
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha --exit"
-  },
-  "version": "0.5.5"
+    "test": "npm run test:package && npm run test:unit",
+    "docgen": "node support/docgen.js",
+    "test:package": "mocha test/package --exit",
+    "test:unit": "mocha test/unit --exit",
+    "test:integration": "mocha test/integration --exit"
+  }
 }

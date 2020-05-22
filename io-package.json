@@ -1,33 +1,45 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "0.5.5",
+        "version": "1.1.1",
         "news": {
-            "0.5.5": {
-                "en": "Return runing on NodeJS 4.x",
-                "ru": "Вернул работу в NodeJS 4.x"
+            "1.1.1": {
+                "en": "Fix for fresh flashed chip"
             },
-            "0.5.4": {
-                "en": "Public version",
-                "ru": "Публичная версия"
+            "1.1.0": {
+                "en": "New features and experimental deConz/Conbee support"
             },
-            "0.5.0": {
-                "en": "Refactoring version",
-                "ru": "Реструктурированная версия"
+            "1.0.4": {
+                "en": "New devices and fixes"
             },
-            "0.1.0": {
-                "en": "Alpha-version",
-                "ru": "Альфа-версия"
+            "1.0.0": {
+                "en": "Powered by Zigbee-Herdsman"
             }
         },
-        "title": "Zigbee adapter",
+        "title": "Zigbee",
         "titleLang": {
-            "en": "Zigbee adapter",
-            "ru": "Zigbee адаптер"
+            "en": "Zigbee",
+            "ru": "Zigbee",
+            "de": "ZigBee",
+            "pt": "Zigbee",
+            "nl": "Zigbee",
+            "fr": "Zigbee",
+            "it": "Zigbee",
+            "es": "zigbee",
+            "pl": "Zigbee",
+            "zh-cn": "Zigbee"
         },
         "desc": {
             "en": "Zigbee adapter for Xiaomi (and other) devices via TI cc2531/cc2530",
-            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через TI cc2531/cc2530"
+            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через TI cc2531/cc2530",
+            "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über TI cc2531 / cc2530",
+            "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via TI cc2531 / cc2530",
+            "nl": "Zigbee-adapter voor Xiaomi (en andere) apparaten via TI cc2531 / cc2530",
+            "fr": "Adaptateur Zigbee pour périphériques Xiaomi (et autres) via TI cc2531 / cc2530",
+            "it": "Adattatore Zigbee per dispositivi Xiaomi (e altri) tramite TI cc2531 / cc2530",
+            "es": "Adaptador Zigbee para dispositivos Xiaomi (y otros) a través de TI cc2531 / cc2530",
+            "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem TI cc2531 / cc2530",
+            "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过TI cc2531 / cc2530"
         },
         "authors": [
             "Kirov Ilya<kirovilya@gmail.com>"
@@ -46,21 +58,42 @@
         "platform": "Javascript/Node.js",
         "mode": "daemon",
         "icon": "zigbee.png",
-        "extIcon": "https://raw.githubusercontent.com/kirovilya/ioBroker.zigbee/master/admin/zigbee.png",
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
         "enabled": true,
-        "keywords": ["zigbee", "xiaomi", "cc2531", "cc2530"],
-        "readme": "https://github.com/kirovilya/ioBroker.zigbee/blob/master/README.md",
+        "keywords": [
+            "zigbee",
+            "xiaomi",
+            "cc2531",
+            "cc2530",
+            "cc2538",
+            "cc2652",
+            "deconz",
+            "conbee",
+            "raspbee"
+        ],
+        "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "loglevel": "info",
         "type": "hardware",
         "materialize": true,
-        "messagebox": true
+        "messagebox": true,
+        "stopBeforeUpdate": true,
+        "dataFolder": "zigbee_%INSTANCE%",
+        "compact": true
     },
     "native": {
-        "port": ""
+        "port": "",
+        "panID": 6754,
+        "extPanID": "DDDDDDDDDDDDDDDD",
+        "channel": 11,
+        "disableLed": false,
+        "precfgkey": "01030507090B0D0F00020406080A0C0D",
+        "countDown": 60,
+        "adapterType": "zstack",
+        "debugHerdsman": false
     },
     "instanceObjects": [
         {
-            "_id":  "info",
+            "_id": "info",
             "type": "channel",
             "common": {
                 "name": "Information"
@@ -68,51 +101,63 @@
             "native": {}
         },
         {
-            "_id":  "info.connection",
+            "_id": "info.connection",
             "type": "state",
             "common": {
-                "role":  "indicator.connected",
-                "name":  "If connected to zigbee device",
-                "type":  "boolean",
-                "read":  true,
+                "role": "indicator.connected",
+                "name": "If connected to zigbee device",
+                "type": "boolean",
+                "read": true,
                 "write": false,
-                "def":   false
+                "def": false
             },
             "native": {}
         },
         {
-            "_id":  "info.pairingMode",
+            "_id": "info.pairingMode",
             "type": "state",
             "common": {
-                "name":  "Pairing mode",
-                "type":  "boolean",
-                "read":  true,
+                "name": "Pairing mode",
+                "type": "boolean",
+                "read": true,
                 "write": false,
-                "def":   false
+                "def": false
             },
             "native": {}
         },
         {
-            "_id":  "info.pairingCountdown",
+            "_id": "info.pairingCountdown",
             "type": "state",
             "common": {
-                "name":  "Pairing countdown",
-                "type":  "number",
-                "read":  true,
+                "name": "Pairing countdown",
+                "type": "number",
+                "read": true,
                 "write": false,
-                "def":   0
+                "def": 0
             },
             "native": {}
         },
         {
-            "_id":  "info.pairingMessage",
+            "_id": "info.pairingMessage",
             "type": "state",
             "common": {
-                "name":  "Pairing message",
-                "type":  "string",
-                "read":  true,
+                "name": "Pairing message",
+                "type": "string",
+                "read": true,
                 "write": false,
-                "def":   ""
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.groups",
+            "type": "state",
+            "common": {
+                "name": "Groups",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
             },
             "native": {}
         }
