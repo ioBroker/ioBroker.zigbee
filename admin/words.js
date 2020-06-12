@@ -33,4 +33,16 @@ systemDictionary = {
     "Yes": {                                         "en": "Yes",                                             "de": "Ja",                                              "ru": "Да",                                              "pt": "sim",                                             "nl": "Ja",                                              "fr": "Oui",                                             "it": "sì",                                              "es": "Sí",                                              "pl": "tak",                                             "zh-cn": "是"},
     "Zigbee adapter": {                              "en": "Zigbee adapter",                                  "de": "Zigbee-Adapter",                                  "ru": "Zigbee драйвер",                                  "pt": "Adaptador Zigbee",                                "nl": "Zigbee-adapter",                                  "fr": "Adaptateur Zigbee",                               "it": "Adattatore Zigbee",                               "es": "Adaptador zigbee",                                "pl": "Adapter Zigbee",                                  "zh-cn": "Zigbee适配器"},
     "transmitPower": {                               "en": "CC1352P and CC26X2R1 transmit Power",             "de": "CC1352P and CC26X2R1 Sendeleistung",              "ru": "CC1352P and CC26X2R1 Мощность передачи",          "pt": "CC1352P and CC26X2R1 Potência de transmissão",    "nl": "CC1352P and CC26X2R1 zendvermogen",               "fr": "CC1352P and CC26X2R1 Puissance de transmission",  "it": "CC1352P and CC26X2R1 trasmettere potenza",        "es": "CC1352P and CC26X2R1 transmitir potencia",        "pl": "CC1352P and CC26X2R1 Moc nadawania",              "zh-cn": "CC1352P ,CC26X2R1 发射功率"},
+    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": {
+        "en": "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)",
+        "de": "Entfernen Sie die Fernbedienung von Coorinator (erforderlich für einige Fernbedienungen wie HUE Dimmer Switch).",
+        "ru": "Отсоедините пульт от Coorinator (необходим для некоторых пультов, таких как HUE Dimmer Switch)",
+        "pt": "Desconecte o controle remoto do Coorinator (necessário para alguns controles remotos, como o HUE Dimmer Switch)",
+        "nl": "Ontkoppel afstandsbediening van Coorinator (noodzakelijk voor sommige afstandsbedieningen zoals HUE Dimmer Switch)",
+        "fr": "Dissocier la télécommande de Coorinator (nécessaire pour certaines télécommandes comme HUE Dimmer Switch)",
+        "it": "Sblocca il telecomando da Coorinator (necessario per alcuni telecomandi come HUE Dimmer Switch)",
+        "es": "Desvincule el control remoto del Coordinador (necesario para algunos controles remotos como HUE Dimmer Switch)",
+        "pl": "Odłącz pilota od Coorinatora (niezbędny do niektórych pilotów, takich jak HUE Dimmer Switch)",
+        "zh-cn": "从Coorinator取消绑定遥控器（对于某些遥控器，例如HUE Dimmer Switch，这是必需的）"
+    }
 };
