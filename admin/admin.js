@@ -1699,6 +1699,9 @@ function prepareBindingDialog(bindObj){
             }
         );
     }
+
+    const unbind_fom_coordinator = bindObj ? bindObj.unbind_from_coordinator : false;
+    $('#unbind_from_coordinator').prop('checked', unbind_fom_coordinator);
 }
 
 function addBindingDialog() {
