@@ -35,7 +35,7 @@ systemDictionary = {
     "transmitPower": {                               "en": "CC1352P and CC26X2R1 transmit Power",             "de": "CC1352P and CC26X2R1 Sendeleistung",              "ru": "CC1352P and CC26X2R1 Мощность передачи",          "pt": "CC1352P and CC26X2R1 Potência de transmissão",    "nl": "CC1352P and CC26X2R1 zendvermogen",               "fr": "CC1352P and CC26X2R1 Puissance de transmission",  "it": "CC1352P and CC26X2R1 trasmettere potenza",        "es": "CC1352P and CC26X2R1 transmitir potencia",        "pl": "CC1352P and CC26X2R1 Moc nadawania",              "zh-cn": "CC1352P ,CC26X2R1 发射功率"},
     "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": {
         "en": "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)",
-        "de": "Entfernen Sie die Fernbedienung von Coorinator (erforderlich für einige Fernbedienungen wie HUE Dimmer Switch).",
+        "de": "Entkoppele die Fernbedienung vom Coorinator (erforderlich für einige Fernbedienungen wie HUE Dimmer Switch).",
         "ru": "Отсоедините пульт от Coorinator (необходим для некоторых пультов, таких как HUE Dimmer Switch)",
         "pt": "Desconecte o controle remoto do Coorinator (necessário para alguns controles remotos, como o HUE Dimmer Switch)",
         "nl": "Ontkoppel afstandsbediening van Coorinator (noodzakelijk voor sommige afstandsbedieningen zoals HUE Dimmer Switch)",
