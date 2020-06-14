@@ -107,8 +107,17 @@ class Zigbee extends utils.Adapter {
 
     tryToReconnect() {
         this.reconnectTimer = setTimeout(()=>{
-            this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
-            this.reconnectCounter -= 1;
+            if (this.config.port.indexOf('tcp://') !== -1) {
+                // Controller connect though WiFi.
+                // Unlikely USB dongle, connection broken may only caused user unpluged the dongle,
+                // WiFi connected gateway is possible that device connection is broken caused by
+                // AP issue or Zigbee gateway power is turned off unexpectedly.
+                // So try to reconnect gateway every 10 seconds all the time.
+                this.log.info(`Try to reconnect.`);
+            } else {
+                this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
+                this.reconnectCounter -= 1;
+            }
             this.doConnect();
         }, 10*1000); // every 10 seconds
     }
@@ -126,7 +135,39 @@ class Zigbee extends utils.Adapter {
         this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
-    onZigbeeEvent(type, entity, message){
+    async checkIfModelUpdate(device) {
+        const modelID = device.modelID,
+              devId = device.ieeeAddr.substr(2);
+        return new Promise(async (resolve, reject) => {
+            this.getObject(devId, (err, obj) => {
+                if (obj && obj.common.type != modelID) {
+                    // let's change model
+                    this.getStatesOf(devId, (err, states) => {
+                        if (!err && states) {
+                            const chain = [];
+                            states.forEach((state) => {
+                                chain.push(this.deleteStateAsync(devId, null, state._id));
+                            });
+                            Promise.all(chain).then(()=>{
+                                this.stController.deleteDeviceStates(devId, () => {
+                                    this.stController.updateDev(devId, modelID, modelID, async () => {
+                                        await this.stController.syncDevStates(device);
+                                        resolve();
+                                    });
+                                });
+                            });
+                        } else {
+                            resolve();
+                        }
+                    });
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    async onZigbeeEvent(type, entity, message){
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
         const device = entity.device,
               mappedModel = entity.mapped,
@@ -137,6 +178,7 @@ class Zigbee extends utils.Adapter {
         if (!mappedModel) {
             return;
         }
+        await this.checkIfModelUpdate(device);
         // always publish link_quality
         if (message.linkquality) {
             this.publishToState(devId, modelID, {linkquality: message.linkquality});
