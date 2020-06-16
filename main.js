@@ -175,6 +175,8 @@ class Zigbee extends utils.Adapter {
               cluster = message.cluster,
               devId = device.ieeeAddr.substr(2),
               meta = {device: device};
+        //this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
+        meta.logger = this.log;
         if (!mappedModel) {
             return;
         }
