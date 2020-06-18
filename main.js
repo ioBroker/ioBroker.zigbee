@@ -24,6 +24,13 @@ const OtaPlugin = require('./lib/ota');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
 
+const createByteArray = function (hexString) {
+    for (var bytes = [], c = 0; c < hexString.length; c += 2) {
+        bytes.push(parseInt(hexString.substr(c, 2), 16));
+    }
+    return bytes;
+}
+
 class Zigbee extends utils.Adapter {
     /**
      * @param {Partial<ioBroker.AdapterOptions>} [options={}]
@@ -64,7 +71,7 @@ class Zigbee extends utils.Adapter {
         // set connection false before connect to zigbee
         this.setState('info.connection', false);
         const zigbeeOptions = this.getZigbeeOptions();
-        this.zbController = new ZigbeeController(zigbeeOptions);
+        this.zbController = new ZigbeeController();
         this.zbController.on('log', this.onLog.bind(this));
         this.zbController.on('ready', this.onZigbeeAdapterReady.bind(this));
         this.zbController.on('disconnect', this.onZigbeeAdapterDisconnected.bind(this));
@@ -74,6 +81,7 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('event', this.onZigbeeEvent.bind(this));
         this.zbController.on('msg', this.onZigbeeEvent.bind(this));
         this.zbController.on('publish', this.publishToState.bind(this));
+        this.zbController.configure(zigbeeOptions);
 
         this.reconnectCounter = 1;
         this.doConnect();
@@ -125,6 +133,19 @@ class Zigbee extends utils.Adapter {
     async onZigbeeAdapterReady() {
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
         this.log.info(`Zigbee started`);
+        // https://github.com/ioBroker/ioBroker.zigbee/issues/668
+        const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
+        if (!extPanIdFix) {
+            const configExtPanId = this.config.extPanID ? '0x'+this.config.extPanID.toLowerCase() : '0xdddddddddddddddd';
+            const networkExtPanId = (await this.zbController.herdsman.getNetworkParameters()).extendedPanID;
+            this.log.debug(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
+            if (configExtPanId != networkExtPanId) {
+                // need change config value and mark that fix is applied
+                this.log.debug(`Fix extPanId value to ${networkExtPanId}. And restart adapter.`);
+                this.updateConfig({extPanID: networkExtPanId.substr(2), extPanIdFix: true});
+            }
+        }
+
         this.setState('info.connection', true);
         const devices = await this.zbController.getClients(false);
         for (const device of devices) {
@@ -393,17 +414,14 @@ class Zigbee extends utils.Adapter {
         if (!port) {
             this.log.error('Serial port not selected! Go to settings page.');
         }
-        const createByteArray = function (hexString) {
-            for (var bytes = [], c = 0; c < hexString.length; c += 2) {
-                bytes.push(parseInt(hexString.substr(c, 2), 16));
-            }
-            return bytes;
-        }
         const panID = parseInt(this.config.panID ? this.config.panID : 0x1a62);
         const channel = parseInt(this.config.channel ? this.config.channel : 11);
         const precfgkey = createByteArray(this.config.precfgkey ? this.config.precfgkey : '01030507090B0D0F00020406080A0C0D');
         const extPanId = createByteArray(this.config.extPanID ? this.config.extPanID : 'DDDDDDDDDDDDDDDD').reverse();
         const adapterType = this.config.adapterType || 'zstack';
+        // https://github.com/ioBroker/ioBroker.zigbee/issues/668
+        const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
+
         return {
             net: {
                 panId: panID,
@@ -421,6 +439,7 @@ class Zigbee extends utils.Adapter {
             backupPath: dbDir + '/backup.json',
             disableLed: this.config.disableLed,
             transmitPower: this.config.transmitPower,
+            extPanIdFix: extPanIdFix,
         };
     }
 
