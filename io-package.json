@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.1.1",
+        "version": "1.1.2",
         "news": {
+            "1.1.2": {
+                "en": "Fix variable to converter"
+            },
             "1.1.1": {
                 "en": "Fix for fresh flashed chip"
             },
