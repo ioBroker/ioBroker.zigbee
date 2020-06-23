@@ -43,7 +43,7 @@ RaspBee
 
 To start the driver, you must specify the name of the port on which the Zigbee-module (stick) is connected. Usually this is the port `/dev/ttyACM0` or `/dev/ttyUSB0` for the UART-connection. Or you can find with `ls -l /dev/serial/by-id` the device direct.
 
-open the settings and set the port
+open the settings and change port
 ![](docs/tutorial/settings.png)
 
 
