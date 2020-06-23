@@ -137,12 +137,44 @@ class Zigbee extends utils.Adapter {
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
         if (!extPanIdFix) {
             const configExtPanId = this.config.extPanID ? '0x'+this.config.extPanID.toLowerCase() : '0xdddddddddddddddd';
-            const networkExtPanId = (await this.zbController.herdsman.getNetworkParameters()).extendedPanID;
+            let networkExtPanId = (await this.zbController.herdsman.getNetworkParameters()).extendedPanID;
+            let needChange = false;
             this.log.debug(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
             if (configExtPanId != networkExtPanId) {
+                const adapterType = this.config.adapterType || 'zstack';
+                if (adapterType === 'zstack') {
+                    // try to read from nvram
+                    const result = await this.zbController.herdsman.adapter.znp.request(
+                        1, // Subsystem.SYS
+                        'osalNvRead', 
+                        {
+                            id: 45, // EXTENDED_PAN_ID
+                            len: 0x08,
+                            offset: 0x00,
+                        },
+                        null, [
+                            0, // ZnpCommandStatus.SUCCESS
+                            2, // ZnpCommandStatus.INVALID_PARAM
+                        ]
+                    );
+                    const nwExtPanId = '0x'+result.payload.value.reverse().toString('hex');
+                    this.log.debug(`Config value ${configExtPanId} : nw value ${nwExtPanId}`);
+                    if (configExtPanId != nwExtPanId) {
+                        networkExtPanId = nwExtPanId;
+                        needChange = true;
+                    }
+                } else {
+                    needChange = true;
+                }
+            }
+            if (needChange) {
                 // need change config value and mark that fix is applied
                 this.log.debug(`Fix extPanId value to ${networkExtPanId}. And restart adapter.`);
                 this.updateConfig({extPanID: networkExtPanId.substr(2), extPanIdFix: true});
+            } else {
+                // only mark that fix is applied
+                this.log.debug(`Fix without changes. And restart adapter.`);
+                this.updateConfig({extPanIdFix: true});
             }
         }
 
