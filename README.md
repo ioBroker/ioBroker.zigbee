@@ -41,7 +41,8 @@ RaspBee
 
 ![](docs/tutorial/zigbee.png)
 
-To start the driver, you must specify the name of the port on which the Zigbee-module (stick) is connected. Usually this is the port `/dev/ttyACM0` or `/dev/ttyUSB0` for the UART-connection. Or you can find with ls -l /dev/serial/by-id the device direct.
+To start the driver, you must specify the name of the port on which the Zigbee-module (stick) is connected. Usually this is the port `/dev/ttyACM0` or `/dev/ttyUSB0` for the UART-connection. Or you can find with `ls -l /dev/serial/by-id` the device direct.
+
 
 For Windows this will be the COM port number.
 
