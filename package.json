@@ -15,13 +15,12 @@
     }
   ],
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "dependencies": {
-    "debug": "^4.1.1",
     "zigbee-herdsman": "0.12.108",
-    "zigbee-herdsman-converters": "12.0.146",
-    "@iobroker/adapter-core": "^1.0.3"
+    "zigbee-herdsman-converters": "12.0.147",
+    "@iobroker/adapter-core": "^2.4.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
