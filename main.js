@@ -8,7 +8,7 @@
 /*jslint node: true */
 'use strict';
 
-const debug = require("zigbee-herdsman/node_modules/debug");
+const debug = require('zigbee-herdsman/node_modules/debug');
 let originalLogMethod = debug.log;
 
 const safeJsonStringify = require('./lib/json');

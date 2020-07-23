@@ -7,6 +7,7 @@ language: node_js
 node_js:
   - '10'
   - '12'
+  - '14'
 before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo ln -s `which node` `which node`js; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then which nodejs || which node; fi'
