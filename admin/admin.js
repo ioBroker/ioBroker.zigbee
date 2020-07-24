@@ -895,7 +895,7 @@ function showNetworkMap(devices, map){
 
     network = new vis.Network(container, data, options);
 
-    const onMapSelect = (event) => {
+    const onMapSelect = function (event) {
         // workaround for https://github.com/almende/vis/issues/4112
         // may be moved to edge.chosen.label if fixed
         function doSelection(select, edges, data) {
