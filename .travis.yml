@@ -38,6 +38,8 @@ script:
   - 'npm run test:package'
   - 'npm run test:unit'
   - 'npm run test:integration'
-  - if [ "$TRAVIS_COMMIT_RANGE" != "" && "$TRAVIS_OS_NAME" != "windows" ]; then COMMIT_RANGE=$TRAVIS_COMMIT_RANGE; else COMMIT_RANGE="HEAD^..HEAD"; fi;
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then
+    if [ "$TRAVIS_COMMIT_RANGE" != "" ]; then COMMIT_RANGE=$TRAVIS_COMMIT_RANGE; else COMMIT_RANGE="HEAD^..HEAD"; fi;
     echo "Lint check of commit range $COMMIT_RANGE";
-    lint-diff $COMMIT_RANGE
+    lint-diff $COMMIT_RANGE;
+    fi;
