@@ -3,13 +3,10 @@
  * Zigbee devices adapter
  *
  */
-
-/* jshint -W097 */// jshint strict:false
-/*jslint node: true */
 'use strict';
 
 const debug = require('zigbee-herdsman/node_modules/debug');
-let originalLogMethod = debug.log;
+const originalLogMethod = debug.log;
 
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
@@ -25,11 +22,12 @@ const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
 
 const createByteArray = function (hexString) {
-    for (var bytes = [], c = 0; c < hexString.length; c += 2) {
+    const bytes = [];
+    for (let c = 0; c < hexString.length; c += 2) {
         bytes.push(parseInt(hexString.substr(c, 2), 16));
     }
     return bytes;
-}
+};
 
 class Zigbee extends utils.Adapter {
     /**
@@ -37,11 +35,11 @@ class Zigbee extends utils.Adapter {
      */
     constructor(options) {
         super(Object.assign(options || {}, {
-            name: "zigbee",
+            name: 'zigbee',
             systemConfig: true,
         }));
-        this.on("ready", this.onReady.bind(this));
-        this.on("unload", this.onUnload.bind(this));
+        this.on('ready', this.onReady.bind(this));
+        this.on('unload', this.onUnload.bind(this));
 
         this.stController = new StatesController(this);
         this.stController.on('log', this.onLog.bind(this));
@@ -102,7 +100,7 @@ class Zigbee extends utils.Adapter {
             if (this.reconnectCounter > 0) {
                 this.tryToReconnect();
             }
-        };
+        }
     }
 
     onZigbeeAdapterDisconnected() {
@@ -182,7 +180,7 @@ class Zigbee extends utils.Adapter {
         const devices = await this.zbController.getClients(false);
         for (const device of devices) {
             this.stController.updateDev(device.ieeeAddr.substr(2), device.modelID, device.modelID, () => {
-                  this.stController.syncDevStates(device);
+                this.stController.syncDevStates(device);
             });
         }
         this.callPluginMethod('start', [this.zbController, this.stController]);
@@ -190,8 +188,8 @@ class Zigbee extends utils.Adapter {
 
     async checkIfModelUpdate(device) {
         const modelID = device.modelID,
-              devId = device.ieeeAddr.substr(2);
-        return new Promise(async (resolve, reject) => {
+            devId = device.ieeeAddr.substr(2);
+        return new Promise((resolve) => {
             this.getObject(devId, (err, obj) => {
                 if (obj && obj.common.type != modelID) {
                     // let's change model
@@ -223,11 +221,11 @@ class Zigbee extends utils.Adapter {
     async onZigbeeEvent(type, entity, message){
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
         const device = entity.device,
-              mappedModel = entity.mapped,
-              modelID = device.modelID,
-              cluster = message.cluster,
-              devId = device.ieeeAddr.substr(2),
-              meta = {device: device};
+            mappedModel = entity.mapped,
+            modelID = device.modelID,
+            cluster = message.cluster,
+            devId = device.ieeeAddr.substr(2),
+            meta = {device: device};
         //this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
         meta.logger = this.log;
         if (!mappedModel) {
@@ -256,8 +254,6 @@ class Zigbee extends utils.Adapter {
 
         converters.forEach((converter) => {
             const publish = (payload) => {
-                // Don't cache messages with click and action.
-                const cache = !payload.hasOwnProperty('click') && !payload.hasOwnProperty('action');
                 this.log.debug(`Publish ${safeJsonStringify(payload)}`);
                 if (payload) {
                     this.publishToState(devId, modelID, payload);
@@ -275,15 +271,15 @@ class Zigbee extends utils.Adapter {
     }
 
     publishToState(devId, modelID, payload) {
-    	this.stController.publishToState(devId, modelID, payload);
+        this.stController.publishToState(devId, modelID, payload);
     }
 
     acknowledgeState(deviceId, modelId, stateDesc, value) {
         if (modelId === 'group') {
-            let stateId = this.namespace + '.group_' + deviceId + '.' + stateDesc.id;
+            const stateId = this.namespace + '.group_' + deviceId + '.' + stateDesc.id;
             this.setState(stateId, value, true);
         } else {
-            let stateId = this.namespace + '.' + deviceId.replace('0x', '') + '.' + stateDesc.id;
+            const stateId = this.namespace + '.' + deviceId.replace('0x', '') + '.' + stateDesc.id;
             this.setState(stateId, value, true);
         }
     }
@@ -375,16 +371,15 @@ class Zigbee extends utils.Adapter {
         this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
         const dev = entity.device;
         if (dev) {
-          this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
-            if (obj) {
-            } else {
-              this.log.debug('new device ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelID);
-              this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${dev.modelID}`, true);
-              this.stController.updateDev(dev.ieeeAddr.substr(2), dev.modelID, dev.modelID, () => {
-                  this.stController.syncDevStates(dev);
-                });
-              }
-           });
+            this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
+                if (!obj) {
+                    this.log.debug('new device ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelID);
+                    this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${dev.modelID}`, true);
+                    this.stController.updateDev(dev.ieeeAddr.substr(2), dev.modelID, dev.modelID, () => {
+                        this.stController.syncDevStates(dev);
+                    });
+                }
+            });
         }
     }
 
@@ -424,7 +419,7 @@ class Zigbee extends utils.Adapter {
                 debug.log = originalLogMethod;
             }
 
-            this.log.info("cleaned everything up...");
+            this.log.info('cleaned everything up...');
             if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
             this.callPluginMethod('stop');
             if (this.zbController) {

@@ -31,7 +31,8 @@
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "no-prototype-builtins": "off"
     },
     "parserOptions": {
         "ecmaVersion": 2019

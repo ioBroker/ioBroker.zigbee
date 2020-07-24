@@ -1,12 +1,12 @@
+/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option*/
 /*
  * you must run 'iobroker upload zigbee' if you edited this file to make changes visible
  */
-var Materialize = (typeof M !== 'undefined') ? M : Materialize,
+const Materialize = (typeof M !== 'undefined') ? M : Materialize,
     anime = (typeof M !== 'undefined') ? M.anime : anime,
     namespace = 'zigbee.' + instance,
-    namespaceLen = namespace.length,
-    devices = [],
-    dialog,
+    namespaceLen = namespace.length;
+let devices = [],
     messages = [],
     map = {},
     mapEdges = null,
@@ -15,7 +15,6 @@ var Materialize = (typeof M !== 'undefined') ? M : Materialize,
     responseCodes = false,
     groups = {},
     devGroups = {},
-    onChangeEmitter,
     binding = [],
     cidList;
 
@@ -71,41 +70,41 @@ function getLQICls(value) {
 }
 
 function getCard(dev) {
-    var title = dev.common.name,
+    const title = dev.common.name,
         id = dev._id,
         type = dev.common.type,
         img_src = dev.icon || dev.common.icon,
-        rooms = [], room,
+        rooms = [],
         lang = systemLang  || 'en';
-    for (var r in dev.rooms) {
+    for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
             rooms.push(dev.rooms[r][lang]);
         } else {
             rooms.push(dev.rooms[r]);
         }
     }
-    room = rooms.join(',') || '&nbsp';
-    var paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    var rid = id.split('.').join('_');
-    var image = `<img src="${img_src}" width="80px">`,
-    	nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
-    	status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
+    const room = rooms.join(',') || '&nbsp';
+    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
+    const rid = id.split('.').join('_');
+    const image = `<img src="${img_src}" width="80px">`,
+        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+        status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
-    	battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-    	lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+        lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-        				<li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
-        				<li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-        				<li><span class="label">model:</span><span>${type}</span></li>
-        				<li><span class="label">vendor:</span><span>${dev.vendor}</span></li>
-        				<li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
-        			</ul>
-        		</div>`,
+                        <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
+                        <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
+                        <li><span class="label">model:</span><span>${type}</span></li>
+                        <li><span class="label">vendor:</span><span>${dev.vendor}</span></li>
+                        <li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
+                    </ul>
+                </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
-        card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+    const card = `<div id="${id}" class="device col s12 m6 l4 xl3">
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <span class="top right small" style="border-radius: 50%">
@@ -120,37 +119,37 @@ function getCard(dev) {
                         <div class="footer right-align"></div>
                     </div>
                     <div class="card-action">
-	                    <div class="card-reveal-buttons">
-	                    	${infoBtn}
-	                    	<span class="left" style="padding-top:8px">${room}</span>
+                        <div class="card-reveal-buttons">
+                            ${infoBtn}
+                            <span class="left" style="padding-top:8px">${room}</span>
                             <span class="left fw_info"></span>
-	                    	<button name="delete" class="right btn-flat btn-small">
-	                    		<i class="material-icons icon-black">delete</i>
-	                    	</button>
-	                    	<button name="edit" class="right btn-flat btn-small">
-	                    		<i class="material-icons icon-green">edit</i>
-	                    	</button>
+                            <button name="delete" class="right btn-flat btn-small">
+                                <i class="material-icons icon-black">delete</i>
+                            </button>
+                            <button name="edit" class="right btn-flat btn-small">
+                                <i class="material-icons icon-green">edit</i>
+                            </button>
                             ${permitJoinBtn}
-	                	</div>
-	                </div>
+                        </div>
+                    </div>
                   </div>
                 </div>`;
     return card;
 }
-
+/*
 function openReval(e, id, name){
-    var $card = $(e.target).closest('.card');
+    const $card = $(e.target).closest('.card');
     if ($card.data('initialOverflow') === undefined) {
         $card.data(
             'initialOverflow',
             $card.css('overflow') === undefined ? '' : $card.css('overflow')
         );
     }
-    var $revealName = e.target.parentNode.name; // click on <i>, get parent <a>
-    let $cardReveal = $card.find('.card-reveal[name="'+$revealName+'"]');
+    const $revealName = e.target.parentNode.name; // click on <i>, get parent <a>
+    const $cardReveal = $card.find('.card-reveal[name="'+$revealName+'"]');
 
-    if ($revealName == "edit") {
-        $cardReveal.find("input").val(name);
+    if ($revealName == 'edit') {
+        $cardReveal.find('input').val(name);
         Materialize.updateTextFields();
     }
 
@@ -163,15 +162,15 @@ function openReval(e, id, name){
         easing: 'easeInOutQuad'
     });
 }
-
-function closeReval(e, id, name){
-    let $cardReveal = $(e.target).closest('.card-reveal');
-    var $revealName = $cardReveal[0].getAttribute("name");
-    if ($revealName == "edit" && id) {
-        var newName = $cardReveal.find("input").val();
+*/
+function closeReval(e, id){
+    const $cardReveal = $(e.target).closest('.card-reveal');
+    const $revealName = $cardReveal[0].getAttribute('name');
+    if ($revealName == 'edit' && id) {
+        const newName = $cardReveal.find('input').val();
         renameDevice(id, newName);
     }
-    var $card = $(e.target).closest('.card');
+    const $card = $(e.target).closest('.card');
     if ($card.data('initialOverflow') === undefined) {
         $card.data(
             'initialOverflow',
@@ -184,20 +183,20 @@ function closeReval(e, id, name){
         duration: 225,
         easing: 'easeInOutQuad',
         complete: function(anim) {
-        let el = anim.animatables[0].target;
-        $(el).css({ display: 'none'});
-        $card.css('overflow', $card.data('initialOverflow'));
+            const el = anim.animatables[0].target;
+            $(el).css({ display: 'none'});
+            $card.css('overflow', $card.data('initialOverflow'));
         }
     });
 }
 
 function deleteConfirmation(id, name) {
-    var text = translateWord('Do you really want to delete device') + ' "'+name+'" ('+id+')?';
-    $('#modaldelete').find("p").text(text);
+    const text = translateWord('Do you really want to delete device') + ' "'+name+'" ('+id+')?';
+    $('#modaldelete').find('p').text(text);
     $('#force').prop('checked', false);
     $('#forcediv').removeClass('hide');
-    $("#modaldelete a.btn[name='yes']").unbind("click");
-    $("#modaldelete a.btn[name='yes']").click(function(e) {
+    $("#modaldelete a.btn[name='yes']").unbind('click');
+    $("#modaldelete a.btn[name='yes']").click(() => {
         const force = $('#force').prop('checked');
         deleteDevice(id, force);
     });
@@ -207,15 +206,15 @@ function deleteConfirmation(id, name) {
 function editName(id, name) {
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find("input[id='d_name']").val(name);
-    if (dev.info && dev.info.device._type == "Router") {
+    if (dev.info && dev.info.device._type == 'Router') {
         list2select('#d_groups', groups, devGroups[id] || []);
-        $("#d_groups").parent().parent().removeClass('hide');
+        $('#d_groups').parent().parent().removeClass('hide');
     } else {
-        $("#d_groups").parent().parent().addClass('hide');
+        $('#d_groups').parent().parent().addClass('hide');
     }
-    $("#modaledit a.btn[name='save']").unbind("click");
-    $("#modaledit a.btn[name='save']").click(function(e) {
-        var newName = $('#modaledit').find("input[id='d_name']").val(),
+    $("#modaledit a.btn[name='save']").unbind('click');
+    $("#modaledit a.btn[name='save']").click(() => {
+        const newName = $('#modaledit').find("input[id='d_name']").val(),
             newGroups = $('#d_groups').val();
         updateDev(id, newName, newGroups);
     });
@@ -252,36 +251,36 @@ function showDevices() {
     const lang = systemLang || 'en';
     // sort by rooms
     devices.sort((a, b)=>{
-        let roomsA = [], roomsB = [];
-        for (var r in a.rooms) {
+        const roomsA = [], roomsB = [];
+        for (const r in a.rooms) {
             if (a.rooms[r].hasOwnProperty(lang)) {
                 roomsA.push(a.rooms[r][lang]);
             } else {
                 roomsA.push(a.rooms[r]);
             }
         }
-        var nameA = roomsA.join(',');
-        for (var r in b.rooms) {
+        const nameA = roomsA.join(',');
+        for (const r in b.rooms) {
             if (b.rooms[r].hasOwnProperty(lang)) {
                 roomsB.push(b.rooms[r][lang]);
             } else {
                 roomsB.push(b.rooms[r]);
             }
         }
-        var nameB = roomsB.join(',');
+        const nameB = roomsB.join(',');
 
         if (nameB < nameB) {
             return -1;
-          }
-          if (nameA > nameB) {
+        }
+        if (nameA > nameB) {
             return 1;
-          }
-          return 0;
+        }
+        return 0;
     });
     devGroups = {};
-    for (var i=0;i < devices.length; i++) {
-        var d = devices[i];
-        if (d.info && d.info.device._type == "Coordinator") continue;
+    for (let i=0;i < devices.length; i++) {
+        const d = devices[i];
+        if (d.info && d.info.device._type == 'Coordinator') continue;
         //if (d.groups && d.info && d.info.device._type == "Router") {
         if (d.groups) {
             devGroups[d._id] = d.groups;
@@ -289,42 +288,42 @@ function showDevices() {
                 return groups[item] || '';
             }).join(', ');
         }
-        var card = getCard(d);
+        const card = getCard(d);
         html += card;
     }
     $('#devices').html(html);
 
     const getDevName = function(dev_block) {
-        return dev_block.find("#dName").text();
+        return dev_block.find('#dName').text();
     };
     const getDevId = function(dev_block) {
-        return dev_block.attr("id");
+        return dev_block.attr('id');
     };
-    $(".card-reveal-buttons button[name='delete']").click(function() {
-        var dev_block = $(this).parents("div.device");
+    $(".card-reveal-buttons button[name='delete']").click(() => {
+        const dev_block = $(this).parents('div.device');
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
-    $(".card-reveal-buttons button[name='edit']").click(function(e) {
-        var dev_block = $(this).parents("div.device"),
+    $(".card-reveal-buttons button[name='edit']").click(() => {
+        const dev_block = $(this).parents('div.device'),
             id = getDevId(dev_block),
             name = getDevName(dev_block);
         editName(id, name);
     });
-    $("button.btn-floating[name='join']").click(function() {
-        var dev_block = $(this).parents("div.device");
+    $("button.btn-floating[name='join']").click(() => {
+        const dev_block = $(this).parents('div.device');
         if (!$('#pairing').hasClass('pulse'))
             joinProcess(getDevId(dev_block));
         showPairingProcess();
     });
-    $(".card-reveal-buttons button[name='info']").click(function(e) {
-        var dev_block = $(this).parents("div.device");
+    $(".card-reveal-buttons button[name='info']").click(() => {
+        const dev_block = $(this).parents('div.device');
         showDevInfo(getDevId(dev_block));
     });
-    $("a.btn[name='done']").click(function(e) {
-        var dev_block = $(this).parents("div.device");
+    $("a.btn[name='done']").click((e) => {
+        const dev_block = $(this).parents('div.device');
         closeReval(e, getDevId(dev_block), getDevName(dev_block));
     });
-    $("a.btn-flat[name='close']").click(function(e) {
+    $("a.btn-flat[name='close']").click((e) => {
         closeReval(e);
     });
 
@@ -348,13 +347,13 @@ function checkFwUpdate() {
     const callback = function(msg) {
         if (msg) {
             const deviceCard = getDeviceCard(msg.device);
-            const devId = getDevId(deviceCard.attr("id"));
+            const devId = getDevId(deviceCard.attr('id'));
             const fwInfoNode = getFwInfoNode(deviceCard);
             if (msg.status == 'available') {
                 fwInfoNode.html(createBtn('system_update', 'Click to start firmware update', false));
-                $(fwInfoNode).find("button[name='fw_update']").click(function(e) {
+                $(fwInfoNode).find("button[name='fw_update']").click(() => {
                     fwInfoNode.html(createBtn('check_circle', 'Firmware update started, check progress in logs.', true, 'icon-blue'));
-                    sendTo(namespace, 'startOta', {devId: devId}, function(msg) {
+                    sendTo(namespace, 'startOta', {devId: devId}, (msg) => {
                         fwInfoNode.html(createBtn('check_circle', 'Finished, see logs.', true));
                         console.log(msg);
                     });
@@ -368,9 +367,9 @@ function checkFwUpdate() {
             }
         }
     };
-    for (var i=0;i < deviceCards.length; i++) {
+    for (let i=0;i < deviceCards.length; i++) {
         const deviceCard = $(deviceCards[i]);
-        const devId = getDevId(deviceCard.attr("id"));
+        const devId = getDevId(deviceCard.attr('id'));
         getFwInfoNode(deviceCard).html('<span class="left" style="padding-top:8px">checking...</span>');
         sendTo(namespace, 'checkOtaAvail', {devId: devId}, callback);
     }
@@ -451,8 +450,8 @@ function getMap() {
 }
 
 // the function loadSettings has to exist ...
+// eslint-disable-next-line no-unused-vars
 function load(settings, onChange) {
-    onChangeEmitter = onChange;
     if (settings.panID === undefined) settings.panID = 6754;
     if (settings.extPanID === undefined) settings.extPanID = 'DDDDDDDDDDDDDDDD';
     // fix for previous wrong value
@@ -461,10 +460,10 @@ function load(settings, onChange) {
     if (settings.channel === undefined) settings.channel = 11;
 
     // example: select elements with id=key and class=value and insert value
-    for (var key in settings) {
+    for (const key in settings) {
         if (savedSettings.indexOf(key) === -1) continue;
         // example: select elements with id=key and class=value and insert value
-        var value = $('#' + key + '.value');
+        const value = $('#' + key + '.value');
         if (value.attr('type') === 'checkbox') {
             value.prop('checked', settings[key]).change(function () {
                 onChange();
@@ -520,7 +519,7 @@ function load(settings, onChange) {
 
     $('#add_group').click(function() {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
-        editGroupName(maxind+1, "");
+        editGroupName(maxind+1, '');
     });
 
     $(document).ready(function() {
@@ -534,18 +533,18 @@ function load(settings, onChange) {
         $('.tooltipped').tooltip();
     });
 
-    var text = $('#pairing').attr('data-tooltip');
-    var transText = translateWord(text);
+    const text = $('#pairing').attr('data-tooltip');
+    const transText = translateWord(text);
     if (transText) {
         $('#pairing').attr('data-tooltip', transText);
     }
 
     $('ul.tabs').on('click', 'a', function(e) {
-        if ($(e.target).attr("id") == 'tabmap') {
+        if ($(e.target).attr('id') == 'tabmap') {
             redrawMap();
         }
-        if ($(e.target).attr("id") == 'develop') {
-        	loadDeveloperTab(onChange);
+        if ($(e.target).attr('id') == 'develop') {
+            loadDeveloperTab(onChange);
         }
     });
 
@@ -559,11 +558,11 @@ function load(settings, onChange) {
 }
 
 function showMessages() {
-    var data = '';
-    for (var ind in messages) {
-        var mess = messages[ind];
+    let data = '';
+    for (const ind in messages) {
+        const mess = messages[ind];
         data = mess + '\n' + data;
-    };
+    }
     $('#stdout').text(data);
 }
 
@@ -580,11 +579,12 @@ function showPairingProcess() {
 
 // ... and the function save has to exist.
 // you have to make sure the callback is called with the settings object as first param!
+// eslint-disable-next-line no-unused-vars
 function save(callback) {
     // example: select elements with class=value and build settings object
-    var obj = {};
+    const obj = {};
     $('.value').each(function () {
-        var $this = $(this);
+        const $this = $(this);
         if (savedSettings.indexOf($this.attr('id')) === -1) return;
         if ($this.hasClass('validate') && $this.hasClass('invalid')) {
             showMessage('Invalid input for ' +$this.attr('id'), _('Error'));
@@ -621,7 +621,7 @@ socket.on('stateChange', function (id, state) {
                 $('#pairing').removeClass('pulse');
             }
         } else if (id.match(/\.info\.pairingCountdown$/)) {
-            var blank_btn = '<i class="material-icons">leak_add</i>';
+            const blank_btn = '<i class="material-icons">leak_add</i>';
             if (state.val == 0) {
                 $('#pairing').html(blank_btn);
             } else {
@@ -632,19 +632,19 @@ socket.on('stateChange', function (id, state) {
             messages.push(state.val);
             showMessages();
         } else {
-        	const devId = getDevId(id);
-        	putEventToNode(devId);
-        	var rid = id.split('.').join('_');
-        	if (id.match(/\.link_quality$/)) {
-        		// update link_quality
-                $(`#${rid}_icon`).removeClass("icon-red icon-orange").addClass(getLQICls(state.val));
-        		$(`#${rid}`).text(state.val);
-        	}
-        	if (id.match(/\.battery$/)) {
-        		// update battery
-                $(`#${rid}_icon`).removeClass("icon-red icon-orange").addClass(getBatteryCls(state.val));
-        		$(`#${rid}`).text(state.val);
-        	}
+            const devId = getDevId(id);
+            putEventToNode(devId);
+            const rid = id.split('.').join('_');
+            if (id.match(/\.link_quality$/)) {
+                // update link_quality
+                $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getLQICls(state.val));
+                $(`#${rid}`).text(state.val);
+            }
+            if (id.match(/\.battery$/)) {
+                // update battery
+                $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
+                $(`#${rid}`).text(state.val);
+            }
         }
     }
 });
@@ -652,7 +652,7 @@ socket.on('stateChange', function (id, state) {
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
     //console.log('objectChange', id, obj);
-    if (obj && obj.type == "device" && obj.common.type !== 'group') {
+    if (obj && obj.type == 'device' && obj.common.type !== 'group') {
         getDevices();
     }
     if (!obj) {
@@ -664,41 +664,38 @@ socket.on('objectChange', function (id, obj) {
         }
     }
 });
+/*
 socket.emit('getObject', 'system.config', function (err, res) {
     if (!err && res && res.common) {
         systemLang = res.common.language || systemLang;
         systemConfig = res;
     }
 });
-
+*/
 
 function putEventToNode(devId) {
-	if (network) {
-		const nodesArray = Object.values(network.body.data.nodes._data);
-		const node = nodesArray.find((node) => { return node.id == devId });
-		if (node) {
-			const exists = networkEvents.find((event) => {
-				return event.node == node.id;
-			});
-			if (!exists) {
-				networkEvents.push({node: node.id, radius: 0, forward: true});
-			// } else {
-			// 	exists.radius = 0;
-			// 	exists.forward = true;
-			}
-		}
-	}
-}
-
-function getNetworkInfo(devId, networkmap){
-    return networkmap.find((info) => info.device.ieeeAddr == devId);
+    if (network) {
+        const nodesArray = Object.values(network.body.data.nodes._data);
+        const node = nodesArray.find((node) => { return node.id == devId; });
+        if (node) {
+            const exists = networkEvents.find((event) => {
+                return event.node == node.id;
+            });
+            if (!exists) {
+                networkEvents.push({node: node.id, radius: 0, forward: true});
+            // } else {
+            //     exists.radius = 0;
+            //     exists.forward = true;
+            }
+        }
+    }
 }
 
 function showNetworkMap(devices, map){
     // create an object with nodes
-    var nodes = {};
+    const nodes = {};
     // create an array with edges
-    var edges = [];
+    const edges = [];
 
     if (map.lqis == undefined || map.lqis.length === 0) { // first init
         $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function() {
@@ -731,7 +728,7 @@ function showNetworkMap(devices, map){
                 return;
             }
 
-            var node;
+            let node;
             if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
                 node = createNode(dev, mapEntry);
                 nodes[mapEntry.ieeeAddr] = node;
@@ -744,13 +741,13 @@ function showNetworkMap(devices, map){
                 const parentDev = getDevice(mapEntry.parent);
                 const to = parentDev ? parentDev._id : undefined;
                 const from = dev._id;
-                var label = mapEntry.lqi.toString();
-                var linkColor = '#0000ff';
-                var edge = edges.find((edge) => {
-                    return (edge.to == to && edge.from == from)
+                let label = mapEntry.lqi.toString();
+                let linkColor = '#0000ff';
+                let edge = edges.find((edge) => {
+                    return (edge.to == to && edge.from == from);
                 });
-                var reverse = edges.find((edge) => {
-                    return (edge.to == from && edge.from == to)
+                const reverse = edges.find((edge) => {
+                    return (edge.to == from && edge.from == to);
                 });
 
                 if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
@@ -796,14 +793,14 @@ function showNetworkMap(devices, map){
                             highlight: linkColor
                         },
                         chosen: {
-                            edge: function(values, id, selected, hovering) {
+                            edge: (values) => {
                                 values.opacity = 1.0;
                                 values.toArrow = true; // always existing
                                 values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
                             },
-                            label: function(values, id, selected, hovering) {
+                            label: () => {
                             // see onMapSelect workaround
-    //                        values.size = 10;
+                                //                        values.size = 10;
                             }
                         },
                         selectionWidth: 0,
@@ -827,7 +824,7 @@ function showNetworkMap(devices, map){
                 const from = routeSource._id;
                 const label = route.status;
                 const linkColor = '#ff00ff';
-                edge = {
+                const edge = {
                     from: from,
                     to: to,
                     label: label,
@@ -845,14 +842,14 @@ function showNetworkMap(devices, map){
                     },
                     dashes: true,
                     chosen: {
-                        edge: function(values, id, selected, hovering) {
+                        edge: (values) => {
                             values.opacity = 1.0;
                             values.toArrow = true; // always existing
                             values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
                         },
-                        label: function(values, id, selected, hovering) {
+                        label: () => {
                         // see onMapSelect workaround
-    //                        values.size = 10;
+                            //                        values.size = 10;
                         }
                     },
                     selectionWidth: 0,
@@ -866,7 +863,7 @@ function showNetworkMap(devices, map){
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
     devices.forEach((dev) => {
-        const node = nodesArray.find((node) => { return node.id == dev._id });
+        const node = nodesArray.find((node) => { return node.id == dev._id; });
         if (!node) {
             const node = createNode(dev);
             node.font = {color:'#ff0000'};
@@ -878,13 +875,13 @@ function showNetworkMap(devices, map){
     });
 
     // create a network
-    var container = document.getElementById('map');
+    const container = document.getElementById('map');
     mapEdges = new vis.DataSet(edges);
-    var data = {
-          nodes: nodesArray,
-          edges: mapEdges
+    const data = {
+        nodes: nodesArray,
+        edges: mapEdges
     };
-    var options = {
+    const options = {
         autoResize: true,
         height: '100%',
         width: '100%',
@@ -898,7 +895,7 @@ function showNetworkMap(devices, map){
 
     network = new vis.Network(container, data, options);
 
-    const onMapSelect = function (event, properties, senderId) {
+    const onMapSelect = (event) => {
         // workaround for https://github.com/almende/vis/issues/4112
         // may be moved to edge.chosen.label if fixed
         function doSelection(select, edges, data) {
@@ -926,7 +923,7 @@ function showNetworkMap(devices, map){
         //         );
         //     });
         // }
-    }
+    };
     network.on('selectNode', onMapSelect);
     network.on('deselectNode', onMapSelect);
     redrawMap();
@@ -935,60 +932,29 @@ function showNetworkMap(devices, map){
 
     // functions to animate:
     networkEvents = [];
-    var updateFrameVar = setInterval(function() { updateFrameTimer(); }, 60);
-
-    function updateFrameTimer() {
-        if (networkEvents.length > 0) {
-            network.redraw();
-            const toDelete = [];
-            networkEvents.forEach((event, index)=>{
-                if (event.radius >= 1) {
-                    toDelete.push(index);
-                } else {
-                    event.radius += 0.08;
-                }
-                // if (event.radius >= 0) {
-                // 	if (event.forward) {
-                // 		event.radius += 0.08;
-                // 	} else {
-                //     	event.radius -= 0.08;
-                //     }
-                //     if (event.radius > 1 && event.forward) {
-                //     	event.forward = false;
-                //     }
-                // } else {
-                //     toDelete.push(index);
-                // }
-            });
-            toDelete.forEach((index)=>{
-            	networkEvents.splice(index, 1);
-            });
-        }
-    }
-
-    network.on("beforeDrawing", function(ctx) {
+    network.on('beforeDrawing', function(ctx) {
         if (networkEvents.length > 0) {
             networkEvents.forEach((event)=>{
                 const inode = event.node;
-                var nodePosition = network.getPositions();
+                const nodePosition = network.getPositions();
                 event.radius = (event.radius > 1) ? 1 : event.radius;
                 const cap = Math.cos(event.radius*Math.PI/2);
-                var colorCircle = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
-                var colorBorder = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
+                const colorCircle = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
+                const colorBorder = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
                 ctx.strokeStyle = colorCircle;
                 ctx.fillStyle = colorBorder;
-                var radius = Math.abs(100 * Math.sin(event.radius));
+                const radius = Math.abs(100 * Math.sin(event.radius));
                 ctx.circle(nodePosition[inode].x, nodePosition[inode].y, radius);
                 ctx.fill();
                 ctx.stroke();
             });
-        };
+        }
     });
 }
 
 function redrawMap() {
     if (network != undefined && devices.length > 0) {
-        var width = $('.adapter-body').width(),
+        const width = $('.adapter-body').width(),
             height = $('.adapter-body').height()-128;
         network.setSize(width, height);
         network.redraw();
@@ -1005,7 +971,7 @@ function updateMapFilter() {
     const showSibl = $('#filterSibl').is(':checked');
     const showPrvChild = $('#filterPrvChild').is(':checked');
     const invisColor = $('#filterMesh').is(':checked') ? 0.2 : 0;
-    mapEdges.forEach((edge, id) => {
+    mapEdges.forEach((edge) => {
         if (((edge.relationship === 0 || edge.relationship === 1) && showParent)
                 || (edge.relationship === 2 && showSibl)
               || (edge.relationship === 3 && showParent) // ignore relationship "unknown"
@@ -1034,46 +1000,46 @@ function getComPorts(onChange) {
         //     return;
         // }
         if (!list) return;
-        var element = $('#ports');
-        for (var j = 0; j < list.length; j++) {
+        const element = $('#ports');
+        for (let j = 0; j < list.length; j++) {
             element.append('<li><a href="#!">' + list[j].comName +'</a></li>');
         }
-        $("#ports a").click(function() {
-            $("#port").val($(this).text());
+        $('#ports a').click(function() {
+            $('#port').val($(this).text());
             Materialize.updateTextFields();
             onChange();
         });
     });
 }
 
-function loadDeveloperTab(onChange) {
+function loadDeveloperTab() {
     // fill device selector
     updateSelect('#dev', devices,
-            function(key, device) {
-                if (device.hasOwnProperty('info')) {
-                    if (device.info.device._type == 'Coordinator') {
-                        return null;
-                    }
-                    return `${device.common.name} (${device.info.name})`;
-                } else { // fallback if device in list but not paired
-                    device.common.name + ' ' +device.native.id;
+        function(key, device) {
+            if (device.hasOwnProperty('info')) {
+                if (device.info.device._type == 'Coordinator') {
+                    return null;
                 }
-            },
-            function(key, device) {
-                return device._id;
-    });
+                return `${device.common.name} (${device.info.name})`;
+            } else { // fallback if device in list but not paired
+                device.common.name + ' ' +device.native.id;
+            }
+        },
+        function(key, device) {
+            return device._id;
+        });
     // add groups to device selector
-    var groupList = [];
-    for (var key in groups) {
+    const groupList = [];
+    for (const key in groups) {
         groupList.push({'_id': namespace+'.'+key.toString(16).padStart(16, '0'), 'groupId': key, 'groupName': groups[key]});
     }
     updateSelect('#dev', groupList,
-            function(key, device) {
-                return 'Group '+device.groupId+': '+device.groupName;
-            },
-            function(key, device) {
-                return device._id;
-    }, true);
+        function(key, device) {
+            return 'Group '+device.groupId+': '+device.groupName;
+        },
+        function(key, device) {
+            return device._id;
+        }, true);
 
     // fill cid, cmd, type selector
     populateSelector('#cid', 'cidList');
@@ -1082,7 +1048,7 @@ function loadDeveloperTab(onChange) {
 
     if (responseCodes == false) {
         const getValue = function() { // convert to number if needed
-            var attrData = $('#value-input').val();
+            let attrData = $('#value-input').val();
             if (attrData.startsWith('"') && attrData.endsWith('"')) {
                 attrData = attrData.substr(1, attrData.length -2);
             } else {
@@ -1092,18 +1058,18 @@ function loadDeveloperTab(onChange) {
             return attrData;
         };
         const prepareData = function () {
-            var data = {
-                    devId: $('#dev-selector option:selected').val(),
-                    ep: $('#ep-selector option:selected').val(),
-                    cid: $('#cid-selector option:selected').val(),
-                    cmd: $('#cmd-selector option:selected').val(),
-                    cmdType: $('#cmd-type-selector').val(),
-                    zclData: {
-                        [$('#attrid-selector').val()]: {},
-                    },
-                    cfg: null,
+            const data = {
+                devId: $('#dev-selector option:selected').val(),
+                ep: $('#ep-selector option:selected').val(),
+                cid: $('#cid-selector option:selected').val(),
+                cmd: $('#cmd-selector option:selected').val(),
+                cmdType: $('#cmd-type-selector').val(),
+                zclData: {
+                    [$('#attrid-selector').val()]: {},
+                },
+                cfg: null,
             };
-            if ($("#value-needed").is(':checked')) {
+            if ($('#value-needed').is(':checked')) {
                 data.zclData[$('#attrid-selector').val()] = getValue();
             }
             return data;
@@ -1121,7 +1087,7 @@ function loadDeveloperTab(onChange) {
                 return;
             }
             if (!removeIfEmpty && value == null) { value = ''; }
-            var data;
+            let data;
             if (prop) {
                 data = prepareExpertData();
                 // https://stackoverflow.com/a/6394168/6937282
@@ -1138,7 +1104,7 @@ function loadDeveloperTab(onChange) {
                         return obj;
                     } else
                         return index(obj[is[0]],is.slice(1), value);
-                }
+                };
                 assignVal(data, prop, value);
             } else {
                 data = prepareData();
@@ -1152,18 +1118,18 @@ function loadDeveloperTab(onChange) {
                 return;
             }
 
-            var device = devices.find(obj => {
+            const device = devices.find(obj => {
                 return obj._id === this.value;
             });
 
-            var epList = device ? device.info.device._endpoints : null;
+            const epList = device ? device.info.device._endpoints : null;
             updateSelect('#ep', epList,
-                    function(key, ep) {
-                        return ep.ID;
-                    },
-                    function(key, ep) {
-                        return ep.ID;
-            });
+                function(key, ep) {
+                    return ep.ID;
+                },
+                function(key, ep) {
+                    return ep.ID;
+                });
             setExpertData('devId', this.value);
             setExpertData('ep', $('#ep-selector').val(), false);
         });
@@ -1175,17 +1141,17 @@ function loadDeveloperTab(onChange) {
         $('#cid-selector').change(function() {
             populateSelector('#attrid', 'attrIdList', this.value);
             if ($('#cmd-type-selector').val() == 'functional') {
-                var cid = $('#cid-selector option:selected').val();
+                const cid = $('#cid-selector option:selected').val();
                 populateSelector('#cmd', 'cmdListFunctional', cid);
             }
             setExpertData('cid', this.value);
         });
 
         $('#cmd-type-selector').change(function() {
-            if (this.value == "foundation") {
+            if (this.value == 'foundation') {
                 populateSelector('#cmd', 'cmdListFoundation');
-            } else if (this.value == "functional") {
-                var cid = $('#cid-selector option:selected').val();
+            } else if (this.value == 'functional') {
+                const cid = $('#cid-selector option:selected').val();
                 populateSelector('#cmd', 'cmdListFunctional', cid);
             }
             setExpertData('cmdType', this.value);
@@ -1200,8 +1166,8 @@ function loadDeveloperTab(onChange) {
 
         // value selector checkbox
         $('#value-needed').change(function() {
-            var attr = $('#attrid-selector').val();
-            var attrData = null;
+            const attr = $('#attrid-selector').val();
+            let attrData = null;
             if (this.checked === true) {
                 $('#value-input').removeAttr('disabled');
                 attrData = getValue();
@@ -1214,7 +1180,7 @@ function loadDeveloperTab(onChange) {
         });
 
         $('#value-input').keyup(function() {
-            var attr = $('#attrid-selector').val();
+            const attr = $('#attrid-selector').val();
             setExpertData('zclData.'+attr, getValue());
         });
 
@@ -1230,7 +1196,7 @@ function loadDeveloperTab(onChange) {
         });
 
         $('#dev-send-btn').click(function() {
-            var data;
+            let data;
             if ($('#expert-mode').is(':checked')) {
                 data = prepareExpertData();
             } else {
@@ -1238,7 +1204,7 @@ function loadDeveloperTab(onChange) {
             }
             sendToZigbee(data.devId, data.ep, data.cid, data.cmd, data.cmdType, data.zclData, data.cfg, function (reply) {
                 console.log('Reply from zigbee: '+ JSON.stringify(reply));
-                if (reply.hasOwnProperty("localErr")) {
+                if (reply.hasOwnProperty('localErr')) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
                 } else if (reply.hasOwnProperty('localStatus')) {
                     showDevRunInfo(reply.localErr, reply.errMsg);
@@ -1285,12 +1251,12 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
         if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please choose ClusterId, Command, CommandType and AttributeId!'});}
         return;
     }
-    var data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
+    const data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
     if (callback) {callback({localStatus: 'Send', errMsg: 'Waiting for reply...'});}
 
     const sendTimeout = setTimeout(function() {
         if (callback) {
-            callback({localErr: 'Timeout', errMsg: 'We did not receive any response.'})
+            callback({localErr: 'Timeout', errMsg: 'We did not receive any response.'});
         }
     }, 15000);
 
@@ -1308,19 +1274,19 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
  * Short feedback message next to run button
  */
 function showDevRunInfo(result, text, level) {
-    var card = $('#devActResult');
+    const card = $('#devActResult');
     if (level == 'yellow') {
-        card.removeClass( "white-text" ).addClass( "yellow-text" );
+        card.removeClass( 'white-text' ).addClass( 'yellow-text' );
     }
     else {
-        card.removeClass( "yellow-text" ).addClass( "white-text" );
+        card.removeClass( 'yellow-text' ).addClass( 'white-text' );
     }
     $('#devActResult').text(result);
     $('#devInfoMsg').text(text);
 }
 
 function addDevLog(reply) {
-    var msg, statusCode;
+    let msg, statusCode;
     if (reply.msg) {
         if (Array.isArray(reply.msg)) {
             msg = reply.msg[0];
@@ -1331,7 +1297,7 @@ function addDevLog(reply) {
         statusCode = msg.hasOwnProperty('status') ? msg.status : msg.statusCode;
     }
 
-    var logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
+    let logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
     if (responseCodes != undefined) {
         const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
         if (statusCode == 0) {
@@ -1341,9 +1307,9 @@ function addDevLog(reply) {
             logHtml = '<span class="yellow-text">'+status+'</span>   '+logHtml;
         }
     }
-    var logView = $('#dev_result_log');
+    const logView = $('#dev_result_log');
     logView.append(logHtml);
-    logView.scrollTop(logView.prop("scrollHeight"));
+    logView.scrollTop(logView.prop('scrollHeight'));
 }
 
 /**
@@ -1352,58 +1318,58 @@ function addDevLog(reply) {
 function populateSelector(selectId, key, cid) {
     $(selectId+'>option:enabled').remove(); // remove existing elements
     $(selectId).select();
-    if (cid == "-2") {
+    if (cid == '-2') {
         updateSelect(selectId, null);
         return;
     }
     sendTo(namespace, 'getLibData', {key: key, cid: cid}, function (data) {
-        var list = data.list;
+        const list = data.list;
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
-                    function(attrName, attr) {
-                        return attrName + ' ('+attr.ID +', type '+attr.type+')';
-                    },
-                    function(attrName, attr) {
-                        return attrName;
-                    });
+                (attrName, attr) => {
+                    return attrName + ' ('+attr.ID +', type '+attr.type+')';
+                },
+                (attrName) => {
+                    return attrName;
+                });
         } else if (key === 'typeList') {
             updateSelect(selectId, list,
-                    function(name, val) {
-                        return name +' ('+val+')';
-                    },
-                    function(name, val) {
-                        return val;
-                    });
+                (name, val) => {
+                    return name +' ('+val+')';
+                },
+                (name, val) => {
+                    return val;
+                });
         } else {
             updateSelect(selectId, list,
-                    function(propName, propInfo) {
-                        return propName +' ('+propInfo.ID+')';
-                    },
-                    function(propName, propInfo) {
-                        return propName;
-                    });
+                (propName, propInfo) => {
+                    return propName +' ('+propInfo.ID+')';
+                },
+                (propName) => {
+                    return propName;
+                });
         }
     });
 }
 
 function updateSelect(id, list, getText, getId, append = false) {
     const selectId = id+'-selector';
-    var mySelect = $(selectId);
+    const mySelect = $(selectId);
     if (!append) {
         $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
         mySelect.select();
     }
     if (list == null && !append) {
-        var infoOption = new Option("Nothing available");
+        const infoOption = new Option('Nothing available');
         infoOption.disabled = true;
         mySelect.append( infoOption);
     }
     else {
-        var keys = Object.keys(list); // is index in case of array
-        for (var i=0; i<keys.length; i++) {
-            var key = keys[i];
-            var item = list[key];
-            var optionText = getText(key, item);
+        const keys = Object.keys(list); // is index in case of array
+        for (let i=0; i<keys.length; i++) {
+            const key = keys[i];
+            const item = list[key];
+            const optionText = getText(key, item);
             if (optionText == null) {
                 continue;
             }
@@ -1419,13 +1385,13 @@ function updateSelect(id, list, getText, getId, append = false) {
 }
 
 function list2select(selector, list, selected, getText, getKey, getData) {
-    var element = $(selector);
+    const element = $(selector);
     element.empty();
-    for (var j in list) {
+    for (const j in list) {
         if (list.hasOwnProperty(j)) {
             const optionKey = (getKey) ? getKey(j, list[j]) : j;
             if (optionKey == null) continue;
-            const cls = (selected.indexOf(optionKey) >= 0) ? " selected" : "";
+            const cls = (selected.indexOf(optionKey) >= 0) ? ' selected' : '';
             const optionText = (getText) ? getText(j, list[j]) : list[j];
             if (optionText == null) continue;
             const optionData = (getData) ? getData(j, list[j]) : '';
@@ -1436,23 +1402,23 @@ function list2select(selector, list, selected, getText, getKey, getData) {
 }
 
 function showGroups() {
-    $("#groups_table").find(".group").remove();
+    $('#groups_table').find('.group').remove();
     if (!groups) return;
-    var element = $('#groups_table');
-    for (var j in groups) {
+    const element = $('#groups_table');
+    for (const j in groups) {
         if (groups.hasOwnProperty(j)) {
             element.append(`<tr id="group_${j}" class="group"><td>${j}</td><td><div>${groups[j]}<span class="right">`+
             `<a id="${j}" name="groupedit" class="waves-effect green btn-floating"><i class="material-icons">edit</i></a>`+
             `<a id="${j}" name="groupdelete" class="waves-effect red btn-floating"><i class="material-icons">delete</i></a></span></div></td></tr>`);
         }
     }
-    $("a.btn-floating[name='groupedit']").click(function(e) {
-        const index = $(this).attr("id"),
+    $("a.btn-floating[name='groupedit']").click(() => {
+        const index = $(this).attr('id'),
             name = groups[index];
         editGroupName(index, name);
     });
-    $("a.btn-floating[name='groupdelete']").click(function() {
-        const index = $(this).attr("id"),
+    $("a.btn-floating[name='groupdelete']").click(() => {
+        const index = $(this).attr('id'),
             name = groups[index];
         deleteGroupConfirmation(index, name);
     });
@@ -1462,9 +1428,9 @@ function editGroupName(id, name) {
     //var text = 'Enter new name for "'+name+'" ('+id+')?';
     $('#groupedit').find("input[id='g_index']").val(id);
     $('#groupedit').find("input[id='g_name']").val(name);
-    $("#groupedit a.btn[name='save']").unbind("click");
-    $("#groupedit a.btn[name='save']").click(function(e) {
-        var newId = $('#groupedit').find("input[id='g_index']").val(),
+    $("#groupedit a.btn[name='save']").unbind('click');
+    $("#groupedit a.btn[name='save']").click(() => {
+        const newId = $('#groupedit').find("input[id='g_index']").val(),
             newName = $('#groupedit').find("input[id='g_name']").val();
         updateGroup(id, newId, newName);
         showGroups();
@@ -1474,11 +1440,11 @@ function editGroupName(id, name) {
 }
 
 function deleteGroupConfirmation(id, name) {
-    var text = translateWord('Do you really whant to delete group') + ' "'+name+'" ('+id+')?';
-    $('#modaldelete').find("p").text(text);
+    const text = translateWord('Do you really whant to delete group') + ' "'+name+'" ('+id+')?';
+    $('#modaldelete').find('p').text(text);
     $('#forcediv').addClass('hide');
-    $("#modaldelete a.btn[name='yes']").unbind("click");
-    $("#modaldelete a.btn[name='yes']").click(function(e) {
+    $("#modaldelete a.btn[name='yes']").unbind('click');
+    $("#modaldelete a.btn[name='yes']").click(() => {
         deleteGroup(id);
         showGroups();
     });
@@ -1501,7 +1467,7 @@ function updateDev(id, newName, newGroups) {
     if (dev && dev.common.name != newName) {
         renameDevice(id, newName);
     }
-    if (dev.info.device._type == "Router") {
+    if (dev.info.device._type == 'Router') {
         const oldGroups = devGroups[id] || [];
         if (oldGroups.toString() != newGroups.toString()) {
             devGroups[id] = newGroups;
@@ -1521,8 +1487,8 @@ function updateDev(id, newName, newGroups) {
 
 function resetConfirmation() {
     $('#modalreset').modal('open');
-    var btn = $("#modalreset .modal-content a.btn");
-    btn.unbind("click");
+    const btn = $('#modalreset .modal-content a.btn');
+    btn.unbind('click');
     btn.click(function(e) {
         sendTo(namespace, 'reset', {mode: e.target.id}, function (err) {
             if (err) {
@@ -1544,8 +1510,8 @@ function prepareBindingDialog(bindObj){
     binddevices.unshift('');
     const bind_source = (bindObj) ? [bindObj.bind_source] : [''];
     const bind_target = (bindObj) ? [bindObj.bind_target] : [''];
-    const bind_source_ep = (bindObj) ? [bindObj.bind_source_ep] : [''];
-    const bind_target_ep = (bindObj) ? [bindObj.bind_target_ep] : [''];
+    // const bind_source_ep = (bindObj) ? [bindObj.bind_source_ep] : [''];
+    // const bind_target_ep = (bindObj) ? [bindObj.bind_target_ep] : [''];
 
     $('#bind_source_ep').empty();
 
@@ -1562,7 +1528,7 @@ function prepareBindingDialog(bindObj){
                     return null;
                 }
                 // check for output clusters
-                var allow = false;
+                let allow = false;
                 for (const cluster of allowClusters) {
                     for (const ep of device.info.endpoints) {
                         if (ep.outputClusters.includes(cluster)) {
@@ -1601,7 +1567,7 @@ function prepareBindingDialog(bindObj){
         },
     );
     const bindtargets = binddevices.slice();
-    for (var key in groups) {
+    for (const key in groups) {
         bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
     }
     $('#bind_target_ep').empty();
@@ -1615,7 +1581,7 @@ function prepareBindingDialog(bindObj){
                     return null;
                 }
                 // check for input clusters
-                var allow = false;
+                let allow = false;
                 for (const cluster of allowClusters) {
                     for (const ep of device.info.endpoints) {
                         if (ep.inputClusters.includes(cluster)) {
@@ -1659,30 +1625,30 @@ function prepareBindingDialog(bindObj){
             return;
         }
 
-        var device = devices.find(obj => {
+        const device = devices.find(obj => {
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.endpoints : null;
+        const epList = device ? device.info.endpoints : null;
         list2select('#bind_source_ep', epList, [],
-            function(key, ep) {
+            (key, ep) => {
                 return ep.ID;
             },
-            function(key, ep) {
+            (key, ep) => {
                 return ep.ID;
             }
         );
     });
     if (bindObj) {
-        var device = devices.find(obj => {
+        const device = devices.find(obj => {
             return obj._id === bindObj.bind_source;
         });
-        var epList = device ? device.info.endpoints : null;
+        const epList = device ? device.info.endpoints : null;
         list2select('#bind_source_ep', epList, [bindObj.bind_source_ep],
-            function(key, ep) {
+            (key, ep) => {
                 return ep.ID;
             },
-            function(key, ep) {
+            (key, ep) => {
                 return ep.ID;
             }
         );
@@ -1693,30 +1659,30 @@ function prepareBindingDialog(bindObj){
             return;
         }
 
-        var device = devices.find(obj => {
+        const device = devices.find(obj => {
             return obj._id === this.value;
         });
 
-        var epList = device ? device.info.endpoints : null;
+        const epList = device ? device.info.endpoints : null;
         list2select('#bind_target_ep', epList, [],
-            function(key, ep) {
+            (key, ep) => {
                 return ep.ID;
             },
-            function(key, ep) {
+            (key, ep) => {
                 return ep.ID;
             }
         );
     });
     if (bindObj) {
-        var device = devices.find(obj => {
+        const device = devices.find(obj => {
             return obj._id === bindObj.bind_target;
         });
-        var epList = device ? device.info.endpoints : null;
+        const epList = device ? device.info.endpoints : null;
         list2select('#bind_target_ep', epList, [bindObj.bind_target_ep],
-            function(key, ep) {
+            (key, ep) => {
                 return ep.ID;
             },
-            function(key, ep) {
+            (key, ep) => {
                 return ep.ID;
             }
         );
@@ -1724,13 +1690,13 @@ function prepareBindingDialog(bindObj){
 }
 
 function addBindingDialog() {
-    $("#bindingmodaledit a.btn[name='save']").unbind("click");
-    $("#bindingmodaledit a.btn[name='save']").click(function(e) {
-        var //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
-            bind_source = $('#bindingmodaledit').find("#bind_source option:selected").val(),
-            bind_source_ep = $('#bindingmodaledit').find("#bind_source_ep option:selected").val(),
-            bind_target = $('#bindingmodaledit').find("#bind_target option:selected").val(),
-            bind_target_ep = $('#bindingmodaledit').find("#bind_target_ep option:selected").val();
+    $("#bindingmodaledit a.btn[name='save']").unbind('click');
+    $("#bindingmodaledit a.btn[name='save']").click(() => {
+        const //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
+            bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
+            bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
+            bind_target = $('#bindingmodaledit').find('#bind_target option:selected').val(),
+            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val();
         addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep);
     });
     prepareBindingDialog();
@@ -1773,13 +1739,13 @@ function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_tar
 }
 
 function editBindingDialog(bindObj) {
-    $("#bindingmodaledit a.btn[name='save']").unbind("click");
-    $("#bindingmodaledit a.btn[name='save']").click(function(e) {
-        var //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
-            bind_source = $('#bindingmodaledit').find("#bind_source option:selected").val(),
-            bind_source_ep = $('#bindingmodaledit').find("#bind_source_ep option:selected").val(),
-            bind_target = $('#bindingmodaledit').find("#bind_target option:selected").val(),
-            bind_target_ep = $('#bindingmodaledit').find("#bind_target_ep option:selected").val();
+    $("#bindingmodaledit a.btn[name='save']").unbind('click');
+    $("#bindingmodaledit a.btn[name='save']").click(() => {
+        const //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
+            bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
+            bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
+            bind_target = $('#bindingmodaledit').find('#bind_target option:selected').val(),
+            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val();
         editBinding(bindObj.id, bind_source, bind_source_ep, bind_target, bind_target_ep);
     });
     prepareBindingDialog(bindObj);
@@ -1788,18 +1754,18 @@ function editBindingDialog(bindObj) {
 }
 
 function showBinding() {
-    var element = $('#binding');
-    element.find(".binding").remove();
+    const element = $('#binding');
+    element.find('.binding').remove();
     if (!binding || !binding.length) return;
     binding.forEach(b => {
         const bind_id = b.id,
-              bind_source = b.bind_source,
-              bind_source_ep = b.bind_source_ep,
-              bind_target = b.bind_target,
-              bind_target_ep = b.bind_target_ep;
+            bind_source = b.bind_source,
+            bind_source_ep = b.bind_source_ep,
+            bind_target = b.bind_target,
+            bind_target_ep = b.bind_target_ep;
         const source_dev = devices.find((d) => d._id == bind_source) || {common: {name: bind_source}},
-              target_dev = devices.find((d) => d._id == bind_target) || {common: {name: bind_target}},
-              target_icon = (target_dev.icon) ? `<img src="${target_dev.icon}" width="64px">` : "";
+            target_dev = devices.find((d) => d._id == bind_target) || {common: {name: bind_target}},
+            target_icon = (target_dev.icon) ? `<img src="${target_dev.icon}" width="64px">` : '';
         const card = `
                     <div id="${bind_id}" class="binding col s12 m6 l4 xl3">
                         <div class="card hoverable">
@@ -1829,7 +1795,7 @@ function showBinding() {
                                 </div>
                             </div>
                         </div>
-                    </div>`
+                    </div>`;
         element.append(card);
     });
 
@@ -1837,7 +1803,7 @@ function showBinding() {
         const bind_id = $(this).parents('.binding')[0].id;
         deleteBindingConfirmation(bind_id);
     });
-    $("#binding button[name='edit']").click(function(e) {
+    $("#binding button[name='edit']").click(() => {
         const bind_id = $(this).parents('.binding')[0].id;
         const bindObj = binding.find((b) => b.id == bind_id);
         if (bindObj) {
@@ -1860,19 +1826,19 @@ function getBinding() {
 }
 
 function deleteBindingConfirmation(id) {
-    var text = translateWord('Do you really want to delete binding?');
-    $('#modaldelete').find("p").text(text);
+    const text = translateWord('Do you really want to delete binding?');
+    $('#modaldelete').find('p').text(text);
     //$('#forcediv').removeClass('hide');
     $('#forcediv').addClass('hide');
-    $("#modaldelete a.btn[name='yes']").unbind("click");
-    $("#modaldelete a.btn[name='yes']").click(function(e) {
+    $("#modaldelete a.btn[name='yes']").unbind('click');
+    $("#modaldelete a.btn[name='yes']").click(() => {
         deleteBinding(id);
     });
     $('#modaldelete').modal('open');
 }
 
 function deleteBinding(id) {
-    sendTo(namespace, 'delBinding', id, function (msg) {
+    sendTo(namespace, 'delBinding', id, (msg) => {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -1883,7 +1849,7 @@ function deleteBinding(id) {
 }
 
 function findClName(id) {
-    for (let key in cidList) {
+    for (const key in cidList) {
         if (cidList.hasOwnProperty(key) && cidList[key].ID == id) {
             return `${key} (${id})`;
         }
@@ -1902,7 +1868,7 @@ function genDevInfo(device) {
         } else {
             return `<li><span class="labelinfo">${name}:</span><span>${value}</span></li>`;
         }
-    }
+    };
     const genRowValues = function(name, value) {
         if (value === undefined) {
             return '';
@@ -1914,7 +1880,7 @@ function genDevInfo(device) {
                 return row;
             }).join('');
         }
-    }
+    };
     const mappedInfo = (!mapped) ? '' : 
         `<div style="font-size: 0.9em">
             <ul>
@@ -1925,7 +1891,7 @@ function genDevInfo(device) {
             </ul>
         </div>`;
     let epInfo = '';
-    for (var epind in dev._endpoints) {
+    for (const epind in dev._endpoints) {
         const ep = dev._endpoints[epind];
         epInfo += 
             `<div style="font-size: 0.9em" class="truncate">
