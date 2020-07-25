@@ -300,23 +300,23 @@ function showDevices() {
     const getDevId = function(dev_block) {
         return dev_block.attr('id');
     };
-    $(".card-reveal-buttons button[name='delete']").click(() => {
+    $(".card-reveal-buttons button[name='delete']").click(function() {
         const dev_block = $(this).parents('div.device');
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
-    $(".card-reveal-buttons button[name='edit']").click(() => {
+    $(".card-reveal-buttons button[name='edit']").click(function() {
         const dev_block = $(this).parents('div.device'),
             id = getDevId(dev_block),
             name = getDevName(dev_block);
         editName(id, name);
     });
-    $("button.btn-floating[name='join']").click(() => {
+    $("button.btn-floating[name='join']").click(function() {
         const dev_block = $(this).parents('div.device');
         if (!$('#pairing').hasClass('pulse'))
             joinProcess(getDevId(dev_block));
         showPairingProcess();
     });
-    $(".card-reveal-buttons button[name='info']").click(() => {
+    $(".card-reveal-buttons button[name='info']").click(function() {
         const dev_block = $(this).parents('div.device');
         showDevInfo(getDevId(dev_block));
     });
@@ -1413,12 +1413,12 @@ function showGroups() {
             `<a id="${j}" name="groupdelete" class="waves-effect red btn-floating"><i class="material-icons">delete</i></a></span></div></td></tr>`);
         }
     }
-    $("a.btn-floating[name='groupedit']").click(() => {
+    $("a.btn-floating[name='groupedit']").click(function() {
         const index = $(this).attr('id'),
             name = groups[index];
         editGroupName(index, name);
     });
-    $("a.btn-floating[name='groupdelete']").click(() => {
+    $("a.btn-floating[name='groupdelete']").click(function() {
         const index = $(this).attr('id'),
             name = groups[index];
         deleteGroupConfirmation(index, name);
@@ -1804,7 +1804,7 @@ function showBinding() {
         const bind_id = $(this).parents('.binding')[0].id;
         deleteBindingConfirmation(bind_id);
     });
-    $("#binding button[name='edit']").click(() => {
+    $("#binding button[name='edit']").click(function() {
         const bind_id = $(this).parents('.binding')[0].id;
         const bindObj = binding.find((b) => b.id == bind_id);
         if (bindObj) {
