@@ -1287,24 +1287,13 @@ function showDevRunInfo(result, text, level) {
 }
 
 function addDevLog(reply) {
-    let msg, statusCode;
-    if (reply.msg) {
-        if (Array.isArray(reply.msg)) {
-            msg = reply.msg[0];
-        }
-        else {
-            msg = reply.msg;
-        }
-        statusCode = msg.hasOwnProperty('status') ? msg.status : msg.statusCode;
-    }
-
-    let logHtml = '<span>'+JSON.stringify(reply)+'</span><br>';
+    const statusCode = reply.statusCode;
+    let logHtml = '<span>'+JSON.stringify(reply.msg)+'</span><br>';
     if (responseCodes != undefined) {
         const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
         if (statusCode == 0) {
             logHtml = '<span class="green-text">'+status+'</span>   '+logHtml;
-        }
-        else {
+        } else {
             logHtml = '<span class="yellow-text">'+status+'</span>   '+logHtml;
         }
     }
