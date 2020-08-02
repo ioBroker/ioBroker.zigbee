@@ -624,9 +624,12 @@ socket.on('stateChange', function (id, state) {
             const blank_btn = '<i class="material-icons">leak_add</i>';
             if (state.val == 0) {
                 $('#pairing').html(blank_btn);
+                $('#progress_line').css('width', `0%`);
             } else {
                 $('#pairing').addClass('pulse');
                 $('#pairing').html(state.val);
+                const percent = 100-100*state.val/($('#countDown').val() || 60);
+                $('#progress_line').css('width', `${percent}%`);
             }
         } else if (id.match(/\.info\.pairingMessage$/)) {
             messages.push(state.val);
