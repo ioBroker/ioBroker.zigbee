@@ -98,8 +98,7 @@ function getCard(dev) {
                     <ul>
                         <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
                         <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-                        <li><span class="label">model:</span><span>${type}</span></li>
-                        <li><span class="label">vendor:</span><span>${dev.vendor}</span></li>
+                        <li><span class="label">model:</span><span>${type}</span></li>                        
                         <li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
@@ -1874,8 +1873,7 @@ function genDevInfo(device) {
     const mappedInfo = (!mapped) ? '' : 
         `<div style="font-size: 0.9em">
             <ul>
-                ${genRow('model', mapped.model)}
-                ${genRow('vendor', mapped.vendor)}
+                ${genRow('model', mapped.model)}               
                 ${genRow('description', mapped.description)}
                 ${genRow('supports', mapped.supports)}
             </ul>

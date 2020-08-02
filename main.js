@@ -179,19 +179,24 @@ class Zigbee extends utils.Adapter {
         this.setState('info.connection', true);
         const devices = await this.zbController.getClients(false);
         for (const device of devices) {
-            this.stController.updateDev(device.ieeeAddr.substr(2), device.modelID, device.modelID, () => {
-                this.stController.syncDevStates(device);
-            });
+            const entity = await this.zbController.resolveEntity(device);
+            if (entity) {
+                const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
+                this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () => {
+                    this.stController.syncDevStates(device, model);
+                });
+            }
         }
         this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
-    async checkIfModelUpdate(device) {
-        const modelID = device.modelID,
+    async checkIfModelUpdate(entity) {
+        const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID,
+            device = entity.device,
             devId = device.ieeeAddr.substr(2);
         return new Promise((resolve) => {
             this.getObject(devId, (err, obj) => {
-                if (obj && obj.common.type != modelID) {
+                if (obj && obj.common.type != model) {
                     // let's change model
                     this.getStatesOf(devId, (err, states) => {
                         if (!err && states) {
@@ -201,8 +206,8 @@ class Zigbee extends utils.Adapter {
                             });
                             Promise.all(chain).then(()=>{
                                 this.stController.deleteDeviceStates(devId, () => {
-                                    this.stController.updateDev(devId, modelID, modelID, async () => {
-                                        await this.stController.syncDevStates(device);
+                                    this.stController.updateDev(devId, model, model, async () => {
+                                        await this.stController.syncDevStates(device, model);
                                         resolve();
                                     });
                                 });
@@ -220,21 +225,22 @@ class Zigbee extends utils.Adapter {
 
     async onZigbeeEvent(type, entity, message){
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
+        if (!entity.mapped) {
+            return;
+        }
         const device = entity.device,
             mappedModel = entity.mapped,
-            modelID = device.modelID,
+            model = (entity.mapped) ? entity.mapped.model : entity.device.modelID,
             cluster = message.cluster,
             devId = device.ieeeAddr.substr(2),
             meta = {device: device};
         //this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
         meta.logger = this.log;
-        if (!mappedModel) {
-            return;
-        }
-        await this.checkIfModelUpdate(device);
+
+        await this.checkIfModelUpdate(entity);
         // always publish link_quality
         if (message.linkquality) {
-            this.publishToState(devId, modelID, {linkquality: message.linkquality});
+            this.publishToState(devId, model, {linkquality: message.linkquality});
         }
 
         let converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
@@ -256,11 +262,11 @@ class Zigbee extends utils.Adapter {
             const publish = (payload) => {
                 this.log.debug(`Publish ${safeJsonStringify(payload)}`);
                 if (payload) {
-                    this.publishToState(devId, modelID, payload);
+                    this.publishToState(devId, model, payload);
                 }
             };
 
-            this.stController.collectOptions(devId, modelID, (options) => {
+            this.stController.collectOptions(devId, model, (options) => {
                 const payload = converter.convert(mappedModel, message, publish, options, meta);
                 if (payload) {
                     // Add device linkquality.
@@ -270,12 +276,12 @@ class Zigbee extends utils.Adapter {
         });
     }
 
-    publishToState(devId, modelID, payload) {
-        this.stController.publishToState(devId, modelID, payload);
+    publishToState(devId, model, payload) {
+        this.stController.publishToState(devId, model, payload);
     }
 
-    acknowledgeState(deviceId, modelId, stateDesc, value) {
-        if (modelId === 'group') {
+    acknowledgeState(deviceId, model, stateDesc, value) {
+        if (model === 'group') {
             const stateId = this.namespace + '.group_' + deviceId + '.' + stateDesc.id;
             this.setState(stateId, value, true);
         } else {
@@ -284,15 +290,15 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    processSyncStatesList(deviceId, modelId, syncStateList) {
+    processSyncStatesList(deviceId, model, syncStateList) {
         syncStateList.forEach((syncState) => {
-            this.acknowledgeState(deviceId, modelId, syncState.stateDesc, syncState.value);
+            this.acknowledgeState(deviceId, model, syncState.stateDesc, syncState.value);
         });
     }
 
-    async publishFromState(deviceId, modelId, stateModel, stateList, options){
-        this.log.debug(`State changes. dev: ${deviceId} model: ${modelId} states: ${safeJsonStringify(stateList)} opt: ${safeJsonStringify(options)}`);
-        if (modelId == 'group') {
+    async publishFromState(deviceId, model, stateModel, stateList, options){
+        this.log.debug(`State changes. dev: ${deviceId} model: ${model} states: ${safeJsonStringify(stateList)} opt: ${safeJsonStringify(options)}`);
+        if (model == 'group') {
             deviceId = parseInt(deviceId);
         }
         const entity = await this.zbController.resolveEntity(deviceId);
@@ -305,7 +311,7 @@ class Zigbee extends utils.Adapter {
 
             if (stateDesc.isOption) {
                 // acknowledge state with given value
-                this.acknowledgeState(deviceId, modelId, stateDesc, value);
+                this.acknowledgeState(deviceId, model, stateDesc, value);
                 // process sync state list
                 //this.processSyncStatesList(deviceId, modelId, syncStateList);
                 return;
@@ -313,7 +319,7 @@ class Zigbee extends utils.Adapter {
 
             const converter = mappedModel.toZigbee.find((c) => c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id));
             if (!converter) {
-                this.log.error(`No converter available for '${modelId}' with key '${stateDesc.id}'`);
+                this.log.error(`No converter available for '${model}' with key '${stateDesc.id}'`);
                 return;
             }
 
@@ -335,7 +341,7 @@ class Zigbee extends utils.Adapter {
             this.log.debug(`convert ${key}, ${preparedValue}, ${safeJsonStringify(preparedOptions)}`);
 
             let target;
-            if (modelId === 'group') {
+            if (model === 'group') {
                 target = entity.mapped;
             } else {
                 target = await this.zbController.resolveEntity(deviceId, epName);
@@ -358,9 +364,9 @@ class Zigbee extends utils.Adapter {
                 const result = await converter.convertSet(target, key, preparedValue, meta);
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
 
-                this.acknowledgeState(deviceId, modelId, stateDesc, value);
+                this.acknowledgeState(deviceId, model, stateDesc, value);
                 // process sync state list
-                this.processSyncStatesList(deviceId, modelId, syncStateList);
+                this.processSyncStatesList(deviceId, model, syncStateList);
             } catch(error) {
                 this.log.error(`Error on send command to ${deviceId}. Error: ${error.stack}`);
             }
@@ -373,10 +379,11 @@ class Zigbee extends utils.Adapter {
         if (dev) {
             this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
                 if (!obj) {
-                    this.log.debug('new device ' + dev.ieeeAddr + ' ' + dev.networkAddress + ' ' + dev.modelID);
-                    this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${dev.modelID}`, true);
-                    this.stController.updateDev(dev.ieeeAddr.substr(2), dev.modelID, dev.modelID, () => {
-                        this.stController.syncDevStates(dev);
+                    const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
+                    this.log.debug(`new device ${dev.ieeeAddr} ${dev.networkAddress} ${model} `);
+                    this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${model}`, true);
+                    this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () => {
+                        this.stController.syncDevStates(dev, model);
                     });
                 }
             });
