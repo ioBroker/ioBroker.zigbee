@@ -932,6 +932,24 @@ function showNetworkMap(devices, map){
 
     // functions to animate:
     networkEvents = [];
+    setInterval(updateFrameTimer, 60);
+
+    function updateFrameTimer() {
+        if (networkEvents.length > 0) {
+            network.redraw();
+            const toDelete = [];
+            networkEvents.forEach((event, index)=>{
+                if (event.radius >= 1) {
+                    toDelete.push(index);
+                } else {
+                    event.radius += 0.08;
+                }
+            });
+            toDelete.forEach((index)=>{
+                networkEvents.splice(index, 1);
+            });
+        }
+    }
     network.on('beforeDrawing', function(ctx) {
         if (networkEvents.length > 0) {
             networkEvents.forEach((event)=>{
