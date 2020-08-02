@@ -4,8 +4,8 @@
         "version": "1.1.3",        
         "news": {            
             "1.1.3": {
-                "en": "refactoring device.js",
-                "de": "neustrukturierung device.js
+                "en": "refactoring devices.js",
+                "de": "neustrukturierung devices.js"
             },                 
             "1.1.2": {
                 "en": "Fix variable to converter"
