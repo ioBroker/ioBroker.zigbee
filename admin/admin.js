@@ -1958,7 +1958,7 @@ function showWaitingDialog(text, timeout){
         const percent = 100-100*countDown/timeout;
         $('#waiting_progress_line').css('width', `${percent}%`);
     }, 1000);
-    const waitingTimeout = setTimeout(function() {
+    setTimeout(function() {
         $('#waiting_progress_line').css('width', `0%`);
         clearTimeout(waitingInt);
         $('#modalWaiting').modal('close');
