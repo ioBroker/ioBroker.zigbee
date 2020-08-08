@@ -224,14 +224,16 @@ function editName(id, name) {
 
 function deleteDevice(id, force) {
     sendTo(namespace, 'deleteDevice', {id: id, force: force}, function (msg) {
+        closeWaitingDialog();
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error.code, _('Error'));
+                showMessage(msg.error, _('Error'));
             } else {
                 getDevices();
             }
         }
     });
+    showWaitingDialog('Device is being removed', 10);
 }
 
 function renameDevice(id, name) {
@@ -1946,4 +1948,25 @@ function showDevInfo(id){
     const info = genDevInfo(getDeviceByID(id));
     $('#devinfo').html(info);
     $('#modaldevinfo').modal('open');
+}
+
+
+function showWaitingDialog(text, timeout){
+    let countDown = timeout;
+    const waitingInt = setInterval(function() {
+        countDown -= 1;
+        const percent = 100-100*countDown/timeout;
+        $('#waiting_progress_line').css('width', `${percent}%`);
+    }, 1000);
+    const waitingTimeout = setTimeout(function() {
+        $('#waiting_progress_line').css('width', `0%`);
+        clearTimeout(waitingInt);
+        $('#modalWaiting').modal('close');
+    }, timeout*1000);
+    $('#waiting_message').text(text);
+    $('#modalWaiting').modal('open');
+}
+
+function closeWaitingDialog(){
+    $('#modalWaiting').modal('close');
 }
