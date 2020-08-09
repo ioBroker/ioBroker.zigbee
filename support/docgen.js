@@ -75,13 +75,13 @@ const logDevices = (devmodels) => {
     return result;
 };
 
-const vendors = Array.from(new Set([...iobDevices.keys()].map((m) => devices.get(m).vendor)));
+const vendors = Array.from(new Set([...iobDevices.keys()].map((m) => (devices.get(m)) ? devices.get(m).vendor : null)));
 vendors.sort();
 text += '|  Model | Description | Picture |\n';
 text += '| ------------- | ------------- | -------------------------- |\n';
 vendors.forEach((vendor) => {
     text += `|  | **${vendor}**  |   |\n`;   
-    text += logDevices([...iobDevices.keys()].map((m) => devices.get(m)).filter((d) => d.vendor === vendor).map((d) => d.model));
+    text += logDevices([...iobDevices.keys()].map((m) => devices.get(m)).filter((d) => d && d.vendor === vendor).map((d) => d.model));
 });
 
 fs.writeFileSync(outputdir + '/' + file, text);
