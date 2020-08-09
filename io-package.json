@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.1.3",        
-        "news": {            
+        "version": "1.2.0",        
+        "news": {    
+            "1.2.0": {
+                "en": "serialport 9, drop support Node < 10, new identify by model",
+                "de": "serialport 9, unterstützung für Node 8 und kleiner gelscöht, neuer identifizierung am model"
+            },          
             "1.1.3": {
                 "en": "refactoring devices.js",
                 "de": "neustrukturierung devices.js"
