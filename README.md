@@ -101,9 +101,63 @@ You can thank the authors by these links:
 
 ## Changelog
 
-### 1.1.3 (2020-08-02)
-* (kirovilya) refactoring devices.js
+### 1.2.0 (2020-08)
+* Serialport 9.0.0. (zigbee-herdsman)
+* Drop support Node < 10 (zigbee-herdsman)
+* Device now identify (for zigbee-herdsman-converters) by model not zigbeeModel
+
+Improvements and fixes:
 * (Strunzdesign) Fixed the mapping between bulb levels and adapter levels
+* (kirovilya) Fix ota for unavailable devices
+* (kirovilya) Lazy states - created only when an event arrives
+* (kirovilya) States generator - states are created depending on the device and its endpoints
+* (Shade) Fixed WXKG11LM clicks
+* (allofmex) Improved DeveloperTab logs
+* (allofmex) Add humidity and temperature calibration state to Tuya RH3052
+* (kirovilya) Fixed a typo due to which extPanID was not set
+* (allofmex) Retry reconnect gateway all the time for tcp connected gateway
+* (kirovilya) Allow to collect zigbee-herdsman logs to iobroker logs
+* (kirovilya) Additional states for QBKG12LM
+
+New devices:
+* (kirovilya) BlitzWolf BW-IS3, Paulmann 500.67, Paulmann 798.09
+* (kirovilya) DiY Geiger counter https://modkam.ru/?p=1591
+* (kirovilya) DiY 8 Relays + 8 switches https://modkam.ru/?p=1638
+* (kirovilya) DiY Freepad https://github.com/diyruz/freepad
+* (kirovilya) Neo Zigbee Siren Alarm https://szneo.com/en/products/show.php?id=241
+* (Shade) RB 278 T
+* (arteck) TS0601_thermostat
+* (arteck) TS0121
+* (arteck) GL-D-004Z
+* (Shade) WXKG07LM
+* (drohne200) 1746430P7
+* (sebastian) 4058075816459
+* (itProfi) SGMHM-I1
+* (arteck) owvfni3
+* (arteck) TS0001, TS0111
+* (Daniel Dreier) Paulmann 500.45
+* (arteck) ZK-EU-2U
+* (Newan) Busch-Jaeger 6735/6736/6737
+* (andrico21) ZM-L03E-Z
+* (arteck) 915005106701, 9290018187B
+* (frankjoke) HGZB-20-UK, GL-W-001Z
+* (arteck) 4034031P7, 3435011P7
+* (arteck) TS0041
+* (agross) 5062231P7, 5062431P7
+* (kirovilya) TI0001-switch, TI0001-socket
+* (arteck) RB 178 T
+* (arteck) HGZB-07A, AV2010/22, AV2010/22A, TS0041, TS0043
+* (nbars) E1744
+* (Florian Look) GS361A-H04
+* (arteck) ICZB-IW11SW
+* (kirovilya) HS2WD-E
+* (Sacred-Shadow) FL 130 C
+* (arteck) HS3SA, 9290022169, 4096730U7, AC10787, SP 220, SP 222, SP 224, 07004D, BW-IS2, InstaRemote
+* (kirovilya) MCLH-08, MCLH-05
+* (Sacred-Shadow) 1746130P7
+* (mar565) GUNNARP panel round
+* (Erdnuss3003) 4090531P7
+
 
 ### 1.1.1 (2020-04-17)
 * (kirovilya) Critical. Fixed error starting adapter if cc-chip was only flashed
