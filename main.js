@@ -5,7 +5,12 @@
  */
 'use strict';
 
-const debug = require('zigbee-herdsman/node_modules/debug');
+let debug;
+try {
+    debug = require('zigbee-herdsman/node_modules/debug');
+} catch (e) {
+    debug = require('debug');
+}
 const originalLogMethod = debug.log;
 
 const safeJsonStringify = require('./lib/json');
