@@ -1711,8 +1711,8 @@ function addBindingDialog() {
             bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
             bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
             bind_target = $('#bindingmodaledit').find('#bind_target option:selected').val(),
-            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val();
-        unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
+            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val(),
+            unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
         addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator);
     });
     prepareBindingDialog();
@@ -1763,7 +1763,7 @@ function editBindingDialog(bindObj) {
             bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
             bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
             bind_target = $('#bindingmodaledit').find('#bind_target option:selected').val(),
-            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val();
+            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val(),
             unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
         editBinding(bindObj.id, bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator);
     });
