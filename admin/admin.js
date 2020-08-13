@@ -20,7 +20,7 @@ let devices = [],
     cidList;
 
 const savedSettings = [
-    'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower', 
+    'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
     'adapterType', 'debugHerdsman',
 ];
 
@@ -1699,6 +1699,9 @@ function prepareBindingDialog(bindObj){
             }
         );
     }
+
+    const unbind_fom_coordinator = bindObj ? bindObj.unbind_from_coordinator : false;
+    $('#unbind_from_coordinator').prop('checked', unbind_fom_coordinator);
 }
 
 function addBindingDialog() {
@@ -1708,8 +1711,9 @@ function addBindingDialog() {
             bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
             bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
             bind_target = $('#bindingmodaledit').find('#bind_target option:selected').val(),
-            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val();
-        addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep);
+            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val(),
+            unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
+        addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator);
     });
     prepareBindingDialog();
 
@@ -1717,12 +1721,13 @@ function addBindingDialog() {
     Materialize.updateTextFields();
 }
 
-function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
+function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator) {
     sendTo(namespace, 'addBinding', {
         bind_source: bind_source,
         bind_source_ep: bind_source_ep,
         bind_target: bind_target,
-        bind_target_ep: bind_target_ep
+        bind_target_ep: bind_target_ep,
+        unbind_from_coordinator
     }, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -1733,13 +1738,14 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep) {
     });
 }
 
-function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep) {
+function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator) {
     sendTo(namespace, 'editBinding', {
         id: bind_id,
         bind_source: bind_source,
         bind_source_ep: bind_source_ep,
         bind_target: bind_target,
-        bind_target_ep: bind_target_ep
+        bind_target_ep: bind_target_ep,
+        unbind_from_coordinator
     }, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -1757,8 +1763,9 @@ function editBindingDialog(bindObj) {
             bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
             bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
             bind_target = $('#bindingmodaledit').find('#bind_target option:selected').val(),
-            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val();
-        editBinding(bindObj.id, bind_source, bind_source_ep, bind_target, bind_target_ep);
+            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val(),
+            unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
+        editBinding(bindObj.id, bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator);
     });
     prepareBindingDialog(bindObj);
     $('#bindingmodaledit').modal('open');
@@ -1893,7 +1900,7 @@ function genDevInfo(device) {
             }).join('');
         }
     };
-    const mappedInfo = (!mapped) ? '' : 
+    const mappedInfo = (!mapped) ? '' :
         `<div style="font-size: 0.9em">
             <ul>
                 ${genRow('model', mapped.model)}               
@@ -1904,7 +1911,7 @@ function genDevInfo(device) {
     let epInfo = '';
     for (const epind in dev._endpoints) {
         const ep = dev._endpoints[epind];
-        epInfo += 
+        epInfo +=
             `<div style="font-size: 0.9em" class="truncate">
                 <ul>
                     ${genRow('endpoint', ep.ID)}
@@ -1914,7 +1921,7 @@ function genDevInfo(device) {
                 </ul>
             </div>`;
     }
-    const info = 
+    const info =
         `<div class="col s12 m6 l6 xl6">
             ${mappedInfo}
             <div class="divider"></div>

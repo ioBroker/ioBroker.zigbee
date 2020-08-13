@@ -265,7 +265,7 @@
                             <p>Pan ID is some simplified id (is used by Zigbee instead of ExtPanID wherever possible). This should be unique too.
                             Note: Zigbee network may choose a different Pan ID than you specified here in case it detects id conflicts.</p>
                         </div>
-                        
+
                     </div>
                     <div class="row">
                         <div class="input-field col s12 m6 l4">
@@ -345,7 +345,7 @@
                             and in <a href="https://www.nxp.com/docs/en/user-guide/JN-UG-3115.pdf" target="_blank">ZigBee Cluster Library</a>.
                             </p>
                             <p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-herdsman-converters" target="_blank">
-                            zigbee-herdsman-converters</a>) to make it available for other user too. 
+                            zigbee-herdsman-converters</a>) to make it available for other user too.
                             </p>
                         </div>
                         <div class="col s8">
@@ -686,6 +686,12 @@
                             <select id="bind_target_ep" class="materialSelect">
                             </select>
                             <label for="bind_target_ep" class="translate">Target endpoint</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s9 input-field">
+                            <input id="unbind_from_coordinator" type="checkbox" class="value" />
+                            <label class="translate" for="unbind_from_coordinator">Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)</label>
                         </div>
                     </div>
                 </div>
