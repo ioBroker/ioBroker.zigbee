@@ -101,7 +101,11 @@ You can thank the authors by these links:
 
 ## Changelog
 
-### 1.2.0 (2020-08)
+### 1.2.1 (2020-08-16)
+* Fixes after changing device identify method
+* (Garfonso) Allow to unbind from coordinator
+
+### 1.2.0 (2020-08-09)
 * Serialport 9.0.0. (zigbee-herdsman)
 * Drop support Node < 10 (zigbee-herdsman)
 * Device now identify (for zigbee-herdsman-converters) by model not zigbeeModel
