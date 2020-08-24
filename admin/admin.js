@@ -1529,6 +1529,7 @@ function prepareBindingDialog(bindObj){
 
     // 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
     const allowClusters = [6, 8, 768];
+    const allowClustersName = {6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
     // fill device selector
     list2select('#bind_source', binddevices, bind_source,
         function(key, device) {
@@ -1642,9 +1643,15 @@ function prepareBindingDialog(bindObj){
         });
 
         const epList = device ? device.info.endpoints : null;
-        list2select('#bind_source_ep', epList, [],
+        const sClusterList = epList.map((ep) => {
+            const clusters = ep.outputClusters.map((cl) => {
+                return allowClusters.includes(cl) ? {ID: ep.ID+'.'+cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {return i != null});
+            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {return i != null});
+        list2select('#bind_source_ep', sClusterList, [],
             (key, ep) => {
-                return ep.ID;
+                return ep.ID+' '+ep.name;
             },
             (key, ep) => {
                 return ep.ID;
@@ -1656,9 +1663,15 @@ function prepareBindingDialog(bindObj){
             return obj._id === bindObj.bind_source;
         });
         const epList = device ? device.info.endpoints : null;
-        list2select('#bind_source_ep', epList, [bindObj.bind_source_ep],
+        const sClusterList = epList.map((ep) => {
+            const clusters = ep.outputClusters.map((cl) => {
+                return allowClusters.includes(cl) ? {ID: ep.ID+'.'+cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {return i != null});
+            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {return i != null});
+        list2select('#bind_source_ep', sClusterList, [bindObj.bind_source_ep],
             (key, ep) => {
-                return ep.ID;
+                return ep.ID+' '+ep.name;
             },
             (key, ep) => {
                 return ep.ID;
@@ -1676,9 +1689,15 @@ function prepareBindingDialog(bindObj){
         });
 
         const epList = device ? device.info.endpoints : null;
-        list2select('#bind_target_ep', epList, [],
+        const tClusterList = epList.map((ep) => {
+            const clusters = ep.inputClusters.map((cl) => {
+                return allowClusters.includes(cl) ? {ID: ep.ID+'.'+cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {return i != null});
+            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {return i != null});
+        list2select('#bind_target_ep', tClusterList, [],
             (key, ep) => {
-                return ep.ID;
+                return ep.ID+' '+ep.name;
             },
             (key, ep) => {
                 return ep.ID;
@@ -1690,9 +1709,15 @@ function prepareBindingDialog(bindObj){
             return obj._id === bindObj.bind_target;
         });
         const epList = device ? device.info.endpoints : null;
-        list2select('#bind_target_ep', epList, [bindObj.bind_target_ep],
+        const tClusterList = epList.map((ep) => {
+            const clusters = ep.inputClusters.map((cl) => {
+                return allowClusters.includes(cl) ? {ID: ep.ID+'.'+cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {return i != null});
+            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {return i != null});
+        list2select('#bind_target_ep', tClusterList, [bindObj.bind_target_ep],
             (key, ep) => {
-                return ep.ID;
+                return ep.ID+' '+ep.name;
             },
             (key, ep) => {
                 return ep.ID;
