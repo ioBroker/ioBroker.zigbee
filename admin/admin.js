@@ -1527,9 +1527,9 @@ function prepareBindingDialog(bindObj){
 
     $('#bind_source_ep').empty();
 
-    // 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
-    const allowClusters = [6, 8, 768];
-    const allowClustersName = {6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
+    // 5 - genScenes, 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
+    const allowClusters = [5, 6, 8, 768];
+    const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
     // fill device selector
     list2select('#bind_source', binddevices, bind_source,
         function(key, device) {
@@ -1645,7 +1645,7 @@ function prepareBindingDialog(bindObj){
         const epList = device ? device.info.endpoints : null;
         const sClusterList = epList.map((ep) => {
             const clusters = ep.outputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'.'+cl, name: allowClustersName[cl]} : null;
+                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
             }).filter((i) => {return i != null});
             return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
         }).flat(2).filter((i) => {return i != null});
@@ -1665,7 +1665,7 @@ function prepareBindingDialog(bindObj){
         const epList = device ? device.info.endpoints : null;
         const sClusterList = epList.map((ep) => {
             const clusters = ep.outputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'.'+cl, name: allowClustersName[cl]} : null;
+                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
             }).filter((i) => {return i != null});
             return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
         }).flat(2).filter((i) => {return i != null});
@@ -1691,7 +1691,7 @@ function prepareBindingDialog(bindObj){
         const epList = device ? device.info.endpoints : null;
         const tClusterList = epList.map((ep) => {
             const clusters = ep.inputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'.'+cl, name: allowClustersName[cl]} : null;
+                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
             }).filter((i) => {return i != null});
             return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
         }).flat(2).filter((i) => {return i != null});
@@ -1711,7 +1711,7 @@ function prepareBindingDialog(bindObj){
         const epList = device ? device.info.endpoints : null;
         const tClusterList = epList.map((ep) => {
             const clusters = ep.inputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'.'+cl, name: allowClustersName[cl]} : null;
+                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
             }).filter((i) => {return i != null});
             return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
         }).flat(2).filter((i) => {return i != null});
@@ -1754,6 +1754,7 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, un
         bind_target_ep: bind_target_ep,
         unbind_from_coordinator
     }, function (msg) {
+        closeWaitingDialog();
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -1761,6 +1762,7 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, un
         }
         getBinding();
     });
+    showWaitingDialog('Device binding is being added', 10);
 }
 
 function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator) {
@@ -1772,6 +1774,7 @@ function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_tar
         bind_target_ep: bind_target_ep,
         unbind_from_coordinator
     }, function (msg) {
+        closeWaitingDialog();
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -1779,6 +1782,7 @@ function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_tar
         }
         getBinding();
     });
+    showWaitingDialog('Device binding is being updated', 10);
 }
 
 function editBindingDialog(bindObj) {
@@ -1883,6 +1887,7 @@ function deleteBindingConfirmation(id) {
 
 function deleteBinding(id) {
     sendTo(namespace, 'delBinding', id, (msg) => {
+        closeWaitingDialog();
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -1890,6 +1895,7 @@ function deleteBinding(id) {
         }
         getBinding();
     });
+    showWaitingDialog('Device binding is being removed', 10);
 }
 
 function findClName(id) {
