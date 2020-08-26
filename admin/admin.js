@@ -1638,9 +1638,9 @@ function prepareBindingDialog(bindObj){
         const sClusterList = epList.map((ep) => {
             const clusters = ep.outputClusters.map((cl) => {
                 return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {return i != null});
+            }).filter((i) => {return i != null;});
             return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {return i != null});
+        }).flat(2).filter((i) => {return i != null;});
         list2select('#bind_source_ep', sClusterList, (selected) ? [selected] : [],
             (key, ep) => {
                 return ep.ID+' '+ep.name;
@@ -1649,7 +1649,7 @@ function prepareBindingDialog(bindObj){
                 return ep.ID;
             }
         );
-    }
+    };
 
     const configureTargetEp = function (devID, selected, sourceCl) {
         const device = devices.find(obj => {
@@ -1660,9 +1660,9 @@ function prepareBindingDialog(bindObj){
         const tClusterList = epList.map((ep) => {
             const clusters = ep.inputClusters.map((cl) => {
                 return (allowClusters.includes(cl) && (!sourceCl || sourceCl == cl)) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {return i != null});
+            }).filter((i) => {return i != null;});
             return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {return i != null});
+        }).flat(2).filter((i) => {return i != null;});
         list2select('#bind_target_ep', tClusterList, (selected) ? [selected] : [],
             (key, ep) => {
                 return ep.ID+' '+ep.name;
@@ -1671,7 +1671,7 @@ function prepareBindingDialog(bindObj){
                 return ep.ID;
             }
         );
-    }
+    };
 
     $('#bind_source').change(function() {
         if (this.selectedIndex <= 0) {
@@ -1699,7 +1699,7 @@ function prepareBindingDialog(bindObj){
     }
 
     $('#bind_source_ep').change(function() {
-        $('#bind_target').trigger("change");
+        $('#bind_target').trigger('change');
     });
 
     const unbind_fom_coordinator = bindObj ? bindObj.unbind_from_coordinator : false;
