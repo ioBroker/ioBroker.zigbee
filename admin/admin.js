@@ -1522,13 +1522,10 @@ function prepareBindingDialog(bindObj){
     binddevices.unshift('');
     const bind_source = (bindObj) ? [bindObj.bind_source] : [''];
     const bind_target = (bindObj) ? [bindObj.bind_target] : [''];
-    // const bind_source_ep = (bindObj) ? [bindObj.bind_source_ep] : [''];
-    // const bind_target_ep = (bindObj) ? [bindObj.bind_target_ep] : [''];
-
-    $('#bind_source_ep').empty();
-
-    // 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
-    const allowClusters = [6, 8, 768];
+    
+    // 5 - genScenes, 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
+    const allowClusters = [5, 6, 8, 768];
+    const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
     // fill device selector
     list2select('#bind_source', binddevices, bind_source,
         function(key, device) {
@@ -1582,7 +1579,6 @@ function prepareBindingDialog(bindObj){
     for (const key in groups) {
         bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
     }
-    $('#bind_target_ep').empty();
     list2select('#bind_target', bindtargets, bind_target,
         function(key, device) {
             if (device == '') {
@@ -1632,73 +1628,79 @@ function prepareBindingDialog(bindObj){
             }
         },
     );
+
+    const configureSourceEp = function (devID, selected) {
+        const device = devices.find(obj => {
+            return obj._id === devID;
+        });
+
+        const epList = device ? device.info.endpoints : [];
+        const sClusterList = epList.map((ep) => {
+            const clusters = ep.outputClusters.map((cl) => {
+                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {return i != null;});
+            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {return i != null;});
+        list2select('#bind_source_ep', sClusterList, (selected) ? [selected] : [],
+            (key, ep) => {
+                return ep.ID+' '+ep.name;
+            },
+            (key, ep) => {
+                return ep.ID;
+            }
+        );
+    };
+
+    const configureTargetEp = function (devID, selected, sourceCl) {
+        const device = devices.find(obj => {
+            return obj._id === devID;
+        });
+
+        const epList = device ? device.info.endpoints : [];
+        const tClusterList = epList.map((ep) => {
+            const clusters = ep.inputClusters.map((cl) => {
+                return (allowClusters.includes(cl) && (!sourceCl || sourceCl == cl)) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {return i != null;});
+            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {return i != null;});
+        list2select('#bind_target_ep', tClusterList, (selected) ? [selected] : [],
+            (key, ep) => {
+                return ep.ID+' '+ep.name;
+            },
+            (key, ep) => {
+                return ep.ID;
+            }
+        );
+    };
+
     $('#bind_source').change(function() {
         if (this.selectedIndex <= 0) {
             return;
         }
-
-        const device = devices.find(obj => {
-            return obj._id === this.value;
-        });
-
-        const epList = device ? device.info.endpoints : null;
-        list2select('#bind_source_ep', epList, [],
-            (key, ep) => {
-                return ep.ID;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
+        configureSourceEp(this.value);
     });
     if (bindObj) {
-        const device = devices.find(obj => {
-            return obj._id === bindObj.bind_source;
-        });
-        const epList = device ? device.info.endpoints : null;
-        list2select('#bind_source_ep', epList, [bindObj.bind_source_ep],
-            (key, ep) => {
-                return ep.ID;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
+        configureSourceEp(bindObj.bind_source, bindObj.bind_source_ep);
+    } else {
+        configureSourceEp();
     }
 
     $('#bind_target').change(function() {
         if (this.selectedIndex <= 0) {
             return;
         }
-
-        const device = devices.find(obj => {
-            return obj._id === this.value;
-        });
-
-        const epList = device ? device.info.endpoints : null;
-        list2select('#bind_target_ep', epList, [],
-            (key, ep) => {
-                return ep.ID;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
+        const bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val();
+        configureTargetEp(this.value, null, (bind_source_ep.indexOf('_') > 0) ? bind_source_ep.split('_')[1] : null);
     });
     if (bindObj) {
-        const device = devices.find(obj => {
-            return obj._id === bindObj.bind_target;
-        });
-        const epList = device ? device.info.endpoints : null;
-        list2select('#bind_target_ep', epList, [bindObj.bind_target_ep],
-            (key, ep) => {
-                return ep.ID;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
+        configureTargetEp(bindObj.bind_target, bindObj.bind_target_ep);
+    } else {
+        configureTargetEp();
     }
+
+    $('#bind_source_ep').change(function() {
+        $('#bind_target').trigger('change');
+    });
 
     const unbind_fom_coordinator = bindObj ? bindObj.unbind_from_coordinator : false;
     $('#unbind_from_coordinator').prop('checked', unbind_fom_coordinator);
@@ -1729,6 +1731,7 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, un
         bind_target_ep: bind_target_ep,
         unbind_from_coordinator
     }, function (msg) {
+        closeWaitingDialog();
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -1736,6 +1739,7 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, un
         }
         getBinding();
     });
+    showWaitingDialog('Device binding is being added', 10);
 }
 
 function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator) {
@@ -1747,6 +1751,7 @@ function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_tar
         bind_target_ep: bind_target_ep,
         unbind_from_coordinator
     }, function (msg) {
+        closeWaitingDialog();
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -1754,6 +1759,7 @@ function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_tar
         }
         getBinding();
     });
+    showWaitingDialog('Device binding is being updated', 10);
 }
 
 function editBindingDialog(bindObj) {
@@ -1858,6 +1864,7 @@ function deleteBindingConfirmation(id) {
 
 function deleteBinding(id) {
     sendTo(namespace, 'delBinding', id, (msg) => {
+        closeWaitingDialog();
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -1865,6 +1872,7 @@ function deleteBinding(id) {
         }
         getBinding();
     });
+    showWaitingDialog('Device binding is being removed', 10);
 }
 
 function findClName(id) {
