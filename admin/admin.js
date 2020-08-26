@@ -1522,11 +1522,7 @@ function prepareBindingDialog(bindObj){
     binddevices.unshift('');
     const bind_source = (bindObj) ? [bindObj.bind_source] : [''];
     const bind_target = (bindObj) ? [bindObj.bind_target] : [''];
-    // const bind_source_ep = (bindObj) ? [bindObj.bind_source_ep] : [''];
-    // const bind_target_ep = (bindObj) ? [bindObj.bind_target_ep] : [''];
-
-    $('#bind_source_ep').empty();
-
+    
     // 5 - genScenes, 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
     const allowClusters = [5, 6, 8, 768];
     const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
@@ -1583,7 +1579,6 @@ function prepareBindingDialog(bindObj){
     for (const key in groups) {
         bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
     }
-    $('#bind_target_ep').empty();
     list2select('#bind_target', bindtargets, bind_target,
         function(key, device) {
             if (device == '') {
@@ -1633,97 +1628,79 @@ function prepareBindingDialog(bindObj){
             }
         },
     );
+
+    const configureSourceEp = function (devID, selected) {
+        const device = devices.find(obj => {
+            return obj._id === devID;
+        });
+
+        const epList = device ? device.info.endpoints : [];
+        const sClusterList = epList.map((ep) => {
+            const clusters = ep.outputClusters.map((cl) => {
+                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {return i != null});
+            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {return i != null});
+        list2select('#bind_source_ep', sClusterList, (selected) ? [selected] : [],
+            (key, ep) => {
+                return ep.ID+' '+ep.name;
+            },
+            (key, ep) => {
+                return ep.ID;
+            }
+        );
+    }
+
+    const configureTargetEp = function (devID, selected, sourceCl) {
+        const device = devices.find(obj => {
+            return obj._id === devID;
+        });
+
+        const epList = device ? device.info.endpoints : [];
+        const tClusterList = epList.map((ep) => {
+            const clusters = ep.inputClusters.map((cl) => {
+                return (allowClusters.includes(cl) && (!sourceCl || sourceCl == cl)) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {return i != null});
+            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {return i != null});
+        list2select('#bind_target_ep', tClusterList, (selected) ? [selected] : [],
+            (key, ep) => {
+                return ep.ID+' '+ep.name;
+            },
+            (key, ep) => {
+                return ep.ID;
+            }
+        );
+    }
+
     $('#bind_source').change(function() {
         if (this.selectedIndex <= 0) {
             return;
         }
-
-        const device = devices.find(obj => {
-            return obj._id === this.value;
-        });
-
-        const epList = device ? device.info.endpoints : null;
-        const sClusterList = epList.map((ep) => {
-            const clusters = ep.outputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {return i != null});
-            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {return i != null});
-        list2select('#bind_source_ep', sClusterList, [],
-            (key, ep) => {
-                return ep.ID+' '+ep.name;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
+        configureSourceEp(this.value);
     });
     if (bindObj) {
-        const device = devices.find(obj => {
-            return obj._id === bindObj.bind_source;
-        });
-        const epList = device ? device.info.endpoints : null;
-        const sClusterList = epList.map((ep) => {
-            const clusters = ep.outputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {return i != null});
-            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {return i != null});
-        list2select('#bind_source_ep', sClusterList, [bindObj.bind_source_ep],
-            (key, ep) => {
-                return ep.ID+' '+ep.name;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
+        configureSourceEp(bindObj.bind_source, bindObj.bind_source_ep);
+    } else {
+        configureSourceEp();
     }
 
     $('#bind_target').change(function() {
         if (this.selectedIndex <= 0) {
             return;
         }
-
-        const device = devices.find(obj => {
-            return obj._id === this.value;
-        });
-
-        const epList = device ? device.info.endpoints : null;
-        const tClusterList = epList.map((ep) => {
-            const clusters = ep.inputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {return i != null});
-            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {return i != null});
-        list2select('#bind_target_ep', tClusterList, [],
-            (key, ep) => {
-                return ep.ID+' '+ep.name;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
+        const bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val();
+        configureTargetEp(this.value, null, (bind_source_ep.indexOf('_') > 0) ? bind_source_ep.split('_')[1] : null);
     });
     if (bindObj) {
-        const device = devices.find(obj => {
-            return obj._id === bindObj.bind_target;
-        });
-        const epList = device ? device.info.endpoints : null;
-        const tClusterList = epList.map((ep) => {
-            const clusters = ep.inputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {return i != null});
-            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {return i != null});
-        list2select('#bind_target_ep', tClusterList, [bindObj.bind_target_ep],
-            (key, ep) => {
-                return ep.ID+' '+ep.name;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
+        configureTargetEp(bindObj.bind_target, bindObj.bind_target_ep);
+    } else {
+        configureTargetEp();
     }
+
+    $('#bind_source_ep').change(function() {
+        $('#bind_target').trigger("change");
+    });
 
     const unbind_fom_coordinator = bindObj ? bindObj.unbind_from_coordinator : false;
     $('#unbind_from_coordinator').prop('checked', unbind_fom_coordinator);
