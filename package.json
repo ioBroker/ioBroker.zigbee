@@ -18,8 +18,8 @@
     "node": ">=10"
   },
   "dependencies": {
-    "zigbee-herdsman": "0.12.119",
-    "zigbee-herdsman-converters": "12.0.166",
+    "zigbee-herdsman": "0.12.122",
+    "zigbee-herdsman-converters": "12.0.174",
     "@iobroker/adapter-core": "^2.4.0"
   },
   "description": "Zigbee devices",
