@@ -15,6 +15,7 @@ const originalLogMethod = debug.log;
 
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
+const pathLib = require('path');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const SerialListPlugin = require('./lib/seriallist');
 const CommandsPlugin = require('./lib/commands');
@@ -74,6 +75,7 @@ class Zigbee extends utils.Adapter {
         // set connection false before connect to zigbee
         this.setState('info.connection', false);
         const zigbeeOptions = this.getZigbeeOptions();
+        this.backup(zigbeeOptions);
         this.zbController = new ZigbeeController();
         this.zbController.on('log', this.onLog.bind(this));
         this.zbController.on('ready', this.onZigbeeAdapterReady.bind(this));
@@ -88,6 +90,32 @@ class Zigbee extends utils.Adapter {
 
         this.reconnectCounter = 1;
         this.doConnect();
+    }
+
+    backup(options) {
+        // backup prior database and nv data before start adapter
+        const files = [];
+        if (fs.existsSync(pathLib.join(options.dbDir, options.backupPath))) files.push(options.backupPath);
+        if (fs.existsSync(pathLib.join(options.dbDir, options.dbPath))) files.push(options.dbPath);
+        if (files.length == 0) return;
+
+        const d = new Date();
+        const backup_name = `${d.getFullYear()}_${('0' + (d.getMonth() + 1)).slice(-2)}_${('0' + d.getDate()).slice(-2)}-`+
+                `${('0' + d.getHours()).slice(-2)}_${('0' + d.getMinutes()).slice(-2)}_${('0' + d.getSeconds()).slice(-2)}`;
+        const tar = require('tar');
+        const name = pathLib.join(options.dbDir, `backup_${backup_name}.tar.gz`);
+        const f = fs.createWriteStream(name);
+        f.on('finish', () => {
+            this.log.debug(`Backup ${name} success`);
+        });
+        f.on('error', err => {
+            this.log.error(`Cannot pack backup ${name}: ` + err);
+        });
+        try {
+            tar.create({gzip: true, p: false, cwd: options.dbDir}, files).pipe(f);
+        } catch (err) {
+            this.log.error(`Cannot pack backup ${name}: ` + err);
+        }
     }
 
     async doConnect() {
@@ -447,7 +475,7 @@ class Zigbee extends utils.Adapter {
     getZigbeeOptions() {
         // file path for db
         const dataDir = (this.systemConfig) ? this.systemConfig.dataDir : '';
-        const dbDir = utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_');
+        const dbDir = pathLib.normalize(utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_'));
         if (this.systemConfig && !fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
         const port = this.config.port;
         if (!port) {
@@ -474,8 +502,9 @@ class Zigbee extends utils.Adapter {
                 rtscts: false,
                 adapter: adapterType,
             },
-            dbPath: dbDir + '/shepherd.db',
-            backupPath: dbDir + '/backup.json',
+            dbDir: dbDir,
+            dbPath: 'shepherd.db',
+            backupPath: 'nvbackup.json',
             disableLed: this.config.disableLed,
             transmitPower: this.config.transmitPower,
             extPanIdFix: extPanIdFix,
