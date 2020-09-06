@@ -1,202 +1,30 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.0.2",
+        "version": "1.2.1",
         "news": {
+            "1.2.0": {
+                "en": "serialport 9, drop support Node < 10, new identify by model",
+                "de": "serialport 9, unterstützung für Node 8 und kleiner gelscöht, neuer identifizierung am model"
+            },
+            "1.1.3": {
+                "en": "refactoring devices.js",
+                "de": "neustrukturierung devices.js"
+            },
+            "1.1.2": {
+                "en": "Fix variable to converter"
+            },
+            "1.1.1": {
+                "en": "Fix for fresh flashed chip"
+            },
+            "1.1.0": {
+                "en": "New features and experimental deConz/Conbee support"
+            },
+            "1.0.4": {
+                "en": "New devices and fixes"
+            },
             "1.0.0": {
                 "en": "Powered by Zigbee-Herdsman"
-            },
-            "0.11.5": {
-                "en": "New devices and fixes"
-            },
-            "0.11.0": {
-                "en": "Support both Z-Stack 1.2 and 3.0"
-            },
-            "0.10.3": {
-                "en": "New devices and fixes"
-            },
-            "0.10.2": {
-                "en": "New devices and fixes"
-            },
-            "0.9.2": {
-                "en": "Xiaomi Lock was added",
-                "de": "Xiaomi Lock wurde hinzugefügt",
-                "ru": "Xiaomi Lock был добавлен",
-                "pt": "Xiaomi Lock foi adicionado",
-                "nl": "Xiaomi Lock is toegevoegd",
-                "fr": "Xiaomi Lock a été ajouté",
-                "it": "Xiaomi Lock è stato aggiunto",
-                "es": "Se añadió Xiaomi Lock",
-                "pl": "Xiaomi Lock został dodany",
-                "zh-cn": "小米锁被添加了"
-            },
-            "0.9.1": {
-                "en": "Groups and new Developer tab were added",
-                "de": "Gruppen und neue Registerkarte \"Entwickler\" wurden hinzugefügt",
-                "ru": "Добавлены группы и новая вкладка «Разработчик»",
-                "pt": "Grupos e nova guia do desenvolvedor foram adicionados",
-                "nl": "Groepen en nieuw tabblad Ontwikkelaars zijn toegevoegd",
-                "fr": "Les groupes et le nouvel onglet Développeur ont été ajoutés",
-                "it": "Sono stati aggiunti i gruppi e la nuova scheda Sviluppatore",
-                "es": "Se agregaron grupos y nueva pestaña de desarrollador",
-                "pl": "Dodano grupy i nową kartę programisty",
-                "zh-cn": "添加了组和新的开发人员选项卡"
-            },
-            "0.8.2": {
-                "en": "new converter from zigbee-shepherd",
-                "ru": "новый конвертер из zigbee-shepherd",
-                "de": "Neuer Konverter von Zigbee-Shepherd",
-                "pt": "novo conversor de zigbee-pastor",
-                "nl": "nieuwe converter van zigbee-shepherd",
-                "fr": "nouveau convertisseur de zigbee-shepherd",
-                "it": "nuovo convertitore da zigbee-shepherd",
-                "es": "nuevo convertidor de zigbee-pastor",
-                "pl": "nowy konwerter z Zigbee-Shepherd",
-                "zh-cn": "来自zigbee-shepherd的新转换器"
-            },
-            "0.8.1": {
-                "en": "Queue option",
-                "ru": "Опция отключение очереди сообщений",
-                "de": "Warteschlangenoption",
-                "pt": "Opção de fila",
-                "nl": "Wachtrijoptie",
-                "fr": "Option de file d'attente",
-                "it": "Opzione di coda",
-                "es": "Opción de cola",
-                "pl": "Opcja kolejki",
-                "zh-cn": "队列选项"
-            },
-            "0.8.0": {
-                "en": "Breaking changes",
-                "ru": "Критические изменения",
-                "de": "Änderungen brechen",
-                "pt": "Quebrando mudanças",
-                "nl": "Veranderingen doorbreken",
-                "fr": "Briser les changements",
-                "it": "Ultime modifiche",
-                "es": "Rompiendo cambios",
-                "pl": "Łamanie zmian",
-                "zh-cn": "打破变化"
-            },
-            "0.7.7": {
-                "en": "Fix 'is open' state",
-                "ru": "Поправлено состояние 'is open'",
-                "de": "Fix 'ist offen' Zustand",
-                "pt": "Corrigir estado 'está aberto'",
-                "nl": "Fix 'is open' staat",
-                "fr": "État \"ouvert\"",
-                "it": "Stato Fix 'è aperto'",
-                "es": "El estado 'está abierto'",
-                "pl": "Napraw stan \"jest otwarty\"",
-                "zh-cn": "修复'打开'状态"
-            },
-            "0.7.6": {
-                "en": "New devices models",
-                "ru": "Новые модели устройств",
-                "de": "Neue Gerätemodelle",
-                "pt": "Novos modelos de dispositivos",
-                "nl": "Nieuwe apparatenmodellen",
-                "fr": "Nouveaux modèles d'appareils",
-                "it": "Nuovi modelli di dispositivi",
-                "es": "Nuevos modelos de dispositivos.",
-                "pl": "Nowe modele urządzeń",
-                "zh-cn": "新设备型号"
-            },
-            "0.7.5": {
-                "en": "Support zigbee-shepherd-converters 4.*",
-                "ru": "Поддержка zigbee-shepherd-converters 4.*",
-                "de": "Unterstütze Zigbee-Hirten-Konverter 4. *",
-                "pt": "Suporte zigbee-shepherd-converters 4. *",
-                "nl": "Ondersteuning zigbee-herder-converters 4. *",
-                "fr": "Soutenez les zigbee-shepherd-converters 4. *",
-                "it": "Supporta zigbee-shepherd-converters 4. *",
-                "es": "Soporte zigbee-shepherd-converters 4. *",
-                "pl": "Wspieraj konie zigbee-pasterzem 4. *",
-                "zh-cn": "支持zigbee-shepherd-converters 4. *"
-            },
-            "0.7.4": {
-                "en": "Allow enter port without selector",
-                "ru": "Ввод порта без выбора из списка",
-                "de": "Erlaube den Port ohne Selector",
-                "pt": "Permitir entrar na porta sem seletor",
-                "nl": "Sta poort vrij zonder selector",
-                "fr": "Autoriser le port d'entrée sans sélecteur",
-                "it": "Consenti la porta di entrata senza selettore",
-                "es": "Permitir entrar puerto sin selector",
-                "pl": "Zezwalaj na port wejściowy bez selektora",
-                "zh-cn": "允许输入端口没有选择器"
-            },
-            "0.7.3": {
-                "en": "OSRAM A60 W clear and Occupancy timeout",
-                "ru": "OSRAM A60 W clear и таймаут детектора движения",
-                "de": "OSRAM A60 W clear und Belegungszeitüberschreitung",
-                "pt": "OSRAM A60 W clear e tempo limite de ocupação",
-                "nl": "OSRAM A60 W helder en bezetting time-out",
-                "fr": "OSRAM A60 W clear et timeout d'occupation",
-                "it": "OSRAM A60 W azzeramento e tempo di attesa",
-                "es": "OSRAM A60 W claro y tiempo de espera de ocupación",
-                "pl": "OSRAM A60 W czysty i limit czasu obecności",
-                "zh-cn": "欧司朗A60 W清除和占用超时"
-            },
-            "0.7.1": {
-                "en": "Network map feature",
-                "ru": "Карта сети и другие улучшения",
-                "de": "Netzwerkkartenfunktion",
-                "pt": "Recurso de mapa de rede",
-                "nl": "Netwerkkaartfunctie",
-                "fr": "Fonction de carte réseau",
-                "it": "Funzionalità della mappa di rete",
-                "es": "Función de mapa de red",
-                "pl": "Funkcja mapy sieci",
-                "zh-cn": "网络地图功能"
-            },
-            "0.6.0": {
-                "en": "More new devices",
-                "ru": "Много новых устройств",
-                "de": "Weitere neue Geräte",
-                "pt": "Mais novos dispositivos",
-                "nl": "Meer nieuwe apparaten",
-                "fr": "Plus de nouveaux appareils",
-                "it": "Altri nuovi dispositivi",
-                "es": "Más nuevos dispositivos",
-                "pl": "Więcej nowych urządzeń",
-                "zh-cn": "更多新设备"
-            },
-            "0.5.9": {
-                "en": "Osram led, Philips Hue",
-                "ru": "Osram led, Philips Hue",
-                "de": "Osram führte Philips Hue an",
-                "pt": "Osram liderou, Philips Hue",
-                "nl": "Osram led, Philips Hue",
-                "fr": "Osram a mené Philips Hue",
-                "it": "Condusse Osram, Philips Hue",
-                "es": "Osram led, Philips Hue",
-                "pl": "Osram prowadził, Philips Hue",
-                "zh-cn": "欧司朗领导，飞利浦Hue"
-            },
-            "0.5.8": {
-                "en": "backup/restore, new Jiawen bulb, remove device by setup key",
-                "ru": "backup/restore, новая лампа Jiawen, удаление устройства при покидании сети",
-                "de": "Backup / Restore, neue Jiawen-Birne, Gerät mit Setup-Taste entfernen",
-                "pt": "backup / restauração, nova lâmpada Jiawen, remova o dispositivo pela chave de instalação",
-                "nl": "back-up / herstel, nieuwe Jiawen-lamp, verwijder het apparaat via de setup-toets",
-                "fr": "sauvegarde / restauration, nouvelle ampoule Jiawen, suppression du périphérique à l'aide de la touche d'installation",
-                "it": "backup / ripristino, nuova lampadina Jiawen, rimozione del dispositivo tramite la chiave di installazione",
-                "es": "Copia de seguridad / restauración, nueva bombilla Jiawen, eliminar dispositivo por clave de configuración",
-                "pl": "tworzenie kopii zapasowej / przywracanie, nowa żarówka Jiawena, usunięcie urządzenia za pomocą klucza instalacyjnego",
-                "zh-cn": "备份/恢复，新的佳文灯泡，通过设置键删除设备"
-            },
-            "0.5.7": {
-                "en": "Update states on adapter start",
-                "ru": "Обновление состояний при старте адаптера",
-                "de": "Status beim Adapterstart aktualisieren",
-                "pt": "Atualizar estados no início do adaptador",
-                "nl": "Status bijwerken bij het starten van de adapter",
-                "fr": "Mise à jour des états au démarrage de l'adaptateur",
-                "it": "Stati di aggiornamento sull'avvio dell'adattatore",
-                "es": "Actualizar estados en el inicio del adaptador",
-                "pl": "Zaktualizuj stany na początku adaptera",
-                "zh-cn": "适配器启动时更新状态"
             }
         },
         "title": "Zigbee",
@@ -247,7 +75,12 @@
             "zigbee",
             "xiaomi",
             "cc2531",
-            "cc2530"
+            "cc2530",
+            "cc2538",
+            "cc2652",
+            "deconz",
+            "conbee",
+            "raspbee"
         ],
         "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "loglevel": "info",
@@ -265,7 +98,9 @@
         "channel": 11,
         "disableLed": false,
         "precfgkey": "01030507090B0D0F00020406080A0C0D",
-        "countDown": 60
+        "countDown": 60,
+        "adapterType": "zstack",
+        "debugHerdsman": false
     },
     "instanceObjects": [
         {

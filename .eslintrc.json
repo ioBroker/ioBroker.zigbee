@@ -1,20 +1,40 @@
 {
     "env": {
         "es6": true,
-        "node": true
+        "node": true,
+        "mocha": true
     },
-    "extends": ["eslint:recommended", "google"],
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
+    "extends": "eslint:recommended",
     "rules": {
-        "require-jsdoc": "off",
-        "indent": ["error", 4],
-        "no-prototype-builtins": "off",
-        "max-len": ["error", { "code": 140 }],
-        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
-        "camelcase": ["error", {"properties": "always"}],
-        "comma-dangle": ["error", "only-multiline"]
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "no-console": "off",
+        "no-var": "error",
+        "prefer-const": "error",
+        "quotes": [
+            "error",
+            "single",
+            {
+                "avoidEscape": true,
+                "allowTemplateLiterals": true
+            }
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-prototype-builtins": "off"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2019
     }
 }

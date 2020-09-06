@@ -124,6 +124,12 @@
     i.icon-blue {
         color: blue;
     }
+    i.icon-red {
+        color: red;
+    }
+    i.icon-orange {
+        color: orange;
+    }
     .m .btn-small.btn-flat {
         padding: 0 4px;
     }
@@ -136,13 +142,26 @@
     }
     .m span.labelinfo {
         display: inline-block;
-        width: 80px;
+        width: 100px;
+        font-weight: bold;
     }
     .forcedelete {
         float: left;
         padding-left: 1rem;
         padding-top: 1rem;
     }
+    .modal-header {
+        position: relative;
+        height: 50px;
+        padding: 20px 20px 5px 20px;
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+    .m .modal.modal-fixed-footer.modal-fixed-header .modal-content{
+        height: calc(100% - 140px)!important;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
 </style>
 </head>
 <body>
@@ -158,7 +177,18 @@
                         <h5 class="translate center-align">Zigbee adapter</h5>
                     </div>
                     <ul id="nav-mobile" class="right">
-                        <li><a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" data-tooltip="Let's pairing!"><i class="material-icons large">leak_add</i></a></li>
+                        <li>
+                            <a id="fw_check_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" title="Check firmware updates">
+                            <i class="material-icons large icon-blue">system_update</i></a>
+                        </li>
+                        <li>
+                            <a id="touchlink_btn" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" title="Touchlink reset and pairing">
+                            <i class="material-icons large">wifi_tethering</i></a>
+                        </li>
+                        <li>
+                            <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translate" title="Let's pairing!">
+                            <i class="material-icons large">leak_add</i></a>
+                        </li>
                     </ul>
                 </div>
                 <div class="nav-content">
@@ -180,10 +210,10 @@
             </div>
             <div id="tab-map" class="col s12 page">
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
-                    <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Refresh"><i class="material-icons large">autorenew</i></a>
+                    <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" title="Refresh"><i class="material-icons large">autorenew</i></a>
                 </div>
                 <div id="viewconfigbtn" class="fixed-action-btn top left" style="">
-                    <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translate" data-tooltip="View config"><i class="material-icons large">menu</i></a>
+                    <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translate" title="View config"><i class="material-icons large">menu</i></a>
                 </div>
                 <div id="map" class="row">
                 </div>
@@ -199,6 +229,14 @@
                             <ul id='ports' class='dropdown-content'>
                             </ul>
                         </span>
+                    </div>
+                    <div class="input-field col s12 m6 l4">
+                        <select id="adapterType" class="value">
+                            <option value="" disabled selected class="translate">Choose type</option>
+                            <option value="zstack">TI Z-Stack/CCxxxx</option>
+                            <option value="deconz">Deconz/Conbee</option>
+                        </select>
+                        <label class="translate">Type</label>
                     </div>
                     <div class="input-field col s6 m3 l3">
                         <input id="countDown" type="number" min="0" max="180" class="value" />
@@ -227,7 +265,7 @@
                             <p>Pan ID is some simplified id (is used by Zigbee instead of ExtPanID wherever possible). This should be unique too.
                             Note: Zigbee network may choose a different Pan ID than you specified here in case it detects id conflicts.</p>
                         </div>
-                        
+
                     </div>
                     <div class="row">
                         <div class="input-field col s12 m6 l4">
@@ -279,6 +317,10 @@
                             <option value="19">high</option>
                         </select>
                         <label class="translate" for="transmitPower">transmitPower</label>
+                    </div>
+                    <div class="input-field col s12 m6 l4 col-disableLed">
+                        <input id="debugHerdsman" type="checkbox" class="value" />
+                        <label class="translate" for="debugHerdsman">Zigbee-herdsman debug info</label>
                     </div>           
                     <div class="input-field col s12 m6 l6">
                         <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
@@ -303,7 +345,7 @@
                             and in <a href="https://www.nxp.com/docs/en/user-guide/JN-UG-3115.pdf" target="_blank">ZigBee Cluster Library</a>.
                             </p>
                             <p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-herdsman-converters" target="_blank">
-                            zigbee-herdsman-converters</a>) to make it available for other user too. 
+                            zigbee-herdsman-converters</a>) to make it available for other user too.
                             </p>
                         </div>
                         <div class="col s8">
@@ -447,7 +489,7 @@
                             </div>
                             <div class="card-action">
                                 <a id="dev-send-btn" class="waves-effect waves-light white-text btn-large tooltipped"
-                                data-position="bottom" data-tooltip="Send data to zigbee">Run</a>
+                                data-position="bottom" title="Send data to zigbee">Run</a>
                             </div>
                         </div>
                     </div>
@@ -482,7 +524,7 @@
             </div>
             <div id="tab-binding" class="col s12 page">
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
-                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" data-tooltip="Add binding"><i class="material-icons large">add</i></a>
+                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translate" title="Add binding"><i class="material-icons large">add</i></a>
                 </div>
                 <div id="binding" class="row">
                 </div>
@@ -551,8 +593,11 @@
         <div id="modalpairing" class="modal modal-fixed-footer">
             <div class="modal-content">
                 <h3 class="translate">Pairing process</h3>
+                <div class="progress">
+                    <div id="progress_line" class="determinate" style="width: 0%"></div>
+                </div>
                 <div class="row textarea">
-                    <textarea id="stdout" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 100px)"></textarea>
+                    <textarea id="stdout" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 115px)"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -643,6 +688,12 @@
                             <label for="bind_target_ep" class="translate">Target endpoint</label>
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col s9 input-field">
+                            <input id="unbind_from_coordinator" type="checkbox" class="value" />
+                            <label class="translate" for="unbind_from_coordinator">Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)</label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -650,6 +701,33 @@
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
+
+        <div id="modaldevinfo" class="modal modal-fixed-footer modal-fixed-header">
+            <div class="modal-header">
+                <h3 class="translate">Device information</h3>
+            </div>
+            <div class="modal-content">
+                <div id="devinfo" class="row">
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+
+        <div id="modalWaiting" class="modal modal">
+            <div class="modal-content">
+                <h3 class="translate">Waiting</h3>
+                <div class="progress">
+                    <div id="waiting_progress_line" class="determinate" style="width: 0%"></div>
+                </div>
+                <div class="row">
+                    <h5 id="waiting_message" class="translate"></h5>
+                </div>
+            </div>
+        </div>
+
     </div>
 </body>
 

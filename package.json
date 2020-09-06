@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "1.0.2",
+  "version": "1.2.1",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -15,13 +15,12 @@
     }
   ],
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "dependencies": {
-    "debug": "^4.1.1",
-    "zigbee-herdsman": "^0.12.44",
-    "zigbee-herdsman-converters": "^12.0.18",
-    "@iobroker/adapter-core": "^1.0.3"
+    "zigbee-herdsman": "0.12.127",
+    "zigbee-herdsman-converters": "12.0.178",
+    "@iobroker/adapter-core": "^2.4.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -38,9 +37,13 @@
   "keywords": [
     "ioBroker",
     "zigbee",
-    "xiaomi",
     "cc2531",
-    "zigbee-shepherd"
+    "cc2530",
+    "cc2538",
+    "cc2652",
+    "deconz",
+    "conbee",
+    "raspbee"
   ],
   "license": "MIT",
   "main": "main.js",
