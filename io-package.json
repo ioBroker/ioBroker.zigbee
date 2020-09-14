@@ -132,6 +132,21 @@
         "icon": "zigbee.png",
         "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
         "enabled": true,
+        "adminTab": {
+            "name": {
+                "en": "Zigbee",
+                "de": "Zigbee",
+                "ru": "Зигби",
+                "pt": "Zigbee",
+                "nl": "Zigbee",
+                "fr": "Zigbee",
+                "it": "Zigbee",
+                "es": "Zigbee",
+                "pl": "Zigbee",
+                "zh-cn": "Zigbee"
+            },
+            "fa-icon": "leak_add"
+        },
         "keywords": [
             "zigbee",
             "xiaomi",

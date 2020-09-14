@@ -1,16 +1,439 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div>TODO write content</div>
-    </body>
+<head>
+<!-- these 4 files always have to be included -->
+<link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
+<link rel="stylesheet" type="text/css" href="../../css/adapter.css"/>
+
+<script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="../../socket.io/socket.io.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"/> -->
+<script type="text/javascript" src="vis-network.min.js"></script>
+<link rel="stylesheet" type="text/css" href="vis-network.min.css"/>
+
+<!-- these files always have to be included -->
+<script type="text/javascript" src="../../js/translate.js"></script>
+<script type="text/javascript" src="../../lib/js/materialize.js"></script>
+<script type="text/javascript" src="../../js/adapter-settings.js"></script>
+<script type="text/javascript" src="words.js"></script>
+
+<script type="text/javascript" src="admin.js"></script>
+<style>
+    .m .col .select-wrapper+label, .m .col input+label:not(.active) {
+        top: -26px;  
+    }
+    .select-wrapper li span {
+        pointer-events: none; /* workarround for checkbox in select, else checkbox and label not clickable */
+    }
+    .m .col input+label { 
+    	font-size: 0.8rem;
+    }
+    .m span{
+        font-size: 0.9em;
+    }
+    .m .zlogo {
+        padding: 0.5rem;
+        width: 64px;
+    }
+    .input-group {
+        display: table;
+    }
+    .input-group input, .suffix {
+        display: table-cell;
+    }
+    .suffix {
+        width:1%;
+    }
+    #tabs {
+        margin-top: 120px;
+    }
+    #main {
+        margin-bottom: -50px;
+    }
+    .page:not(.active) {
+        /* prevents 'all pages visible for a moment at first load' (because pages are loaded before materialize is loaded)*/
+        display: none;
+    }
+    #dev-selectors > div {
+        margin-top: 30px;
+        border-bottom: 1px solid lightblue;
+    }
+    #dev_result_log {
+    	overflow: scroll;
+    	height: 10em;
+    	padding: 0.5em;
+    }
+    #expert-toggle {
+        margin-bottom: 3em;
+    }
+    #expert-json {
+        min-height: 18rem;
+        overflow-y: scroll;
+    }
+    #viewconfigbtn {
+        left: 23px;
+        width: 45px;
+        top: 120px;
+    }
+    .m .card .zcard {
+        padding: 10px;
+    }
+    .m .zcard .card-title {
+        font-size: 16px;
+        font-weight: 300;
+    }
+    .card-action .card-reveal-buttons {
+        left: 0;
+        position: absolute;
+        border: none;
+        bottom: 0;
+        height: 50px;
+        background: #fff;
+        right: 0;
+        /*text-align: right;*/
+        padding: 10px;
+    }
+    .card-action i {
+        font-size: 1.7em;
+    }
+    .card-action button {
+        margin-right: 5px;
+    }
+    .small-button {
+        background: #fff;
+        color: #0e2e4a;
+        padding: 1px 0 0 0;
+        cursor: pointer;
+        transition: .2s linear;
+    }
+    .small-button, .small-button-empty {
+        width: 24px;
+        margin: 0 1px 0 0;
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        border: 0;
+        border-radius: 2px;
+    }
+    i.icon-green {
+        color: green;
+    }
+    i.icon-black {
+        color: black;
+    }
+    i.icon-blue {
+        color: blue;
+    }
+    i.icon-red {
+        color: red;
+    }
+    i.icon-orange {
+        color: orange;
+    }
+    .m .btn-small.btn-flat {
+        padding: 0 4px;
+    }
+    .m .row .col.tool {
+        padding: 0 .1rem;
+    }
+    .m span.label {
+        display: inline-block;
+        width: 50px;
+    }
+    .m span.labelinfo {
+        display: inline-block;
+        width: 100px;
+        font-weight: bold;
+    }
+    .forcedelete {
+        float: left;
+        padding-left: 1rem;
+        padding-top: 1rem;
+    }
+    .modal-header {
+        position: relative;
+        height: 50px;
+        padding: 20px 20px 5px 20px;
+        border-bottom: 1px solid rgba(0,0,0,.1);
+    }
+    .m .modal.modal-fixed-footer.modal-fixed-header .modal-content{
+        height: calc(100% - 140px)!important;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+}
+</style>
+</head>
+<body>
+    <!-- you have to put your config page in a div with id adapter-container -->
+    <div id="main" class="m adapter-container">
+        <div class="row navbar-fixed">
+            <nav class="nav-extended">
+                <div class="nav-wrapper">
+                    <div class="col">
+                        <img src="zigbee.png" class="zlogo left" height="64px"/>
+                    </div>
+                    <div class="col">
+                        <h5 class="translate center-align">Zigbee adapter</h5>
+                    </div>
+                    <ul id="nav-mobile" class="right">
+                        <li>
+                            <a id="fw_check_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Check firmware updates">
+                            <i class="material-icons large icon-blue">system_update</i></a>
+                        </li>
+                        <li>
+                            <a id="touchlink_btn" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Touchlink reset and pairing">
+                            <i class="material-icons large">wifi_tethering</i></a>
+                        </li>
+                        <li>
+                            <a id="pairing" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Let's pairing!">
+                            <i class="material-icons large">leak_add</i></a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="nav-content">
+                    <ul class="tabs tabs-transparent">
+                        <li class="tab col s2"><a id="devs" href="#tab-main" class="translate">Devices</a></li>
+                        <li class="tab col s2"><a href="#tab-groups" class="translate">Groups</a></li>
+                        <li class="tab col s2"><a id="tabmap" href="#tab-map" class="translate">Network map</a></li>
+                        <li class="tab col s2"><a href="#tab-binding" class="translate">Binding</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div id="tabs" class="tabs-content row">            
+            <div id="tab-main" class="col s12 page active">
+                <div id="devices" style="margin-bottom: 50px" class="row">
+                </div>
+            </div>
+            
+            <div id="tab-map" class="col s12 page">
+                <div class="fixed-action-btn" style="margin-bottom: 100px">
+                    <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Refresh"><i class="material-icons large">autorenew</i></a>
+                </div>
+                <div id="viewconfigbtn" class="fixed-action-btn top left" style="">
+                    <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translateT" title="View config"><i class="material-icons large">menu</i></a>
+                </div>
+                <div id="map" class="row">
+                </div>
+            </div>
+            
+            <div id="tab-groups" class="col s12 page">
+                <div class="row">
+                    <div class="col s12">
+                        <div class="col s12">
+                            <table class="">
+                                <thead>
+                                    <tr>
+                                        <th data-name="num" class="translate">№</th>
+                                        <th data-name="name" class="translate">Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groups_table"></tbody>
+                            </table>
+                        </div>
+                        <a id="add_group" class="btn-floating waves-effect waves-light blue table-button-add tooltipped hoverable translateT" title="Add group">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tab-binding" class="col s12 page">
+                <div class="fixed-action-btn" style="margin-bottom: 100px">
+                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add binding"><i class="material-icons large">add</i></a>
+                </div>
+                <div id="binding" class="row">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="materialize-dialogs m">
+        <div id="modaledit" class="modal">
+            <div class="modal-content">
+                <!-- <h3 class="translate">Config device</h3> -->
+                <div class="row">
+                    <div class="input-field">
+                        <input id="d_name" type="text" class="value validate">
+                        <label for="d_name" class="translate">Name</label>
+                    </div>
+                    <div class="input-field">
+                        <select id="d_groups" class="materialSelect" multiple><option value="1">Значение</option></select>
+                        <label for="d_groups" class="translate">Groups</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="groupedit" class="modal">
+            <div class="modal-content">
+                <!-- <h3 class="translate">Group</h3> -->
+                <div class="row">
+                    <div class="input-field col s12 m4 l2">
+                        <input id="g_index" type="number" min="1" class="value validate">
+                        <label for="g_index" class="translate">№</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="g_name" type="text" class="value validate">
+                        <label for="g_name" class="translate">Name</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="modaldelete" class="modal">
+            <div class="modal-content">
+                <h3 class="translate">Delete confirmation</h3>
+                <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+                <div id="forcediv" class="hide forcedelete">
+                    <input id="force" type="checkbox" class="value" />
+                    <label class="translate" for="force">Force delete (for lost devices)</label>
+                </div>
+                <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="modalpairing" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h3 class="translate">Pairing process</h3>
+                <div class="progress">
+                    <div id="progress_line" class="determinate" style="width: 0%"></div>
+                </div>
+                <div class="row textarea">
+                    <textarea id="stdout" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 115px)"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
+                <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+
+        <div id="modalviewconfig" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h3 class="translate">Map view config</h3>
+                <div class="row">
+                    <div class="input-field input-group col s12 m6 l6">
+                        <div id="filterParentTgl" class="input-field col s12 admin-tooltip-icon translateT" title="Show parent">
+                            <label for="filterParent" style="pointer-events: auto;"> 
+                            <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
+                                <input style="pointer-events: none;" id="filterParent" type="checkbox" class="filled-in" checked="checked"/>
+                                <span style="pointer-events: none; color:#0000ff;" class="translate">Parent/Child/Unknown</span>
+                            </label>
+                        </div>
+                        <div id="filterSiblTgl" class="input-field col s12 admin-tooltip-icon translateT" title="Show siblings">
+                            <label for="filterSibl" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterSibl" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none; color:#00bb00;" class="translate">Siblings</span>
+                            </label>
+                        </div>
+                        <div id="filterPrvChildTgl" class="input-field col s12 admin-tooltip-icon translateT" title="Show previous parents">
+                            <label for="filterPrvChild" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterPrvChild" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none; color:#555555;" class="translate">Previous Parents</span>
+                            </label>
+                        </div>
+                        <div id="filterMeshTgl" class="input-field col s12 admin-tooltip-icon translateT" title="Show full mesh">
+                            <label for="filterMesh" style="pointer-events: auto;"> 
+                                <input style="pointer-events: none;" id="filterMesh" type="checkbox" class="filled-in"/>
+                                <span style="pointer-events: none;">Mesh</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="input-field input-group col s12 m6 l6">
+                        <p class="translate">Device map info</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
+                <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+
+        <div id="bindingmodaledit" class="modal">
+            <div class="modal-content">
+                <div class="row">
+                    <h3 class="translate">Binding configuration</h3>
+                    <div class="row">                        
+                        <div class="col s9 input-field">
+                            <select id="bind_source" class="icons">
+                            </select>
+                            <label for="bind_source" class="translate">Source device</label>
+                        </div>
+                        <div class="col s3 input-field">
+                            <select id="bind_source_ep" class="materialSelect">
+                            </select>
+                            <label for="bind_source_ep" class="translate">Source endpoint</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s9 input-field">
+                            <select id="bind_target" class="icons">
+                            </select>
+                            <label for="bind_target" class="translate">Target device</label>
+                        </div>
+                        <div class="col s3 input-field">
+                            <select id="bind_target_ep" class="materialSelect">
+                            </select>
+                            <label for="bind_target_ep" class="translate">Target endpoint</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s9 input-field">
+                            <input id="unbind_from_coordinator" type="checkbox" class="value" />
+                            <label class="translate" for="unbind_from_coordinator">Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="modaldevinfo" class="modal modal-fixed-footer modal-fixed-header">
+            <div class="modal-header">
+                <h3 class="translate">Device information</h3>
+            </div>
+            <div class="modal-content">
+                <div id="devinfo" class="row">
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+
+        <div id="modalWaiting" class="modal modal">
+            <div class="modal-content">
+                <h3 class="translate">Waiting</h3>
+                <div class="progress">
+                    <div id="waiting_progress_line" class="determinate" style="width: 0%"></div>
+                </div>
+                <div class="row">
+                    <h5 id="waiting_message" class="translate"></h5>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+
 </html>
