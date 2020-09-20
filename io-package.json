@@ -5,26 +5,87 @@
         "news": {
             "1.2.0": {
                 "en": "serialport 9, drop support Node < 10, new identify by model",
-                "de": "serialport 9, unterstützung für Node 8 und kleiner gelscöht, neuer identifizierung am model"
+                "de": "serialport 9, unterstützung für Node 8 und kleiner gelscöht, neuer identifizierung am model",
+                "ru": "serialport 9, drop support Node <10, новая идентификация по модели",
+                "pt": "serialport 9, drop support Node <10, nova identificação por modelo",
+                "nl": "serialport 9, drop support Node <10, nieuwe identificatie per model",
+                "fr": "serialport 9, drop support Node <10, nouvelle identification par modèle",
+                "it": "porta seriale 9, supporto drop Node <10, nuova identificazione per modello",
+                "es": "serialport 9, drop support Node <10, nueva identificación por modelo",
+                "pl": "serialport 9, upuść wsparcie Node <10, nowa identyfikacja według modelu",
+                "zh-cn": "串行端口9，删除支持节点<10，通过型号进行新标识"
             },
             "1.1.3": {
                 "en": "refactoring devices.js",
-                "de": "neustrukturierung devices.js"
+                "de": "neustrukturierung devices.js",
+                "ru": "рефакторинг devices.js",
+                "pt": "refatoração de devices.js",
+                "nl": "refactoring devices.js",
+                "fr": "refactorisation de devices.js",
+                "it": "refactoring devices.js",
+                "es": "refactorización de devices.js",
+                "pl": "refaktoryzacja devices.js",
+                "zh-cn": "重构devices.js"
             },
             "1.1.2": {
-                "en": "Fix variable to converter"
+                "en": "Fix variable to converter",
+                "de": "Variable zum Konverter korrigieren",
+                "ru": "Исправить переменную в конвертере",
+                "pt": "Fixar variável para conversor",
+                "nl": "Fix variabele naar converter",
+                "fr": "Fixer la variable au convertisseur",
+                "it": "Correggi la variabile al convertitore",
+                "es": "Corregir variable al convertidor",
+                "pl": "Napraw zmienną do konwertera",
+                "zh-cn": "固定变量到转换器"
             },
             "1.1.1": {
-                "en": "Fix for fresh flashed chip"
+                "en": "Fix for fresh flashed chip",
+                "de": "Fix für frisch geflashten Chip",
+                "ru": "Исправить свежий прошитый чип",
+                "pt": "Correção para chip atualizado",
+                "nl": "Oplossing voor vers geflitste chip",
+                "fr": "Correction de la puce flashée fraîche",
+                "it": "Risolto il problema con il chip lampeggiante fresco",
+                "es": "Arreglo para chip flasheado nuevo",
+                "pl": "Naprawiono świeżo flashowany chip",
+                "zh-cn": "修复新的闪存芯片"
             },
             "1.1.0": {
-                "en": "New features and experimental deConz/Conbee support"
+                "en": "New features and experimental deConz/Conbee support",
+                "de": "Neue Funktionen und experimentelle deConz / Conbee-Unterstützung",
+                "ru": "Новые функции и экспериментальная поддержка deConz / Conbee",
+                "pt": "Novos recursos e suporte experimental deConz / Conbee",
+                "nl": "Nieuwe functies en experimentele ondersteuning voor deConz / Conbee",
+                "fr": "Nouvelles fonctionnalités et prise en charge expérimentale de deConz / Conbee",
+                "it": "Nuove funzionalità e supporto sperimentale deConz / Conbee",
+                "es": "Nuevas funciones y soporte experimental deConz / Conbee",
+                "pl": "Nowe funkcje i eksperymentalna obsługa deConz / Conbee",
+                "zh-cn": "新功能和实验性的deConz / Conbee支持"
             },
             "1.0.4": {
-                "en": "New devices and fixes"
+                "en": "New devices and fixes",
+                "de": "Neue Geräte und Korrekturen",
+                "ru": "Новые устройства и исправления",
+                "pt": "Novos dispositivos e correções",
+                "nl": "Nieuwe apparaten en fixes",
+                "fr": "Nouveaux appareils et correctifs",
+                "it": "Nuovi dispositivi e correzioni",
+                "es": "Nuevos dispositivos y arreglos",
+                "pl": "Nowe urządzenia i poprawki",
+                "zh-cn": "新设备和修复"
             },
             "1.0.0": {
-                "en": "Powered by Zigbee-Herdsman"
+                "en": "Powered by Zigbee-Herdsman",
+                "de": "Angetrieben von Zigbee-Herdsman",
+                "ru": "При поддержке Zigbee-Herdsman",
+                "pt": "Desenvolvido por Zigbee-Herdsman",
+                "nl": "Aangedreven door Zigbee-Herdsman",
+                "fr": "Propulsé par Zigbee-Herdsman",
+                "it": "Alimentato da Zigbee-Herdsman",
+                "es": "Desarrollado por Zigbee-Herdsman",
+                "pl": "Obsługiwane przez Zigbee-Herdsman",
+                "zh-cn": "由Zigbee-Herdsman提供支持"
             }
         },
         "title": "Zigbee",
@@ -70,7 +131,7 @@
         "mode": "daemon",
         "icon": "zigbee.png",
         "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
-        "enabled": true,
+        "enabled": true,        
         "keywords": [
             "zigbee",
             "xiaomi",
@@ -89,7 +150,23 @@
         "messagebox": true,
         "stopBeforeUpdate": true,
         "dataFolder": "zigbee_%INSTANCE%",
-        "compact": true
+        "compact": true,
+        "materializeTab": true,
+        "adminTab": {
+            "name": {
+                "en": "Zigbee",
+                "de": "Zigbee",
+                "ru": "Зигби",
+                "pt": "Zigbee",
+                "nl": "Zigbee",
+                "fr": "Zigbee",
+                "it": "Zigbee",
+                "es": "Zigbee",
+                "pl": "Zigbee",
+                "zh-cn": "Zigbee"
+            },
+            "fa-icon": "leak_add"
+        }
     },
     "native": {
         "port": "",
