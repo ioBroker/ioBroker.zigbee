@@ -260,7 +260,7 @@
                             <label class="translate" for="panID">PanID</label>
                         </div>
                         <div class="input-field col s12 m6 l8">
-                            <p>PanIDText</p>
+                            <p class="translate">PanIDText</p>
                         </div>
 
                     </div>
@@ -332,21 +332,18 @@
                     </div>
                     <div class="row">
                         <div class="col s4">
-                            <p>You may send here own commands to your devices that are not yet
-                            implemented as Objects. It may also be used to find undocumented settings
-                            of your devices. Or to test the effects of settings to decide if it
-                            is worth to implement as Object. And so on...</p>
-                            <p>You find good explanations what the settings mean
-                            <a href="https://docs.smartthings.com/en/latest/device-type-developers-guide/zigbee-primer.html" target="_blank">here</a>
-                            and in <a href="https://www.nxp.com/docs/en/user-guide/JN-UG-3115.pdf" target="_blank">ZigBee Cluster Library</a>.
+                            <p class="translate">notImplementedText</p>
+                            <p><span class="translate">You find good explanations what the settings mean</span>&nbsp;
+                                <a href="https://docs.smartthings.com/en/latest/device-type-developers-guide/zigbee-primer.html" target="_blank" class="translate">here</a>&nbsp;
+                                <span class="translate">and in</span>&nbsp<a href="https://www.nxp.com/docs/en/user-guide/JN-UG-3115.pdf" target="_blank">ZigBee Cluster Library</a>.
                             </p>
-                            <p>Please contribute your discoveries (<a href="https://github.com/Koenkk/zigbee-herdsman-converters" target="_blank">
-                            zigbee-herdsman-converters</a>) to make it available for other user too.
+                            <p><span class="translate">Please contribute your discoveries</span>&nbsp;(<a href="https://github.com/Koenkk/zigbee-herdsman-converters" target="_blank">
+                                    zigbee-herdsman-converters</a>)&nbsp;<span class="translate">to make it available for other user too</span>.
                             </p>
                         </div>
                         <div class="col s8">
                             <div class="blue-grey-text">
-                            <h6>Examples:</h6>
+                            <h6 class="translate">Examples:</h6>
                             <ul  class="collapsible">
                             <li>
                                 <div class="collapsible-header translate">Read Firmware</div>
@@ -403,13 +400,13 @@
                         <div class="row">
                             <div class="input-field col s8">
                                 <select id ="dev-selector">
-                                <option value="" disabled selected>Select a device</option>
+                                <option value="" disabled selected class="translate">Select a device</option>
                                 </select>
                                 <label for="dev-selector" class="translate">Device</label>
                             </div> 
-                            <div class="input-field col s4 admin-tooltip-icon" title="Some kind of 'device within device'. Every endpoint may have different functions. If one does not work, test another.">
+                            <div class="input-field col s4 admin-tooltip-icon translateT" title="Some kind of 'device within device'. Every endpoint may have different functions. If one does not work, test another.">
                                 <select id ="ep-selector">
-                                <option value="" disabled selected>Select an Endpoint</option>
+                                <option value="" disabled selected class="translate">Select an Endpoint</option>
                                 </select>
                                 <label for="ep-selector" class="translate">Endpoint</label>
                             </div>
@@ -418,7 +415,7 @@
                             <div class="row"> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="Group of functions. AttributeIds will change depending on your choice here.">
                                     <select id ="cid-selector">
-                                    <option value="" disabled selected>Select cid</option>
+                                    <option value="" disabled selected class="translate">Select cid</option>
                                     </select>
                                     <label for="cid-selector" class="translate">Cluster ID</label>
                                 </div> 
@@ -431,25 +428,25 @@
                                 </div> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="The action you want to run.">
                                     <select id ="cmd-selector">
-                                    <option value="" disabled selected>Select Command</option>
+                                    <option value="" disabled selected class="translate">Select Command</option>
                                     </select>
                                     <label for="cmd-selector" class="translate">Command</label>
                                 </div> 
                                 <div class="input-field col s4 admin-tooltip-icon" title="The setting you are interested in.">
                                     <select id ="attrid-selector">
-                                    <option value="" disabled selected>Select Attribute</option>
+                                    <option value="" disabled selected class="translate">Select Attribute</option>
                                     </select>
-                                    <label for="attrid-selector">Attribute Id</label>
+                                    <label for="attrid-selector" class="translate">Attribute ID</label>
                                 </div>
                                 <div class="col s8">
-                                    <div class="input-field col s5 offset-s1 admin-tooltip-icon" title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
+                                    <div class="input-field col s5 offset-s1 admin-tooltip-icon translateT" title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
                                         <label for="value-needed" style="pointer-events: auto;">
                                         <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
                                             <input style="pointer-events: none;" id="value-needed" type="checkbox" class="filled-in"/>
-                                            <span style="pointer-events: none;">Needs value</span>
+                                            <span style="pointer-events: none;" class="translate">Needs value</span>
                                         </label>
                                     </div>
-                                    <div class="input-field col s6 admin-tooltip-icon" title="The value to send to your device (use douple-quotes if a number is a string).">
+                                    <div class="input-field col s6 admin-tooltip-icon translateT" title="The value to send to your device (use douple-quotes if a number is a string).">
                                         <input id ="value-input" disabled placeholder="0">
                                         <label for="value-input">Value</label>
                                     </div>
@@ -459,18 +456,15 @@
                     </div>
                     <div class="col s3">
                         <div class="row">
-                            <div id="expert-toggle" class="input-field col s12 admin-tooltip-icon" title="Switch expert mode to enter raw data, sent to zigbee device.">
+                            <div id="expert-toggle" class="input-field col s12 admin-tooltip-icon translateT" title="Switch expert mode to enter raw data, sent to zigbee device.">
                                 <label for="expert-mode" style="pointer-events: auto;"> 
                                 <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
                                     <input style="pointer-events: none;" id="expert-mode" type="checkbox" class="filled-in"/>
-                                    <span style="pointer-events: none;">Expert mode</span>
+                                    <span style="pointer-events: none;" class="translate">Expert mode</span>
                                 </label>
                             </div> 
                             <div id="expert-json-box" class="input-field col s12" style="display:none;">
-                            <p>You may edit the raw data to send here. Do not use this if you are not
-                            sure of what you are doing! Use JSON format (attribute names in double quotes!).
-                            Additional properties may be added too. See examples above. (Format as used by zigbee-shepherd)
-                            </p>
+                                <p class="translate">zigbee-shepherd</p>
                             <div class="input-field col s12">
                                 <textarea id="expert-json" class="materialize-textarea"></textarea>
                                 <label for="expert-json">JSON</label>
