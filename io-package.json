@@ -131,7 +131,7 @@
         "mode": "daemon",
         "icon": "zigbee.png",
         "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
-        "enabled": true,
+        "enabled": true,        
         "keywords": [
             "zigbee",
             "xiaomi",
@@ -150,7 +150,23 @@
         "messagebox": true,
         "stopBeforeUpdate": true,
         "dataFolder": "zigbee_%INSTANCE%",
-        "compact": true
+        "compact": true,
+        "materializeTab": true,
+        "adminTab": {
+            "name": {
+                "en": "Zigbee",
+                "de": "Zigbee",
+                "ru": "Зигби",
+                "pt": "Zigbee",
+                "nl": "Zigbee",
+                "fr": "Zigbee",
+                "it": "Zigbee",
+                "es": "Zigbee",
+                "pl": "Zigbee",
+                "zh-cn": "Zigbee"
+            },
+            "fa-icon": "leak_add"
+        }
     },
     "native": {
         "port": "",
