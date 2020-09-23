@@ -172,7 +172,7 @@
         "port": "",
         "panID": 6754,
         "extPanID": "DDDDDDDDDDDDDDDD",
-        "channel": 11,
+        "channel": 15,
         "disableLed": false,
         "precfgkey": "01030507090B0D0F00020406080A0C0D",
         "countDown": 60,
