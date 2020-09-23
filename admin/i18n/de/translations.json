@@ -93,7 +93,7 @@
     "Zigbee adapter": "Zigbee-Adapter",
     "Zigbee-herdsman debug info": "Zigbee-herdsman Debug-Info",
     "transmitPower": "CC1352P and CC26X2R1 Sendeleistung",
-    "№": "Nr."
+    "№": "Nr.";
     "and in": "und in",
     "here": "hier",
     "notImplementedText": "Sie können hier eigene Befehle an Ihre Geräte senden, die noch nicht als Objekte implementiert sind. Es kann auch verwendet werden, um undokumentierte Einstellungen Ihrer Geräte zu finden. Oder um die Auswirkungen von Einstellungen zu testen und zu entscheiden, ob es sich lohnt, sie als Objekt zu implementieren. Und so weiter...",
