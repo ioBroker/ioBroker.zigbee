@@ -514,6 +514,10 @@ function load(settings, onChange) {
         showViewConfig();
     });
 
+    $('#scan').click(function() {
+        showChannels();
+    });
+
     sendTo(namespace, 'getGroups', {}, function (data) {
         groups = data;
         showGroups();
@@ -1984,4 +1988,32 @@ function showWaitingDialog(text, timeout){
 
 function closeWaitingDialog(){
     $('#modalWaiting').modal('close');
+}
+
+
+function showChannels() {
+    sendTo(namespace, 'getChannels', {}, function (msg) {
+        closeWaitingDialog();
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                $('#modalchannels').modal('open');
+                let info = '';
+                for (let ch = 11; ch < 27; ch++) {
+                    const value = msg.energyvalues[ch-11];
+                    info +=
+                        `<div style="padding-top: 10px">
+                            <span class="">№ ${ch}: ${value}%</span>
+                            <span class="progress" style="margin: -15px 0 0 80px; height: 15px; width: 80%">
+                              <div class="determinate" style="width: ${value}%"></div>
+                            </span>
+                        </div>`;
+                }
+                
+                $('#channelsinfo').html(info);
+            }
+        }
+    });
+    showWaitingDialog('Scanning channels', 10);
 }

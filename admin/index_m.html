@@ -44,6 +44,26 @@
     .suffix {
         width:1%;
     }
+    .input-field.suffix a {
+      position: absolute;
+      font-size: 2rem;
+      top: 0px;
+      right: 0px;
+    }
+
+    .input-field.suffix a.active {
+      color: #26a69a;
+    }
+
+    .input-field.suffix .select-wrapper {
+      margin-right: 3rem;
+      width: 92%;
+      width: calc(100% - 3rem);
+    }
+
+    .input-field.suffix label {
+      margin-right: 3rem;
+    }
     #tabs {
         margin-top: 120px;
     }
@@ -265,7 +285,7 @@
 
                     </div>
                     <div class="row">
-                        <div class="input-field col s12 m6 l4">
+                        <div class="input-field suffix col s12 m6 l4">
                             <select id="channel" class="value">
                                 <option value="" disabled selected class="translate">Choose channel</option>
                                 <option value="11">11</option>
@@ -286,6 +306,7 @@
                                 <option value="26">26</option>
                             </select>
                             <label class="translate">Channel</label>
+                            <a id="scan" class='btn' data-target='channel'><i class="material-icons">graphic_eq</i></a>
                         </div>
                         <div class="input-field col s12 m6 l8">
                             <p class="translate">ChannelChangeText</p>
@@ -716,6 +737,21 @@
             </div>
         </div>
 
+        <div id="modalchannels" class="modal modal-fixed-footer modal-fixed-header">
+            <div class="modal-header">
+                <h3 class="translate">Channels</h3>
+            </div>
+            <div class="modal-content">
+                <div class="row">
+                    <h6>Channels energy scan. Lower energy is better</h6>
+                </div>
+                <div id="channelsinfo" class="row">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
     </div>
 </body>
 
