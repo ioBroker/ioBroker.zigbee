@@ -201,6 +201,7 @@ function deleteConfirmation(id, name) {
         deleteDevice(id, force);
     });
     $('#modaldelete').modal('open');
+    Materialize.updateTextFields();
 }
 
 function editName(id, name) {
@@ -208,9 +209,9 @@ function editName(id, name) {
     $('#modaledit').find("input[id='d_name']").val(name);
     if (dev.info && dev.info.device._type == 'Router') {
         list2select('#d_groups', groups, devGroups[id] || []);
-        $('#d_groups').parent().parent().removeClass('hide');
+        $('#modaledit').find('.input-field.groups').removeClass('hide');
     } else {
-        $('#d_groups').parent().parent().addClass('hide');
+        $('#modaledit').find('.input-field.groups').addClass('hide');
     }
     $("#modaledit a.btn[name='save']").unbind('click');
     $("#modaledit a.btn[name='save']").click(() => {
