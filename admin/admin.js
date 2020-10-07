@@ -1,4 +1,4 @@
-/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option*/
+/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option, noConfigDialog*/
 
 /*
  * you must run 'iobroker upload zigbee' if you edited this file to make changes visible

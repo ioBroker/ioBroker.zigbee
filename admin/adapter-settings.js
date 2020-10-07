@@ -1,25 +1,26 @@
-var path = location.pathname;
-var parts = path.split('/');
+/*global $, location, socket, document, window, io, alert, load, systemDictionary, systemLang, translateAll*/
+const path = location.pathname;
+const parts = path.split('/');
 parts.splice(-3);
 
-var socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
-var instance = window.location.search.slice(-1) || 0;
-var common   = null; // common information of adapter
-var host     = null; // host object on which the adapter runs
-var changed  = false;
-var systemConfig;
-var certs    = [];
-var adapter  = '';
-var onChangeSupported = false;
+const socket   = io.connect('/', {path: parts.join('/') + '/socket.io'});
+const instance = window.location.search.slice(-1) || 0;
+let common   = null; // common information of adapter
+const host     = null; // host object on which the adapter runs
+const changed  = false;
+let systemConfig;
+let certs    = [];
+let adapter  = '';
+const onChangeSupported = false;
 
-var tmp = window.location.pathname.split('/');
+const tmp = window.location.pathname.split('/');
 adapter = tmp[tmp.length - 2];
-var _adapterInstance = 'system.adapter.' + adapter + '.' + instance;
+const _adapterInstance = 'system.adapter.' + adapter + '.' + instance;
 
 $(document).ready(function () {
     'use strict';
-    var $body = $('body');
-        $body.wrapInner('<div style="height: calc(100% - 44px); width: 100%; overflow:auto"></div>');
+    const $body = $('body');
+    $body.wrapInner('<div style="height: calc(100% - 44px); width: 100%; overflow:auto"></div>');
     loadSystemConfig(function () {
         if (typeof translateAll === 'function') translateAll();
         loadSettings(prepareTooltips);
@@ -38,16 +39,16 @@ function loadSystemConfig(callback) {
             if (!err && res) {
                 if (res.native && res.native.certificates) {
                     certs = [];
-                    for (var c in res.native.certificates) {
+                    for (const c in res.native.certificates) {
                         if (res.native.certificates.hasOwnProperty(c) && !res.native.certificates[c]) continue;
-                        var _cert = {
+                        const _cert = {
                             name: c,
                             type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public'
                         };
                         if (_cert.type === 'public') {
-                            var m = res.native.certificates[c].split('-----END CERTIFICATE-----');
-                            var count = 0;
-                            for (var _m = 0; _m < m.length; _m++) {
+                            const m = res.native.certificates[c].split('-----END CERTIFICATE-----');
+                            let count = 0;
+                            for (let _m = 0; _m < m.length; _m++) {
                                 if (m[_m].replace(/[\r\n|\r|\n]+/, '').trim()) count++;
                             }
                             if (count > 1) _cert.type = 'chained';
@@ -88,10 +89,10 @@ function loadSettings(callback) {
 
 function prepareTooltips() {
     $('.admin-icon').each(function () {
-        var id = $(this).data('id');
+        let id = $(this).data('id');
         if (!id) {
-            var $prev = $(this).prev();
-            var $input = $prev.find('input');
+            let $prev = $(this).prev();
+            let $input = $prev.find('input');
             if (!$input.length) $input = $prev.find('select');
             if (!$input.length) $input = $prev.find('textarea');
 
@@ -106,13 +107,13 @@ function prepareTooltips() {
 
         if (!id) return;
 
-        var tooltip = '';
+        let tooltip = '';
         if (systemDictionary['tooltip_' + id]) {
             tooltip = systemDictionary['tooltip_' + id][systemLang] || systemDictionary['tooltip_' + id].en;
         }
 
-        var icon = '';
-        var link = $(this).data('link');
+        let icon = '';
+        let link = $(this).data('link');
         if (link) {
             if (link === true) {
                 if (common.readme) {
@@ -138,10 +139,10 @@ function prepareTooltips() {
         }
     });
     $('.admin-text').each(function () {
-        var id = $(this).data('id');
+        let id = $(this).data('id');
         if (!id) {
-            var $prev = $(this).prev();
-            var $input = $prev.find('input');
+            let $prev = $(this).prev();
+            let $input = $prev.find('input');
             if (!$input.length) $input = $prev.find('select');
             if (!$input.length) $input = $prev.find('textarea');
             if (!$input.length) {
