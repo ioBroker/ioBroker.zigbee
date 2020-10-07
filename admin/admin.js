@@ -982,13 +982,11 @@ function showNetworkMap(devices, map){
 
 function redrawMap() {
     if (network != undefined && devices.length > 0) {
-        const width = $('.adapter-body').width(),
-            height = $('.adapter-body').height()-128;
+        const width = $('.adapter-body').width() || $('#main').width(),
+            height = ($('.adapter-body').height() || $('#main').height()) -128;
         network.setSize(width, height);
         network.redraw();
         network.fit();
-        // temporary hack for admin tab
-        if (noConfigDialog) return;
         network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
     }
 }
