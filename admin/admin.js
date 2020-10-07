@@ -825,6 +825,7 @@ function showNetworkMap(devices, map){
     }
 
     // routing
+    /*
     if (map.routing) {
         map.routing.forEach((route)=>{
             if (!route.nextHop) return;
@@ -870,6 +871,7 @@ function showNetworkMap(devices, map){
             }
         });
     }
+    */
 
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
@@ -984,7 +986,7 @@ function showNetworkMap(devices, map){
 function redrawMap() {
     if (network != undefined && devices.length > 0) {
         const width = $('.adapter-body').width() || $('#main').width(),
-            height = ($('.adapter-body').height() || $('#main').height()) -128;
+            height = ($('.adapter-body').height() || ($('#main').height()-45)) -128;
         network.setSize(width, height);
         network.redraw();
         network.fit();

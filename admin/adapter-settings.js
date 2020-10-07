@@ -19,8 +19,6 @@ const _adapterInstance = 'system.adapter.' + adapter + '.' + instance;
 
 $(document).ready(function () {
     'use strict';
-    const $body = $('body');
-    $body.wrapInner('<div style="height: calc(100% - 44px); width: 100%; overflow:auto"></div>');
     loadSystemConfig(function () {
         if (typeof translateAll === 'function') translateAll();
         loadSettings(prepareTooltips);

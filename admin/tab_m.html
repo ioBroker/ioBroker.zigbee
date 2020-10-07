@@ -230,7 +230,7 @@
                 </div>
             </div>
             <div id="tab-map" class="col s12 page">
-                <div class="fixed-action-btn" style="margin-bottom: 100px">
+                <div class="fixed-action-btn">
                     <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Refresh"><i class="material-icons large">autorenew</i></a>
                 </div>
                 <div id="viewconfigbtn" class="fixed-action-btn top left" style="">
@@ -533,7 +533,7 @@
                 </div>
             </div>
             <div id="tab-binding" class="col s12 page">
-                <div class="fixed-action-btn" style="margin-bottom: 100px">
+                <div class="fixed-action-btn">
                     <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add binding"><i class="material-icons large">add</i></a>
                 </div>
                 <div id="binding" class="row">
@@ -592,8 +592,10 @@
             </div>
             <div class="modal-footer">
                 <div id="forcediv" class="hide forcedelete">
-                    <input id="force" type="checkbox" class="value" />
-                    <label class="translate" for="force">Force delete (for lost devices)</label>
+                    <label>
+                        <input id="force" type="checkbox" class="value" />
+                        <span class="translate" for="force">Force delete (for lost devices)</span>
+                    </label>
                 </div>
                 <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
@@ -700,8 +702,10 @@
                     </div>
                     <div class="row">
                         <div class="col s9 input-field">
-                            <input id="unbind_from_coordinator" type="checkbox" class="value" />
-                            <label class="translate" for="unbind_from_coordinator">Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)</label>
+                            <label>
+                                <input id="unbind_from_coordinator" type="checkbox" class="value" />
+                                <span class="translate" for="unbind_from_coordinator">Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)</span>
+                            </label>
                         </div>
                     </div>
                 </div>
