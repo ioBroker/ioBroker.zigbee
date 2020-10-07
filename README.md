@@ -101,6 +101,16 @@ You can thank the authors by these links:
 
 ## Changelog
 
+### 1.3.0 (2020-10-)
+* More stable (zigbee-herdsman)
+* Backup prior database and nv-data (for z-stack 3) before start adapter
+* Allow to select bind cluster
+* Admin Tab support (experimental)
+* (UncleSamSwiss, DutchmanNL) Translation
+* New devices by: 
+    arteck, kirovilya, Shade, krumbholz, fre, Alex18081, ae, asgothian, 
+    Strunzdesign, kairauer, VLGorskij, Hesse-Bub, PaulchenPlump, blackrozes
+
 ### 1.2.1 (2020-08-16)
 * Fixes after changing device identify method
 * (Garfonso) Allow to unbind from coordinator

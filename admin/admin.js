@@ -537,6 +537,7 @@ function load(settings, onChange) {
         Materialize.updateTextFields();
         $('.collapsible').collapsible();
         $('.tooltipped').tooltip();
+        Materialize.Tabs.init($('.tabs'));
     });
 
     const text = $('#pairing').attr('data-tooltip');
@@ -986,6 +987,8 @@ function redrawMap() {
         network.setSize(width, height);
         network.redraw();
         network.fit();
+        // temporary hack for admin tab
+        if (noConfigDialog) return;
         network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
     }
 }
