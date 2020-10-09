@@ -20,7 +20,8 @@
   "dependencies": {
     "zigbee-herdsman": "0.13.13",
     "zigbee-herdsman-converters": "12.0.203",
-    "@iobroker/adapter-core": "^2.4.0"
+    "@iobroker/adapter-core": "^2.4.0",
+    "tar": "^6.0.5"
   },
   "description": "Zigbee devices",
   "devDependencies": {
