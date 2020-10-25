@@ -1,4 +1,4 @@
-/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option*/
+/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option, noConfigDialog*/
 
 /*
  * you must run 'iobroker upload zigbee' if you edited this file to make changes visible
@@ -201,6 +201,7 @@ function deleteConfirmation(id, name) {
         deleteDevice(id, force);
     });
     $('#modaldelete').modal('open');
+    Materialize.updateTextFields();
 }
 
 function editName(id, name) {
@@ -208,9 +209,9 @@ function editName(id, name) {
     $('#modaledit').find("input[id='d_name']").val(name);
     if (dev.info && dev.info.device._type == 'Router') {
         list2select('#d_groups', groups, devGroups[id] || []);
-        $('#d_groups').parent().parent().removeClass('hide');
+        $('#modaledit').find('.input-field.groups').removeClass('hide');
     } else {
-        $('#d_groups').parent().parent().addClass('hide');
+        $('#modaledit').find('.input-field.groups').addClass('hide');
     }
     $("#modaledit a.btn[name='save']").unbind('click');
     $("#modaledit a.btn[name='save']").click(() => {
@@ -514,6 +515,10 @@ function load(settings, onChange) {
         showViewConfig();
     });
 
+    $('#scan').click(function() {
+        showChannels();
+    });
+
     sendTo(namespace, 'getGroups', {}, function (data) {
         groups = data;
         showGroups();
@@ -533,6 +538,7 @@ function load(settings, onChange) {
         Materialize.updateTextFields();
         $('.collapsible').collapsible();
         $('.tooltipped').tooltip();
+        Materialize.Tabs.init($('.tabs'));
     });
 
     const text = $('#pairing').attr('data-tooltip');
@@ -819,6 +825,7 @@ function showNetworkMap(devices, map){
     }
 
     // routing
+    /*
     if (map.routing) {
         map.routing.forEach((route)=>{
             if (!route.nextHop) return;
@@ -864,6 +871,7 @@ function showNetworkMap(devices, map){
             }
         });
     }
+    */
 
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
@@ -977,8 +985,8 @@ function showNetworkMap(devices, map){
 
 function redrawMap() {
     if (network != undefined && devices.length > 0) {
-        const width = $('.adapter-body').width(),
-            height = $('.adapter-body').height()-128;
+        const width = $('.adapter-body').width() || $('#main').width(),
+            height = ($('.adapter-body').height() || ($('#main').height()-45)) -128;
         network.setSize(width, height);
         network.redraw();
         network.fit();
@@ -1984,4 +1992,32 @@ function showWaitingDialog(text, timeout){
 
 function closeWaitingDialog(){
     $('#modalWaiting').modal('close');
+}
+
+
+function showChannels() {
+    sendTo(namespace, 'getChannels', {}, function (msg) {
+        closeWaitingDialog();
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                $('#modalchannels').modal('open');
+                let info = '';
+                for (let ch = 11; ch < 27; ch++) {
+                    const value = msg.energyvalues[ch-11];
+                    info +=
+                        `<div style="padding-top: 10px">
+                            <span class="">№ ${ch}: ${value}%</span>
+                            <span class="progress" style="margin: -15px 0 0 80px; height: 15px; width: 80%">
+                              <div class="determinate" style="width: ${value}%"></div>
+                            </span>
+                        </div>`;
+                }
+                
+                $('#channelsinfo').html(info);
+            }
+        }
+    });
+    showWaitingDialog('Scanning channels', 10);
 }

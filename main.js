@@ -361,7 +361,7 @@ class Zigbee extends utils.Adapter {
                 endpoint_name: epName,
                 options: preparedOptions,
                 device: entity.device,
-                mapped: mappedModel,
+                mapped: (model == 'group') ? [] : mappedModel,
                 message: {[key]: preparedValue},
                 logger: this.log,
                 state: {},
