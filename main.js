@@ -96,7 +96,7 @@ class Zigbee extends utils.Adapter {
 
     async doConnect() {
         try {
-            this.log.info(`Starting Zigbee ...`);
+            this.log.info(`Starting Zigbee (@Asgothian Github) ...`);
             await this.zbController.start();
         } catch (error) {
             this.setState('info.connection', false);
