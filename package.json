@@ -1,6 +1,10 @@
 {
   "name": "iobroker.zigbee",
+<<<<<<< HEAD
   "version": "1.3.1.0",
+=======
+  "version": "1.3.1",
+>>>>>>> parent of 75978eb... Custom Version Number
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
