@@ -1,3 +1,13 @@
-const Identifier = "Asgothian Github 1.3.1.A"
+'use strict';
 
-export Identifier
+class debugIdentifier {
+    ReportIdentifier() {
+      return "Asgothian Debug " + ReportVersion();
+    }
+    ReportVersion()
+    {
+      return "1.3.1.a";
+    }
+}
+
+module.exports = debugIdentifier;
