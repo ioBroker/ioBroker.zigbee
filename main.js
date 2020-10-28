@@ -95,8 +95,16 @@ class Zigbee extends utils.Adapter {
     }
 
     async doConnect() {
+        let debugversion = '';
         try {
-            this.log.info(`Starting Zigbee (@Asgothian Github) ...`);
+          const DebugIdentify = require('./debugidentify');
+           debugverion = DebugIdentify.ReportIdentifier();
+        }
+        catch {
+          debugversion = ' npm ...';
+        }
+        try {
+            this.log.info('Starting Zigbee ' + debugversion);
             await this.zbController.start();
         } catch (error) {
             this.setState('info.connection', false);

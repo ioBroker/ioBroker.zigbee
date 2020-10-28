@@ -2,7 +2,7 @@
 
 class debugIdentifier {
     ReportIdentifier() {
-      return "Asgothian Debug " + ReportVersion();
+      return "Asgothian GitHub " + ReportVersion() + ' ...';
     }
     ReportVersion()
     {
