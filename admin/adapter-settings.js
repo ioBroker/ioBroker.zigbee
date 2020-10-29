@@ -173,3 +173,36 @@ function sendToHost(host, command, message, callback) {
 function onChange(isChanged) {
     //
 }
+
+function showMessage(message, title, icon) {
+    var $dialogMessage;
+    // noinspection JSJQueryEfficiency
+    $dialogMessage = $('#dialog-message');
+    if (!$dialogMessage.length) {
+        $('body').append(
+            '<div class="m"><div id="dialog-message" class="modal modal-fixed-footer">' +
+            '    <div class="modal-content">' +
+            '        <h6 class="dialog-title title"></h6>' +
+            '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+            '    </div>' +
+            '    <div class="modal-footer">' +
+            '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
+            '    </div>' +
+            '</div></div>');
+        $dialogMessage = $('#dialog-message');
+    }
+    if (icon) {
+        $dialogMessage.find('.dialog-icon')
+            .show()
+            .html(icon);
+    } else {
+        $dialogMessage.find('.dialog-icon').hide();
+    }
+    if (title) {
+        $dialogMessage.find('.dialog-title').html(title).show();
+    } else {
+        $dialogMessage.find('.dialog-title').hide();
+    }
+    $dialogMessage.find('.dialog-text').html(message);
+    $dialogMessage.modal().modal('open');
+}
