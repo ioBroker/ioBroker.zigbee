@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+    iobroker:
+        build: .
+        container_name: iobroker-dvlp
+        hostname: iobroker-dvlp
+        ports:
+            - '8081:8081'
+        volumes:
+            - ./..:/workspace:cached
+            - iobrokerdata-dvlp:/opt/iobroker
+        environment:
+            - LANG=en_US.UTF-8
+            - LANGUAGE=en_US:en
+            - LC_ALL=en_US.UTF-8
+            - TZ=Europe/Zurich
+            - SETGID=1000
+
+volumes:
+    iobrokerdata-dvlp:
