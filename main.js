@@ -95,8 +95,16 @@ class Zigbee extends utils.Adapter {
     }
 
     async doConnect() {
+        let debugversion = '';
         try {
-            this.log.info(`Starting Zigbee...`);
+          const DebugIdentify = require('./debugidentify');
+           debugverion = DebugIdentify.ReportIdentifier();
+        }
+        catch {
+          debugversion = ' npm ...';
+        }
+        try {
+            this.log.info('Starting Zigbee ' + debugversion);
             await this.zbController.start();
         } catch (error) {
             this.setState('info.connection', false);
@@ -153,7 +161,7 @@ class Zigbee extends utils.Adapter {
                     // try to read from nvram
                     const result = await this.zbController.herdsman.adapter.znp.request(
                         1, // Subsystem.SYS
-                        'osalNvRead', 
+                        'osalNvRead',
                         {
                             id: 45, // EXTENDED_PAN_ID
                             len: 0x08,
