@@ -39,7 +39,7 @@
     "Hide": "Cacher",
     "Let's pairing!": "Apparions!",
     "Map view config": "Map view config",
-    "Name": "prénom",
+    "Name": "Nom",
     "Needs value": "Besoin de valeur",
     "Network map": "Carte du réseau",
     "Pairing process": "Processus d'appariement",
@@ -92,12 +92,11 @@
     "You find good explanations what the settings mean": "Vous trouvez de bonnes explications sur ce que signifient les paramètres",
     "Zigbee adapter": "Adaptateur Zigbee",
     "Zigbee-herdsman debug info": "Informations de débogage de Zigbee-herdsman",
-    "transmitPower": "Puissance de transmission de CC1352P et CC26X2R1",
+    "transmitPower": "CC1352P and CC26X2R1 Puissance de transmission",
     "and in": "et en",
     "here": "ici",
     "notImplementedText": "Vous pouvez envoyer ici vos propres commandes à vos appareils qui ne sont pas encore implémentées en tant qu'objets. Il peut également être utilisé pour rechercher des paramètres non documentés de vos appareils. Ou pour tester les effets des paramètres pour décider s'il vaut la peine de les implémenter en tant qu'objet. Etc...",
     "to make it available for other user too": "pour le rendre disponible pour d'autres utilisateurs aussi",
-    "transmitPower": "CC1352P and CC26X2R1 Puissance de transmission",
     "zigbee-shepherd": "Vous pouvez modifier les données brutes à envoyer ici. Ne l'utilisez pas si vous n'êtes pas sûr de ce que vous faites! Utilisez le format JSON (noms d'attributs entre guillemets!). Des propriétés supplémentaires peuvent également être ajoutées. Voir les exemples ci-dessus. (Format utilisé par zigbee-shepherd)",
     "№": "№"
 }
