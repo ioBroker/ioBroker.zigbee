@@ -17,12 +17,10 @@
     "workspaceFolder": "/workspace",
 
     // Set *default* container specific settings.json values on container create.
-    "settings": {
-        "terminal.integrated.shell.linux": null
-    },
+    "settings": {},
 
     // Add the IDs of extensions you want installed when the container is created.
-    "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+    "extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"],
 
     // Uncomment the next line if you want start specific services in your Docker Compose config.
     // "runServices": [],
@@ -30,8 +28,8 @@
     // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
     // "shutdownAction": "none",
 
-    // Uncomment the next line to run commands after the container is created - for example installing git.
-    // "postCreateCommand": "apt-get update && apt-get install -y git",
+    // When creating the container, delete unnecessary adapters, disable error reporting, set the license as confirmed, and install/update this adapter
+    "postCreateCommand": "iob del discovery && iob plugin disable sentry && iob object set system.config common.licenseConfirmed=true && NPM_PACK=$(npm pack) && iob url \"$(pwd)/$NPM_PACK\" --debug && rm \"$NPM_PACK\""
 
     // Uncomment to connect as a non-root user. See https://aka.ms/vscode-remote/containers/non-root.
     //"remoteUser": "iobroker"
