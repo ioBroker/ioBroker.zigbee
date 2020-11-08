@@ -333,7 +333,6 @@ class Zigbee extends utils.Adapter {
                 //this.processSyncStatesList(deviceId, modelId, syncStateList);
                 return;
             }
-this.log.warn("publish from state: mappedModel: " + JSON.stringify(mappedModel));
             const converter = mappedModel.toZigbee.find((c) => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
             if (!converter) {
                 this.log.error(`No converter available for '${model}' with key '${stateDesc.id}'`);
