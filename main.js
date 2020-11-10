@@ -103,8 +103,22 @@ class Zigbee extends utils.Adapter {
         catch {
           debugversion = ' npm ...';
         }
+ 
+        // installed version         
+        let gitVers = '';
         try {
             this.log.info('Starting Zigbee ' + debugversion);
+
+            await this.getForeignObject("system.adapter." + this.namespace, (err, obj) => {
+              if (!err && obj && obj.common.installedFrom.includes('://')) {
+                    let instFrom = obj.common.installedFrom;
+                    gitVers = gitVers + instFrom.replace('tarball','commit');
+                } else {
+                    gitVers = obj.common.installedFrom;
+                }
+                this.log.info('Installed Version: ' + gitVers );
+            });
+
             await this.zbController.start();
         } catch (error) {
             this.setState('info.connection', false);
