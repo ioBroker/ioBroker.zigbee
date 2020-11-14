@@ -91,17 +91,18 @@ class Zigbee extends utils.Adapter {
         this.callPluginMethod('configure', [zigbeeOptions]);
 
         this.reconnectCounter = 1;
+        this.log.warn(JSON.stringify(this));
         this.doConnect();
     }
 
     async doConnect() {
         let debugversion = '';
         try {
-          const DebugIdentify = require('./debugidentify');
-           debugverion = DebugIdentify.ReportIdentifier();
+            const DebugIdentify = require('./debugidentify');
+            debugversion = DebugIdentify.ReportIdentifier();
         }
         catch {
-          debugversion = ' npm ...';
+            debugversion = ' npm ...';
         }
         try {
             this.log.info('Starting Zigbee ' + debugversion);
