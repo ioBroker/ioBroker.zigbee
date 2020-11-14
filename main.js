@@ -103,8 +103,22 @@ class Zigbee extends utils.Adapter {
         catch {
           debugversion = ' npm ...';
         }
+ 
+        // installed version         
+        let gitVers = '';
         try {
             this.log.info('Starting Zigbee ' + debugversion);
+
+            await this.getForeignObject("system.adapter." + this.namespace, (err, obj) => {
+              if (!err && obj && obj.common.installedFrom.includes('://')) {
+                    let instFrom = obj.common.installedFrom;
+                    gitVers = gitVers + instFrom.replace('tarball','commit');
+                } else {
+                    gitVers = obj.common.installedFrom;
+                }
+                this.log.info('Installed Version: ' + gitVers );
+            });
+
             await this.zbController.start();
         } catch (error) {
             this.setState('info.connection', false);
@@ -259,8 +273,7 @@ class Zigbee extends utils.Adapter {
         if (message.linkquality) {
             this.publishToState(devId, model, {linkquality: message.linkquality});
         }
-
-        let converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
+        let converters = mappedModel.fromZigbee.filter(c => c && c.cluster === cluster && (
             (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
         if (!converters.length && type === 'readResponse') {
             converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
@@ -321,6 +334,7 @@ class Zigbee extends utils.Adapter {
         const entity = await this.zbController.resolveEntity(deviceId);
         this.log.debug(`entity: ${safeJsonStringify(entity)}`);
         const mappedModel = entity.mapped;
+        this.log.debug('Mapped Model: ' +  JSON.stringify(mappedModel));
 
         stateList.forEach(async(changedState) => {
             const stateDesc = changedState.stateDesc;
@@ -333,8 +347,7 @@ class Zigbee extends utils.Adapter {
                 //this.processSyncStatesList(deviceId, modelId, syncStateList);
                 return;
             }
-
-            const converter = mappedModel.toZigbee.find((c) => c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id));
+            const converter = mappedModel.toZigbee.find((c) => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
             if (!converter) {
                 this.log.error(`No converter available for '${model}' with key '${stateDesc.id}'`);
                 return;

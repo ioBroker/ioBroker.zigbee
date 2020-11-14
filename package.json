@@ -21,18 +21,19 @@
     "zigbee-herdsman": "0.13.26",
     "zigbee-herdsman-converters": "12.0.226",
     "@iobroker/adapter-core": "^2.4.0",
-    "tar": "^6.0.5"
+    "tar": "^6.0.5",
+    "typescript": "^4.0.5"
   },
   "description": "Zigbee devices",
   "devDependencies": {
+    "@iobroker/testing": "^1.1.10",
     "axios": "^0.18.0",
     "chai": "^4.2.0",
-    "gulp": "^4.0.0",
-    "mocha": "^6.0.2",
-    "@iobroker/testing": "^1.1.10",
-    "eslint": "*",
+    "eslint": "^7.13.0",
     "eslint-config-google": "*",
-    "lint-diff": "*"
+    "gulp": "^4.0.0",
+    "lint-diff": "*",
+    "mocha": "^6.0.2"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
@@ -59,6 +60,7 @@
     "docgen": "node support/docgen.js",
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
-    "test:integration": "mocha test/integration --exit"
+    "test:integration": "mocha test/integration --exit",
+    "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235"
   }
 }
