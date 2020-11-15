@@ -42,6 +42,7 @@ class Zigbee extends utils.Adapter {
      */
     constructor(options) {
         super(Object.assign(options || {}, {
+            dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
             name: 'zigbee',
             systemConfig: true,
         }));
@@ -91,7 +92,6 @@ class Zigbee extends utils.Adapter {
         this.callPluginMethod('configure', [zigbeeOptions]);
 
         this.reconnectCounter = 1;
-        this.log.warn(JSON.stringify(this));
         this.doConnect();
     }
 
