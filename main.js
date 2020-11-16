@@ -42,6 +42,7 @@ class Zigbee extends utils.Adapter {
      */
     constructor(options) {
         super(Object.assign(options || {}, {
+            dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
             name: 'zigbee',
             systemConfig: true,
         }));
@@ -97,11 +98,11 @@ class Zigbee extends utils.Adapter {
     async doConnect() {
         let debugversion = '';
         try {
-          const DebugIdentify = require('./debugidentify');
-           debugverion = DebugIdentify.ReportIdentifier();
+            const DebugIdentify = require('./debugidentify');
+            debugversion = DebugIdentify.ReportIdentifier();
         }
         catch {
-          debugversion = ' npm ...';
+            debugversion = ' npm ...';
         }
  
         // installed version         
