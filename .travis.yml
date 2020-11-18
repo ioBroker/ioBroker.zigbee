@@ -1,18 +1,19 @@
 os:
   - linux
   - osx
+  - windows
 sudo: required
 language: node_js
 node_js:
-  - '6'
-  - '8'
   - '10'
+  - '12'
+  - '14'
 before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo ln -s `which node` `which node`js; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then which nodejs || which node; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CC=clang++; export CXX=clang++; export CXXFLAGS=-std=c++11; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew unlink pkg-config; fi'
-  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX=g++-4.9; CC=gcc-4.9; fi'
+  - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX=g++-6; CC=gcc-6; fi'
   - npm install -g node-gyp
 install:
   - npm install --unsafe-perm
@@ -27,8 +28,8 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-4.9
-      - g++-4.9
+      - gcc-6
+      - g++-6
 env:
   global:
     - secure: >-
@@ -37,3 +38,8 @@ script:
   - 'npm run test:package'
   - 'npm run test:unit'
   - 'npm run test:integration'
+  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then
+    if [ "$TRAVIS_COMMIT_RANGE" != "" ]; then COMMIT_RANGE=$TRAVIS_COMMIT_RANGE; else COMMIT_RANGE="HEAD^..HEAD"; fi;
+    echo "Lint check of commit range $COMMIT_RANGE";
+    lint-diff $COMMIT_RANGE;
+    fi;

@@ -1,15 +1,15 @@
 version: 'test-{build}'
 environment:
   matrix:
-    - nodejs_version: '6'
     - nodejs_version: '8'
     - nodejs_version: '10'
+    - nodejs_version: '12'
 platform:
   - x86
   - x64
 clone_folder: 'c:\projects\%APPVEYOR_PROJECT_NAME%'
 install:
-  - ps: 'Install-Product node $env:nodejs_version $env:platform'
+  - ps: 'Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform'
   - ps: '$NpmVersion = (npm -v).Substring(0,1)'
   - ps: 'if($NpmVersion -eq 5) { npm install -g npm@5 }'
   - ps: npm --version

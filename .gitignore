@@ -1,6 +1,10 @@
 .git
 .idea
+.remote-sync.json
+.DS_Store
 node_modules
 nbproject
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
+.vscode/launch.json
+debugidentify.js
