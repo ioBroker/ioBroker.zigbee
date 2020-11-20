@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.3.1",
+        "version": "1.3.1a",
         "news": {
             "1.2.0": {
                 "en": "serialport 9, drop support Node < 10, new identify by model",
