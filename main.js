@@ -111,7 +111,7 @@ class Zigbee extends utils.Adapter {
             this.log.info('Starting Zigbee ' + debugversion);
 
             await this.getForeignObject("system.adapter." + this.namespace, (err, obj) => {
-              if (!err && obj && obj.common.installedFrom.includes('://')) {
+                if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
                     let instFrom = obj.common.installedFrom;
                     gitVers = gitVers + instFrom.replace('tarball','commit');
                 } else {
