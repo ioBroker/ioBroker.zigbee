@@ -1916,10 +1916,11 @@ function genDevInfo(device) {
             }).join('');
         }
     };
+    const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${mapped.model}.html">${mapped.model}</a>`;
     const mappedInfo = (!mapped) ? '' :
         `<div style="font-size: 0.9em">
             <ul>
-                ${genRow('model', mapped.model)}               
+                ${genRow('model', modelUrl)}
                 ${genRow('description', mapped.description)}
                 ${genRow('supports', mapped.supports)}
             </ul>
@@ -1937,13 +1938,16 @@ function genDevInfo(device) {
                 </ul>
             </div>`;
     }
+    const imgSrc = device.icon || device.common.icon;
+    const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px'><div class="divider"></div>`: '';
     const info =
         `<div class="col s12 m6 l6 xl6">
+            ${imgInfo}
             ${mappedInfo}
             <div class="divider"></div>
             <div style="font-size: 0.9em" class="truncate">
                 <ul>
-                    ${genRow('model', dev._modelID)}
+                    ${genRow('modelZigbee', dev._modelID)}
                     ${genRow('type', dev._type)}
                     ${genRow('ieee', dev.ieeeAddr)}
                     ${genRow('nwk', dev._networkAddress)}
