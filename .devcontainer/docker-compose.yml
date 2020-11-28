@@ -9,7 +9,7 @@ services:
         expose:
             - 8081
         volumes:
-            - ..:/workspace:cached
+            - ..:/workspace
             - iobrokerdata-zigbee-d:/opt/iobroker
         environment:
             - LANG=en_US.UTF-8
@@ -26,7 +26,7 @@ services:
         ports:
             - '1235:1235'
         volumes:
-            - ..:/workspace:cached
+            - ..:/workspace
         environment:
             - CHOKIDAR_USEPOLLING=1
 
@@ -42,7 +42,7 @@ services:
         container_name: nginx-dvlp
         volumes:
             - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-            - ..:/workspace:cached
+            - ..:/workspace
         ports:
             # Make the ioBroker admin available under http://localhost:8082
             - 8082:80
