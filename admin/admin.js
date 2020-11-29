@@ -349,7 +349,7 @@ function showDevices() {
             const card = getCoordinatorCard(d);
             html += card;
         }
-        else {}
+        else {
         //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
                 devGroups[d._id] = d.groups;
