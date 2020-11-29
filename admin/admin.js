@@ -89,9 +89,9 @@ function getCoordinatorCard(dev) {
         id = dev._id,
         type = dev.common.type,
         img_src = 'zigbee.png',
-        lang = systemLang  || 'en';
-    const rid = id.split('.').join('_');
-    const image = `<img src="${img_src}" width="80px">`,
+        lang = systemLang  || 'en',
+        rid = id.split('.').join('_'),
+        image = `<img src="${img_src}" width="80px">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
         lqi_cls = getLQICls(dev.link_quality),
@@ -106,7 +106,7 @@ function getCoordinatorCard(dev) {
                     </ul>
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-    const card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+        card = `<div id="${id}" class="device col s12 m6 l4 xl3">
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <span class="top right small" style="border-radius: 50%">
