@@ -100,9 +100,11 @@ function getCoordinatorCard(dev) {
                     <ul>
                         <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
                         <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-                        <li><span class="label">type:</span><span>${coordinatorinfo.coordinatorVersion.type}</span></li>                        
-                        <li><span class="label">port:</span><span>${coordinatorinfo.port}</span></li>
-                        <li><span class="label">channel:</span><span>${coordinatorinfo.channel}</span></li>
+                        <li><span class="label">type:</span><span>${(coordinatorinfo.type ? coordinatorinfo.type : 'not set')}</span></li>                        
+                        <li><span class="label">version:</span><span>${(coordinatorinfo.version ? coordinatorinfo.version : 'not set')}</span></li>                        
+                        <li><span class="label">revision:</span><span>${(coordinatorinfo.revision ? coordinatorinfo.revision : 'not set')}</span></li>                        
+                        <li><span class="label">port:</span><span>${(coordinatorinfo.port ? coordinatorinfo.port : 'not set')}</span></li>
+                        <li><span class="label">channel:</span><span>${(coordinatorinfo.channel ? coordinatorinfo.channel : 'not set')}</span></li>
                     </ul>
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
