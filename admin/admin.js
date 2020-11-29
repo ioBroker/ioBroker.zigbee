@@ -17,9 +17,15 @@ let devices = [],
     groups = {},
     devGroups = {},
     binding = [],
-    coordinatorinfo = [],
+    coordinatorinfo = {
+        type: 'uwn',
+        version: '1.0.0',
+        revision: '20201201',
+        port: '/dev/TTYnotthere',
+        channel: '0'
+    },
     cidList;
-    
+
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
@@ -72,17 +78,6 @@ function getLQICls(value) {
     return '';
 }
 
-function getCoordinatorInfo() {
-    sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            } else {
-                coordinatorinfo = msg;
-            }
-        }
-    });
-}
 
 function getCoordinatorCard(dev) {
     const title = 'Zigbee Coordinator',
@@ -93,15 +88,15 @@ function getCoordinatorCard(dev) {
         rid = id.split('.').join('_'),
         image = `<img src="${img_src}" width="80px">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
-        paired = '<i class="material-icons right">leak_remove</i>',
+        paired = '',
         status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
         lqi_cls = getLQICls(dev.link_quality),
         lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-                        <li><span class="label">type:</span><span>${coordinatorinfo.type}</span></li>                        
-                        <li><span class="label">version:</span><span>${coordinatorinfo.version}</span></li>                        
-                        <li><span class="label">revision:</span><span>${coordinatorinfo.revision}</span></li>                        
+                        <li><span class="label">type:</span><span>${coordinatorinfo.type}</span></li>
+                        <li><span class="label">version:</span><span>${coordinatorinfo.version}</span></li>
+                        <li><span class="label">revision:</span><span>${coordinatorinfo.revision}</span></li>
                         <li><span class="label">port:</span><span>${coordinatorinfo.port}</span></li>
                         <li><span class="label">channel:</span><span>${coordinatorinfo.channel}</span></li>
                     </ul>
@@ -160,7 +155,7 @@ function getCard(dev) {
                     <ul>
                         <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
                         <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-                        <li><span class="label">model:</span><span>${type}</span></li>                        
+                        <li><span class="label">model:</span><span>${type}</span></li>
                         <li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
@@ -346,7 +341,7 @@ function showDevices() {
     for (let i=0;i < devices.length; i++) {
         const d = devices[i];
         if (!d.info) continue;
-        if (d.info.device._type == 'Coordinator') { 
+        if (d.info.device._type == 'Coordinator') {
             const card = getCoordinatorCard(d);
             html += card;
         }
@@ -474,6 +469,18 @@ function joinProcess(devId) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
+            }
+        }
+    });
+}
+
+function getCoordinatorInfo() {
+    sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                coordinatorinfo = msg;
             }
         }
     });
@@ -1599,7 +1606,7 @@ function prepareBindingDialog(bindObj){
     binddevices.unshift('');
     const bind_source = (bindObj) ? [bindObj.bind_source] : [''];
     const bind_target = (bindObj) ? [bindObj.bind_target] : [''];
-    
+
     // 5 - genScenes, 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
     const allowClusters = [5, 6, 8, 768];
     const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
@@ -2087,7 +2094,7 @@ function showChannels() {
                             </span>
                         </div>`;
                 }
-                
+
                 $('#channelsinfo').html(info);
             }
         }
