@@ -85,7 +85,7 @@ function getCoordinatorInfo() {
 }
 
 function getCoordinatorCard(dev) {
-    const title = dev.common.name,
+    const title = 'Zigbee Coordinator',
         id = dev._id,
         type = dev.common.type,
         img_src = 'zigbee.png',
@@ -99,8 +99,6 @@ function getCoordinatorCard(dev) {
         lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-                        <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
-                        <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
                         <li><span class="label">type:</span><span>${(coordinatorinfo.type) ? coordinatorinfo.type : 'not set'}</span></li>                        
                         <li><span class="label">version:</span><span>${(coordinatorinfo.version) ? coordinatorinfo.version : 'not set'}</span></li>                        
                         <li><span class="label">revision:</span><span>${(coordinatorinfo.revision) ? coordinatorinfo.revision : 'not set'}</span></li>                        
@@ -483,6 +481,7 @@ function joinProcess(devId) {
 
 
 function getDevices() {
+    getCoordinatorInfo();
     sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -555,7 +554,6 @@ function load(settings, onChange) {
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getMap();
-    getCoordinatorInfo();
     //addCard();
 
     // Signal to admin, that no changes yet
