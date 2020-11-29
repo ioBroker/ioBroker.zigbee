@@ -17,7 +17,9 @@ let devices = [],
     groups = {},
     devGroups = {},
     binding = [],
+    coordinatorinfo = [],
     cidList;
+    
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
@@ -69,6 +71,65 @@ function getLQICls(value) {
     }
     return '';
 }
+
+function getCoordinatorInfo() {
+    sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                coordinatorinfo = msg;
+            }
+        }
+    });
+}
+
+function getCoordinatorCard(dev) {
+    const title = dev.common.name,
+        id = dev._id,
+        type = dev.common.type,
+        img_src = 'zigbee.png',
+        lang = systemLang  || 'en';
+    const rid = id.split('.').join('_');
+    const image = `<img src="${img_src}" width="80px">`,
+        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+        status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
+        lqi_cls = getLQICls(dev.link_quality),
+        lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+                    <ul>
+                        <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
+                        <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
+                        <li><span class="label">type:</span><span>${coordinatorinfo.coordinatorVersion.type}</span></li>                        
+                        <li><span class="label">port:</span><span>${coordinatorinfo.port}</span></li>
+                        <li><span class="label">channel:</span><span>${coordinatorinfo.channel}</span></li>
+                    </ul>
+                </div>`,
+        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+    const card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+                  <div class="card hoverable">
+                    <div class="card-content zcard">
+                        <span class="top right small" style="border-radius: 50%">
+                            ${lq}
+                            ${status}
+                        </span>
+                        <!--/a--!>
+                        <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                        <i class="left">${image}</i>
+                        ${info}
+                        <div class="footer right-align"></div>
+                    </div>
+                    <div class="card-action">
+                        <div class="card-reveal-buttons">
+                            ${permitJoinBtn}
+                        </div>
+                    </div>
+                  </div>
+                </div>`;
+    return card;
+}
+
+
 
 function getCard(dev) {
     const title = dev.common.name,
@@ -283,16 +344,22 @@ function showDevices() {
     devGroups = {};
     for (let i=0;i < devices.length; i++) {
         const d = devices[i];
-        if (d.info && d.info.device._type == 'Coordinator') continue;
-        //if (d.groups && d.info && d.info.device._type == "Router") {
-        if (d.groups) {
-            devGroups[d._id] = d.groups;
-            d.groupNames = d.groups.map(item=>{
-                return groups[item] || '';
-            }).join(', ');
+        if (!d.info) continue;
+        if (d.info.device._type == 'Coordinator') { 
+            const card = getCoordinatorCard(d);
+            html += card;
         }
-        const card = getCard(d);
-        html += card;
+        else {}
+        //if (d.groups && d.info && d.info.device._type == "Router") {
+            if (d.groups) {
+                devGroups[d._id] = d.groups;
+                d.groupNames = d.groups.map(item=>{
+                    return groups[item] || '';
+                }).join(', ');
+            }
+            const card = getCard(d);
+            html += card;
+        }
     }
     $('#devices').html(html);
 
@@ -485,6 +552,7 @@ function load(settings, onChange) {
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getMap();
+    getCoordinatorInfo();
     //addCard();
 
     // Signal to admin, that no changes yet
