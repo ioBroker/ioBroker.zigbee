@@ -107,10 +107,12 @@ This means that the new device is described correctly enough in zigbee-herdsman-
 
 The only thing that is not described (yet, it may change in the future) in zigbee-herdsman-converters is the device image. This is why the device icon on network map uses external links to the resource https://www.zigbee2mqtt.io/images/devices/*.
 If you want to use local images, then you need to put the image file in /admin/img and briefly describe the device in the /lib/devices.js file without the *states*:
+```
 {
     models: [‘01MINIZB’],
     icon: 'img/ITEAD01ZBMINI. png',
 }
+```
 in this case, the *states* attribute will be formed based on the *exposes* description and the image will be local.
 
 ### 1.3.1 (2020-10-30)
