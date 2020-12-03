@@ -19,7 +19,7 @@ let devices = [],
     binding = [],
     coordinatorinfo = {
         type: 'uwn',
-        version: '1.0.0',
+        version: undefined,
         revision: '20201201',
         port: '/dev/TTYnotthere',
         channel: '0'
@@ -82,14 +82,11 @@ function getLQICls(value) {
 function getCoordinatorCard(dev) {
     const title = 'Zigbee Coordinator',
         id = dev._id,
-        type = dev.common.type,
         img_src = 'zigbee.png',
-        lang = systemLang  || 'en',
         rid = id.split('.').join('_'),
         image = `<img src="${img_src}" width="80px">`,
-        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         paired = '',
-        status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
+        status = `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>`,
         lqi_cls = getLQICls(dev.link_quality),
         lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
@@ -124,8 +121,10 @@ function getCoordinatorCard(dev) {
                 </div>`;
     return card;
 }
-
-
+function getAdapterVersion() {
+    if (coordinatorinfo.CoordinatorVersion) return coordinatorinfo.CoordinatorVersion;
+    return '';
+}
 
 function getCard(dev) {
     const title = dev.common.name,
