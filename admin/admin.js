@@ -17,7 +17,15 @@ let devices = [],
     groups = {},
     devGroups = {},
     binding = [],
+    coordinatorinfo = {
+        type: 'uwn',
+        version: undefined,
+        revision: '20201201',
+        port: '/dev/TTYnotthere',
+        channel: '0'
+    },
     cidList;
+
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
@@ -70,6 +78,54 @@ function getLQICls(value) {
     return '';
 }
 
+
+function getCoordinatorCard(dev) {
+    const title = 'Zigbee Coordinator',
+        id = dev._id,
+        img_src = 'zigbee.png',
+        rid = id.split('.').join('_'),
+        image = `<img src="${img_src}" width="80px">`,
+        paired = '',
+        status = `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>`,
+        lqi_cls = getLQICls(dev.link_quality),
+        lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+                    <ul>
+                        <li><span class="label">type:</span><span>${coordinatorinfo.type}</span></li>
+                        <li><span class="label">version:</span><span>${coordinatorinfo.version}</span></li>
+                        <li><span class="label">revision:</span><span>${coordinatorinfo.revision}</span></li>
+                        <li><span class="label">port:</span><span>${coordinatorinfo.port}</span></li>
+                        <li><span class="label">channel:</span><span>${coordinatorinfo.channel}</span></li>
+                    </ul>
+                </div>`,
+        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+                  <div class="card hoverable">
+                    <div class="card-content zcard">
+                        <span class="top right small" style="border-radius: 50%">
+                            ${lq}
+                            ${status}
+                        </span>
+                        <!--/a--!>
+                        <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                        <i class="left">${image}</i>
+                        ${info}
+                        <div class="footer right-align"></div>
+                    </div>
+                    <div class="card-action">
+                        <div class="card-reveal-buttons">
+                            ${permitJoinBtn}
+                        </div>
+                    </div>
+                  </div>
+                </div>`;
+    return card;
+}
+function getAdapterVersion() {
+    if (coordinatorinfo.CoordinatorVersion) return coordinatorinfo.CoordinatorVersion;
+    return '';
+}
+
 function getCard(dev) {
     const title = dev.common.name,
         id = dev._id,
@@ -98,7 +154,7 @@ function getCard(dev) {
                     <ul>
                         <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
                         <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-                        <li><span class="label">model:</span><span>${type}</span></li>                        
+                        <li><span class="label">model:</span><span>${type}</span></li>
                         <li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
@@ -283,16 +339,22 @@ function showDevices() {
     devGroups = {};
     for (let i=0;i < devices.length; i++) {
         const d = devices[i];
-        if (d.info && d.info.device._type == 'Coordinator') continue;
-        //if (d.groups && d.info && d.info.device._type == "Router") {
-        if (d.groups) {
-            devGroups[d._id] = d.groups;
-            d.groupNames = d.groups.map(item=>{
-                return groups[item] || '';
-            }).join(', ');
+        if (!d.info) continue;
+        if (d.info.device._type == 'Coordinator') {
+            const card = getCoordinatorCard(d);
+            html += card;
         }
-        const card = getCard(d);
-        html += card;
+        else {
+        //if (d.groups && d.info && d.info.device._type == "Router") {
+            if (d.groups) {
+                devGroups[d._id] = d.groups;
+                d.groupNames = d.groups.map(item=>{
+                    return groups[item] || '';
+                }).join(', ');
+            }
+            const card = getCard(d);
+            html += card;
+        }
     }
     $('#devices').html(html);
 
@@ -411,8 +473,21 @@ function joinProcess(devId) {
     });
 }
 
+function getCoordinatorInfo() {
+    sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                coordinatorinfo = msg;
+            }
+        }
+    });
+}
+
 
 function getDevices() {
+    getCoordinatorInfo();
     sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -1530,7 +1605,7 @@ function prepareBindingDialog(bindObj){
     binddevices.unshift('');
     const bind_source = (bindObj) ? [bindObj.bind_source] : [''];
     const bind_target = (bindObj) ? [bindObj.bind_target] : [''];
-    
+
     // 5 - genScenes, 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
     const allowClusters = [5, 6, 8, 768];
     const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
@@ -2018,7 +2093,7 @@ function showChannels() {
                             </span>
                         </div>`;
                 }
-                
+
                 $('#channelsinfo').html(info);
             }
         }
