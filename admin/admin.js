@@ -796,13 +796,18 @@ function showNetworkMap(devices, map){
             id: dev._id,
             label: dev.common.name,
             title: dev._id.replace(namespace+'.', '') + extInfo,
-            shape: 'image',
+            shape: 'circularImage',
             image: dev.icon,
+            imagePadding: {top: 5, bottom: 5, left: 5, right: 5},
+            color: {background: 'white', highlight: {background: 'white'}},
             font: {color:'#007700'},
+            borderWidth: 1,
+            borderWidthSelected: 4,
         };
         if (dev.info && dev.info.device._type == 'Coordinator') {
             node.shape = 'star';
             node.label = 'Coordinator';
+            delete node.color;
         }
         return node;
     };
