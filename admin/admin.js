@@ -143,6 +143,7 @@ function getCard(dev) {
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
+    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="80px">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         status = `<div class="col tool">${(nwk) ? '<i class="material-icons icon-green">check_circle</i>' : '<i class="material-icons icon-black">leak_remove</i>'}</div>`,
@@ -154,7 +155,7 @@ function getCard(dev) {
                     <ul>
                         <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
                         <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-                        <li><span class="label">model:</span><span>${type}</span></li>
+                        <li><span class="label">model:</span><span>${modelUrl}</span></li>
                         <li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
@@ -1991,7 +1992,7 @@ function genDevInfo(device) {
             }).join('');
         }
     };
-    const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${mapped.model}.html">${mapped.model}</a>`;
+    const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${mapped.model}.html" target="_blank" rel="noopener noreferrer">${mapped.model}</a>`;
     const mappedInfo = (!mapped) ? '' :
         `<div style="font-size: 0.9em">
             <ul>
