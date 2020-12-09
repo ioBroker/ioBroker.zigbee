@@ -96,7 +96,6 @@ function getCoordinatorCard(dev) {
                         <li><span class="label">revision:</span><span>${coordinatorinfo.revision}</span></li>
                         <li><span class="label">port:</span><span>${coordinatorinfo.port}</span></li>
                         <li><span class="label">channel:</span><span>${coordinatorinfo.channel}</span></li>
-                        <li><span class="label">adapter:</span><span>${coordinatorinfo.installedFrom}</span></li>
                     </ul>
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
