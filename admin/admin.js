@@ -18,11 +18,11 @@ let devices = [],
     devGroups = {},
     binding = [],
     coordinatorinfo = {
-        type: 'uwn',
-        version: undefined,
-        revision: '20201201',
-        port: '/dev/TTYnotthere',
-        channel: '0'
+        type: 'd2',
+        version: 'd2',
+        revision: 'd2',
+        port: 'd2',
+        channel: 'd2'
     },
     cidList;
 
