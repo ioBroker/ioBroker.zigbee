@@ -349,9 +349,14 @@ function showDevices() {
         //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
                 devGroups[d._id] = d.groups;
-                d.groupNames = d.groups.map(item=>{
-                    return groups[item] || '';
-                }).join(', ');
+                if (typeof d.groups.map == "function") {
+                    d.groupNames = d.groups.map(item=>{
+                        return groups[item] || '';
+                    }).join(', ');
+                }
+                else {
+                    d.groupNames = "..";
+                }
             }
             const card = getCard(d);
             html += card;
