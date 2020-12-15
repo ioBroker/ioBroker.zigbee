@@ -3,6 +3,18 @@
         "name": "zigbee",
         "version": "1.4.0",
         "news": {
+            "1.4.1": {
+                "en": "kelvin is added into color_temp",
+                "de": "Kelvin wird zu color_temp hinzugefügt",
+                "ru": "кельвин добавлен в color_temp",
+                "pt": "Kelvin é adicionado em color_temp",
+                "nl": "kelvin wordt toegevoegd aan color_temp",
+                "fr": "kelvin est ajouté dans color_temp",
+                "it": "kelvin viene aggiunto a color_temp",
+                "es": "kelvin se agrega a color_temp",
+                "pl": "kelvin jest dodawany do color_temp",
+                "zh-cn": "将开尔文添加到color_temp"
+            },
             "1.2.0": {
                 "en": "serialport 9, drop support Node < 10, new identify by model",
                 "de": "serialport 9, unterstützung für Node 8 und kleiner gelscöht, neuer identifizierung am model",
