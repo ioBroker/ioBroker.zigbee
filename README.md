@@ -98,6 +98,9 @@ You can thank the authors by these links:
 * to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
 
 ## Changelog
+### 1.4.1 (2020-12)
+* added a kelvin posibility into colortemp
+
 ### 1.4.0 (2020-12)
 * Many new devices available
 
