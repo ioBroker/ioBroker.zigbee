@@ -104,15 +104,15 @@ class Zigbee extends utils.Adapter {
         catch {
             debugversion = ' npm ...';
         }
- 
-        // installed version         
+
+        // installed version
         let gitVers = '';
         try {
             this.log.info('Starting Zigbee ' + debugversion);
 
-            await this.getForeignObject("system.adapter." + this.namespace, (err, obj) => {
+            await this.getForeignObject('system.adapter.' + this.namespace, (err, obj) => {
                 if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
-                    let instFrom = obj.common.installedFrom;
+                    const instFrom = obj.common.installedFrom;
                     gitVers = gitVers + instFrom.replace('tarball','commit');
                 } else {
                     gitVers = obj.common.installedFrom;
@@ -417,6 +417,7 @@ class Zigbee extends utils.Adapter {
                         this.stController.syncDevStates(dev, model);
                     });
                 }
+                //                else this.log.warn(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
             });
         }
     }
