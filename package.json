@@ -26,7 +26,8 @@
   },
   "description": "Zigbee devices",
   "devDependencies": {
-    "@iobroker/testing": "^1.1.10",
+    "@alcalzone/release-script": "^1.8.3",
+    "@iobroker/testing": "^2.4.2",
     "axios": "^0.18.0",
     "chai": "^4.2.0",
     "eslint": "^7.13.0",
@@ -61,6 +62,9 @@
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
-    "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235"
+    "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235",
+    "test:js": "mocha --opts test/mocha.custom.opts",
+    "lint": "npm run lint:js",
+    "lint:js": "eslint"
   }
 }
