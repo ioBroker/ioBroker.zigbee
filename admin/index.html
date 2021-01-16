@@ -26,7 +26,7 @@
 <script type="text/javascript" src="admin.js"></script>
 <style>
     .m .col .select-wrapper+label {
-        top: -26px;  
+        top: -26px;
     }
     .m span{
         font-size: 0.9em;
@@ -87,7 +87,7 @@
                 <div id="sett" class="row">
                     <div class="input-field input-group col s3 m3 l3">
                         <input id="port" type="text" class="value validate"/>
-                        <label for="port" class="translate">COM port name</label>                            
+                        <label for="port" class="translate">COM port name</label>
                     </div>
                     <div class="input-field col s2 m2 l2">
                         <input id="panID" type="number" min="1" max="65565" class="value" />
@@ -102,14 +102,18 @@
                         <label class="translate" for="disableLed">Disable LED for cc2531</label>
                     </div>
                     <div class="input-field col s2 m2 l2">
+                        <input id="disablePing" type="checkbox" class="value" />
+                        <label class="translate" for="disableLed">Disable active availability check</label>
+                    </div>
+                    <div class="input-field col s2 m2 l2">
                         <input id="disableQueue" type="checkbox" class="value" />
                         <label class="translate" for="disableQueue">Disable Queue</label>
-                    </div>                    
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-        
+
     <div class="materialize-dialogs m">
     <div id="modaledit" class="modal">
         <div class="modal-content">

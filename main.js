@@ -505,6 +505,7 @@ class Zigbee extends utils.Adapter {
             dbPath: 'shepherd.db',
             backupPath: 'nvbackup.json',
             disableLed: this.config.disableLed,
+            disablePing: this.config.disablePing,
             transmitPower: this.config.transmitPower,
             extPanIdFix: extPanIdFix,
         };
