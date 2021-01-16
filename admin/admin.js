@@ -29,7 +29,7 @@ let devices = [],
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman',
+    'adapterType', 'debugHerdsman', 'disablePing',
 ];
 
 function getDeviceByID(ID) {
@@ -148,9 +148,9 @@ function getCard(dev) {
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
-        battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',       
+        battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
         lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
-        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,          
+        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
                         <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
@@ -349,13 +349,13 @@ function showDevices() {
         //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
                 devGroups[d._id] = d.groups;
-                if (typeof d.groups.map == "function") {
+                if (typeof d.groups.map == 'function') {
                     d.groupNames = d.groups.map(item=>{
                         return groups[item] || '';
                     }).join(', ');
                 }
                 else {
-                    d.groupNames = "..";
+                    d.groupNames = '..';
                 }
             }
             const card = getCard(d);
@@ -542,6 +542,7 @@ function load(settings, onChange) {
     if (settings.extPanID === 'DDDDDDDDDDDDDDD') settings.extPanID = 'DDDDDDDDDDDDDDDD';
     if (settings.precfgkey === undefined) settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
     if (settings.channel === undefined) settings.channel = 11;
+    if (settings.disablePing === undefined) settings.disablePing = false;
 
     // example: select elements with id=key and class=value and insert value
     for (const key in settings) {
