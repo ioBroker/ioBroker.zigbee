@@ -26,7 +26,8 @@
   },
   "description": "Zigbee devices",
   "devDependencies": {
-    "@iobroker/testing": "^1.1.10",
+    "@alcalzone/release-script": "^1.8.3",
+    "@iobroker/testing": "^2.4.2",
     "axios": "^0.18.0",
     "chai": "^4.2.0",
     "eslint": "^7.13.0",

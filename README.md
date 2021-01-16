@@ -97,6 +97,11 @@ You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
 * to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
 
+<!--
+    Placeholder for the next version (at the beginning of the line):
+    ### __WORK IN PROGRESS__
+-->
+
 ## Changelog
 ### 1.4.1 (2020-12)
 * (o0shojo0o) added a kelvin posibility into colortemp
