@@ -61,6 +61,9 @@
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
-    "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235"
+    "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235",
+    "test:js": "mocha --opts test/mocha.custom.opts",
+    "lint": "npm run lint:js",
+    "lint:js": "eslint"
   }
 }
