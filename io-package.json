@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.4.1",
+        "version": "1.4.2",
         "news": {
             "1.4.1": {
                 "en": "kelvin is added into color_temp",
@@ -189,7 +189,8 @@
         "precfgkey": "01030507090B0D0F00020406080A0C0D",
         "countDown": 60,
         "adapterType": "zstack",
-        "debugHerdsman": false
+        "debugHerdsman": false,
+        "disablePing": false
     },
     "instanceObjects": [
         {

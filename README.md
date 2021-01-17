@@ -97,9 +97,25 @@ You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
 * to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
 
+<!--
+    Placeholder for the next version (at the beginning of the line):
+    ### __WORK IN PROGRESS__
+-->
+
 ## Changelog
 ### 1.4.1 (2020-12)
-* added a kelvin posibility into colortemp
+* (o0shojo0o) added a kelvin posibility into colortemp
+* (asgothian) Hue_calibration for exposed devices (Use requires PR on zigbee-herdsman-converters, PR is being worked on)
+* (asgothian) fix Tuya Thermostat: restore lost property "preset"
+* (asgothian) Change for Device Availability: Stagger initial ping by 200 ms to prevent network congestion due to a large number of ping requests
+* (asgothian) Change for Device Availability: Ping request triggered on reconnect. Before the herdsman Ping function is used, the adapter attempts to read the "state" dp. If this is successful, no ping is sent and the state is set
+* (asgothian) Change for Device Availability: Set link Quality to 0 when a device is not connected, 10 when it is reconnecting.
+* (asgothian) fix for message "illegal properties x,y" - remove color and color_temp from readable states on device available again (Issue #607)
+* (asgothian) RGB Color can now be entered as "named" color. Implemented names are taken from the list of extended web colors on wikipedia (https://en.wikipedia.org/wiki/Web_colors)
+* (asgothian) change in how RGB color is parsed. Incomplete colors will now be parsed successfully. #FFF will result in R 0, G 15, B 255
+* (asgothian) change in OTA: Message that a device does not respond for OTA query downgraded to "info" from "error"
+* (asgothian) new coordinator card
+
 
 ### 1.4.0 (2020-12)
 * Many new devices available
