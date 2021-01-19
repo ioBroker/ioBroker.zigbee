@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.4.2",
+        "version": "1.4.3",
         "news": {
             "1.4.1": {
                 "en": "kelvin is added into color_temp",
@@ -143,7 +143,7 @@
         "mode": "daemon",
         "icon": "zigbee.png",
         "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
-        "enabled": true,        
+        "enabled": true,
         "keywords": [
             "zigbee",
             "xiaomi",
