@@ -30,7 +30,7 @@
     "@iobroker/testing": "^2.4.2",
     "axios": "^0.18.0",
     "chai": "^4.2.0",
-    "eslint": "^7.13.0",
+    "eslint": "^7.18.0",
     "eslint-config-google": "*",
     "gulp": "^4.0.0",
     "lint-diff": "*",
