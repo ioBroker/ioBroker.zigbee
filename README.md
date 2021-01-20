@@ -14,7 +14,7 @@ With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others mo
 ## Hardware
 
 ### Texas Instruments SoC
-
+..
 For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc26x2r, cc2538](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
