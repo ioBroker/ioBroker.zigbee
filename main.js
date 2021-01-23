@@ -36,6 +36,18 @@ const createByteArray = function (hexString) {
     return bytes;
 };
 
+const E_INFO=1;
+const E_DEBUG=2;
+const E_WARN=3;
+const E_ERROR=4;
+
+const errorCodes = {
+    9999: { severity:E_INFO, message:'No response'},
+    233: { severity:E_DEBUG, message:'MAC NO ACK'},
+    205: { severity:E_WARN, message:'No network route'},
+};
+
+
 class Zigbee extends utils.Adapter {
     /**
      * @param {Partial<ioBroker.AdapterOptions>} [options={}]
@@ -62,6 +74,33 @@ class Zigbee extends utils.Adapter {
             new OtaPlugin(this),
             new BackupPlugin(this),
         ];
+    }
+
+    filterError(errormessage, message, error) {
+        if (error.code === undefined)
+        {
+            let em =  error.stack.match(/failed \((.+?)\) at/);
+            if (!em) em = error.stack.match(/failed \((.+?)\)/);
+            this.log.error(`${message} no error code (${(em ? em[1]:'undefined')})`);
+            this.log.debug(`Stack trace for ${em}: ${error.stack}`);
+            return;
+        }
+        const ecode = errorCodes[error.code];
+        if (ecode === undefined) {
+            this.log.error(errormessage);
+            return;
+        }
+        switch (ecode.severity) {
+            case E_INFO: this.log.info(`${message}: Code ${error.code} (${ecode.message})`);
+                break;
+            case E_DEBUG: this.log.debug(`${message}: Code ${error.code} (${ecode.message})`)
+                break;
+            case E_WARN: this.log.warn(`${message}: Code ${error.code} (${ecode.message})`)
+                break;
+            case E_ERROR: this.log.error(`${message}: Code ${error.code} (${ecode.message})`)
+                break;
+            default: this.log.error(`${message}: Code ${error.code} (malformed error)`)
+        }
     }
 
     debugLog (data) {
@@ -399,7 +438,8 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 this.processSyncStatesList(deviceId, model, syncStateList);
             } catch(error) {
-                this.log.error(`Error on send command to ${deviceId}. Error: ${error.stack}`);
+                this.filterError(`Error ${error.code} on send command to ${deviceId}. Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
+//                this.log.error(`Error ${error.code} on send command to ${deviceId}. Error: ${error.stack}`);
             }
         });
     }
