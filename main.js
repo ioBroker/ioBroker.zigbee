@@ -27,6 +27,7 @@ const OtaPlugin = require('./lib/ota');
 const BackupPlugin = require('./lib/backup');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
+const ExcludePlugin = require('./lib/exclude');
 
 const createByteArray = function (hexString) {
     const bytes = [];
