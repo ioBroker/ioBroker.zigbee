@@ -214,7 +214,7 @@ class Zigbee extends utils.Adapter {
         
         // get exclude list from object
         this.getState('exclude.all', (err, state) => {
-            this.stController.getExcludeExcposes(state);
+            this.stController.getExcludeExposes(state);
         });
 
         const devicesFromDB = await this.zbController.getClients(false);
