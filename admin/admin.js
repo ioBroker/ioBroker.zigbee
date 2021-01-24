@@ -17,6 +17,7 @@ let devices = [],
     groups = {},
     devGroups = {},
     binding = [],
+    excludes = [],    
     coordinatorinfo = {
         type: 'd2',
         version: 'd2',
@@ -501,6 +502,7 @@ function getDevices() {
             } else {
                 devices = msg;
                 showDevices();
+                getExclude();
                 getBinding();
             }
         }
@@ -636,6 +638,10 @@ function load(settings, onChange) {
         if ($(e.target).attr('id') == 'develop') {
             loadDeveloperTab(onChange);
         }
+    });
+    
+    $('#add_exclude').click(function() {
+        addExcludeDialog();
     });
 
     $('#add_binding').click(function() {
@@ -2111,4 +2117,188 @@ function showChannels() {
         }
     });
     showWaitingDialog('Scanning channels', 10);
+}
+
+function onlyOne(devs) {
+
+    let devTypes = [];
+    let devOut = [];
+
+    for (i = 0; i < devs.length; i++) {
+        const typ = devs[i];
+        devTypes.push(typ.common.type);
+    }
+
+    devTypes = devTypes.filter(this.onlyUnique);
+
+    for (const key in devTypes) {
+        devOut.push(devs.find(x => x.common.type == devTypes[key]));
+    }
+
+    return devOut;
+}
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
+function prepareExcludeDialog(excludeObj) {
+    const excludetargets = devices.slice();
+    const exclude_target = (excludeObj) ? [excludeObj.exclude_target] : [''];
+
+    const onlyOneTargets = this.onlyOne(excludetargets);
+    onlyOneTargets.unshift('');
+
+    list2select('#exclude_target', onlyOneTargets, exclude_target,
+
+        function(key, device) {
+            if (device == '') {
+                return 'Select model';
+            }
+            if (device.hasOwnProperty('info')) {
+                if (device.info.device._type == 'Coordinator') {
+                    return null;
+                }
+                return device.common.type;
+            } else {
+                return device.common.type;
+            }
+        },
+        function(key, device) {
+            if (device == '') {
+                return '';
+            } else {
+                return device._id;
+            }
+        },
+        function(key, device) {
+            if (device == '') {
+                return 'disabled';
+            } else if (device.icon) {
+                return `data-icon="${device.icon}"`;
+            } else {
+                return '';
+            }
+        },
+    );
+
+}
+
+function addExcludeDialog() {
+    $("#excludemodaledit a.btn[name='save']").unbind('click');
+    $("#excludemodaledit a.btn[name='save']").click(() => {
+        const exclude_id = $('#excludemodaledit').find('#exclude_target option:selected').val();
+
+        const ids = devices.map(el => el._id);
+        const idx = ids.indexOf(exclude_id);
+        const exclude_model = devices[idx];
+
+        addExclude(exclude_model);
+    });
+    prepareExcludeDialog();
+
+    $('#excludemodaledit').modal('open');
+    Materialize.updateTextFields();
+}
+
+function addExclude(exclude_model) {
+      sendTo(namespace, 'addExclude', {       
+         exclude_model: exclude_model
+    }, function (msg) {
+        closeWaitingDialog();
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            }
+        }
+        getExclude();
+    });
+}
+
+function getExclude() {
+    sendTo(namespace, 'getExclude', {}, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                excludes = msg;
+                showExclude();
+            }
+        }
+    });
+}
+
+function showExclude() {
+    const element = $('#exclude');
+    element.find('.exclude').remove();
+
+    if (!excludes || !excludes.length) {
+        return;
+    }
+
+
+    excludes.forEach(b => {
+        const exclude_id = b.id;
+
+        const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}},
+             exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
+
+        const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${exclude_id}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
+
+        const card = `
+                    <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3">
+                        <div class="card hoverable">
+                            <div class="card-content zcard">
+                                <i class="left"><img src="${exclude_dev.icon}" width="64px"></i>
+                                    <div style="min-height:72px; font-size: 0.8em" class="truncate">
+                                        <ul>
+                                            <li><span class="label">model:</span><span>${modelUrl}</span></li>
+                                        </ul>
+                                    </div>                                
+                            </div>
+                            <div class="card-action">
+                                <div class="card-reveal-buttons zcard">
+                                    <span class="card-title truncate">${exclude_id}
+                                        <button name="delete" class="right btn-flat btn-small">
+                                            <i class="material-icons icon-black">delete</i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+        element.append(card);
+    });
+
+    $("#exclude button[name='delete']").click(function() {
+        const exclude_id = $(this).parents('.exclude')[0].id;
+        deleteExcludeConfirmation(exclude_id);
+        deleteExclude(exclude_id);
+    });
+}
+
+
+
+function deleteExcludeConfirmation(id) {
+    const text = translateWord('Do you really want to delete exclude?');
+    $('#modaldelete').find('p').text(text);
+    //$('#forcediv').removeClass('hide');
+    $('#forcediv').addClass('hide');
+    $("#modaldelete a.btn[name='yes']").unbind('click');
+    $("#modaldelete a.btn[name='yes']").click(() => {
+        deleteExclude(id);
+    });
+    $('#modaldelete').modal('open');
+}
+
+function deleteExclude(id) {
+    sendTo(namespace, 'delExclude', id, (msg) => {
+        closeWaitingDialog();
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            }
+        }
+        getExclude();
+    });
 }

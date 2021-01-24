@@ -27,6 +27,7 @@ const OtaPlugin = require('./lib/ota');
 const BackupPlugin = require('./lib/backup');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
+const ExcludePlugin = require('./lib/exclude');
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -71,6 +72,7 @@ class Zigbee extends utils.Adapter {
             new NetworkMapPlugin(this),
             new DeveloperPlugin(this),
             new BindingPlugin(this),
+            new ExcludePlugin(this),
             new OtaPlugin(this),
             new BackupPlugin(this),
         ];
@@ -248,8 +250,14 @@ class Zigbee extends utils.Adapter {
         }
 
         this.setState('info.connection', true);
-        const devices = await this.zbController.getClients(false);
-        for (const device of devices) {
+        
+        // get exclude list from object
+        this.getState('exclude.all', (err, state) => {
+            this.stController.getExcludeExposes(state);
+        });
+
+        const devicesFromDB = await this.zbController.getClients(false);
+        for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
                 const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;

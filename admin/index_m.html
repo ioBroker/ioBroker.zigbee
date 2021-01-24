@@ -19,6 +19,9 @@
 
 <script type="text/javascript" src="admin.js"></script>
 <style>
+    .m .tabs {
+        height: auto!important;
+    }    
     .m .col .select-wrapper+label, .m .col input+label:not(.active) {
         top: -26px;
     }
@@ -65,7 +68,7 @@
       margin-right: 3rem;
     }
     #tabs {
-        margin-top: 120px;
+        margin-top: 160px;
     }
     #main {
         margin-bottom: -50px;
@@ -213,12 +216,13 @@
                 </div>
                 <div class="nav-content">
                     <ul class="tabs tabs-transparent">
-                        <li class="tab col s2"><a id="devs" href="#tab-main" class="translate">Devices</a></li>
-                        <li class="tab col s2"><a href="#tab-groups" class="translate">Groups</a></li>
-                        <li class="tab col s2"><a id="tabmap" href="#tab-map" class="translate">Network map</a></li>
-                        <li class="tab col s2"><a href="#tab-binding" class="translate">Binding</a></li>
-                        <li class="tab col s2"><a id="settings" href="#tab-sett" class="translate">Settings</a></li>
-                        <li class="tab col s2"><a id="develop" href="#tab-dev" class="translate">Developer</a></li>
+                        <li class="tab col s2"><a href="#tab-main" id="devs"      class="translate">Devices</a></li>
+                        <li class="tab col s2"><a href="#tab-groups"              class="translate">Groups</a></li>
+                        <li class="tab col s2"><a href="#tab-map"  id="tabmap"    class="translate">Network map</a></li>
+                        <li class="tab col s2"><a href="#tab-binding"             class="translate">Binding</a></li>
+                        <li class="tab col s2"><a href="#tab-exclude"             class="translate">Excludes</a></li>                        
+                        <li class="tab col s2"><a href="#tab-sett" id="settings"  class="translate">Settings</a></li>
+                        <li class="tab col s2"><a href="#tab-dev"  id="develop"   class="translate">Developer</a></li>
                     </ul>
                 </div>
             </nav>
@@ -349,6 +353,24 @@
                     </div>
                 </div>
             </div>
+            
+            <div id="tab-expos" class="col s12 page">
+                <div id="exposes" class="row">
+                    <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
+                    <div class="table-values-div">
+                        <table class="table-values">
+                            <thead>
+                            <tr>
+                                <th data-name="addr"    style="width: 70%" class="translate">addr</th>
+                                <th data-name="active"  style="width: 30px" data-style="width: 70px" data-type="checkbox" class="translate">enabled</th>
+                                <th data-buttons="delete up down" style="width: 120px"></th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>            
+            </div>
+
             <div id="tab-dev" class="col s12 page">
                 <div id="develop" class="row">
                     <div class="row">
@@ -543,6 +565,13 @@
                 <div id="binding" class="row">
                 </div>
             </div>
+            <div id="tab-exclude" class="col s12 page">
+                <div class="fixed-action-btn" style="margin-bottom: 100px">
+                    <a id="add_exclude" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add exlude"><i class="material-icons large">add</i></a>
+                </div>
+                <div id="exclude" class="row">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -715,7 +744,24 @@
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
-
+        <div id="excludemodaledit" class="modal">
+            <div class="modal-content">
+                <div class="row">
+                    <h3 class="translate">Exclude configuration</h3>
+                    <div class="row">                        
+                        <div class="col s9 input-field">
+                            <select id="exclude_target" class="icons">
+                            </select>
+                            <label for="exclude_target" class="translate">exclude device</label>
+                        </div>                       
+                    </div>                  
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
         <div id="modaldevinfo" class="modal modal-fixed-footer modal-fixed-header">
             <div class="modal-header">
                 <h3 class="translate">Device information</h3>
