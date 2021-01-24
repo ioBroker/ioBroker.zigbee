@@ -502,6 +502,7 @@ function getDevices() {
             } else {
                 devices = msg;
                 showDevices();
+                getExclude();
                 getBinding();
             }
         }
@@ -637,6 +638,10 @@ function load(settings, onChange) {
         if ($(e.target).attr('id') == 'develop') {
             loadDeveloperTab(onChange);
         }
+    });
+    
+    $('#add_exclude').click(function() {
+        addExcludeDialog();
     });
 
     $('#add_binding').click(function() {
@@ -2112,6 +2117,29 @@ function showChannels() {
         }
     });
     showWaitingDialog('Scanning channels', 10);
+}
+
+function onlyOne(devs) {
+
+    let devTypes = [];
+    let devOut = [];
+
+    for (i = 0; i < devs.length; i++) {
+        const typ = devs[i];
+        devTypes.push(typ.common.type);
+    }
+
+    devTypes = devTypes.filter(this.onlyUnique);
+
+    for (const key in devTypes) {
+        devOut.push(devs.find(x => x.common.type == devTypes[key]));
+    }
+
+    return devOut;
+}
+
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
 }
 
 function prepareExcludeDialog(excludeObj) {
