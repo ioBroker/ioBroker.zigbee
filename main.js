@@ -59,6 +59,7 @@ class Zigbee extends utils.Adapter {
             new NetworkMapPlugin(this),
             new DeveloperPlugin(this),
             new BindingPlugin(this),
+            new ExcludePlugin(this),
             new OtaPlugin(this),
             new BackupPlugin(this),
         ];
@@ -209,8 +210,14 @@ class Zigbee extends utils.Adapter {
         }
 
         this.setState('info.connection', true);
-        const devices = await this.zbController.getClients(false);
-        for (const device of devices) {
+        
+        // get exclude list from object
+        this.getState('exclude.all', (err, state) => {
+            this.stController.getExcludeExcposes(state);
+        });
+
+        const devicesFromDB = await this.zbController.getClients(false);
+        for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
                 const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
