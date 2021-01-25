@@ -27,6 +27,7 @@ const OtaPlugin = require('./lib/ota');
 const BackupPlugin = require('./lib/backup');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
+const ExcludePlugin = require('./lib/exclude');
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -35,6 +36,18 @@ const createByteArray = function (hexString) {
     }
     return bytes;
 };
+
+const E_INFO=1;
+const E_DEBUG=2;
+const E_WARN=3;
+const E_ERROR=4;
+
+const errorCodes = {
+    9999: { severity:E_INFO, message:'No response'},
+    233: { severity:E_DEBUG, message:'MAC NO ACK'},
+    205: { severity:E_WARN, message:'No network route'},
+};
+
 
 class Zigbee extends utils.Adapter {
     /**
@@ -59,9 +72,37 @@ class Zigbee extends utils.Adapter {
             new NetworkMapPlugin(this),
             new DeveloperPlugin(this),
             new BindingPlugin(this),
+            new ExcludePlugin(this),
             new OtaPlugin(this),
             new BackupPlugin(this),
         ];
+    }
+
+    filterError(errormessage, message, error) {
+        if (error.code === undefined)
+        {
+            let em =  error.stack.match(/failed \((.+?)\) at/);
+            if (!em) em = error.stack.match(/failed \((.+?)\)/);
+            this.log.error(`${message} no error code (${(em ? em[1]:'undefined')})`);
+            this.log.debug(`Stack trace for ${em}: ${error.stack}`);
+            return;
+        }
+        const ecode = errorCodes[error.code];
+        if (ecode === undefined) {
+            this.log.error(errormessage);
+            return;
+        }
+        switch (ecode.severity) {
+            case E_INFO: this.log.info(`${message}: Code ${error.code} (${ecode.message})`);
+                break;
+            case E_DEBUG: this.log.debug(`${message}: Code ${error.code} (${ecode.message})`)
+                break;
+            case E_WARN: this.log.warn(`${message}: Code ${error.code} (${ecode.message})`)
+                break;
+            case E_ERROR: this.log.error(`${message}: Code ${error.code} (${ecode.message})`)
+                break;
+            default: this.log.error(`${message}: Code ${error.code} (malformed error)`)
+        }
     }
 
     debugLog (data) {
@@ -209,8 +250,14 @@ class Zigbee extends utils.Adapter {
         }
 
         this.setState('info.connection', true);
-        const devices = await this.zbController.getClients(false);
-        for (const device of devices) {
+        
+        // get exclude list from object
+        this.getState('exclude.all', (err, state) => {
+            this.stController.getExcludeExposes(state);
+        });
+
+        const devicesFromDB = await this.zbController.getClients(false);
+        for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
                 const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
@@ -399,7 +446,8 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 this.processSyncStatesList(deviceId, model, syncStateList);
             } catch(error) {
-                this.log.error(`Error on send command to ${deviceId}. Error: ${error.stack}`);
+                this.filterError(`Error ${error.code} on send command to ${deviceId}. Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
+//                this.log.error(`Error ${error.code} on send command to ${deviceId}. Error: ${error.stack}`);
             }
         });
     }
