@@ -113,5 +113,18 @@ systemDictionary = {
         "es": "excluir",
         "pl": "wykluczyć",
         "zh-cn": "排除"
-    },    
+    },   
+    "notImplementedText": {
+    "You can add here some devices that should be excluded from our description. You only use exposures from zigbee-herdsman-converter": {
+    "en": "You can add here some devices that should be excluded from our description. You only use exposures from zigbee-herdsman-converter",
+    "de": "Sie können hier einige Geräte hinzufügen, die von unserer Beschreibung ausgeschlossen werden sollten. Sie verwenden nur Belichtungen von ZigBee-Herdsman-Converter",
+    "ru": "Вы можете добавить сюда некоторые устройства, которые следует исключить из нашего описания. Вы используете только экспозиции из zigbee-herdsman-converter",
+    "pt": "Você pode adicionar aqui alguns dispositivos que devem ser excluídos de nossa descrição. Você só usa exposições de zigbee-herdsman-converter",
+    "nl": "U kunt hier enkele apparaten toevoegen die van onze beschrijving moeten worden uitgesloten. Je gebruikt alleen opnamen van zigbee-herdsman-converter",
+    "fr": "Vous pouvez ajouter ici quelques appareils qui devraient être exclus de notre description. Vous n'utilisez que des expositions de zigbee-herdsman-converter",
+    "it": "Puoi aggiungere qui alcuni dispositivi che dovrebbero essere esclusi dalla nostra descrizione. Utilizzi solo esposizioni da zigbee-herdsman-converter",
+    "es": "Puede agregar aquí algunos dispositivos que deben excluirse de nuestra descripción. Solo usa exposiciones de zigbee-herdsman-converter",
+    "pl": "Możesz dodać tutaj kilka urządzeń, które powinny zostać wyłączone z naszego opisu. Używasz tylko ekspozycji z zigbee-herdsman-converter",
+    "zh-cn": "您可以在此处添加一些应从我们的说明中排除的设备。您只能使用zigbee-herdsman-converter的曝光"
+  },
 };
