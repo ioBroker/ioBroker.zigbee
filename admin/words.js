@@ -114,7 +114,7 @@ systemDictionary = {
         "pl": "wykluczyć",
         "zh-cn": "排除"
     },   
-    "notImplementedText": {
+    "ExcludeTextTranslation": {
     "You can add here some devices that should be excluded from our description. You only use exposures from zigbee-herdsman-converter": {
     "en": "You can add here some devices that should be excluded from our description. You only use exposures from zigbee-herdsman-converter",
     "de": "Sie können hier einige Geräte hinzufügen, die von unserer Beschreibung ausgeschlossen werden sollten. Sie verwenden nur Belichtungen von ZigBee-Herdsman-Converter",
