@@ -194,6 +194,26 @@
     },
     "instanceObjects": [
         {
+            "_id": "exclude",
+            "type": "channel",
+            "common": {
+                "name": "exclude devs from devices.js"
+            },
+            "native": {}
+        },
+        {
+            "_id": "exclude.all",
+            "type": "state",
+            "common": {
+                "name": "all",
+                "type": "string",
+                "read": true,
+                "write": true,
+                "def": "[]"
+            },
+            "native": {}
+        }
+        {
             "_id": "info",
             "type": "channel",
             "common": {
