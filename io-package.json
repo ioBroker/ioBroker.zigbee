@@ -212,7 +212,7 @@
                 "def": "[]"
             },
             "native": {}
-        }
+        },
         {
             "_id": "info",
             "type": "channel",
