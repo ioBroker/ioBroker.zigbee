@@ -28,7 +28,7 @@
   "devDependencies": {
     "@alcalzone/release-script": "^1.8.3",
     "@iobroker/testing": "^2.4.2",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "chai": "^4.2.0",
     "eslint": "^7.18.0",
     "eslint-config-google": "*",
