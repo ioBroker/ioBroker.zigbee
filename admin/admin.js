@@ -2143,10 +2143,19 @@ function onlyUnique(value, index, self) {
 }
 
 function prepareExcludeDialog(excludeObj) {
-    const excludetargets = devices.slice();
+    const exDevs = devices.slice();
+    let   excludetargets = [];
     const exclude_target = (excludeObj) ? [excludeObj.exclude_target] : [''];
+    const arrExclude = JSON.stringify(excludes);
 
-    const onlyOneTargets = this.onlyOne(excludetargets);
+    for (const exTr of exDevs) {
+        const typeEx = exTr.common.type;
+        if (arrExclude.indexOf(typeEx) < 1) {
+            excludetargets.push(exTr);
+        }
+    }
+
+    let onlyOneTargets = this.onlyOne(excludetargets);
     onlyOneTargets.unshift('');
 
     list2select('#exclude_target', onlyOneTargets, exclude_target,
