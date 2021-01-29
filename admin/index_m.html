@@ -324,7 +324,18 @@
                     <div class="input-field col s12 m6 l8">
                         <p class="translate">Tranport Key Text</p>
                     </div>
-                </div>
+                </div>                               
+                <div class="row">
+                   <div class="input-field col s12 m6 l8 col-transmitPower">
+                        <select id="transmitPower" class="value" >
+                            <option value="" disabled selected class="translate">transmitPower</option>
+                            <option value="-22">low</option>
+                            <option value="0">norm</option>
+                            <option value="19">high</option>
+                        </select>
+                        <label class="translate" for="transmitPower">transmitPower</label>
+                    </div>
+                </div>                
                 <div class="row" style="margin-bottom: 90px">
                     <h6>Others</h6>
                     <div class="input-field col s12 m6 l4 col-disableLed">
@@ -335,15 +346,7 @@
                         <input id="disablePing" type="checkbox" class="value" />
                         <label class="translate" for="disablePing">Disable active availability check</label>
                     </div>
-                    <div class="input-field col s12 m6 l8 col-transmitPower">
-                        <select id="transmitPower" class="value" >
-                            <option value="" disabled selected class="translate">transmitPower</option>
-                            <option value="-22">low</option>
-                            <option value="0">norm</option>
-                            <option value="19">high</option>
-                        </select>
-                        <label class="translate" for="transmitPower">transmitPower</label>
-                    </div>
+                    
                     <div class="input-field col s12 m6 l4 col-disableLed">
                         <input id="debugHerdsman" type="checkbox" class="value" />
                         <label class="translate" for="debugHerdsman">Zigbee-herdsman debug info</label>
@@ -566,6 +569,9 @@
                 </div>
             </div>
             <div id="tab-exclude" class="col s12 page">
+                <div class="col s4">
+                    <p class="translate">ExcludeTextTranslation</p>&nbsp;                        
+                </div>
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
                     <a id="add_exclude" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add exlude"><i class="material-icons large">add</i></a>
                 </div>
