@@ -21,7 +21,7 @@
 <style>
     .m .tabs {
         height: auto!important;
-    }    
+    }
     .m .col .select-wrapper+label, .m .col input+label:not(.active) {
         top: -26px;
     }
@@ -201,6 +201,10 @@
                     </div>
                     <ul id="nav-mobile" class="right">
                         <li>
+                            <a id="state_cleanup_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="State Cleanup">
+                            <i class="material-icons large icon-blue">sync</i></a>
+                        </li>
+                        <li>
                             <a id="fw_check_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Check firmware updates">
                             <i class="material-icons large icon-blue">system_update</i></a>
                         </li>
@@ -220,7 +224,7 @@
                         <li class="tab col s2"><a href="#tab-groups"              class="translate">Groups</a></li>
                         <li class="tab col s2"><a href="#tab-map"  id="tabmap"    class="translate">Network map</a></li>
                         <li class="tab col s2"><a href="#tab-binding"             class="translate">Binding</a></li>
-                        <li class="tab col s2"><a href="#tab-exclude"             class="translate">Excludes</a></li>                        
+                        <li class="tab col s2"><a href="#tab-exclude"             class="translate">Excludes</a></li>
                         <li class="tab col s2"><a href="#tab-sett" id="settings"  class="translate">Settings</a></li>
                         <li class="tab col s2"><a href="#tab-dev"  id="develop"   class="translate">Developer</a></li>
                     </ul>
@@ -324,7 +328,7 @@
                     <div class="input-field col s12 m6 l8">
                         <p class="translate">Tranport Key Text</p>
                     </div>
-                </div>                               
+                </div>
                 <div class="row">
                    <div class="input-field col s12 m6 l8 col-transmitPower">
                         <select id="transmitPower" class="value" >
@@ -335,7 +339,7 @@
                         </select>
                         <label class="translate" for="transmitPower">transmitPower</label>
                     </div>
-                </div>                
+                </div>
                 <div class="row" style="margin-bottom: 90px">
                     <h6>Others</h6>
                     <div class="input-field col s12 m6 l4 col-disableLed">
@@ -346,7 +350,7 @@
                         <input id="disablePing" type="checkbox" class="value" />
                         <label class="translate" for="disablePing">Disable active availability check</label>
                     </div>
-                    
+
                     <div class="input-field col s12 m6 l4 col-disableLed">
                         <input id="debugHerdsman" type="checkbox" class="value" />
                         <label class="translate" for="debugHerdsman">Zigbee-herdsman debug info</label>
@@ -356,7 +360,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div id="tab-expos" class="col s12 page">
                 <div id="exposes" class="row">
                     <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
@@ -371,7 +375,7 @@
                             </thead>
                         </table>
                     </div>
-                </div>            
+                </div>
             </div>
 
             <div id="tab-dev" class="col s12 page">
@@ -570,7 +574,7 @@
             </div>
             <div id="tab-exclude" class="col s12 page">
                 <div class="col s4">
-                    <p class="translate">ExcludeTextTranslation</p>&nbsp;                        
+                    <p class="translate">ExcludeTextTranslation</p>&nbsp;
                 </div>
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
                     <a id="add_exclude" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add exlude"><i class="material-icons large">add</i></a>
@@ -633,6 +637,20 @@
                 <div id="forcediv" class="hide forcedelete">
                     <input id="force" type="checkbox" class="value" />
                     <label class="translate" for="force">Force delete (for lost devices)</label>
+                </div>
+                <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+        <div id="modalclean" class="modal">
+            <div class="modal-content">
+                <h3 class="translate">State cleanup confirmation</h3>
+                <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+                <div id="cforcediv" class="hide cforcedelete">
+                    <input id="cforce" type="checkbox" class="value" />
+                    <label class="translate" for="cforce">Force removed states with custom configuration (history, upnp, etc.)</label>
                 </div>
                 <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
@@ -754,13 +772,13 @@
             <div class="modal-content">
                 <div class="row">
                     <h3 class="translate">Exclude configuration</h3>
-                    <div class="row">                        
+                    <div class="row">
                         <div class="col s9 input-field">
                             <select id="exclude_target" class="icons">
                             </select>
                             <label for="exclude_target" class="translate">exclude device</label>
-                        </div>                       
-                    </div>                  
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

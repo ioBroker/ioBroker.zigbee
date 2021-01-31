@@ -17,7 +17,7 @@ let devices = [],
     groups = {},
     devGroups = {},
     binding = [],
-    excludes = [],    
+    excludes = [],
     coordinatorinfo = {
         type: 'd2',
         version: 'd2',
@@ -262,6 +262,20 @@ function deleteConfirmation(id, name) {
     Materialize.updateTextFields();
 }
 
+function cleanConfirmation() {
+    const text = translateWord('Do you really want to clean the states?');
+    $('#modalclean').find('p').text(text);
+    $('#cforce').prop('checked', false);
+    $('#cforcediv').removeClass('hide');
+    $("#modalclean a.btn[name='yes']").unbind('click');
+    $("#modalclean a.btn[name='yes']").click(() => {
+        const force = $('#cforce').prop('checked');
+        cleanDeviceStates(force);
+    });
+    $('#modalclean').modal('open');
+    Materialize.updateTextFields();
+}
+
 function editName(id, name) {
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find("input[id='d_name']").val(name);
@@ -295,6 +309,20 @@ function deleteDevice(id, force) {
     showWaitingDialog('Device is being removed', 10);
 }
 
+
+function cleanDeviceStates(force) {
+    sendTo(namespace, 'cleanDeviceStates', {force: force}, function (msg) {
+        closeWaitingDialog();
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                getDevices();
+            }
+        }
+    });
+    showWaitingDialog('Device is being removed', 10);
+}
 function renameDevice(id, name) {
     sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
@@ -574,6 +602,9 @@ function load(settings, onChange) {
     // Signal to admin, that no changes yet
     onChange(false);
 
+    $('#state_cleanup_btn').click(function() {
+        cleanConfirmation();
+    });
     $('#fw_check_btn').click(function() {
         checkFwUpdate();
     });
@@ -639,7 +670,7 @@ function load(settings, onChange) {
             loadDeveloperTab(onChange);
         }
     });
-    
+
     $('#add_exclude').click(function() {
         addExcludeDialog();
     });
@@ -2211,7 +2242,7 @@ function addExcludeDialog() {
 }
 
 function addExclude(exclude_model) {
-      sendTo(namespace, 'addExclude', {       
+      sendTo(namespace, 'addExclude', {
          exclude_model: exclude_model
     }, function (msg) {
         closeWaitingDialog();
@@ -2263,7 +2294,7 @@ function showExclude() {
                                         <ul>
                                             <li><span class="label">model:</span><span>${modelUrl}</span></li>
                                         </ul>
-                                    </div>                                
+                                    </div>
                             </div>
                             <div class="card-action">
                                 <div class="card-reveal-buttons zcard">
