@@ -61,6 +61,7 @@ class Zigbee extends utils.Adapter {
         }));
         this.on('ready', this.onReady.bind(this));
         this.on('unload', this.onUnload.bind(this));
+        this.query_device_block = [];
 
         this.stController = new StatesController(this);
         this.stController.on('log', this.onLog.bind(this));
@@ -250,7 +251,7 @@ class Zigbee extends utils.Adapter {
         }
 
         this.setState('info.connection', true);
-        
+
         // get exclude list from object
         this.getState('exclude.all', (err, state) => {
             this.stController.getExcludeExposes(state);
@@ -301,6 +302,8 @@ class Zigbee extends utils.Adapter {
             });
         });
     }
+
+
 
     async onZigbeeEvent(type, entity, message){
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
@@ -393,6 +396,37 @@ class Zigbee extends utils.Adapter {
                 this.acknowledgeState(deviceId, model, stateDesc, value);
                 // process sync state list
                 //this.processSyncStatesList(deviceId, modelId, syncStateList);
+                // if this is the device query state => trigger the device query
+                
+                // on activation of the 'device_query' state trigger hardware query where possible
+                if (stateDesc.id == 'device_query') {
+                    if (this.query_device_block.indexOf(deviceId) > -1) {
+                        this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
+                        return;
+                    };
+                    if (mappedModel) {
+                        this.query_device_block.push(deviceId);
+                        this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
+                        for (const converter of mappedModel.toZigbee) {
+                            if (converter.hasOwnProperty('convertGet')) {
+                                for (const ckey of converter.key) {
+                                    try {
+                                        await converter.convertGet(entity.device.endpoints[0], ckey, {});
+                                    } catch (error) {
+                                        this.log.warn(`Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after query with '${JSON.stringify(error)}'`);
+                                    }
+                                }
+                            }
+                        }
+                        this.log.debug(`Device query for '${entity.device.ieeeAddr}' done`);
+                        const idToRemove = deviceId;
+                        setTimeout(()=>{
+                            const idx = this.query_device_block.indexOf(idToRemove);
+                            if (idx > -1)  this.query_device_block.splice(idx);
+                        }, 10000);
+                    }
+                    return;
+                }
                 return;
             }
             const converter = mappedModel.toZigbee.find((c) => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
@@ -609,6 +643,8 @@ class Zigbee extends utils.Adapter {
             }
         }
     }
+
+
 }
 
 
