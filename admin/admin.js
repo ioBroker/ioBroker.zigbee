@@ -263,7 +263,7 @@ function deleteConfirmation(id, name) {
 }
 
 function cleanConfirmation() {
-    const text = translateWord('Do you really want to clean the states?');
+    const text = translateWord('Do you really want to remove orphaned states?');
     $('#modalclean').find('p').text(text);
     $('#cforce').prop('checked', false);
     $('#cforcediv').removeClass('hide');
