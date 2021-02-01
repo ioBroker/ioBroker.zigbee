@@ -397,20 +397,20 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 //this.processSyncStatesList(deviceId, modelId, syncStateList);
                 // if this is the device query state => trigger the device query
-//                this.log.warn('statedesc option state for  ' +  JSON.stringify(deviceId) + ' is ' + JSON.stringify(stateDesc));
-                ///// ugly hack - need better solution
+                
+                // on activation of the 'device_query' state trigger hardware query where possible
                 if (stateDesc.id == 'device_query') {
                     if (this.query_device_block.indexOf(deviceId) > -1) {
-                        this.log.warn(`Cannot query '${entity.device.ieeeAddr}' again just yet`)
+                        this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
                         return;
                     };
                     if (mappedModel) {
                         this.query_device_block.push(deviceId);
+                        this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
                         for (const converter of mappedModel.toZigbee) {
                             if (converter.hasOwnProperty('convertGet')) {
                                 for (const ckey of converter.key) {
                                     try {
-//                                        this.log.warn(`Trying to read '${ckey}'  '${JSON.stringify(entity.device.endpoints[0])}'`)
                                         await converter.convertGet(entity.device.endpoints[0], ckey, {});
                                     } catch (error) {
                                         this.log.warn(`Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after query with '${JSON.stringify(error)}'`);
@@ -418,17 +418,15 @@ class Zigbee extends utils.Adapter {
                                 }
                             }
                         }
+                        this.log.debug(`Device query for '${entity.device.ieeeAddr}' done`);
                         const idToRemove = deviceId;
                         setTimeout(()=>{
                             const idx = this.query_device_block.indexOf(idToRemove);
                             if (idx > -1)  this.query_device_block.splice(idx);
-                        }, 30000);
+                        }, 10000);
                     }
                     return;
                 }
-
-
-
                 return;
             }
             const converter = mappedModel.toZigbee.find((c) => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
