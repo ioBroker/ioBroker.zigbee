@@ -341,7 +341,7 @@ class Zigbee extends utils.Adapter {
 
         converters.forEach((converter) => {
             const publish = (payload) => {
-                this.log.debug(`Publish ${safeJsonStringify(payload)}`);
+                this.log.debug(`Publish ${safeJsonStringify(payload)} to ${safeJsonStringify(devId)}`);
                 if (payload) {
                     this.publishToState(devId, model, payload);
                 }
@@ -397,7 +397,7 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 //this.processSyncStatesList(deviceId, modelId, syncStateList);
                 // if this is the device query state => trigger the device query
-                
+
                 // on activation of the 'device_query' state trigger hardware query where possible
                 if (stateDesc.id == 'device_query') {
                     if (this.query_device_block.indexOf(deviceId) > -1) {
