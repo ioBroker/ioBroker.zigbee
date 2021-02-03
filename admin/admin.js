@@ -848,7 +848,8 @@ function showNetworkMap(devices, map){
             borderWidthSelected: 4,
         };
         if (dev.info && dev.info.device._type == 'Coordinator') {
-            node.shape = 'star';
+     //       node.shape = 'star';
+            node.image = 'zigbee.png';
             node.label = 'Coordinator';
             delete node.color;
         }
