@@ -431,7 +431,7 @@ class Zigbee extends utils.Adapter {
             }
             const converter = mappedModel.toZigbee.find((c) => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
             if (!converter) {
-                this.log.error(`No converter available for '${model}' with key '${stateDesc.id}'`);
+                this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
                 return;
             }
 
