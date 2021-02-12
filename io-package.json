@@ -190,7 +190,8 @@
         "countDown": 60,
         "adapterType": "zstack",
         "debugHerdsman": false,
-        "disablePing": false
+        "disablePing": false,
+        "external": ""
     },
     "instanceObjects": [
         {

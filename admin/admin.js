@@ -30,7 +30,7 @@ let devices = [],
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman', 'disablePing',
+    'adapterType', 'debugHerdsman', 'disablePing', 'external',
 ];
 
 function getDeviceByID(ID) {

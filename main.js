@@ -28,6 +28,8 @@ const BackupPlugin = require('./lib/backup');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
 const ExcludePlugin = require('./lib/exclude');
+const zigbeeHerdsmanConverters = require('zigbee-herdsman-converters');
+const vm = require('vm');
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -116,6 +118,13 @@ class Zigbee extends utils.Adapter {
             debug.enable('zigbee-herdsman*');
         }
 
+        // external converters
+        this.applyExternalConverters();
+        // get exclude list from object
+        this.getState('exclude.all', (err, state) => {
+            this.stController.getExcludeExposes(state);
+        });
+
         this.subscribeStates('*');
         // set connection false before connect to zigbee
         this.setState('info.connection', false);
@@ -135,6 +144,36 @@ class Zigbee extends utils.Adapter {
 
         this.reconnectCounter = 1;
         this.doConnect();
+    }
+
+    * getExternalDefinition() {
+        const extfiles = this.config.external.split(';') || [];
+        for (const moduleName of extfiles) {
+            if (!moduleName) continue;
+            this.log.info(`Apply converter from module: ${moduleName}`);
+            const sandbox = {
+                require,
+                module: {},
+            };
+            const converterCode = fs.readFileSync(moduleName, {encoding: 'utf8'});
+            vm.runInNewContext(converterCode, sandbox);
+            const converter = sandbox.module.exports;
+            if (Array.isArray(converter)) {
+                for (const item of converter) {
+                    yield item;
+                }
+            } else {
+                yield converter;
+            }
+        }
+    }
+
+    applyExternalConverters(){
+        for (const definition of this.getExternalDefinition()) {
+            const toAdd = {...definition};
+            delete toAdd['homeassistant'];
+            zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+        }
     }
 
     async doConnect() {
@@ -251,11 +290,6 @@ class Zigbee extends utils.Adapter {
         }
 
         this.setState('info.connection', true);
-
-        // get exclude list from object
-        this.getState('exclude.all', (err, state) => {
-            this.stController.getExcludeExposes(state);
-        });
 
         const devicesFromDB = await this.zbController.getClients(false);
         for (const device of devicesFromDB) {
