@@ -1,4 +1,4 @@
-/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option, noConfigDialog*/
+/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option*/
 
 /*
  * you must run 'iobroker upload zigbee' if you edited this file to make changes visible
@@ -52,7 +52,7 @@ function getDevice(ieeeAddr) {
         }
     });
 }
-
+// eslint-disable-next-line no-unused-vars
 function getDeviceByNetwork(nwk) {
     return devices.find((devInfo) => {
         try {
@@ -121,10 +121,6 @@ function getCoordinatorCard(dev) {
                   </div>
                 </div>`;
     return card;
-}
-function getAdapterVersion() {
-    if (coordinatorinfo.CoordinatorVersion) return coordinatorinfo.CoordinatorVersion;
-    return '';
 }
 
 function getCard(dev) {
@@ -848,7 +844,7 @@ function showNetworkMap(devices, map){
             borderWidthSelected: 4,
         };
         if (dev.info && dev.info.device._type == 'Coordinator') {
-     //       node.shape = 'star';
+            // node.shape = 'star';
             node.image = 'zigbee.png';
             node.label = 'Coordinator';
             delete node.color;
@@ -2154,14 +2150,14 @@ function showChannels() {
 function onlyOne(devs) {
 
     let devTypes = [];
-    let devOut = [];
+    const devOut = [];
 
-    for (i = 0; i < devs.length; i++) {
+    for (let i = 0; i < devs.length; i++) {
         const typ = devs[i];
         devTypes.push(typ.common.type);
     }
 
-    devTypes = devTypes.filter(this.onlyUnique);
+    devTypes = devTypes.filter(onlyUnique);
 
     for (const key in devTypes) {
         devOut.push(devs.find(x => x.common.type == devTypes[key]));
@@ -2176,7 +2172,7 @@ function onlyUnique(value, index, self) {
 
 function prepareExcludeDialog(excludeObj) {
     const exDevs = devices.slice();
-    let   excludetargets = [];
+    const excludetargets = [];
     const exclude_target = (excludeObj) ? [excludeObj.exclude_target] : [''];
     const arrExclude = JSON.stringify(excludes);
 
@@ -2187,7 +2183,7 @@ function prepareExcludeDialog(excludeObj) {
         }
     }
 
-    let onlyOneTargets = this.onlyOne(excludetargets);
+    const onlyOneTargets = onlyOne(excludetargets);
     onlyOneTargets.unshift('');
 
     list2select('#exclude_target', onlyOneTargets, exclude_target,
@@ -2243,8 +2239,8 @@ function addExcludeDialog() {
 }
 
 function addExclude(exclude_model) {
-      sendTo(namespace, 'addExclude', {
-         exclude_model: exclude_model
+    sendTo(namespace, 'addExclude', {
+        exclude_model: exclude_model
     }, function (msg) {
         closeWaitingDialog();
         if (msg) {
@@ -2277,12 +2273,11 @@ function showExclude() {
         return;
     }
 
-
     excludes.forEach(b => {
         const exclude_id = b.id;
 
-        const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}},
-             exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
+        const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}};
+        // exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
 
         const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${exclude_id}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
 

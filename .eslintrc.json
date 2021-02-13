@@ -13,10 +13,7 @@
                 "SwitchCase": 1
             }
         ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
+        "linebreak-style": 0,
         "no-console": "off",
         "no-var": "error",
         "prefer-const": "error",

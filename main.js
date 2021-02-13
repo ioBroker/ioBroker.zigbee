@@ -98,13 +98,13 @@ class Zigbee extends utils.Adapter {
         switch (ecode.severity) {
             case E_INFO: this.log.info(`${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            case E_DEBUG: this.log.debug(`${message}: Code ${error.code} (${ecode.message})`)
+            case E_DEBUG: this.log.debug(`${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            case E_WARN: this.log.warn(`${message}: Code ${error.code} (${ecode.message})`)
+            case E_WARN: this.log.warn(`${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            case E_ERROR: this.log.error(`${message}: Code ${error.code} (${ecode.message})`)
+            case E_ERROR: this.log.error(`${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            default: this.log.error(`${message}: Code ${error.code} (malformed error)`)
+            default: this.log.error(`${message}: Code ${error.code} (malformed error)`);
         }
     }
 
@@ -437,7 +437,7 @@ class Zigbee extends utils.Adapter {
                     if (this.query_device_block.indexOf(deviceId) > -1) {
                         this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
                         return;
-                    };
+                    }
                     if (mappedModel) {
                         this.query_device_block.push(deviceId);
                         this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
@@ -514,8 +514,8 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 this.processSyncStatesList(deviceId, model, syncStateList);
             } catch(error) {
-                this.filterError(`Error ${error.code} on send command to ${deviceId}. Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
-//                this.log.error(`Error ${error.code} on send command to ${deviceId}. Error: ${error.stack}`);
+                this.filterError(`Error ${error.code} on send command to ${deviceId}.`+
+                   ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
             }
         });
     }
