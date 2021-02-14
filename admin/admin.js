@@ -141,7 +141,7 @@ function getCard(dev) {
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
-    const image = `<img src="${img_src}" width="80px">`,
+    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
@@ -2060,7 +2060,7 @@ function genDevInfo(device) {
             </div>`;
     }
     const imgSrc = device.icon || device.common.icon;
-    const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px'><div class="divider"></div>`: '';
+    const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px' onerror="this.onerror=null;this.src='img/unavailable.png';"><div class="divider"></div>`: '';
     const info =
         `<div class="col s12 m6 l6 xl6">
             ${imgInfo}
@@ -2212,7 +2212,7 @@ function prepareExcludeDialog(excludeObj) {
             if (device == '') {
                 return 'disabled';
             } else if (device.icon) {
-                return `data-icon="${device.icon}"`;
+                return `data-icon="${device.icon}" onerror="this.onerror=null;this.src='img/unavailable.png';"`;
             } else {
                 return '';
             }
@@ -2285,7 +2285,7 @@ function showExclude() {
                     <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3">
                         <div class="card hoverable">
                             <div class="card-content zcard">
-                                <i class="left"><img src="${exclude_dev.icon}" width="64px"></i>
+                                <i class="left"><img src="${exclude_dev.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';"></i>
                                     <div style="min-height:72px; font-size: 0.8em" class="truncate">
                                         <ul>
                                             <li><span class="label">model:</span><span>${modelUrl}</span></li>
