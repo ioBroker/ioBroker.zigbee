@@ -115,15 +115,15 @@ systemDictionary = {
         "zh-cn": "排除"
     },   
     "ExcludeTextTranslation": {
-        "en": "You can add here some devices that should be excluded from our description. You only use exposes from zigbee-herdsman-converter",
-        "de": "Sie können hier einige Geräte hinzufügen, die von unserer Beschreibung ausgeschlossen werden sollten. Sie verwenden nur exposes von ZigBee-Herdsman-Converter",
-        "ru": "Вы можете добавить сюда некоторые устройства, которые следует исключить из нашего описания. Вы используете только экспонаты из zigbee-herdsman-converter",
-        "pt": "Você pode adicionar aqui alguns dispositivos que devem ser excluídos de nossa descrição. Você só usa exposições do zigbee-herdsman-converter",
-        "nl": "U kunt hier enkele apparaten toevoegen die van onze beschrijving moeten worden uitgesloten. Je gebruikt alleen belichtingen van zigbee-herdsman-converter",
-        "fr": "Vous pouvez ajouter ici quelques appareils qui devraient être exclus de notre description. Vous n'utilisez que des expositions de zigbee-herdsman-converter",
-        "it": "Puoi aggiungere qui alcuni dispositivi che dovrebbero essere esclusi dalla nostra descrizione. Usi solo espone da zigbee-herdsman-converter",
-        "es": "Puede agregar aquí algunos dispositivos que deben excluirse de nuestra descripción. Solo usa exposiciones de zigbee-herdsman-converter",
-        "pl": "Możesz dodać tutaj kilka urządzeń, które powinny zostać wyłączone z naszego opisu. Używasz tylko ekspozycji z zigbee-herdsman-converter",
-        "zh-cn": "您可以在此处添加一些应从我们的说明中排除的设备。您只能使用zigbee-herdsman-converter中的暴露"
+    "en": "You can add here some devices that should be excluded from our description. You only use exposes from zigbee-herdsman-converter. After add please restart the adapter",
+    "de": "Sie können hier einige Geräte hinzufügen, die von unserer Beschreibung ausgeschlossen werden sollten. Sie verwenden nur Belichtungen von ZigBee-Herdsman-Converter. Nach dem Hinzufügen starten Sie bitte den Adapter neu",
+    "ru": "Вы можете добавить сюда некоторые устройства, которые следует исключить из нашего описания. Вы используете только экспонаты из zigbee-herdsman-converter. После добавления перезапустите адаптер",
+    "pt": "Você pode adicionar aqui alguns dispositivos que devem ser excluídos de nossa descrição. Você só usa exposições do zigbee-herdsman-converter. Após adicionar reinicie o adaptador",
+    "nl": "U kunt hier enkele apparaten toevoegen die van onze beschrijving moeten worden uitgesloten. Je gebruikt alleen exposes van zigbee-herdsman-converter. Start na het toevoegen de adapter opnieuw op",
+    "fr": "Vous pouvez ajouter ici quelques appareils qui devraient être exclus de notre description. Vous n'utilisez que des expositions de zigbee-herdsman-converter. Après l'ajout, veuillez redémarrer l'adaptateur",
+    "it": "Puoi aggiungere qui alcuni dispositivi che dovrebbero essere esclusi dalla nostra descrizione. Usi solo espone da zigbee-herdsman-converter. Dopo l'aggiunta, riavviare l'adattatore",
+    "es": "Puede agregar aquí algunos dispositivos que deben excluirse de nuestra descripción. Solo usa exposiciones de zigbee-herdsman-converter. Después de agregar, reinicie el adaptador",
+    "pl": "Możesz dodać tutaj kilka urządzeń, które powinny zostać wyłączone z naszego opisu. Używasz tylko ekspozycji z zigbee-herdsman-converter. Po dodaniu zrestartuj adapter",
+    "zh-cn": "您可以在此处添加一些应从我们的说明中排除的设备。您只能使用zigbee-herdsman-converter中的暴露。添加后，请重新启动适配器"
   },
 };
