@@ -1,4 +1,4 @@
-/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option, noConfigDialog*/
+/*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option*/
 
 /*
  * you must run 'iobroker upload zigbee' if you edited this file to make changes visible
@@ -30,7 +30,7 @@ let devices = [],
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman', 'disablePing',
+    'adapterType', 'debugHerdsman', 'disablePing', 'external',
 ];
 
 function getDeviceByID(ID) {
@@ -52,7 +52,7 @@ function getDevice(ieeeAddr) {
         }
     });
 }
-
+// eslint-disable-next-line no-unused-vars
 function getDeviceByNetwork(nwk) {
     return devices.find((devInfo) => {
         try {
@@ -122,10 +122,6 @@ function getCoordinatorCard(dev) {
                 </div>`;
     return card;
 }
-function getAdapterVersion() {
-    if (coordinatorinfo.CoordinatorVersion) return coordinatorinfo.CoordinatorVersion;
-    return '';
-}
 
 function getCard(dev) {
     const title = dev.common.name,
@@ -145,7 +141,7 @@ function getCard(dev) {
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
-    const image = `<img src="${img_src}" width="80px">`,
+    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
@@ -848,7 +844,7 @@ function showNetworkMap(devices, map){
             borderWidthSelected: 4,
         };
         if (dev.info && dev.info.device._type == 'Coordinator') {
-     //       node.shape = 'star';
+            // node.shape = 'star';
             node.image = 'zigbee.png';
             node.label = 'Coordinator';
             delete node.color;
@@ -2064,7 +2060,7 @@ function genDevInfo(device) {
             </div>`;
     }
     const imgSrc = device.icon || device.common.icon;
-    const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px'><div class="divider"></div>`: '';
+    const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px' onerror="this.onerror=null;this.src='img/unavailable.png';"><div class="divider"></div>`: '';
     const info =
         `<div class="col s12 m6 l6 xl6">
             ${imgInfo}
@@ -2154,14 +2150,14 @@ function showChannels() {
 function onlyOne(devs) {
 
     let devTypes = [];
-    let devOut = [];
+    const devOut = [];
 
-    for (i = 0; i < devs.length; i++) {
+    for (let i = 0; i < devs.length; i++) {
         const typ = devs[i];
         devTypes.push(typ.common.type);
     }
 
-    devTypes = devTypes.filter(this.onlyUnique);
+    devTypes = devTypes.filter(onlyUnique);
 
     for (const key in devTypes) {
         devOut.push(devs.find(x => x.common.type == devTypes[key]));
@@ -2176,7 +2172,7 @@ function onlyUnique(value, index, self) {
 
 function prepareExcludeDialog(excludeObj) {
     const exDevs = devices.slice();
-    let   excludetargets = [];
+    const excludetargets = [];
     const exclude_target = (excludeObj) ? [excludeObj.exclude_target] : [''];
     const arrExclude = JSON.stringify(excludes);
 
@@ -2187,7 +2183,7 @@ function prepareExcludeDialog(excludeObj) {
         }
     }
 
-    let onlyOneTargets = this.onlyOne(excludetargets);
+    const onlyOneTargets = onlyOne(excludetargets);
     onlyOneTargets.unshift('');
 
     list2select('#exclude_target', onlyOneTargets, exclude_target,
@@ -2216,7 +2212,7 @@ function prepareExcludeDialog(excludeObj) {
             if (device == '') {
                 return 'disabled';
             } else if (device.icon) {
-                return `data-icon="${device.icon}"`;
+                return `data-icon="${device.icon}" onerror="this.onerror=null;this.src='img/unavailable.png';"`;
             } else {
                 return '';
             }
@@ -2243,8 +2239,8 @@ function addExcludeDialog() {
 }
 
 function addExclude(exclude_model) {
-      sendTo(namespace, 'addExclude', {
-         exclude_model: exclude_model
+    sendTo(namespace, 'addExclude', {
+        exclude_model: exclude_model
     }, function (msg) {
         closeWaitingDialog();
         if (msg) {
@@ -2277,12 +2273,11 @@ function showExclude() {
         return;
     }
 
-
     excludes.forEach(b => {
         const exclude_id = b.id;
 
-        const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}},
-             exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
+        const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}};
+        // exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
 
         const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${exclude_id}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
 
@@ -2290,7 +2285,7 @@ function showExclude() {
                     <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3">
                         <div class="card hoverable">
                             <div class="card-content zcard">
-                                <i class="left"><img src="${exclude_dev.icon}" width="64px"></i>
+                                <i class="left"><img src="${exclude_dev.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';"></i>
                                     <div style="min-height:72px; font-size: 0.8em" class="truncate">
                                         <ul>
                                             <li><span class="label">model:</span><span>${modelUrl}</span></li>
