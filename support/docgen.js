@@ -25,7 +25,10 @@ for (const device of devices) {
 
 devices = new Map(devices.map((d) => [d.model, d]));
 
-let iobDevices = require('../lib/devices').devices;
+const Devices = require('../lib/devices');
+let iobDevices = Devices.devices;
+Devices.fillStatesWithExposes('');
+
 const iobCount = iobDevices.filter((d) => (!d.exposed)).length;
 iobDevices = new Map(iobDevices.map((d) => d.models.map((m) => [m, d])).flat());
 
