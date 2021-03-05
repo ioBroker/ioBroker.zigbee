@@ -147,7 +147,10 @@ class Zigbee extends utils.Adapter {
     }
 
     * getExternalDefinition() {
-        const extfiles = this.config.external.split(';') || [];
+        if (this.config.external === undefined) {
+            return;
+        }
+        const extfiles = this.config.external.split(';');
         for (const moduleName of extfiles) {
             if (!moduleName) continue;
             this.log.info(`Apply converter from module: ${moduleName}`);
