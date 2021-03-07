@@ -254,9 +254,9 @@ class Zigbee extends utils.Adapter {
             let networkExtPanId = (await this.zbController.herdsman.getNetworkParameters()).extendedPanID;
             let needChange = false;
             this.log.debug(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
-            if (configExtPanId != networkExtPanId) {
-                const adapterType = this.config.adapterType || 'zstack';
-                if (adapterType === 'zstack') {
+            const adapterType = this.config.adapterType || 'zstack';
+            if (adapterType === 'zstack') {
+                if (configExtPanId != networkExtPanId) {
                     // try to read from nvram
                     const result = await this.zbController.herdsman.adapter.znp.request(
                         1, // Subsystem.SYS
