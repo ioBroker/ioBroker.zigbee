@@ -87,7 +87,6 @@ class Zigbee extends utils.Adapter {
         if (typeof obj === 'object' && obj.command) {
             switch (obj.command) {
                 case 'SendToDevice':
-                this.log.warn(`on Message: ${JSON.stringify(obj)}`)
                 let rv = {
                     success: false,
                     loc:-1,
@@ -438,7 +437,6 @@ class Zigbee extends utils.Adapter {
     }
 
     async publishFromState(deviceId, model, stateModel, stateList, options){
-        this.log.debug(`State changes. dev: ${deviceId} model: ${model} states: ${safeJsonStringify(stateList)} opt: ${safeJsonStringify(options)}`);
         if (model == 'group') {
             deviceId = parseInt(deviceId);
         }
@@ -497,7 +495,6 @@ class Zigbee extends utils.Adapter {
 
             const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
             const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
-
             let syncStateList = [];
             if (stateModel && stateModel.syncStates) {
                 stateModel.syncStates.forEach((syncFunct) => {
@@ -536,7 +533,8 @@ class Zigbee extends utils.Adapter {
                 const result = await converter.convertSet(target, key, preparedValue, meta);
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
 
-                this.acknowledgeState(deviceId, model, stateDesc, value);
+                if (stateModel)
+                    this.acknowledgeState(deviceId, model, stateDesc, value);
                 // process sync state list
                 this.processSyncStatesList(deviceId, model, syncStateList);
             } catch(error) {
@@ -583,7 +581,6 @@ class Zigbee extends utils.Adapter {
                     this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`)
                 }
                 const mappedModel = entity.mapped;
-                this.log.warn('Mapped Model: ' +  JSON.stringify(mappedModel));
                 if (!mappedModel) {
                     this.log.error(`No Model for Device ${safeJsonStringify(payload_obj.device)}`)
                 }
@@ -691,7 +688,6 @@ class Zigbee extends utils.Adapter {
     }
 
     getZigbeeOptions() {
-        this.log.warn('get Zigbee Options called')
         // file path for db
         const dataDir = (this.systemConfig) ? this.systemConfig.dataDir : '';
         const dbDir = pathLib.normalize(utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_'));
