@@ -63,6 +63,8 @@ class Zigbee extends utils.Adapter {
         }));
         this.on('ready', this.onReady.bind(this));
         this.on('unload', this.onUnload.bind(this));
+        this.on('message', this.onMessage.bind(this));
+
         this.query_device_block = [];
 
         this.stController = new StatesController(this);
@@ -79,6 +81,27 @@ class Zigbee extends utils.Adapter {
             new OtaPlugin(this),
             new BackupPlugin(this),
         ];
+    }
+
+    async onMessage(obj) {
+        if (typeof obj === 'object' && obj.command) {
+            switch (obj.command) {
+                case 'SendToDevice':
+                this.log.warn(`on Message: ${JSON.stringify(obj)}`)
+                let rv = {
+                    success: false,
+                    loc:-1,
+                };
+                try {
+                    rv = await this.SendPayload(obj.message);
+                }
+                catch (e) {
+                    rv.error = e;
+                }
+                this.sendTo(obj.from, obj.command, rv, obj.callback);
+                break;
+            }
+        }
     }
 
     filterError(errormessage, message, error) {
@@ -522,6 +545,83 @@ class Zigbee extends utils.Adapter {
             }
         });
     }
+    //
+    //
+    // This function is introduced to explicitly allow user level scripts to send Commands
+    // directly to the zigbee device. It utilizes the zigbee-herdsman-converters to generate
+    // the exact zigbee message to be sent and can be used to set device options which are
+    // not exposed as states. It serves as a wrapper function for "publishFromState" with
+    // extended parameter checking
+    //
+    // This function is NEVER called from within the adapter itself. The entire structure
+    // is built for end user use.
+    // The payload can either be a JSON object or the string representation of a JSON object
+    // The following keys are supported in the object:
+    // device: name of the device. For a device zigbee.0.0011223344556677 this would be 0011223344556677
+    // payload: The data to send to the device as JSON object (key/Value pairs)
+    // endpoint: optional: the endpoint to send the data to, if supported.
+    //
+    async SendPayload(payload) {
+        this.log.debug(`publishToDevice called with ${safeJsonStringify(payload)}`);
+        let payload_obj = {};
+        if (typeof payload === 'string') {
+            try {
+                payload_obj = JSON.parse()
+            } catch (e) {
+                this.log.error(`Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`)
+                return {success:false, error: `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`};
+            }
+        } else if (typeof payload === 'object') {
+            payload_obj = payload;
+        }
+        if (payload_obj.hasOwnProperty('device') && payload_obj.hasOwnProperty('payload'))
+        {
+            try {
+                let stateList = [];
+                const entity = await this.zbController.resolveEntity(`0x${payload.device}`);
+                if (!entity) {
+                    this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`)
+                }
+                const mappedModel = entity.mapped;
+                this.log.warn('Mapped Model: ' +  JSON.stringify(mappedModel));
+                if (!mappedModel) {
+                    this.log.error(`No Model for Device ${safeJsonStringify(payload_obj.device)}`)
+                }
+                if (typeof payload_obj.payload !== 'object') {
+                    this.log.error(`Illegal payload type for ${safeJsonStringify(payload_obj.device)}`)
+                }
+                for (var key in payload_obj.payload) {
+                    if (payload_obj.payload[key] != undefined) {
+                        const datatype = typeof payload_obj.payload[key];
+                        stateList.push({stateDesc: {
+                            id:key,
+                            prop:key,
+                            role:'state',
+                            type:datatype,
+                            epname:payload_obj.endpoint,
+                        }, value: payload_obj.payload[key], index:0, timeout:0})
+                    }
+                }
+                try {
+                    this.log.debug(`Calling publish to state for ${safeJsonStringify(payload_obj.device)} with ${safeJsonStringify(stateList)}`)
+                    await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, undefined);
+                    return {success: true};
+                }
+                catch (error)
+                {
+                    this.filterError(`Error ${error.code} on send command to ${payload.device}.`+
+                       ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
+                    return {success:false, error: error, loc:1};
+                }
+            }
+            catch (e) {
+                return {success:false, error: e, loc:2};
+            }
+
+        }
+        return {success:false, error: 'missing parameter device or payload in message ' + JSON.stringify(payload), loc:3};
+    }
+
 
     newDevice(entity) {
         this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
@@ -591,6 +691,7 @@ class Zigbee extends utils.Adapter {
     }
 
     getZigbeeOptions() {
+        this.log.warn('get Zigbee Options called')
         // file path for db
         const dataDir = (this.systemConfig) ? this.systemConfig.dataDir : '';
         const dbDir = pathLib.normalize(utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_'));
