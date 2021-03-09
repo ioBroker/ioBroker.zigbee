@@ -578,14 +578,17 @@ class Zigbee extends utils.Adapter {
                 let stateList = [];
                 const entity = await this.zbController.resolveEntity(`0x${payload.device}`);
                 if (!entity) {
-                    this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`)
+                    this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`);
+                    return {success: false, error: `Device ${safeJsonStringify(payload_obj.device)} not found`};
                 }
                 const mappedModel = entity.mapped;
                 if (!mappedModel) {
-                    this.log.error(`No Model for Device ${safeJsonStringify(payload_obj.device)}`)
+                    this.log.error(`No Model for Device ${safeJsonStringify(payload_obj.device)}`);
+                    return {success: false, error: `No Model for Device ${safeJsonStringify(payload_obj.device)}`};
                 }
                 if (typeof payload_obj.payload !== 'object') {
-                    this.log.error(`Illegal payload type for ${safeJsonStringify(payload_obj.device)}`)
+                    this.log.error(`Illegal payload type for ${safeJsonStringify(payload_obj.device)}`);
+                    return {success: false, error: `Illegal payload type for ${safeJsonStringify(payload_obj.device)}`};
                 }
                 for (var key in payload_obj.payload) {
                     if (payload_obj.payload[key] != undefined) {
@@ -608,15 +611,15 @@ class Zigbee extends utils.Adapter {
                 {
                     this.filterError(`Error ${error.code} on send command to ${payload.device}.`+
                        ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
-                    return {success:false, error: error, loc:1};
+                    return {success:false, error: error};
                 }
             }
             catch (e) {
-                return {success:false, error: e, loc:2};
+                return {success:false, error: e};
             }
 
         }
-        return {success:false, error: 'missing parameter device or payload in message ' + JSON.stringify(payload), loc:3};
+        return {success:false, error: 'missing parameter device or payload in message ' + JSON.stringify(payload)};
     }
 
 
