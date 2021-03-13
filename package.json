@@ -18,8 +18,8 @@
     "node": ">=10"
   },
   "dependencies": {
-    "zigbee-herdsman": "^0.13.78",
-    "zigbee-herdsman-converters": "^14.0.81",
+    "zigbee-herdsman": "^0.13.79",
+    "zigbee-herdsman-converters": "^14.0.85",
     "@iobroker/adapter-core": "^2.4.0",
     "tar": "^6.0.5",
     "typescript": "^4.0.5"
@@ -46,7 +46,9 @@
     "cc2652",
     "deconz",
     "conbee",
-    "raspbee"
+    "raspbee",
+    "ezsp",
+    "efr32"
   ],
   "license": "MIT",
   "main": "main.js",
