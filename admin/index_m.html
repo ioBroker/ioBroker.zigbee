@@ -68,7 +68,7 @@
       margin-right: 3rem;
     }
     #tabs {
-        margin-top: 160px;
+        margin-top: 115px;
     }
     #main {
         margin-bottom: -50px;
@@ -184,7 +184,16 @@
         padding-top: 5px;
         padding-bottom: 5px;
     }
-
+    .m .page {
+        height: calc(100% - 120px);
+        overflow: auto;
+    }
+    #tab-sett {
+        padding-right: 30px;
+    }
+    #map {
+        margin-bottom: 0px;
+    }
 </style>
 </head>
 <body>
@@ -220,13 +229,13 @@
                 </div>
                 <div class="nav-content">
                     <ul class="tabs tabs-transparent">
-                        <li class="tab col s2"><a href="#tab-main" id="devs"      class="translate">Devices</a></li>
-                        <li class="tab col s2"><a href="#tab-groups"              class="translate">Groups</a></li>
-                        <li class="tab col s2"><a href="#tab-map"  id="tabmap"    class="translate">Network map</a></li>
-                        <li class="tab col s2"><a href="#tab-binding"             class="translate">Binding</a></li>
-                        <li class="tab col s2"><a href="#tab-exclude"             class="translate">Excludes</a></li>
-                        <li class="tab col s2"><a href="#tab-sett" id="settings"  class="translate">Settings</a></li>
-                        <li class="tab col s2"><a href="#tab-dev"  id="develop"   class="translate">Developer</a></li>
+                        <li class="tab col s2"><a href="#tab-main" id="devs"      class="translate tooltipped">Devices</a></li>
+                        <li class="tab col s2"><a href="#tab-groups"              class="translate tooltipped">Groups</a></li>
+                        <li class="tab col s2"><a href="#tab-map"  id="tabmap"    class="translate tooltipped">Network map</a></li>
+                        <li class="tab col s2"><a href="#tab-binding"             class="translate tooltipped">Binding</a></li>
+                        <li class="tab col s1"><a href="#tab-exclude"             class="translate tooltipped">Excludes</a></li>
+                        <li class="tab col s2"><a href="#tab-sett" id="settings"  class="translate tooltipped">Settings</a></li>
+                        <li class="tab col s1"><a href="#tab-dev"  id="develop"   class="translate tooltipped">Developer</a></li>
                     </ul>
                 </div>
             </nav>
