@@ -97,5 +97,6 @@
     "to make it available for other user too": "om het ook beschikbaar te maken voor andere gebruikers",
     "transmitPower": "CC1352P and CC26X2R1 zendvermogen",
     "zigbee-shepherd": "U kunt de onbewerkte gegevens bewerken om hier naartoe te sturen. Gebruik dit niet als u niet zeker weet wat u doet! Gebruik het JSON-formaat (attribuutnamen tussen dubbele aanhalingstekens!). Er kunnen ook aanvullende eigenschappen worden toegevoegd. Zie voorbeelden hierboven. (Formaat zoals gebruikt door zigbee-shepherd)",
-    "№": "№"
+    "№": "№",
+    "This page is needed only for advanced users that like to extend adapter functionalities!": "Deze pagina is alleen bedoeld voor gevorderden welke de adapter functionaliteit uit willen breiden!"
 }
