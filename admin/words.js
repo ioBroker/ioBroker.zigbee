@@ -116,7 +116,7 @@ systemDictionary = {
     },   
     "ExcludeTextTranslation": {
     "en": "You can add here some devices that should be excluded from our description. You only use exposes from zigbee-herdsman-converter. After add please restart the adapter",
-    "de": "Sie können hier einige Geräte hinzufügen, die von unserer Beschreibung ausgeschlossen werden sollten. Sie verwenden nur Belichtungen von ZigBee-Herdsman-Converter. Nach dem Hinzufügen starten Sie bitte den Adapter neu",
+    "de": "Sie können hier einige Geräte hinzufügen, die von unserer Beschreibung ausgeschlossen werden sollten. Sie verwenden nur exposes vom ZigBee-Herdsman-Converter. Nach dem Hinzufügen starten Sie bitte den Adapter neu",
     "ru": "Вы можете добавить сюда некоторые устройства, которые следует исключить из нашего описания. Вы используете только экспонаты из zigbee-herdsman-converter. После добавления перезапустите адаптер",
     "pt": "Você pode adicionar aqui alguns dispositivos que devem ser excluídos de nossa descrição. Você só usa exposições do zigbee-herdsman-converter. Após adicionar reinicie o adaptador",
     "nl": "U kunt hier enkele apparaten toevoegen die van onze beschrijving moeten worden uitgesloten. Je gebruikt alleen exposes van zigbee-herdsman-converter. Start na het toevoegen de adapter opnieuw op",
