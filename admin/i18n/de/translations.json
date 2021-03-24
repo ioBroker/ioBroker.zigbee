@@ -57,8 +57,8 @@
     "Run": "Ausführen",
     "Save": "Speichern",
     "Select your settings. Then click RUN to send command to your Zigbee device.": "Wähle deine Einstellungen. Klicke dann auf Ausführen, um den Befehl an das ZigBee-Gerät zu senden.",
-    "Select Attribute": "Wählen Sie Attribut",
-    "Select Command": "Wählen Sie Befehl",
+    "Select Attribute": "Wählen Sie ein Attribut",
+    "Select Command": "Wählen Sie ein Befehl",
     "Select a device": "Wählen Sie ein Gerät aus",
     "Select an Endpoint": "Wählen Sie einen Endpunkt",
     "Select cid": "Wählen Sie eine Cluster-ID aus",
@@ -98,4 +98,3 @@
     "notImplementedText": "Sie können hier eigene Befehle an Ihre Geräte senden, die noch nicht als Objekte implementiert sind. Es kann auch verwendet werden, um undokumentierte Einstellungen Ihrer Geräte zu finden. Oder um die Auswirkungen von Einstellungen zu testen und zu entscheiden, ob es sich lohnt, sie als Objekt zu implementieren. Und so weiter...",
     "to make it available for other user too": "um es auch für andere Benutzer verfügbar zu machen"
 }
-
