@@ -98,5 +98,9 @@
     "to make it available for other user too": "aby udostępnić go także innemu użytkownikowi",
     "transmitPower": "CC1352P and CC26X2R1 Moc nadawania",
     "zigbee-shepherd": "Tutaj możesz edytować nieprzetworzone dane do wysłania. Nie używaj tego, jeśli nie jesteś pewien, co robisz! Użyj formatu JSON (nazwy atrybutów w podwójnych cudzysłowach!). Można również dodać dodatkowe właściwości. Zobacz przykłady powyżej. (Format używany przez zigbee-shepherd)",
-    "№": "Nr"
+    "№": "Nr",
+    "Excludes": "wykluczyć",
+    "ExcludeTextTranslation": "Możesz dodać tutaj kilka urządzeń, które powinny zostać wyłączone z naszego opisu. Używasz tylko ekspozycji z zigbee-herdsman-converter. Po dodaniu zrestartuj adapter"
+    
+    
 }
