@@ -1,5 +1,5 @@
 {
-    "Add binding": "Bindung hinzufügen",
+    "Add binding": "binding hinzufügen",
     "Add group": "Gruppe hinzufügen",
     "Attribute ID": "Attribut-ID",
     "Binding": "Bindung",
@@ -80,9 +80,9 @@
     "This page is needed only for advanced users that like to extend adapter functionalities!": "Diese Seite wird nur von fortgeschrittenen Benutzern benötigt, die die Adapterfunktionen erweitern möchten!",
     "The value to send to your device (use douple-quotes if a number is a string).": "Der Wert, der an Ihr Gerät gesendet werden soll (verwenden Sie doppelte Anführungszeichen, wenn eine Zahl eine Zeichenfolge ist).",
     "Touchlink reset and pairing": "Touchlink zurücksetzen und koppeln",
-    "Transport Kex Text": "Transportschlüssel ist der Netzwerkverschlüsselungsschlüssel.  Bitte wähle eine zufällige Schlüsselsequenz <b>bevor</b> du Geräte koppelst. Gib einfach 32 zufällige Hex-Zeichen ein (a-f und 0-9). Wenn du den Schlüssel später änderst, musst du alle Geräte neu koppeln.",
+    "Transport Kex Text": "Transportschlüssel ist der Netzwerkverschlüsselungsschlüssel. Bitte wähle eine zufällige Schlüsselsequenz <b>bevor</b> du Geräte koppelst. Gib einfach 32 zufällige Hex-Zeichen ein (a-f und 0-9). Wenn du den Schlüssel später änderst, musst du alle Geräte neu koppeln.",
     "Transport Key": "Transportschlüssel",
-    "Type": "Art",
+    "Type": "Type",
     "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Entkoppele die Fernbedienung vom Koordinator (erforderlich für einige Fernbedienungen wie HUE Dimmer Switch).",
     "View config": "Konfiguration anzeigen",
     "Waiting": "Warten",
