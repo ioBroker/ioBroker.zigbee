@@ -25,7 +25,8 @@ let devices = [],
         port: 'd2',
         channel: 'd2'
     },
-    cidList;
+    cidList,
+    shuffleInstance;
 
 
 const savedSettings = [
@@ -100,7 +101,7 @@ function getCoordinatorCard(dev) {
                     </ul>
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+        card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <span class="top right small" style="border-radius: 50%">
@@ -158,7 +159,7 @@ function getCard(dev) {
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
-    const card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+    const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <span class="top right small" style="border-radius: 50%">
@@ -388,6 +389,10 @@ function showDevices() {
         }
     }
     $('#devices').html(html);
+    shuffleInstance = new Shuffle($("#devices"), {
+        itemSelector: '.device',
+        sizer: '.js-shuffle-sizer',
+    });
 
     const getDevName = function(dev_block) {
         return dev_block.find('#dName').text();
@@ -650,6 +655,14 @@ function load(settings, onChange) {
         $('.collapsible').collapsible();
         $('.tooltipped').tooltip();
         Materialize.Tabs.init($('.tabs'));
+        $('#device-search').keyup(function (event) {
+            const searchText = event.target.value.toLowerCase();
+            doSearch(searchText);
+        });
+        $('#device-order a').click(function () {
+            $('#device-order-btn').text($(this).text());
+            doSort();
+        });
     });
 
     const text = $('#pairing').attr('data-tooltip');
@@ -2337,4 +2350,36 @@ function deleteExclude(id) {
         }
         getExclude();
     });
+}
+
+function doSearch(searchText) {
+    if (shuffleInstance) {
+        if (searchText) {
+            shuffleInstance.filter(function (element, shuffle) {
+                var titleElement = element.querySelector('.card-title');
+                var titleText = titleElement.textContent.toLowerCase().trim();
+
+                return titleText.indexOf(searchText) !== -1;
+            });
+        } else {
+            shuffleInstance.filter();
+        }
+    }
+}
+
+function doSort() {
+    if (shuffleInstance) {
+        const sortOrder = $('#device-order-btn').text().toLowerCase();
+        if (sortOrder == 'default') {
+            shuffleInstance.sort({});
+        } else if (sortOrder == 'a-z') {
+            shuffleInstance.sort({
+                by: sortByTitle
+            });
+        } 
+    }
+}
+
+function sortByTitle(element) {
+    return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }
