@@ -655,7 +655,14 @@ function load(settings, onChange) {
         $('.collapsible').collapsible();
         $('.tooltipped').tooltip();
         Materialize.Tabs.init($('.tabs'));
-        $('#device-search').keyup(doSearch);
+        $('#device-search').keyup(function (event) {
+            const searchText = event.target.value.toLowerCase();
+            doSearch(searchText);
+        });
+        $('#device-order a').click(function () {
+            $('#device-order-btn').text($(this).text());
+            doSort();
+        });
     });
 
     const text = $('#pairing').attr('data-tooltip');
@@ -2345,9 +2352,8 @@ function deleteExclude(id) {
     });
 }
 
-function doSearch(event) {
+function doSearch(searchText) {
     if (shuffleInstance) {
-        const searchText = event.target.value.toLowerCase();
         if (searchText) {
             shuffleInstance.filter(function (element, shuffle) {
                 var titleElement = element.querySelector('.card-title');
@@ -2359,4 +2365,21 @@ function doSearch(event) {
             shuffleInstance.filter();
         }
     }
+}
+
+function doSort() {
+    if (shuffleInstance) {
+        const sortOrder = $('#device-order-btn').text().toLowerCase();
+        if (sortOrder == 'default') {
+            shuffleInstance.sort({});
+        } else if (sortOrder == 'a-z') {
+            shuffleInstance.sort({
+                by: sortByTitle
+            });
+        } 
+    }
+}
+
+function sortByTitle(element) {
+    return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }
