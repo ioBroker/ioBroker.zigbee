@@ -100,7 +100,7 @@ function getCoordinatorCard(dev) {
                     </ul>
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+        card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <span class="top right small" style="border-radius: 50%">
@@ -158,7 +158,7 @@ function getCard(dev) {
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
-    const card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+    const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <span class="top right small" style="border-radius: 50%">
@@ -388,6 +388,10 @@ function showDevices() {
         }
     }
     $('#devices').html(html);
+    const shuffleInstance = new Shuffle($("#devices"), {
+        itemSelector: '.device',
+        sizer: '.js-shuffle-sizer',
+    });
 
     const getDevName = function(dev_block) {
         return dev_block.find('#dName').text();

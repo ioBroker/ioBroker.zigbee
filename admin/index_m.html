@@ -18,6 +18,7 @@
 <script type="text/javascript" src="words.js"></script>
 
 <script type="text/javascript" src="admin.js"></script>
+<script type="text/javascript" src="shuffle.min.js"></script>
 <style>
     .m .tabs {
         height: auto!important;
@@ -98,8 +99,15 @@
         width: 45px;
         top: 120px;
     }
+    .m .card {
+        margin: 0px;
+    }
     .m .card .zcard {
         padding: 10px;
+    }
+    .device {
+        padding: 5px;
+        width: 290px;
     }
     .m .zcard .card-title {
         font-size: 16px;
@@ -242,7 +250,10 @@
         </div>
         <div id="tabs" class="tabs-content row">
             <div id="tab-main" class="col s12 page active">
-                <div id="devices" style="margin-bottom: 50px" class="row">
+                <div class="row">
+                    <div class="my-sizer-element col s12 m6 l4 xl3"></div>
+                </div>
+                <div id="devices" class="row">
                 </div>
             </div>
             <div id="tab-map" class="col s12 page">
