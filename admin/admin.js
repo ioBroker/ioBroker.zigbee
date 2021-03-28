@@ -25,7 +25,8 @@ let devices = [],
         port: 'd2',
         channel: 'd2'
     },
-    cidList;
+    cidList,
+    shuffleInstance;
 
 
 const savedSettings = [
@@ -388,7 +389,7 @@ function showDevices() {
         }
     }
     $('#devices').html(html);
-    const shuffleInstance = new Shuffle($("#devices"), {
+    shuffleInstance = new Shuffle($("#devices"), {
         itemSelector: '.device',
         sizer: '.js-shuffle-sizer',
     });
@@ -654,6 +655,7 @@ function load(settings, onChange) {
         $('.collapsible').collapsible();
         $('.tooltipped').tooltip();
         Materialize.Tabs.init($('.tabs'));
+        $('#device-search').keyup(doSearch);
     });
 
     const text = $('#pairing').attr('data-tooltip');
@@ -2341,4 +2343,20 @@ function deleteExclude(id) {
         }
         getExclude();
     });
+}
+
+function doSearch(event) {
+    if (shuffleInstance) {
+        const searchText = event.target.value.toLowerCase();
+        if (searchText) {
+            shuffleInstance.filter(function (element, shuffle) {
+                var titleElement = element.querySelector('.card-title');
+                var titleText = titleElement.textContent.toLowerCase().trim();
+
+                return titleText.indexOf(searchText) !== -1;
+            });
+        } else {
+            shuffleInstance.filter();
+        }
+    }
 }
