@@ -389,6 +389,25 @@ function showDevices() {
         }
     }
     $('#devices').html(html);
+    // update rooms filter
+    const allRooms = new Set(devices.map((item)=>item.rooms).flat().map((room)=>{
+        if (room && room.hasOwnProperty(lang)) {
+            return room[lang];
+        } else {
+            return room;
+        }
+    }).filter((item)=>item != undefined));
+    const roomSelector = $('#room-filter');
+    roomSelector.empty();
+    roomSelector.append(`<li class="device-order-item" data-type="All" tabindex="0"><a class="translate" data-lang="All">All</a></li>`);
+    allRooms.forEach((item) => {
+        roomSelector.append(`<li class="device-order-item" data-type="${item}" tabindex="0"><a class="translate" data-lang="${item}">${item}</a></li>`);
+    });
+    $('#room-filter a').click(function () {
+        $('#room-filter-btn').text($(this).text());
+        doFilter();
+    });
+
     shuffleInstance = new Shuffle($("#devices"), {
         itemSelector: '.device',
         sizer: '.js-shuffle-sizer',
@@ -656,8 +675,7 @@ function load(settings, onChange) {
         $('.tooltipped').tooltip();
         Materialize.Tabs.init($('.tabs'));
         $('#device-search').keyup(function (event) {
-            const searchText = event.target.value.toLowerCase();
-            doSearch(searchText);
+            doFilter(event.target.value.toLowerCase());
         });
         $('#device-order a').click(function () {
             $('#device-order-btn').text($(this).text());
@@ -2352,14 +2370,36 @@ function deleteExclude(id) {
     });
 }
 
-function doSearch(searchText) {
+function doFilter(inputText) {
     if (shuffleInstance) {
-        if (searchText) {
+        const lang = systemLang || 'en';
+        const searchText = inputText || $('#device-search').val();
+        const roomFilter = $('#room-filter-btn').text().toLowerCase();
+        if (searchText || roomFilter !== 'all') {
             shuffleInstance.filter(function (element, shuffle) {
-                var titleElement = element.querySelector('.card-title');
-                var titleText = titleElement.textContent.toLowerCase().trim();
-
-                return titleText.indexOf(searchText) !== -1;
+                const devId = element.getAttribute('id');
+                const dev = getDeviceByID(devId);
+                let valid = true;
+                if (searchText) {
+                    const titleElement = element.querySelector('.card-title');
+                    const titleText = titleElement.textContent.toLowerCase().trim();
+                    valid = (titleText.indexOf(searchText) !== -1);
+                }
+                if (valid && dev && roomFilter !== 'all') {
+                    if (dev.rooms) {
+                        const rooms = dev.rooms.map((room) => {
+                            if (room && room.hasOwnProperty(lang)) {
+                                return room[lang];
+                            } else {
+                                return room;
+                            }
+                        }).filter((item)=>item != undefined).map((item)=>item.toLowerCase().trim());
+                        valid = rooms.includes(roomFilter);
+                    } else {
+                        valid = false;
+                    }
+                }
+                return valid;
             });
         } else {
             shuffleInstance.filter();
