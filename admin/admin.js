@@ -25,7 +25,8 @@ let devices = [],
         port: 'd2',
         channel: 'd2'
     },
-    cidList;
+    cidList,
+    shuffleInstance;
 
 
 const savedSettings = [
@@ -100,7 +101,7 @@ function getCoordinatorCard(dev) {
                     </ul>
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+        card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <span class="top right small" style="border-radius: 50%">
@@ -158,7 +159,7 @@ function getCard(dev) {
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
-    const card = `<div id="${id}" class="device col s12 m6 l4 xl3">
+    const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
                         <span class="top right small" style="border-radius: 50%">
@@ -388,6 +389,29 @@ function showDevices() {
         }
     }
     $('#devices').html(html);
+    // update rooms filter
+    const allRooms = new Set(devices.map((item)=>item.rooms).flat().map((room)=>{
+        if (room && room.hasOwnProperty(lang)) {
+            return room[lang];
+        } else {
+            return room;
+        }
+    }).filter((item)=>item != undefined));
+    const roomSelector = $('#room-filter');
+    roomSelector.empty();
+    roomSelector.append(`<li class="device-order-item" data-type="All" tabindex="0"><a class="translate" data-lang="All">All</a></li>`);
+    allRooms.forEach((item) => {
+        roomSelector.append(`<li class="device-order-item" data-type="${item}" tabindex="0"><a class="translate" data-lang="${item}">${item}</a></li>`);
+    });
+    $('#room-filter a').click(function () {
+        $('#room-filter-btn').text($(this).text());
+        doFilter();
+    });
+
+    shuffleInstance = new Shuffle($("#devices"), {
+        itemSelector: '.device',
+        sizer: '.js-shuffle-sizer',
+    });
 
     const getDevName = function(dev_block) {
         return dev_block.find('#dName').text();
@@ -650,6 +674,13 @@ function load(settings, onChange) {
         $('.collapsible').collapsible();
         $('.tooltipped').tooltip();
         Materialize.Tabs.init($('.tabs'));
+        $('#device-search').keyup(function (event) {
+            doFilter(event.target.value.toLowerCase());
+        });
+        $('#device-order a').click(function () {
+            $('#device-order-btn').text($(this).text());
+            doSort();
+        });
     });
 
     const text = $('#pairing').attr('data-tooltip');
@@ -2337,4 +2368,58 @@ function deleteExclude(id) {
         }
         getExclude();
     });
+}
+
+function doFilter(inputText) {
+    if (shuffleInstance) {
+        const lang = systemLang || 'en';
+        const searchText = inputText || $('#device-search').val();
+        const roomFilter = $('#room-filter-btn').text().toLowerCase();
+        if (searchText || roomFilter !== 'all') {
+            shuffleInstance.filter(function (element, shuffle) {
+                const devId = element.getAttribute('id');
+                const dev = getDeviceByID(devId);
+                let valid = true;
+                if (searchText) {
+                    const titleElement = element.querySelector('.card-title');
+                    const titleText = titleElement.textContent.toLowerCase().trim();
+                    valid = (titleText.indexOf(searchText) !== -1);
+                }
+                if (valid && dev && roomFilter !== 'all') {
+                    if (dev.rooms) {
+                        const rooms = dev.rooms.map((room) => {
+                            if (room && room.hasOwnProperty(lang)) {
+                                return room[lang];
+                            } else {
+                                return room;
+                            }
+                        }).filter((item)=>item != undefined).map((item)=>item.toLowerCase().trim());
+                        valid = rooms.includes(roomFilter);
+                    } else {
+                        valid = false;
+                    }
+                }
+                return valid;
+            });
+        } else {
+            shuffleInstance.filter();
+        }
+    }
+}
+
+function doSort() {
+    if (shuffleInstance) {
+        const sortOrder = $('#device-order-btn').text().toLowerCase();
+        if (sortOrder == 'default') {
+            shuffleInstance.sort({});
+        } else if (sortOrder == 'a-z') {
+            shuffleInstance.sort({
+                by: sortByTitle
+            });
+        } 
+    }
+}
+
+function sortByTitle(element) {
+    return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }

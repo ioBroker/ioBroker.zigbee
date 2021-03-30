@@ -95,6 +95,9 @@
     "№": "Nr.",
     "and in": "und in",
     "here": "hier",
-    "notImplementedText": "Sie können hier eigene Befehle an Ihre Geräte senden, die noch nicht als Objekte implementiert sind. Es kann auch verwendet werden um undokumentierte Einstellungen Ihrer Geräte zu finden. Oder um die Auswirkungen von Einstellungen zu testen und zu entscheiden, ob es sich lohnt sie als Objekt zu implementieren. Und so weiter...",
-    "to make it available for other user too": "um es auch für andere Benutzer verfügbar zu machen"
+    "notImplementedText": "Sie können hier eigene Befehle an Ihre Geräte senden, die noch nicht als Objekte implementiert sind. Es kann auch verwendet werden, um undokumentierte Einstellungen Ihrer Geräte zu finden. Oder um die Auswirkungen von Einstellungen zu testen und zu entscheiden, ob es sich lohnt, sie als Objekt zu implementieren. Und so weiter...",
+    "to make it available for other user too": "um es auch für andere Benutzer verfügbar zu machen",
+    "Excludes": "ausschließen",
+    "ExcludeTextTranslation": "Sie können hier einige Geräte hinzufügen, die von unserer Beschreibung ausgeschlossen werden sollten. Sie verwenden nur exposes vom ZigBee-Herdsman-Converter. Nach dem Hinzufügen starten Sie bitte den Adapter neu"
+
 }

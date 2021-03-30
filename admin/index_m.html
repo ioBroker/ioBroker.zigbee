@@ -18,6 +18,7 @@
 <script type="text/javascript" src="words.js"></script>
 
 <script type="text/javascript" src="admin.js"></script>
+<script type="text/javascript" src="shuffle.min.js"></script>
 <style>
     .m .tabs {
         height: auto!important;
@@ -98,8 +99,15 @@
         width: 45px;
         top: 120px;
     }
+    .m .card {
+        margin: 0px;
+    }
     .m .card .zcard {
         padding: 10px;
+    }
+    .device {
+        padding: 5px;
+        width: 290px;
     }
     .m .zcard .card-title {
         font-size: 16px;
@@ -194,6 +202,14 @@
     #map {
         margin-bottom: 0px;
     }
+    #tab-main .main-toolbar-table .filter-input {
+        display: inline-table;
+        padding-left: 6px;
+        height: 24px;
+        width: 10rem;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
 </style>
 </head>
 <body>
@@ -242,14 +258,39 @@
         </div>
         <div id="tabs" class="tabs-content row">
             <div id="tab-main" class="col s12 page active">
-                <div id="devices" style="margin-bottom: 50px" class="row">
+                <div class="navbar-fixed" style="height: 36px">
+                    <nav style="height: 36px; margin-left: -12px">
+                        <div class="nav-wrapper main-toolbar-table">
+                            <div class="col s4 m4 l4 xl3 main-toolbar-table-types-tools main-toolbar-table-filter input-field" style="line-height: 24px;">
+                                <i class="material-icons prefix" style="line-height: 24px;">search</i>
+                                <input id="device-search" class="filter-input translateP" placeholder="Искать" autocomplete="new-password" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Filter">
+                                <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
+                            </div>
+                            <div class="col s4 m4 l4 xl3 input-field" style="line-height: 24px;">
+                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
+                                <a id="device-order-btn" class="dropdown-trigger btn" href="#" data-target="device-order">Default</a>
+                                <ul id="device-order" class="dropdown-content" tabindex="0">
+                                    <li class="device-order-item" data-type="a-z" tabindex="0"><a class="translate" data-lang="A-Z">A-Z</a></li>
+                                    <li class="device-order-item" data-type="default" tabindex="0"><a class="translate" data-lang="Default">Default</a></li>
+                                </ul>
+                            </div>
+                            <div class="col s4 m4 l4 xl3 input-field" style="line-height: 24px;">
+                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">art_track</i>
+                                <a id="room-filter-btn" class="dropdown-trigger btn" href="#" data-target="room-filter">All</a>
+                                <ul id="room-filter" class="dropdown-content" tabindex="0">
+                                </ul>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+                <div id="devices" class="row">
                 </div>
             </div>
             <div id="tab-map" class="col s12 page">
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
                     <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Refresh"><i class="material-icons large">autorenew</i></a>
                 </div>
-                <div id="viewconfigbtn" class="fixed-action-btn top left" style="">
+                <div id="viewconfigbtn" class="fixed-action-btn top left">
                     <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translateT" title="View config"><i class="material-icons large">menu</i></a>
                 </div>
                 <div id="map" class="row">
