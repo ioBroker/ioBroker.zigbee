@@ -161,30 +161,47 @@ function getCard(dev) {
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
-                    <div class="card-content zcard">
-                        <span class="top right small" style="border-radius: 50%">
-                            ${battery}
-                            ${lq}
-                            ${status}
-                        </span>
-                        <!--/a--!>
-                        <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
-                        <i class="left">${image}</i>
-                        ${info}
-                        <div class="footer right-align"></div>
+                    <div class="back face hide">
+                        <div class="card-content zcard">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${battery}
+                                ${lq}
+                                ${status}
+                            </span>
+                            <!--/a--!>
+                            <span id="dName" class="card-title truncate"><button class="flip left btn-flat btn-small return"><i class="material-icons">repeat</i></button>${title}</span><!--${paired}--!>
+                            <i class="left">${image}</i>
+                            ${info}
+                            <div class="footer right-align"></div>
+                        </div>
                     </div>
-                    <div class="card-action">
-                        <div class="card-reveal-buttons">
-                            ${infoBtn}
-                            <span class="left" style="padding-top:8px">${room}</span>
-                            <span class="left fw_info"></span>
-                            <button name="delete" class="right btn-flat btn-small">
-                                <i class="material-icons icon-black">delete</i>
-                            </button>
-                            <button name="edit" class="right btn-flat btn-small">
-                                <i class="material-icons icon-green">edit</i>
-                            </button>
-                            ${permitJoinBtn}
+                    <div class="front face">
+                        <div class="card-content zcard">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${battery}
+                                ${lq}
+                                ${status}
+                            </span>
+                            <!--/a--!>
+                            <span id="dName" class="card-title truncate"><button class="flip left btn-flat btn-small"><i class="material-icons">repeat</i></button>
+                            ${title}</span><!--${paired}--!>
+                            <i class="left">${image}</i>
+                            ${info}
+                            <div class="footer right-align"></div>
+                        </div>
+                        <div class="card-action">
+                            <div class="card-reveal-buttons">
+                                ${infoBtn}
+                                <span class="left" style="padding-top:8px">${room}</span>
+                                <span class="left fw_info"></span>
+                                <button name="delete" class="right btn-flat btn-small">
+                                    <i class="material-icons icon-black">delete</i>
+                                </button>
+                                <button name="edit" class="right btn-flat btn-small">
+                                    <i class="material-icons icon-green">edit</i>
+                                </button>
+                                ${permitJoinBtn}
+                            </div>
                         </div>
                     </div>
                   </div>
@@ -406,6 +423,23 @@ function showDevices() {
     $('#room-filter a').click(function () {
         $('#room-filter-btn').text($(this).text());
         doFilter();
+    });
+    $(".flip").click(function(){
+        const card = $(this).parents(".card");
+        const flipped = card.hasClass("flipped");
+        card.toggleClass("flipped");
+        if (flipped) {
+            card.children(".front").removeClass("hide");
+        } else {
+            card.children(".back").removeClass("hide");
+        }
+        setTimeout(function() {
+            if (flipped) {
+                card.children(".back").addClass("hide");
+            } else {
+                card.children(".front").addClass("hide");
+            }
+        }, 1000);
     });
 
     shuffleInstance = new Shuffle($("#devices"), {
