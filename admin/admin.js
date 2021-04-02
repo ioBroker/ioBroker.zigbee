@@ -161,7 +161,7 @@ function getCard(dev) {
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
-                    <div class="back face hide">
+                    <div class="front face">
                         <div class="card-content zcard">
                             <span class="top right small" style="border-radius: 50%">
                                 ${battery}
@@ -175,7 +175,7 @@ function getCard(dev) {
                             <div class="footer right-align"></div>
                         </div>
                     </div>
-                    <div class="front face">
+                    <div class="back face hide">
                         <div class="card-content zcard">
                             <span class="top right small" style="border-radius: 50%">
                                 ${battery}
@@ -434,12 +434,15 @@ function showDevices() {
             card.children(".back").removeClass("hide");
         }
         setTimeout(function() {
+            const flipped = card.hasClass("flipped");
             if (flipped) {
-                card.children(".back").addClass("hide");
-            } else {
+                card.children(".back").removeClass("hide");
                 card.children(".front").addClass("hide");
+            } else {
+                card.children(".front").removeClass("hide");
+                card.children(".back").addClass("hide");
             }
-        }, 1000);
+        }, 500);
     });
 
     shuffleInstance = new Shuffle($("#devices"), {
