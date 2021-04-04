@@ -159,32 +159,21 @@ function getCard(dev) {
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+    const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
-                    <div class="front face">
-                        <div class="card-content zcard">
-                            <span class="top right small" style="border-radius: 50%">
-                                ${battery}
-                                ${lq}
-                                ${status}
-                            </span>
-                            <!--/a--!>
-                            <span id="dName" class="card-title truncate"><button class="flip left btn-flat btn-small return"><i class="material-icons">repeat</i></button>${title}</span><!--${paired}--!>
-                            <i class="left">${image}</i>
-                            ${info}
-                            <div class="footer right-align"></div>
-                        </div>
-                    </div>
+                    <div class="front face">${dashCard}</div>
                     <div class="back face hide">
                         <div class="card-content zcard">
+                            <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
                                 ${battery}
                                 ${lq}
                                 ${status}
                             </span>
                             <!--/a--!>
-                            <span id="dName" class="card-title truncate"><button class="flip left btn-flat btn-small"><i class="material-icons">repeat</i></button>
-                            ${title}</span><!--${paired}--!>
+                            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                            </div>
                             <i class="left">${image}</i>
                             ${info}
                             <div class="footer right-align"></div>
@@ -2459,4 +2448,50 @@ function doSort() {
 
 function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
+}
+
+function getDashCard(dev) {
+    const title = dev.common.name,
+    id = dev._id,
+    type = dev.common.type,
+    img_src = dev.icon || dev.common.icon,
+    rooms = [],
+    lang = systemLang  || 'en';
+    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
+    const rid = id.split('.').join('_');
+    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
+        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+        battery_cls = getBatteryCls(dev.battery),
+        lqi_cls = getLQICls(dev.link_quality),
+        battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+        lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+                    <ul>
+                        <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
+                        <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
+                        <li><span class="label">model:</span><span>${modelUrl}</span></li>
+                        <li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
+                    </ul>
+                </div>`,
+        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+    const dashCard = `
+        <div class="card-content zcard">
+            <div class="flip" style="cursor: pointer">
+            <span class="top right small" style="border-radius: 50%">
+                ${battery}
+                ${lq}
+                ${status}
+            </span>
+            <!--/a--!>
+            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+            </div>
+            <i class="left">${image}</i>
+            ${info}
+            <div class="footer right-align"></div>
+        </div>`;
+
+    return dashCard;
 }
