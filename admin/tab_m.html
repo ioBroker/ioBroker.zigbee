@@ -99,13 +99,22 @@
     }
     .m .card {
         margin: 0px;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform .5s;
+        -webkit-transition: -webkit-transform .5s;
+        transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
     }
     .m .card .zcard {
         padding: 10px;
     }
     .device {
         padding: 5px;
-        width: 290px;
+        width: 350px;
+        height: 250px;
+        perspective: 600px;
     }
     .m .zcard .card-title {
         font-size: 16px;
@@ -167,7 +176,8 @@
     }
     .m span.label {
         display: inline-block;
-        width: 50px;
+        width: 150px;
+        font-weight: bold;
     }
     .m span.labelinfo {
         display: inline-block;
@@ -201,6 +211,21 @@
         width: 10rem;
         margin-top: 5px;
         margin-bottom: 0;
+    }
+    .face {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    .back {
+        transform: rotateY( 180deg );
+        -webkit-transform: rotateY(180deg);
+    }
+    .card.flipped {
+        transform: rotateY(180deg);
+        -webkit-transform: rotateY(180deg);
     }
 </style>
 </head>
