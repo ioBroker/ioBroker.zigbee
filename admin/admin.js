@@ -438,6 +438,7 @@ function showDevices() {
         itemSelector: '.device',
         sizer: '.js-shuffle-sizer',
     });
+    doFilter();
 
     const getDevName = function(dev_block) {
         return dev_block.find('#dName').text();
@@ -2469,20 +2470,20 @@ function getDashCard(dev) {
         status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
-    const reserv = ['link_quality', 'available', 'battery', 'groups', 'device_query'];
     const info = dev.statesDef.map((stateDef)=>{
-        const id = stateDef._id;
-        const name = id.split('.').pop();
-        if (reserv.includes(name)) return '';
-        let val = (dev.states[id]) ? dev.states[id].val : '';
-        if (stateDef.common.role == 'switch') {
+        const id = stateDef.id;
+        let val = stateDef.val || '';
+        if (stateDef.role == 'switch') {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? "checked" : ""}><span class="lever"></span></label></span>`;
-        }
-        if (stateDef.common.role == 'level.dimmer') {
+        } else if (stateDef.role == 'level.dimmer') {
             val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
+        } else if (stateDef.role == 'level.color.temperature') {
+            val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
+        } else if (stateDef.type == 'boolean') {
+            const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
+            val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
         }
-
-        return `<li><span class="label">${stateDef.common.name}</span><span id=${id}>${val}</span></li>`;
+        return `<li><span class="label">${stateDef.name}</span><span id=${id}>${val}</span></li>`;
     }).join('');
     const dashCard = `
         <div class="card-content zcard">
@@ -2495,7 +2496,7 @@ function getDashCard(dev) {
             <span id="dName" class="card-title truncate">${title}</span>
             </div>
             <i class="left">${image}</i>
-            <div style="min-height:88px; font-size: 1em" class="truncate">
+            <div style="min-height:88px; font-size: 0.8em" class="truncate">
                 <ul>
                     ${info}
                 </ul>

@@ -242,6 +242,23 @@
         width: 70px;
         margin: 0px;
     }
+    .m .dash input[type=checkbox]:checked+span:not(.lever):before {
+        width: 10px;
+        height: 16px;
+    }
+    .m .dash input[type=checkbox]+span:not(.lever):before {
+        width: 10px;
+        height: 12px;
+    }
+    .m .dash input[type="checkbox"]+span:not(.lever) {
+        width: 10px;
+        height: 12px;
+        margin-left: 25px;
+        margin-top: -1px;
+    }
+    .m .dash input[type=checkbox]:not(:checked):disabled+span:not(.lever):before {
+        background-color: rgba(0,0,0,.1);
+    }
 </style>
 </head>
 <body>
