@@ -176,6 +176,11 @@
     }
     .m span.label {
         display: inline-block;
+        width: 100px;
+        font-weight: bold;
+    }
+    .m span.label.dash {
+        display: inline-block;
         width: 150px;
         font-weight: bold;
     }
@@ -258,6 +263,9 @@
     }
     .m .dash input[type=checkbox]:not(:checked):disabled+span:not(.lever):before {
         background-color: rgba(0,0,0,.1);
+    }
+    .m span .dash.value {
+        margin-left: 25px;
     }
 </style>
 </head>

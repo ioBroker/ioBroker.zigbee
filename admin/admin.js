@@ -2485,8 +2485,10 @@ function getDashCard(dev) {
         } else if (stateDef.type == 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
+        } else {
+            val = `<span class="dash value">${val}</span>`;
         }
-        return `<li><span class="label">${stateDef.name}</span><span id=${sid}>${val}</span></li>`;
+        return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid}>${val}</span></li>`;
     }).join('');
     const dashCard = `
         <div class="card-content zcard">
