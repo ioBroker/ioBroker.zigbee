@@ -2467,26 +2467,22 @@ function getDashCard(dev) {
         battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
         lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
-        // info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
-        //             <ul>
-        //                 <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
-        //                 <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-        //                 <li><span class="label">model:</span><span>${modelUrl}</span></li>
-        //                 <li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
-        //             </ul>
-        //         </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+    const reserv = ['link_quality', 'available', 'battery', 'groups', 'device_query'];
     const info = dev.statesDef.map((stateDef)=>{
         const id = stateDef._id;
+        const name = id.split('.').pop();
+        if (reserv.includes(name)) return '';
         let val = (dev.states[id]) ? dev.states[id].val : '';
         if (stateDef.common.role == 'switch') {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? "checked" : ""}><span class="lever"></span></label></span>`;
         }
         if (stateDef.common.role == 'level.dimmer') {
-            val = `<p class="range-field"><input type="range" min="0" max="100" /></p>`;
+            val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
         }
-        return `<li><span class="label">${stateDef.common.name}</span><span>${val}</span></li>`;
+
+        return `<li><span class="label">${stateDef.common.name}</span><span id=${id}>${val}</span></li>`;
     }).join('');
     const dashCard = `
         <div class="card-content zcard">
@@ -2499,7 +2495,7 @@ function getDashCard(dev) {
             <span id="dName" class="card-title truncate">${title}</span>
             </div>
             <i class="left">${image}</i>
-            <div style="min-height:88px; font-size: 0.8em" class="truncate">
+            <div style="min-height:88px; font-size: 1em" class="truncate">
                 <ul>
                     ${info}
                 </ul>

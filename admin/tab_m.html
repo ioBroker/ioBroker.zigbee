@@ -113,7 +113,7 @@
     .device {
         padding: 5px;
         width: 350px;
-        height: 250px;
+        height: 200px;
         perspective: 600px;
     }
     .m .zcard .card-title {
@@ -226,6 +226,21 @@
     .card.flipped {
         transform: rotateY(180deg);
         -webkit-transform: rotateY(180deg);
+    }
+    .m .switch label .lever {
+        width: 30px;
+        height: 12px;
+    }
+    .m .switch label .lever:after, .m .switch label .lever:before {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        left: 0;
+        top: -1px;
+    }
+    .m .dash input[type=range] {
+        width: 70px;
+        margin: 0px;
     }
 </style>
 </head>
