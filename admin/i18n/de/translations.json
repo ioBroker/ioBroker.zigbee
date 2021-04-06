@@ -82,7 +82,7 @@
     "Touchlink reset and pairing": "Touchlink zurücksetzen und koppeln",
     "Transport Kex Text": "Transportschlüssel ist der Netzwerkverschlüsselungsschlüssel. Bitte wähle eine zufällige Schlüsselsequenz <b>bevor</b> du Geräte koppelst. Gib einfach 32 zufällige Hex-Zeichen ein (a-f und 0-9). Wenn du den Schlüssel später änderst, musst du alle Geräte neu koppeln.",
     "Transport Key": "Transportschlüssel",
-    "Type": "Type",
+    "Type": "Typ",
     "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Entkoppele die Fernbedienung vom Koordinator (erforderlich für einige Fernbedienungen wie HUE Dimmer Switch).",
     "View config": "Konfiguration anzeigen",
     "Waiting": "Warten",
@@ -99,5 +99,4 @@
     "to make it available for other user too": "um es auch für andere Benutzer verfügbar zu machen",
     "Excludes": "ausschließen",
     "ExcludeTextTranslation": "Sie können hier einige Geräte hinzufügen, die von unserer Beschreibung ausgeschlossen werden sollten. Sie verwenden nur exposes vom ZigBee-Herdsman-Converter. Nach dem Hinzufügen starten Sie bitte den Adapter neu"
-
 }
