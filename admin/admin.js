@@ -829,6 +829,8 @@ socket.on('stateChange', function (id, state) {
                 $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
                 $(`#${rid}`).text(state.val);
             }
+            // set other states 
+            setDashStates(id, state);
         }
     }
 });
@@ -2472,6 +2474,7 @@ function getDashCard(dev) {
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const info = dev.statesDef.map((stateDef)=>{
         const id = stateDef.id;
+        const sid = id.split('.').join('_');
         let val = stateDef.val || '';
         if (stateDef.role == 'switch') {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? "checked" : ""}><span class="lever"></span></label></span>`;
@@ -2483,7 +2486,7 @@ function getDashCard(dev) {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
         }
-        return `<li><span class="label">${stateDef.name}</span><span id=${id}>${val}</span></li>`;
+        return `<li><span class="label">${stateDef.name}</span><span id=${sid}>${val}</span></li>`;
     }).join('');
     const dashCard = `
         <div class="card-content zcard">
@@ -2505,4 +2508,26 @@ function getDashCard(dev) {
         </div>`;
 
     return dashCard;
+}
+
+function setDashStates(id, state) {
+    const devId = getDevId(id);
+    const dev = getDeviceByID(devId);
+    if (dev) {
+        const stateDef = dev.statesDef.find((stateDef)=> stateDef.id == id);
+        if (stateDef) {
+            const sid = id.split('.').join('_');
+            if (stateDef.role == 'switch') {
+                $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
+            } else if (stateDef.role == 'level.dimmer') {
+                //val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
+            } else if (stateDef.role == 'level.color.temperature') {
+                //val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
+            } else if (stateDef.type == 'boolean') {
+                $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
+            } else {
+                $(`#${sid}`).text(state.val);
+            }
+        }
+    }
 }
