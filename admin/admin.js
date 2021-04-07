@@ -2486,7 +2486,7 @@ function getDashCard(dev) {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
         } else {
-            val = `<span class="dash value">${val}</span>`;
+            val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
         return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid}>${val}</span></li>`;
     }).join('');
@@ -2501,7 +2501,7 @@ function getDashCard(dev) {
             <span id="dName" class="card-title truncate">${title}</span>
             </div>
             <i class="left">${image}</i>
-            <div style="min-height:88px; font-size: 0.8em" class="truncate">
+            <div style="min-height:88px; font-size: 0.8em; height: 130px; overflow-y: auto" class="truncate">
                 <ul>
                     ${info}
                 </ul>
@@ -2528,7 +2528,7 @@ function setDashStates(id, state) {
             } else if (stateDef.type == 'boolean') {
                 $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
             } else {
-                $(`#${sid}`).text(state.val);
+                $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
             }
         }
     }
