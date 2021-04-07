@@ -395,6 +395,8 @@ function showDevices() {
         }
     }
     $('#devices').html(html);
+    hookControls();
+
     // update rooms filter
     const allRooms = new Set(devices.map((item)=>item.rooms).flat().map((room)=>{
         if (room && room.hasOwnProperty(lang)) {
@@ -2488,7 +2490,7 @@ function getDashCard(dev) {
         } else {
             val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
-        return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid}>${val}</span></li>`;
+        return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
     }).join('');
     const dashCard = `
         <div class="card-content zcard">
@@ -2532,4 +2534,14 @@ function setDashStates(id, state) {
             }
         }
     }
+}
+
+function hookControls() {
+    $("input[type='checkbox']").change(function (event) {
+        const val = $(this).is(':checked');
+        const id = $(this).parents(".state").attr('oid');
+        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
+            //console.log(data);
+        });
+    });
 }
