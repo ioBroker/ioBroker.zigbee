@@ -2547,7 +2547,6 @@ function hookControls() {
     $("input[type='range']").change(function (event) {
         const val = $(this).val();
         const id = $(this).parents(".state").attr('oid');
-        console.log(id, val);
         sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
             //console.log(data);
         });
