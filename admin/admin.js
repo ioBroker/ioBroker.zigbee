@@ -27,7 +27,7 @@ let devices = [],
     },
     cidList,
     shuffleInstance;
-
+const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
@@ -825,6 +825,8 @@ socket.on('stateChange', function (id, state) {
                 // update link_quality
                 $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getLQICls(state.val));
                 $(`#${rid}`).text(state.val);
+                const dev = getDeviceByID(devId);
+                dev.link_quality_lc = state.lc;
             }
             if (id.match(/\.battery$/)) {
                 // update battery
@@ -840,17 +842,17 @@ socket.on('stateChange', function (id, state) {
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
     //console.log('objectChange', id, obj);
-    if (obj && obj.type == 'device' && obj.common.type !== 'group') {
-        getDevices();
-    }
-    if (!obj) {
-        // delete state or device
-        const elems = id.split('.');
-        //console.log('elems', elems);
-        if (elems.length === 3) {
-            getDevices();
-        }
-    }
+    // if (obj && obj.type == 'device' && obj.common.type !== 'group') {
+    //     getDevices();
+    // }
+    // if (!obj) {
+    //     // delete state or device
+    //     const elems = id.split('.');
+    //     //console.log('elems', elems);
+    //     if (elems.length === 3) {
+    //         getDevices();
+    //     }
+    // }
 });
 /*
 socket.emit('getObject', 'system.config', function (err, res) {
@@ -2473,7 +2475,8 @@ function getDashCard(dev) {
         lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
+        idleTime = (dev.link_quality_lc > 0) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
     const info = dev.statesDef.map((stateDef)=>{
         const id = stateDef.id;
         const sid = id.split('.').join('_');
@@ -2496,6 +2499,7 @@ function getDashCard(dev) {
         <div class="card-content zcard">
             <div class="flip" style="cursor: pointer">
             <span class="top right small" style="border-radius: 50%">
+                ${idleTime}
                 ${battery}
                 ${lq}
                 ${status}
@@ -2551,4 +2555,20 @@ function hookControls() {
             //console.log(data);
         });
     });
+}
+
+function getIdleTime(value) {
+    return (value) ? moment(new Date(value)).fromNow(true) : "";
+}
+
+function updateCardTimer() {
+    if (devices) {
+        devices.forEach((dev)=>{
+            const id = dev._id;
+            if (id) {
+                const rid = id.split('.').join('_');
+                $(`#${rid}_link_quality_lc`).text(getIdleTime(dev.link_quality_lc));
+            }
+        });
+    }
 }

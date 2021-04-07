@@ -19,6 +19,7 @@
 
 <script type="text/javascript" src="admin.js"></script>
 <script type="text/javascript" src="shuffle.min.js"></script>
+<script type="text/javascript" src="moment.min.js"></script>
 <style>
     .m .tabs {
         height: auto!important;
@@ -274,6 +275,9 @@
     }
     .m span .dash.value {
         margin-left: 25px;
+    }
+    .m .idletime {
+        padding-left: 15px;
     }
 </style>
 </head>
@@ -911,7 +915,7 @@
         </div>
         <div id="modaldevinfo" class="modal modal-fixed-footer modal-fixed-header">
             <div class="modal-header">
-                <h3 class="translate">Device information</h3>
+                <h5 class="translate">Device information</h5>
             </div>
             <div class="modal-content">
                 <div id="devinfo" class="row">
