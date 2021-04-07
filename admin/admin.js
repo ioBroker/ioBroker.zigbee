@@ -2481,9 +2481,9 @@ function getDashCard(dev) {
         if (stateDef.role == 'switch') {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? "checked" : ""}><span class="lever"></span></label></span>`;
         } else if (stateDef.role == 'level.dimmer') {
-            val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
+            val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
         } else if (stateDef.role == 'level.color.temperature') {
-            val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
+            val = `<span class="range-field dash"><input type="range" min="200" max="9000" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
         } else if (stateDef.type == 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
@@ -2524,9 +2524,9 @@ function setDashStates(id, state) {
             if (stateDef.role == 'switch') {
                 $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
             } else if (stateDef.role == 'level.dimmer') {
-                //val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
+                $(`#${sid}`).find("input[type='range']").prop('value', state.val);
             } else if (stateDef.role == 'level.color.temperature') {
-                //val = `<span class="range-field dash"><input type="range" min="0" max="100" /></span>`;
+                $(`#${sid}`).find("input[type='range']").prop('value', state.val);
             } else if (stateDef.type == 'boolean') {
                 $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
             } else {
@@ -2540,6 +2540,14 @@ function hookControls() {
     $("input[type='checkbox']").change(function (event) {
         const val = $(this).is(':checked');
         const id = $(this).parents(".state").attr('oid');
+        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
+            //console.log(data);
+        });
+    });
+    $("input[type='range']").change(function (event) {
+        const val = $(this).val();
+        const id = $(this).parents(".state").attr('oid');
+        console.log(id, val);
         sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
             //console.log(data);
         });
