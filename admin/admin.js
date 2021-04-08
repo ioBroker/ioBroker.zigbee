@@ -2481,11 +2481,11 @@ function getDashCard(dev) {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
         let val = stateDef.val || '';
-        if (stateDef.role == 'switch') {
+        if (stateDef.role == 'switch' && stateDef.write) {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? "checked" : ""}><span class="lever"></span></label></span>`;
-        } else if (stateDef.role == 'level.dimmer') {
+        } else if (stateDef.role == 'level.dimmer' && stateDef.write) {
             val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
-        } else if (stateDef.role == 'level.color.temperature') {
+        } else if (stateDef.role == 'level.color.temperature' && stateDef.write) {
             val = `<span class="range-field dash"><input type="range" min="200" max="9000" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
         } else if (stateDef.type == 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
@@ -2525,11 +2525,11 @@ function setDashStates(id, state) {
         const stateDef = dev.statesDef.find((stateDef)=> stateDef.id == id);
         if (stateDef) {
             const sid = id.split('.').join('_');
-            if (stateDef.role == 'switch') {
+            if (stateDef.role == 'switch' && stateDef.write) {
                 $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
-            } else if (stateDef.role == 'level.dimmer') {
+            } else if (stateDef.role == 'level.dimmer' && stateDef.write) {
                 $(`#${sid}`).find("input[type='range']").prop('value', state.val);
-            } else if (stateDef.role == 'level.color.temperature') {
+            } else if (stateDef.role == 'level.color.temperature' && stateDef.write) {
                 $(`#${sid}`).find("input[type='range']").prop('value', state.val);
             } else if (stateDef.type == 'boolean') {
                 $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
