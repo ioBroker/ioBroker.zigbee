@@ -2504,7 +2504,7 @@ function getDashCard(dev) {
                 ${lq}
                 ${status}
             </span>
-            <span id="dName" class="card-title truncate">${title}</span>
+            <span class="card-title truncate">${title}</span>
             </div>
             <i class="left">${image}</i>
             <div style="min-height:88px; font-size: 0.8em; height: 130px; overflow-y: auto" class="truncate">
