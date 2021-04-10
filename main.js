@@ -109,7 +109,7 @@ class Zigbee extends utils.Adapter {
             let em =  error.stack.match(/failed \((.+?)\) at/);
             if (!em) em = error.stack.match(/failed \((.+?)\)/);
             this.log.error(`${message} no error code (${(em ? em[1]:'undefined')})`);
-            this.log.debug(`Stack trace for ${em}: ${error.stack}`);
+            this.log.warn(`Stack trace for ${em}: ${error.stack}`);
             return;
         }
         const ecode = errorCodes[error.code];
@@ -437,7 +437,9 @@ class Zigbee extends utils.Adapter {
     }
 
     async publishFromState(deviceId, model, stateModel, stateList, options){
+        let isGroup = false;
         if (model == 'group') {
+            isGroup = true;
             deviceId = parseInt(deviceId);
         }
         const entity = await this.zbController.resolveEntity(deviceId);
@@ -537,6 +539,9 @@ class Zigbee extends utils.Adapter {
                     this.acknowledgeState(deviceId, model, stateDesc, value);
                 // process sync state list
                 this.processSyncStatesList(deviceId, model, syncStateList);
+                if (isGroup) {
+                    this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc])
+                }
             } catch(error) {
                 this.filterError(`Error ${error.code} on send command to ${deviceId}.`+
                    ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
