@@ -580,8 +580,12 @@ class Zigbee extends utils.Adapter {
         if (payload_obj.hasOwnProperty('device') && payload_obj.hasOwnProperty('payload'))
         {
             try {
+                const isDevice =  payload.device.indexOf('group_') == -1;
                 let stateList = [];
-                const entity = await this.zbController.resolveEntity(`0x${payload.device}`);
+                const devID = (isDevice ? `0x${payload.device}`:parseInt(payload.device.replace('group_', '')));
+                this.log.warn(`A ${payload.device} ${devID}`);
+
+                const entity = await this.zbController.resolveEntity(devID);;
                 if (!entity) {
                     this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`);
                     return {success: false, error: `Device ${safeJsonStringify(payload_obj.device)} not found`};
@@ -609,7 +613,7 @@ class Zigbee extends utils.Adapter {
                 }
                 try {
                     this.log.debug(`Calling publish to state for ${safeJsonStringify(payload_obj.device)} with ${safeJsonStringify(stateList)}`)
-                    await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, undefined);
+                    await this.publishFromState(devID, (isDevice ? '': 'group'), undefined, stateList, undefined);
                     return {success: true};
                 }
                 catch (error)
