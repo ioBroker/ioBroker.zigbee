@@ -48,6 +48,7 @@ const errorCodes = {
     9999: { severity:E_INFO, message:'No response'},
     233: { severity:E_DEBUG, message:'MAC NO ACK'},
     205: { severity:E_WARN, message:'No network route'},
+    134: { severity:E_ERROR, message:'Unnsupported Attribute'},
 };
 
 
@@ -109,7 +110,7 @@ class Zigbee extends utils.Adapter {
             let em =  error.stack.match(/failed \((.+?)\) at/);
             if (!em) em = error.stack.match(/failed \((.+?)\)/);
             this.log.error(`${message} no error code (${(em ? em[1]:'undefined')})`);
-            this.log.warn(`Stack trace for ${em}: ${error.stack}`);
+            this.log.debug(`Stack trace for ${em}: ${error.stack}`);
             return;
         }
         const ecode = errorCodes[error.code];
@@ -162,7 +163,7 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('msg', this.onZigbeeEvent.bind(this));
         this.zbController.on('publish', this.publishToState.bind(this));
         this.zbController.configure(zigbeeOptions);
-        this.callPluginMethod('configure', [zigbeeOptions]);
+        await this.callPluginMethod('configure', [zigbeeOptions]);
 
         this.reconnectCounter = 1;
         this.doConnect();
@@ -241,11 +242,11 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    onZigbeeAdapterDisconnected() {
+    async onZigbeeAdapterDisconnected() {
         this.reconnectCounter = 5;
         this.log.error('Adapter disconnected, stopping');
         this.setState('info.connection', false);
-        this.callPluginMethod('stop');
+        await this.callPluginMethod('stop');
         this.tryToReconnect();
     }
 
@@ -326,7 +327,7 @@ class Zigbee extends utils.Adapter {
                 });
             }
         }
-        this.callPluginMethod('start', [this.zbController, this.stController]);
+        await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
     async checkIfModelUpdate(entity) {
@@ -534,13 +535,13 @@ class Zigbee extends utils.Adapter {
             try {
                 const result = await converter.convertSet(target, key, preparedValue, meta);
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
-
-                if (stateModel)
+                if (stateModel && !isGroup)
                     this.acknowledgeState(deviceId, model, stateDesc, value);
                 // process sync state list
                 this.processSyncStatesList(deviceId, model, syncStateList);
                 if (isGroup) {
-                    this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc])
+                    await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc])
+                    this.acknowledgeState(deviceId, model, stateDesc, value);
                 }
             } catch(error) {
                 this.filterError(`Error ${error.code} on send command to ${deviceId}.`+
@@ -659,17 +660,18 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    callPluginMethod(method, parameters) {
+    async callPluginMethod(method, parameters) {
         for (const plugin of this.plugins) {
             if (plugin[method]) {
                 try {
                     if (parameters !== undefined) {
-                        plugin[method](...parameters);
+                        await plugin[method](...parameters);
                     } else {
-                        plugin[method]();
+                        await plugin[method]();
                     }
                 } catch (error) {
-                    this.log.error(`Failed to call '${plugin.constructor.name}' '${method}' (${error.stack})`);
+                    if (error && !error.hasOwnProperty('code'))
+                        this.log.error(`Failed to call '${plugin.constructor.name}' '${method}' (${error.stack})`);
                     throw error;
                 }
             }
@@ -688,7 +690,7 @@ class Zigbee extends utils.Adapter {
 
             this.log.info('cleaned everything up...');
             if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
-            this.callPluginMethod('stop');
+            await this.callPluginMethod('stop');
             if (this.zbController) {
                 await this.zbController.stop();
             }
