@@ -1613,17 +1613,15 @@ function updateDev(id, newName, newGroups) {
         if (oldGroups.toString() != newGroups.toString()) {
             devGroups[id] = newGroups;
             sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
-                if (msg) {
-                    if (msg.error) {
+                if (msg && msg.error) {
                         showMessage(msg.error, _('Error'));
                     }
-                }
-                else {
-                // save dev-groups on success
-                    dev.groups = newGroups;
-                }
+                    else {
+                    // save dev-groups on success
+                        dev.groups = newGroups;
+                    }
+                showDevices();
             });
-            showDevices();
         }
     }
 }
