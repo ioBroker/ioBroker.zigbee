@@ -48,6 +48,7 @@ const errorCodes = {
     9999: { severity:E_INFO, message:'No response'},
     233: { severity:E_DEBUG, message:'MAC NO ACK'},
     205: { severity:E_WARN, message:'No network route'},
+    134: { severity:E_ERROR, message:'Unnsupported Attribute'},
 };
 
 
@@ -162,7 +163,7 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('msg', this.onZigbeeEvent.bind(this));
         this.zbController.on('publish', this.publishToState.bind(this));
         this.zbController.configure(zigbeeOptions);
-        this.callPluginMethod('configure', [zigbeeOptions]);
+        await this.callPluginMethod('configure', [zigbeeOptions]);
 
         this.reconnectCounter = 1;
         this.doConnect();
@@ -241,11 +242,11 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    onZigbeeAdapterDisconnected() {
+    async onZigbeeAdapterDisconnected() {
         this.reconnectCounter = 5;
         this.log.error('Adapter disconnected, stopping');
         this.setState('info.connection', false);
-        this.callPluginMethod('stop');
+        await this.callPluginMethod('stop');
         this.tryToReconnect();
     }
 
@@ -326,7 +327,7 @@ class Zigbee extends utils.Adapter {
                 });
             }
         }
-        this.callPluginMethod('start', [this.zbController, this.stController]);
+        await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
     async checkIfModelUpdate(entity) {
@@ -437,7 +438,9 @@ class Zigbee extends utils.Adapter {
     }
 
     async publishFromState(deviceId, model, stateModel, stateList, options){
+        let isGroup = false;
         if (model == 'group') {
+            isGroup = true;
             deviceId = parseInt(deviceId);
         }
         const entity = await this.zbController.resolveEntity(deviceId);
@@ -532,11 +535,14 @@ class Zigbee extends utils.Adapter {
             try {
                 const result = await converter.convertSet(target, key, preparedValue, meta);
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
-
-                if (stateModel)
+                if (stateModel && !isGroup)
                     this.acknowledgeState(deviceId, model, stateDesc, value);
                 // process sync state list
                 this.processSyncStatesList(deviceId, model, syncStateList);
+                if (isGroup) {
+                    await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc])
+                    this.acknowledgeState(deviceId, model, stateDesc, value);
+                }
             } catch(error) {
                 this.filterError(`Error ${error.code} on send command to ${deviceId}.`+
                    ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
@@ -575,8 +581,12 @@ class Zigbee extends utils.Adapter {
         if (payload_obj.hasOwnProperty('device') && payload_obj.hasOwnProperty('payload'))
         {
             try {
+                const isDevice =  payload.device.indexOf('group_') == -1;
                 let stateList = [];
-                const entity = await this.zbController.resolveEntity(`0x${payload.device}`);
+                const devID = (isDevice ? `0x${payload.device}`:parseInt(payload.device.replace('group_', '')));
+                this.log.warn(`A ${payload.device} ${devID}`);
+
+                const entity = await this.zbController.resolveEntity(devID);;
                 if (!entity) {
                     this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`);
                     return {success: false, error: `Device ${safeJsonStringify(payload_obj.device)} not found`};
@@ -604,7 +614,7 @@ class Zigbee extends utils.Adapter {
                 }
                 try {
                     this.log.debug(`Calling publish to state for ${safeJsonStringify(payload_obj.device)} with ${safeJsonStringify(stateList)}`)
-                    await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, undefined);
+                    await this.publishFromState(devID, (isDevice ? '': 'group'), undefined, stateList, undefined);
                     return {success: true};
                 }
                 catch (error)
@@ -650,17 +660,18 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    callPluginMethod(method, parameters) {
+    async callPluginMethod(method, parameters) {
         for (const plugin of this.plugins) {
             if (plugin[method]) {
                 try {
                     if (parameters !== undefined) {
-                        plugin[method](...parameters);
+                        await plugin[method](...parameters);
                     } else {
-                        plugin[method]();
+                        await plugin[method]();
                     }
                 } catch (error) {
-                    this.log.error(`Failed to call '${plugin.constructor.name}' '${method}' (${error.stack})`);
+                    if (error && !error.hasOwnProperty('code'))
+                        this.log.error(`Failed to call '${plugin.constructor.name}' '${method}' (${error.stack})`);
                     throw error;
                 }
             }
@@ -679,7 +690,7 @@ class Zigbee extends utils.Adapter {
 
             this.log.info('cleaned everything up...');
             if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
-            this.callPluginMethod('stop');
+            await this.callPluginMethod('stop');
             if (this.zbController) {
                 await this.zbController.stop();
             }
