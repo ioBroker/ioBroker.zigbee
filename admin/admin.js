@@ -2490,6 +2490,13 @@ function getDashCard(dev) {
         } else if (stateDef.type == 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
+        } else if (stateDef.states && stateDef.write) {
+            const sts = stateDef.states.split(';');
+            const options = sts.map((item) => {
+                const v = item.split(':');
+                return `<option value="${v[0]}" ${(val == v[0]) ? "selected" : ""}>${v[1]}</option>`;
+            });
+            val = `<select class="browser-default enum" style="height: 16px; padding: 0px; width: auto; display: inline-block">${options.join('')}</select>`;
         } else {
             val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
@@ -2531,6 +2538,8 @@ function setDashStates(id, state) {
                 $(`#${sid}`).find("input[type='range']").prop('value', state.val);
             } else if (stateDef.role == 'level.color.temperature' && stateDef.write) {
                 $(`#${sid}`).find("input[type='range']").prop('value', state.val);
+            } else if (stateDef.states && stateDef.write) {
+                $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
             } else if (stateDef.type == 'boolean') {
                 $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
             } else {
@@ -2549,6 +2558,13 @@ function hookControls() {
         });
     });
     $("input[type='range']").change(function (event) {
+        const val = $(this).val();
+        const id = $(this).parents(".state").attr('oid');
+        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
+            //console.log(data);
+        });
+    });
+    $(".state select").on( "change", function () {
         const val = $(this).val();
         const id = $(this).parents(".state").attr('oid');
         sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
