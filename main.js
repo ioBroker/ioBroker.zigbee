@@ -87,19 +87,20 @@ class Zigbee extends utils.Adapter {
     async onMessage(obj) {
         if (typeof obj === 'object' && obj.command) {
             switch (obj.command) {
-                case 'SendToDevice':
-                let rv = {
-                    success: false,
-                    loc:-1,
-                };
-                try {
-                    rv = await this.SendPayload(obj.message);
+                case 'SendToDevice': {
+                    let rv = {
+                        success: false,
+                        loc:-1,
+                    };
+                    try {
+                        rv = await this.SendPayload(obj.message);
+                    }
+                    catch (e) {
+                        rv.error = e;
+                    }
+                    this.sendTo(obj.from, obj.command, rv, obj.callback);
+                    break;
                 }
-                catch (e) {
-                    rv.error = e;
-                }
-                this.sendTo(obj.from, obj.command, rv, obj.callback);
-                break;
             }
         }
     }
@@ -540,7 +541,7 @@ class Zigbee extends utils.Adapter {
                 // process sync state list
                 this.processSyncStatesList(deviceId, model, syncStateList);
                 if (isGroup) {
-                    await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc])
+                    await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
                     this.acknowledgeState(deviceId, model, stateDesc, value);
                 }
             } catch(error) {
@@ -570,9 +571,9 @@ class Zigbee extends utils.Adapter {
         let payload_obj = {};
         if (typeof payload === 'string') {
             try {
-                payload_obj = JSON.parse()
+                payload_obj = JSON.parse();
             } catch (e) {
-                this.log.error(`Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`)
+                this.log.error(`Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
                 return {success:false, error: `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`};
             }
         } else if (typeof payload === 'object') {
@@ -582,11 +583,11 @@ class Zigbee extends utils.Adapter {
         {
             try {
                 const isDevice =  payload.device.indexOf('group_') == -1;
-                let stateList = [];
+                const stateList = [];
                 const devID = (isDevice ? `0x${payload.device}`:parseInt(payload.device.replace('group_', '')));
                 this.log.warn(`A ${payload.device} ${devID}`);
 
-                const entity = await this.zbController.resolveEntity(devID);;
+                const entity = await this.zbController.resolveEntity(devID);
                 if (!entity) {
                     this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`);
                     return {success: false, error: `Device ${safeJsonStringify(payload_obj.device)} not found`};
@@ -600,7 +601,7 @@ class Zigbee extends utils.Adapter {
                     this.log.error(`Illegal payload type for ${safeJsonStringify(payload_obj.device)}`);
                     return {success: false, error: `Illegal payload type for ${safeJsonStringify(payload_obj.device)}`};
                 }
-                for (var key in payload_obj.payload) {
+                for (const key in payload_obj.payload) {
                     if (payload_obj.payload[key] != undefined) {
                         const datatype = typeof payload_obj.payload[key];
                         stateList.push({stateDesc: {
@@ -609,11 +610,11 @@ class Zigbee extends utils.Adapter {
                             role:'state',
                             type:datatype,
                             epname:payload_obj.endpoint,
-                        }, value: payload_obj.payload[key], index:0, timeout:0})
+                        }, value: payload_obj.payload[key], index:0, timeout:0});
                     }
                 }
                 try {
-                    this.log.debug(`Calling publish to state for ${safeJsonStringify(payload_obj.device)} with ${safeJsonStringify(stateList)}`)
+                    this.log.debug(`Calling publish to state for ${safeJsonStringify(payload_obj.device)} with ${safeJsonStringify(stateList)}`);
                     await this.publishFromState(devID, (isDevice ? '': 'group'), undefined, stateList, undefined);
                     return {success: true};
                 }
