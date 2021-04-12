@@ -684,7 +684,7 @@ function load(settings, onChange) {
     });
 
     sendTo(namespace, 'getGroups', {}, function (data) {
-        groups = data;
+        groups = data.groups;
         showGroups();
     });
 
@@ -1659,12 +1659,12 @@ function deleteGroupConfirmation(id, name) {
 function updateGroup(id, newId, newName) {
     delete groups[id];
     groups[newId] = newName;
-    sendTo(namespace, 'updateGroups', groups);
+    sendTo(namespace, 'renameGroup', { id: newId, name: newName} );
 }
 
 function deleteGroup(id) {
     delete groups[id];
-    sendTo(namespace, 'updateGroups', groups);
+    sendTo(namespace, 'deleteGroup', id );
 }
 
 function updateDev(id, newName, newGroups) {
@@ -1676,16 +1676,16 @@ function updateDev(id, newName, newGroups) {
         const oldGroups = devGroups[id] || [];
         if (oldGroups.toString() != newGroups.toString()) {
             devGroups[id] = newGroups;
-            dev.groups = newGroups;
-            // save dev-groups
-            sendTo(namespace, 'groupDevices', devGroups, function (msg) {
-                if (msg) {
-                    if (msg.error) {
+            sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
+                if (msg && msg.error) {
                         showMessage(msg.error, _('Error'));
                     }
-                }
+                    else {
+                    // save dev-groups on success
+                        dev.groups = newGroups;
+                    }
+                showDevices();
             });
-            showDevices();
         }
     }
 }
