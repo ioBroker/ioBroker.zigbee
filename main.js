@@ -48,7 +48,7 @@ const errorCodes = {
     9999: { severity:E_INFO, message:'No response'},
     233: { severity:E_DEBUG, message:'MAC NO ACK'},
     205: { severity:E_WARN, message:'No network route'},
-    134: { severity:E_ERROR, message:'Unnsupported Attribute'},
+    134: { severity:E_WARN, message:'Unnsupported Attribute'},
 };
 
 
