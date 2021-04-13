@@ -27,7 +27,7 @@ let devices = [],
     },
     cidList,
     shuffleInstance;
-
+const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
@@ -151,40 +151,46 @@ function getCard(dev) {
         status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-                        <li><span class="label">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
-                        <li><span class="label">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-                        <li><span class="label">model:</span><span>${modelUrl}</span></li>
-                        <li><span class="label">groups:</span><span>${dev.groupNames || ''}</span></li>
+                        <li><span class="labelinfo">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
+                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
+                        <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
+                        <li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+    const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
-                    <div class="card-content zcard">
-                        <span class="top right small" style="border-radius: 50%">
-                            ${battery}
-                            ${lq}
-                            ${status}
-                        </span>
-                        <!--/a--!>
-                        <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
-                        <i class="left">${image}</i>
-                        ${info}
-                        <div class="footer right-align"></div>
-                    </div>
-                    <div class="card-action">
-                        <div class="card-reveal-buttons">
-                            ${infoBtn}
-                            <span class="left" style="padding-top:8px">${room}</span>
-                            <span class="left fw_info"></span>
-                            <button name="delete" class="right btn-flat btn-small">
-                                <i class="material-icons icon-black">delete</i>
-                            </button>
-                            <button name="edit" class="right btn-flat btn-small">
-                                <i class="material-icons icon-green">edit</i>
-                            </button>
-                            ${permitJoinBtn}
+                    <div class="front face">${dashCard}</div>
+                    <div class="back face hide">
+                        <div class="card-content zcard">
+                            <div class="flip" style="cursor: pointer">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${battery}
+                                ${lq}
+                                ${status}
+                            </span>
+                            <!--/a--!>
+                            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                            </div>
+                            <i class="left">${image}</i>
+                            ${info}
+                            <div class="footer right-align"></div>
+                        </div>
+                        <div class="card-action">
+                            <div class="card-reveal-buttons">
+                                ${infoBtn}
+                                <span class="left" style="padding-top:8px">${room}</span>
+                                <span class="left fw_info"></span>
+                                <button name="delete" class="right btn-flat btn-small">
+                                    <i class="material-icons icon-black">delete</i>
+                                </button>
+                                <button name="edit" class="right btn-flat btn-small">
+                                    <i class="material-icons icon-green">edit</i>
+                                </button>
+                                ${permitJoinBtn}
+                            </div>
                         </div>
                     </div>
                   </div>
@@ -389,6 +395,8 @@ function showDevices() {
         }
     }
     $('#devices').html(html);
+    hookControls();
+
     // update rooms filter
     const allRooms = new Set(devices.map((item)=>item.rooms).flat().map((room)=>{
         if (room && room.hasOwnProperty(lang)) {
@@ -407,11 +415,32 @@ function showDevices() {
         $('#room-filter-btn').text($(this).text());
         doFilter();
     });
+    $(".flip").click(function(){
+        const card = $(this).parents(".card");
+        const flipped = card.hasClass("flipped");
+        card.toggleClass("flipped");
+        if (flipped) {
+            card.children(".front").removeClass("hide");
+        } else {
+            card.children(".back").removeClass("hide");
+        }
+        setTimeout(function() {
+            const flipped = card.hasClass("flipped");
+            if (flipped) {
+                card.children(".back").removeClass("hide");
+                card.children(".front").addClass("hide");
+            } else {
+                card.children(".front").removeClass("hide");
+                card.children(".back").addClass("hide");
+            }
+        }, 500);
+    });
 
     shuffleInstance = new Shuffle($("#devices"), {
         itemSelector: '.device',
         sizer: '.js-shuffle-sizer',
     });
+    doFilter();
 
     const getDevName = function(dev_block) {
         return dev_block.find('#dName').text();
@@ -796,12 +825,16 @@ socket.on('stateChange', function (id, state) {
                 // update link_quality
                 $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getLQICls(state.val));
                 $(`#${rid}`).text(state.val);
+                const dev = getDeviceByID(devId);
+                dev.link_quality_lc = state.lc;
             }
             if (id.match(/\.battery$/)) {
                 // update battery
                 $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
                 $(`#${rid}`).text(state.val);
             }
+            // set other states 
+            setDashStates(id, state);
         }
     }
 });
@@ -809,17 +842,17 @@ socket.on('stateChange', function (id, state) {
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
     //console.log('objectChange', id, obj);
-    if (obj && obj.type == 'device' && obj.common.type !== 'group') {
-        getDevices();
-    }
-    if (!obj) {
-        // delete state or device
-        const elems = id.split('.');
-        //console.log('elems', elems);
-        if (elems.length === 3) {
-            getDevices();
-        }
-    }
+    // if (obj && obj.type == 'device' && obj.common.type !== 'group') {
+    //     getDevices();
+    // }
+    // if (!obj) {
+    //     // delete state or device
+    //     const elems = id.split('.');
+    //     //console.log('elems', elems);
+    //     if (elems.length === 3) {
+    //         getDevices();
+    //     }
+    // }
 });
 /*
 socket.emit('getObject', 'system.config', function (err, res) {
@@ -2422,4 +2455,136 @@ function doSort() {
 
 function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
+}
+
+function getDashCard(dev) {
+    const title = dev.common.name,
+    id = dev._id,
+    type = dev.common.type,
+    img_src = dev.icon || dev.common.icon,
+    rooms = [],
+    lang = systemLang  || 'en';
+    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
+    const rid = id.split('.').join('_');
+    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
+        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+        battery_cls = getBatteryCls(dev.battery),
+        lqi_cls = getLQICls(dev.link_quality),
+        battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+        lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
+        idleTime = (dev.link_quality_lc > 0) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
+    const info = dev.statesDef.map((stateDef)=>{
+        const id = stateDef.id;
+        const sid = id.split('.').join('_');
+        let val = stateDef.val || '';
+        if (stateDef.role == 'switch' && stateDef.write) {
+            val = `<span class="switch"><label><input type="checkbox" ${(val) ? "checked" : ""}><span class="lever"></span></label></span>`;
+        } else if (stateDef.role == 'level.dimmer' && stateDef.write) {
+            val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
+        } else if (stateDef.role == 'level.color.temperature' && stateDef.write) {
+            val = `<span class="range-field dash"><input type="range" min="200" max="9000" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
+        } else if (stateDef.type == 'boolean') {
+            const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
+            val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
+        } else if (stateDef.states && stateDef.write) {
+            const sts = stateDef.states.split(';');
+            const options = sts.map((item) => {
+                const v = item.split(':');
+                return `<option value="${v[0]}" ${(val == v[0]) ? "selected" : ""}>${v[1]}</option>`;
+            });
+            val = `<select class="browser-default enum" style="height: 16px; padding: 0px; width: auto; display: inline-block">${options.join('')}</select>`;
+        } else {
+            val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
+        }
+        return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
+    }).join('');
+    const dashCard = `
+        <div class="card-content zcard">
+            <div class="flip" style="cursor: pointer">
+            <span class="top right small" style="border-radius: 50%">
+                ${idleTime}
+                ${battery}
+                ${lq}
+                ${status}
+            </span>
+            <span class="card-title truncate">${title}</span>
+            </div>
+            <i class="left">${image}</i>
+            <div style="min-height:88px; font-size: 0.8em; height: 130px; overflow-y: auto" class="truncate">
+                <ul>
+                    ${info}
+                </ul>
+            </div>
+            <div class="footer right-align"></div>
+        </div>`;
+
+    return dashCard;
+}
+
+function setDashStates(id, state) {
+    const devId = getDevId(id);
+    const dev = getDeviceByID(devId);
+    if (dev) {
+        const stateDef = dev.statesDef.find((stateDef)=> stateDef.id == id);
+        if (stateDef) {
+            const sid = id.split('.').join('_');
+            if (stateDef.role == 'switch' && stateDef.write) {
+                $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
+            } else if (stateDef.role == 'level.dimmer' && stateDef.write) {
+                $(`#${sid}`).find("input[type='range']").prop('value', state.val);
+            } else if (stateDef.role == 'level.color.temperature' && stateDef.write) {
+                $(`#${sid}`).find("input[type='range']").prop('value', state.val);
+            } else if (stateDef.states && stateDef.write) {
+                $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
+            } else if (stateDef.type == 'boolean') {
+                $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
+            } else {
+                $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
+            }
+        }
+    }
+}
+
+function hookControls() {
+    $("input[type='checkbox']").change(function (event) {
+        const val = $(this).is(':checked');
+        const id = $(this).parents(".state").attr('oid');
+        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
+            //console.log(data);
+        });
+    });
+    $("input[type='range']").change(function (event) {
+        const val = $(this).val();
+        const id = $(this).parents(".state").attr('oid');
+        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
+            //console.log(data);
+        });
+    });
+    $(".state select").on( "change", function () {
+        const val = $(this).val();
+        const id = $(this).parents(".state").attr('oid');
+        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
+            //console.log(data);
+        });
+    });
+}
+
+function getIdleTime(value) {
+    return (value) ? moment(new Date(value)).fromNow(true) : "";
+}
+
+function updateCardTimer() {
+    if (devices) {
+        devices.forEach((dev)=>{
+            const id = dev._id;
+            if (id) {
+                const rid = id.split('.').join('_');
+                $(`#${rid}_link_quality_lc`).text(getIdleTime(dev.link_quality_lc));
+            }
+        });
+    }
 }
