@@ -826,7 +826,9 @@ socket.on('stateChange', function (id, state) {
                 $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getLQICls(state.val));
                 $(`#${rid}`).text(state.val);
                 const dev = getDeviceByID(devId);
-                dev.link_quality_lc = state.lc;
+                if (dev) {
+                    dev.link_quality_lc = state.lc;
+                }
             }
             if (id.match(/\.battery$/)) {
                 // update battery
@@ -2477,7 +2479,7 @@ function getDashCard(dev) {
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
-    const info = dev.statesDef.map((stateDef)=>{
+    const info = (dev.statesDef) ? dev.statesDef.map((stateDef)=>{
         const id = stateDef.id;
         const sid = id.split('.').join('_');
         let val = stateDef.val || '';
@@ -2501,7 +2503,7 @@ function getDashCard(dev) {
             val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
         return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
-    }).join('');
+    }).join('') : '';
     const dashCard = `
         <div class="card-content zcard">
             <div class="flip" style="cursor: pointer">
