@@ -844,17 +844,18 @@ socket.on('stateChange', function (id, state) {
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
     //console.log('objectChange', id, obj);
-    // if (obj && obj.type == 'device' && obj.common.type !== 'group') {
-    //     getDevices();
-    // }
-    // if (!obj) {
-    //     // delete state or device
-    //     const elems = id.split('.');
-    //     //console.log('elems', elems);
-    //     if (elems.length === 3) {
-    //         getDevices();
-    //     }
-    // }
+    if (obj && obj.type == 'device' && obj.common.type !== 'group') {
+        updateDevice(id);
+    }
+    if (!obj) {
+        // delete state or device
+        const elems = id.split('.');
+        //console.log('elems', elems);
+        if (elems.length === 3) {
+            removeDevice(id);
+            showDevices();
+        }
+    }
 });
 /*
 socket.emit('getObject', 'system.config', function (err, res) {
@@ -2588,5 +2589,31 @@ function updateCardTimer() {
                 $(`#${rid}_link_quality_lc`).text(getIdleTime(dev.link_quality_lc));
             }
         });
+    }
+}
+
+function updateDevice(id) {
+    sendTo(namespace, 'getDevice', {id: id}, function (devs) {
+        if (devs) {
+            if (devs.error) {
+                showMessage(devs.error, _('Error'));
+            } else {
+                removeDevice(id);
+                devs.forEach((dev)=>{
+                    devices.push(dev);
+                })
+                showDevices();
+            }
+        }
+    });
+}
+
+function removeDevice(id) {
+    const dev = getDeviceByID(id);
+    if (dev) {
+        const ind = devices.indexOf(dev);
+        if (ind > -1) {
+            devices.splice(ind, 1);
+        }
     }
 }
