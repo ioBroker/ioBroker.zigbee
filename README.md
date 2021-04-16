@@ -104,7 +104,7 @@ You can thank the authors by these links:
 
 ## Changelog
 
-### 1.5.0 (2021-04-14)
+### 1.5.1 (2021-04-14)
 * (kirovilya) Dashboard
 * (asgothian) Groups (reworked)
 * [Experimental support EZSP protocol for EFR32 chips](https://github.com/Koenkk/zigbee-herdsman/issues/319) (zigbee-herdsman)
