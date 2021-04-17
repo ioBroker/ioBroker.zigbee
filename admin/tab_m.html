@@ -19,6 +19,8 @@
 <script type="text/javascript" src="words.js"></script>
 
 <script type="text/javascript" src="admin.js"></script>
+<script type="text/javascript" src="shuffle.min.js"></script>
+<script type="text/javascript" src="moment.min.js"></script>
 <style>
     .m .col .select-wrapper+label, .m .col input+label:not(.active) {
         top: -26px;
@@ -96,8 +98,24 @@
         width: 45px;
         top: 120px;
     }
+    .m .card {
+        margin: 0px;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transition: transform .5s;
+        -webkit-transition: -webkit-transform .5s;
+        transform-style: preserve-3d;
+        -webkit-transform-style: preserve-3d;
+    }
     .m .card .zcard {
         padding: 10px;
+    }
+    .device {
+        padding: 5px;
+        width: 330px;
+        height: 200px;
+        perspective: 600px;
     }
     .m .zcard .card-title {
         font-size: 16px;
@@ -159,7 +177,13 @@
     }
     .m span.label {
         display: inline-block;
-        width: 50px;
+        width: 100px;
+        font-weight: bold;
+    }
+    .m span.label.dash {
+        display: inline-block;
+        width: 140px;
+        font-weight: bold;
     }
     .m span.labelinfo {
         display: inline-block;
@@ -182,7 +206,71 @@
         padding-top: 5px;
         padding-bottom: 5px;
     }
-}
+    .m .page {
+        height: calc(100% - 120px);
+        overflow: auto;
+    }
+    #tab-main .main-toolbar-table .filter-input {
+        display: inline-table;
+        padding-left: 6px;
+        height: 24px;
+        width: 10rem;
+        margin-top: 5px;
+        margin-bottom: 0;
+    }
+    .face {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+    .back {
+        transform: rotateY( 180deg );
+        -webkit-transform: rotateY(180deg);
+    }
+    .card.flipped {
+        transform: rotateY(180deg);
+        -webkit-transform: rotateY(180deg);
+    }
+    .m .switch label .lever {
+        width: 30px;
+        height: 12px;
+    }
+    .m .switch label .lever:after, .m .switch label .lever:before {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        left: 0;
+        top: -1px;
+    }
+    .m .dash input[type=range] {
+        width: 70px;
+        margin: 0px;
+    }
+    .m .dash input[type=checkbox]:checked+span:not(.lever):before {
+        width: 10px;
+        height: 16px;
+    }
+    .m .dash input[type=checkbox]+span:not(.lever):before {
+        width: 10px;
+        height: 12px;
+    }
+    .m .dash input[type="checkbox"]+span:not(.lever) {
+        width: 10px;
+        height: 12px;
+        margin-left: 25px;
+        margin-top: -1px;
+    }
+    .m .dash input[type=checkbox]:not(:checked):disabled+span:not(.lever):before {
+        background-color: rgba(0,0,0,.1);
+    }
+    .m span .dash.value {
+        margin-left: 25px;
+    }
+    .m .idletime {
+        padding-left: 15px;
+    }
 </style>
 </head>
 <body>
@@ -227,7 +315,30 @@
         </div>
         <div id="tabs" class="tabs-content row">
             <div id="tab-main" class="col s12 page active">
-                <div id="devices" style="margin-bottom: 50px" class="row">
+                <div class="navbar-fixed" style="height: 36px; margin-top: -5px;">
+                    <nav style="height: 36px; margin-left: -12px">
+                        <div class="col s4 m4 l4 xl3 main-toolbar-table-types-tools main-toolbar-table-filter input-field" style="line-height: 24px;">
+                            <i class="material-icons prefix" style="line-height: 24px;">search</i>
+                            <input id="device-search" class="filter-input translateP" placeholder="Искать" autocomplete="new-password" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Filter">
+                            <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
+                        </div>
+                        <div class="col s4 m4 l4 xl3 input-field" style="line-height: 24px;">
+                            <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
+                            <a id="device-order-btn" class="dropdown-trigger btn" href="#" data-target="device-order">Default</a>
+                            <ul id="device-order" class="dropdown-content" tabindex="0">
+                                <li class="device-order-item" data-type="a-z" tabindex="0"><a class="translate" data-lang="A-Z">A-Z</a></li>
+                                <li class="device-order-item" data-type="default" tabindex="0"><a class="translate" data-lang="Default">Default</a></li>
+                            </ul>
+                        </div>
+                        <div class="col s4 m4 l4 xl3 input-field" style="line-height: 24px;">
+                            <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">art_track</i>
+                            <a id="room-filter-btn" class="dropdown-trigger btn" href="#" data-target="room-filter">All</a>
+                            <ul id="room-filter" class="dropdown-content" tabindex="0">
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+                <div id="devices" class="row">
                 </div>
             </div>
             <div id="tab-map" class="col s12 page">

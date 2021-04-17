@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.4.5",
+        "version": "1.5.1",
         "news": {
+            "1.5.0": {
+                "en": "Dashboard"
+            },
             "1.4.1": {
                 "en": "kelvin is added into color_temp",
                 "de": "Kelvin wird zu color_temp hinzugefügt",
