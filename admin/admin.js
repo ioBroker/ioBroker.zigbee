@@ -124,6 +124,82 @@ function getCoordinatorCard(dev) {
     return card;
 }
 
+function getGroupCard(dev) {
+    const title = dev.common.name,
+        id = dev._id,
+        type = dev.common.type,
+        img_src = dev.icon || dev.common.icon,
+        rooms = [],
+        lang = systemLang  || 'en';
+    for (const r in dev.rooms) {
+        if (dev.rooms[r].hasOwnProperty(lang)) {
+            rooms.push(dev.rooms[r][lang]);
+        } else {
+            rooms.push(dev.rooms[r]);
+        }
+    }
+    const room = rooms.join(',') || '&nbsp';
+    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
+    const rid = id.split('.').join('_');
+    const modelUrl = (!type || isGroup) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
+        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+        battery_cls = getBatteryCls(dev.battery),
+        lqi_cls = getLQICls(dev.link_quality),
+        battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+        lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+                    <ul>
+                        <li><span class="labelinfo">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
+                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
+                        <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
+                        <li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>
+                    </ul>
+                </div>`,
+        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+    const dashCard = getDashCard(dev);
+    const card = `<div id="${id}" class="device">
+                  <div class="card hoverable">
+                    <div class="front face">${dashCard}</div>
+                    <div class="back face hide">
+                        <div class="card-content zcard">
+                            <div class="flip" style="cursor: pointer">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${battery}
+                                ${lq}
+                                ${status}
+                            </span>
+                            <!--/a--!>
+                            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                            </div>
+                            <i class="left">${image}</i>
+                            ${info}
+                            <div class="footer right-align"></div>
+                        </div>
+                        <div class="card-action">
+                            <div class="card-reveal-buttons">
+                                ${infoBtn}
+                                <span class="left" style="padding-top:8px">${room}</span>
+                                <span class="left fw_info"></span>
+                                <button name="delete" class="right btn-flat btn-small">
+                                    <i class="material-icons icon-black">delete</i>
+                                </button>
+                                <button name="edit" class="right btn-flat btn-small">
+                                    <i class="material-icons icon-green">edit</i>
+                                </button>
+                                ${permitJoinBtn}
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>`;
+    return card;
+}
+
+
+
 function getCard(dev) {
     const title = dev.common.name,
         id = dev._id,
@@ -141,7 +217,7 @@ function getCard(dev) {
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
-    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const modelUrl = (!type || isGroup) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
@@ -372,7 +448,14 @@ function showDevices() {
     devGroups = {};
     for (let i=0;i < devices.length; i++) {
         const d = devices[i];
-        if (!d.info) continue;
+        if (!d.info) {
+            if (d.common && d.common.type == 'group')
+            {
+                const card = getGroupCard(d);
+                html += card;
+            }
+            continue;
+        };
         if (d.info.device._type == 'Coordinator') {
             const card = getCoordinatorCard(d);
             html += card;
@@ -835,7 +918,7 @@ socket.on('stateChange', function (id, state) {
                 $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
                 $(`#${rid}`).text(state.val);
             }
-            // set other states 
+            // set other states
             setDashStates(id, state);
         }
     }
@@ -2452,7 +2535,7 @@ function doSort() {
             shuffleInstance.sort({
                 by: sortByTitle
             });
-        } 
+        }
     }
 }
 
