@@ -99,7 +99,6 @@
     "transmitPower": "CC1352P and CC26X2R1 transmit Power",
     "zigbee-shepherd": "You may edit the raw data to send here. Do not use this if you are not sure of what you are doing! Use JSON format (attribute names in double quotes!). Additional properties may be added too. See examples above. (Format as used by zigbee-shepherd)",
     "№": "№",
-    "Excludes": "to Exclude",
-    "ExcludeTextTranslation": "You can add here some devices that should be excluded from our description. You only use exposes from zigbee-herdsman-converter. After add please restart the adapter"
-    
+    "Excludes": "to exclude",
+    "ExcludeTextTranslation": "Here you can add some devices that should be excluded from our description. They only use \"exposes\" from zigbee-herdsman-converter. After adding, please restart the adapter."
 }
