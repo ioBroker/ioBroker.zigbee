@@ -125,40 +125,23 @@ function getCoordinatorCard(dev) {
 }
 
 function getGroupCard(dev) {
-    const title = dev.common.name,
-        id = dev._id,
-        type = dev.common.type,
+    const id = (dev._id ? dev._id: '');
+        title = dev.common.name,
         img_src = dev.icon || dev.common.icon,
-        rooms = [],
         lang = systemLang  || 'en';
-    for (const r in dev.rooms) {
-        if (dev.rooms[r].hasOwnProperty(lang)) {
-            rooms.push(dev.rooms[r][lang]);
-        } else {
-            rooms.push(dev.rooms[r]);
+    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
+    let info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+                <ul>`;
+                info = info.concat(`<li><span class="labelinfo">group ${id.replace(namespace+'.group_', '')}</span></li>`);
+    if (dev.memberinfo === undefined) {
+        info = info.concat(`<li><span class="labelinfo">No devices in group</span></li>`);
+    } else {
+        for (let m=0;m < dev.memberinfo.length; m++) {
+            info = info.concat(`<li><span class="labelinfo">${dev.memberinfo[m].name}</span><span> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
         }
-    }
-    const room = rooms.join(',') || '&nbsp';
-    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    const rid = id.split('.').join('_');
-    const modelUrl = (!type || isGroup) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
-    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
-        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
-        battery_cls = getBatteryCls(dev.battery),
-        lqi_cls = getLQICls(dev.link_quality),
-        battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
-        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
-        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
-                    <ul>
-                        <li><span class="labelinfo">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
-                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
-                        <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
-                        <li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>
-                    </ul>
-                </div>`,
-        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+    };
+    info = info.concat(`                    </ul>
+                </div>`);
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
@@ -166,13 +149,8 @@ function getGroupCard(dev) {
                     <div class="back face hide">
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
-                            <span class="top right small" style="border-radius: 50%">
-                                ${battery}
-                                ${lq}
-                                ${status}
-                            </span>
                             <!--/a--!>
-                            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                            <span id="dName" class="card-title truncate">${title}</span><!----!>
                             </div>
                             <i class="left">${image}</i>
                             ${info}
@@ -180,16 +158,12 @@ function getGroupCard(dev) {
                         </div>
                         <div class="card-action">
                             <div class="card-reveal-buttons">
-                                ${infoBtn}
-                                <span class="left" style="padding-top:8px">${room}</span>
-                                <span class="left fw_info"></span>
-                                <button name="delete" class="right btn-flat btn-small">
+                                <button name="deletegrp" class="right btn-flat btn-small">
                                     <i class="material-icons icon-black">delete</i>
                                 </button>
-                                <button name="edit" class="right btn-flat btn-small">
+                                <button name="editgrp" class="right btn-flat btn-small">
                                     <i class="material-icons icon-green">edit</i>
                                 </button>
-                                ${permitJoinBtn}
                             </div>
                         </div>
                     </div>
@@ -217,7 +191,7 @@ function getCard(dev) {
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
-    const modelUrl = (!type || isGroup) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
@@ -535,11 +509,22 @@ function showDevices() {
         const dev_block = $(this).parents('div.device');
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
+    $(".card-reveal-buttons button[name='deletegrp']").click(function() {
+        const dev_block = $(this).parents('div.device');
+        const id = dev_block.attr('id').replace(namespace+'.group_', '');
+        deleteGroupConfirmation(id, getDevName(dev_block));
+    });
     $(".card-reveal-buttons button[name='edit']").click(function() {
         const dev_block = $(this).parents('div.device'),
             id = getDevId(dev_block),
             name = getDevName(dev_block);
         editName(id, name);
+    });
+    $(".card-reveal-buttons button[name='editgrp']").click(function() {
+        const dev_block = $(this).parents('div.device'),
+            id = dev_block.attr('id').replace(namespace+'.group_', ''),
+            name = getDevName(dev_block);
+        editGroupName(id, name);
     });
     $("button.btn-floating[name='join']").click(function() {
         const dev_block = $(this).parents('div.device');
@@ -774,6 +759,11 @@ function load(settings, onChange) {
     $('#add_group').click(function() {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
         editGroupName(maxind+1, '');
+    });
+    $('#add_grp_btn').click(function() {
+        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
+        editGroupName(maxind+1, '');
+        getDevices();
     });
 
     $(document).ready(function() {
@@ -1724,7 +1714,8 @@ function editGroupName(id, name) {
         const newId = $('#groupedit').find("input[id='g_index']").val(),
             newName = $('#groupedit').find("input[id='g_name']").val();
         updateGroup(id, newId, newName);
-        showGroups();
+//        showGroups();
+        getDevices();
     });
     $('#groupedit').modal('open');
     Materialize.updateTextFields();
@@ -1737,7 +1728,8 @@ function deleteGroupConfirmation(id, name) {
     $("#modaldelete a.btn[name='yes']").unbind('click');
     $("#modaldelete a.btn[name='yes']").click(() => {
         deleteGroup(id);
-        showGroups();
+//        showGroups();
+        getDevices();
     });
     $('#modaldelete').modal('open');
 }
