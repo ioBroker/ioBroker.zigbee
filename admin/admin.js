@@ -128,27 +128,33 @@ function getGroupCard(dev) {
     const id = (dev._id ? dev._id: '');
         title = dev.common.name,
         img_src = dev.icon || dev.common.icon,
+        lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
         lang = systemLang  || 'en';
-    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
-    let info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+    let memberCount = 0;
+    let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
                 <ul>`;
-                info = info.concat(`<li><span class="labelinfo">group ${id.replace(namespace+'.group_', '')}</span></li>`);
+                info = info.concat(`<li><span class="labelinfo">Group ${id.replace(namespace+'.group_', '')}</span></li>`);
     if (dev.memberinfo === undefined) {
         info = info.concat(`<li><span class="labelinfo">No devices in group</span></li>`);
     } else {
         for (let m=0;m < dev.memberinfo.length; m++) {
             info = info.concat(`<li><span class="labelinfo">${dev.memberinfo[m].name}</span><span> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
         }
+        memberCount = (dev.memberinfo.length<8?dev.memberinfo.length:7);
     };
     info = info.concat(`                    </ul>
                 </div>`);
-    const dashCard = getDashCard(dev);
+    const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
+    const dashCard = getDashCard(dev,`img/group_${memberCount}.png` );
     const card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="front face">${dashCard}</div>
                     <div class="back face hide">
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${lq}
+                            </span>
                             <!--/a--!>
                             <span id="dName" class="card-title truncate">${title}</span><!----!>
                             </div>
@@ -973,7 +979,7 @@ function showNetworkMap(devices, map){
         const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const node = {
             id: dev._id,
-            label: dev.common.name,
+            label: (dev.link_quality >0 ? dev.common.name:`${dev.common.name}\n(disconnected)`) ,
             title: dev._id.replace(namespace+'.', '') + extInfo,
             shape: 'circularImage',
             image: dev.icon,
@@ -1000,16 +1006,16 @@ function showNetworkMap(devices, map){
                 return;
             }
 
-            let node;
-            if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-                node = createNode(dev, mapEntry);
-                nodes[mapEntry.ieeeAddr] = node;
-            }
-            else {
-                node = nodes[mapEntry.ieeeAddr];
-            }
+            if (dev.info && (dev.common && dev.common.type != 'group')) {
+                let node;
+                if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
+                    node = createNode(dev, mapEntry);
+                    nodes[mapEntry.ieeeAddr] = node;
+                }
+                else {
+                    node = nodes[mapEntry.ieeeAddr];
+                }
 
-            if (dev.info) {
                 const parentDev = getDevice(mapEntry.parent);
                 const to = parentDev ? parentDev._id : undefined;
                 const from = dev._id;
@@ -2535,11 +2541,11 @@ function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }
 
-function getDashCard(dev) {
+function getDashCard(dev, groupImage) {
     const title = dev.common.name,
     id = dev._id,
     type = dev.common.type,
-    img_src = dev.icon || dev.common.icon,
+    img_src = (groupImage ? groupImage: dev.icon || dev.common.icon),
     rooms = [],
     lang = systemLang  || 'en';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
@@ -2550,8 +2556,8 @@ function getDashCard(dev) {
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
-        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
+        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage ? '': `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
