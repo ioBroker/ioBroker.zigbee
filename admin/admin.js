@@ -125,7 +125,7 @@ function getCoordinatorCard(dev) {
 }
 
 function getGroupCard(dev) {
-    const id = (dev._id ? dev._id: '');
+    const id = (dev._id ? dev._id: ''),
         title = dev.common.name,
         img_src = dev.icon || dev.common.icon,
         lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
