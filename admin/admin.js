@@ -129,7 +129,16 @@ function getGroupCard(dev) {
         title = dev.common.name,
         img_src = dev.icon || dev.common.icon,
         lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
+        rooms = [],
         lang = systemLang  || 'en';
+    for (const r in dev.rooms) {
+        if (dev.rooms[r].hasOwnProperty(lang)) {
+            rooms.push(dev.rooms[r][lang]);
+        } else {
+            rooms.push(dev.rooms[r]);
+        }
+    }
+    const room = rooms.join(',') || '&nbsp';
     let memberCount = 0;
     let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
                 <ul>`;
@@ -164,6 +173,7 @@ function getGroupCard(dev) {
                         </div>
                         <div class="card-action">
                             <div class="card-reveal-buttons">
+                                <span class="left" style="padding-top:8px">${room}</span>
                                 <button name="deletegrp" class="right btn-flat btn-small">
                                     <i class="material-icons icon-black">delete</i>
                                 </button>
