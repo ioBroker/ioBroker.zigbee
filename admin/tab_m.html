@@ -187,7 +187,7 @@
     }
     .m span.labelinfo {
         display: inline-block;
-        width: 100px;
+        width: 60px;
         font-weight: bold;
     }
     .forcedelete {
@@ -287,8 +287,16 @@
                     </div>
                     <ul id="nav-mobile" class="right">
                         <li>
+                            <a id="state_cleanup_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="State Cleanup">
+                            <i class="material-icons large icon-blue">sync</i></a>
+                        </li>
+                        <li>
                             <a id="fw_check_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Check firmware updates">
                             <i class="material-icons large icon-blue">system_update</i></a>
+                        </li>
+                        <li>
+                            <a id="add_grp_btn" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Add Group">
+                            <i class="material-icons large">group_work</i></a>
                         </li>
                         <li>
                             <a id="touchlink_btn" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Touchlink reset and pairing">
@@ -303,7 +311,7 @@
                 <div class="nav-content">
                     <ul class="tabs tabs-transparent">
                         <li class="tab col s2"><a href="#tab-main" id="devs"      class="translate">Devices</a></li>
-                        <li class="tab col s2"><a href="#tab-groups"              class="translate">Groups</a></li>
+<!--                        <li class="tab col s2"><a href="#tab-groups"              class="translate">Groups</a></li>-->
                         <li class="tab col s2"><a href="#tab-map"  id="tabmap"    class="translate">Network map</a></li>
                         <li class="tab col s2"><a href="#tab-binding"             class="translate">Binding</a></li>
                         <li class="tab col s2"><a href="#tab-exclude"             class="translate">Excludes</a></li>
@@ -657,13 +665,13 @@
             </div>
             <div id="tab-exclude" class="col s12 page">
                 <div class="col s4">
-                    <p class="translate">ExcludeTextTranslation</p>&nbsp;                        
+                    <p class="translate">ExcludeTextTranslation</p>&nbsp;
                 </div>
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
                     <a id="add_exclude" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add exlude"><i class="material-icons large">add</i></a>
                 </div>
-                <div id="exclude" class="row">  
-                </div>                                             
+                <div id="exclude" class="row">
+                </div>
             </div>
         </div>
     </div>
@@ -691,7 +699,7 @@
 
         <div id="groupedit" class="modal">
             <div class="modal-content">
-                <!-- <h3 class="translate">Group</h3> -->
+                <h3 class="translate">Add/Edit Group</h3>
                 <div class="row">
                     <div class="input-field col s12 m4 l2">
                         <input id="g_index" type="number" min="1" class="value validate">
@@ -722,6 +730,21 @@
                         <input id="force" type="checkbox" class="value" />
                         <span class="translate" for="force">Force delete (for lost devices)</span>
                     </label>
+                </div>
+                <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="modalclean" class="modal">
+            <div class="modal-content">
+                <h3 class="translate">State cleanup confirmation</h3>
+                <p>A bunch of text</p>
+            </div>
+            <div class="modal-footer">
+                <div id="cforcediv" class="hide forcedelete">
+                    <input id="cforce" type="checkbox" class="value" />
+                    <label class="translate" for="cforce">Force removed states with custom configuration (history, upnp, etc.)</label>
                 </div>
                 <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>

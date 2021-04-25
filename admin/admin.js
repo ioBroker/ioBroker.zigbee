@@ -124,6 +124,71 @@ function getCoordinatorCard(dev) {
     return card;
 }
 
+function getGroupCard(dev) {
+    const id = (dev._id ? dev._id: ''),
+        title = dev.common.name,
+        lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
+        rooms = [],
+        lang = systemLang  || 'en';
+    for (const r in dev.rooms) {
+        if (dev.rooms[r].hasOwnProperty(lang)) {
+            rooms.push(dev.rooms[r][lang]);
+        } else {
+            rooms.push(dev.rooms[r]);
+        }
+    }
+    const room = rooms.join(',') || '&nbsp';
+    let memberCount = 0;
+    let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
+                <ul>`;
+                info = info.concat(`<li><span class="labelinfo">Group ${id.replace(namespace+'.group_', '')}</span></li>`);
+    if (dev.memberinfo === undefined) {
+        info = info.concat(`<li><span class="labelinfo">No devices in group</span></li>`);
+    } else {
+        for (let m=0;m < dev.memberinfo.length; m++) {
+            info = info.concat(`<li><span class="labelinfo">${dev.memberinfo[m].name}</span><span> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
+        }
+        memberCount = (dev.memberinfo.length<8?dev.memberinfo.length:7);
+    };
+    info = info.concat(`                    </ul>
+                </div>`);
+    const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
+    const dashCard = getDashCard(dev,`img/group_${memberCount}.png` );
+    const card = `<div id="${id}" class="device">
+                  <div class="card hoverable">
+                    <div class="front face">${dashCard}</div>
+                    <div class="back face hide">
+                        <div class="card-content zcard">
+                            <div class="flip" style="cursor: pointer">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${lq}
+                            </span>
+                            <!--/a--!>
+                            <span id="dName" class="card-title truncate">${title}</span><!----!>
+                            </div>
+                            <i class="left">${image}</i>
+                            ${info}
+                            <div class="footer right-align"></div>
+                        </div>
+                        <div class="card-action">
+                            <div class="card-reveal-buttons">
+                                <span class="left" style="padding-top:8px">${room}</span>
+                                <button name="deletegrp" class="right btn-flat btn-small">
+                                    <i class="material-icons icon-black">delete</i>
+                                </button>
+                                <button name="editgrp" class="right btn-flat btn-small">
+                                    <i class="material-icons icon-green">edit</i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>`;
+    return card;
+}
+
+
+
 function getCard(dev) {
     const title = dev.common.name,
         id = dev._id,
@@ -372,7 +437,14 @@ function showDevices() {
     devGroups = {};
     for (let i=0;i < devices.length; i++) {
         const d = devices[i];
-        if (!d.info) continue;
+        if (!d.info) {
+            if (d.common && d.common.type == 'group')
+            {
+                const card = getGroupCard(d);
+                html += card;
+            }
+            continue;
+        };
         if (d.info.device._type == 'Coordinator') {
             const card = getCoordinatorCard(d);
             html += card;
@@ -452,11 +524,22 @@ function showDevices() {
         const dev_block = $(this).parents('div.device');
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
+    $(".card-reveal-buttons button[name='deletegrp']").click(function() {
+        const dev_block = $(this).parents('div.device');
+        const id = dev_block.attr('id').replace(namespace+'.group_', '');
+        deleteGroupConfirmation(id, getDevName(dev_block));
+    });
     $(".card-reveal-buttons button[name='edit']").click(function() {
         const dev_block = $(this).parents('div.device'),
             id = getDevId(dev_block),
             name = getDevName(dev_block);
         editName(id, name);
+    });
+    $(".card-reveal-buttons button[name='editgrp']").click(function() {
+        const dev_block = $(this).parents('div.device'),
+            id = dev_block.attr('id').replace(namespace+'.group_', ''),
+            name = getDevName(dev_block);
+        editGroupName(id, name);
     });
     $("button.btn-floating[name='join']").click(function() {
         const dev_block = $(this).parents('div.device');
@@ -692,6 +775,11 @@ function load(settings, onChange) {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
         editGroupName(maxind+1, '');
     });
+    $('#add_grp_btn').click(function() {
+        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
+        editGroupName(maxind+1, '');
+        getDevices();
+    });
 
     $(document).ready(function() {
         $('.modal').modal({
@@ -835,7 +923,7 @@ socket.on('stateChange', function (id, state) {
                 $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
                 $(`#${rid}`).text(state.val);
             }
-            // set other states 
+            // set other states
             setDashStates(id, state);
         }
     }
@@ -897,10 +985,11 @@ function showNetworkMap(devices, map){
     }
 
     const createNode = function(dev, mapEntry) {
+        if (dev.common && dev.common.type == 'group') return undefined;
         const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const node = {
             id: dev._id,
-            label: dev.common.name,
+            label: (dev.link_quality >0 ? dev.common.name:`${dev.common.name}\n(disconnected)`) ,
             title: dev._id.replace(namespace+'.', '') + extInfo,
             shape: 'circularImage',
             image: dev.icon,
@@ -930,13 +1019,14 @@ function showNetworkMap(devices, map){
             let node;
             if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
                 node = createNode(dev, mapEntry);
-                nodes[mapEntry.ieeeAddr] = node;
+                if (node) {
+                    nodes[mapEntry.ieeeAddr] = node;
+                }
             }
             else {
                 node = nodes[mapEntry.ieeeAddr];
             }
-
-            if (dev.info) {
+            if (node) {
                 const parentDev = getDevice(mapEntry.parent);
                 const to = parentDev ? parentDev._id : undefined;
                 const from = dev._id;
@@ -1067,11 +1157,15 @@ function showNetworkMap(devices, map){
         const node = nodesArray.find((node) => { return node.id == dev._id; });
         if (!node) {
             const node = createNode(dev);
-            node.font = {color:'#ff0000'};
-            if (dev.info && dev.info.device._type == 'Coordinator') {
-                node.font = {color:'#000000'};
+
+            if (node)
+            {
+                node.font = {color:'#ff0000'};
+                if (dev.info && dev.info.device._type == 'Coordinator') {
+                    node.font = {color:'#000000'};
+                }
+                nodesArray.push(node);
             }
-            nodesArray.push(node);
         }
     });
 
@@ -1641,7 +1735,8 @@ function editGroupName(id, name) {
         const newId = $('#groupedit').find("input[id='g_index']").val(),
             newName = $('#groupedit').find("input[id='g_name']").val();
         updateGroup(id, newId, newName);
-        showGroups();
+//        showGroups();
+        getDevices();
     });
     $('#groupedit').modal('open');
     Materialize.updateTextFields();
@@ -1654,7 +1749,8 @@ function deleteGroupConfirmation(id, name) {
     $("#modaldelete a.btn[name='yes']").unbind('click');
     $("#modaldelete a.btn[name='yes']").click(() => {
         deleteGroup(id);
-        showGroups();
+//        showGroups();
+        getDevices();
     });
     $('#modaldelete').modal('open');
 }
@@ -2452,7 +2548,7 @@ function doSort() {
             shuffleInstance.sort({
                 by: sortByTitle
             });
-        } 
+        }
     }
 }
 
@@ -2460,11 +2556,11 @@ function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }
 
-function getDashCard(dev) {
+function getDashCard(dev, groupImage) {
     const title = dev.common.name,
     id = dev._id,
     type = dev.common.type,
-    img_src = dev.icon || dev.common.icon,
+    img_src = (groupImage ? groupImage: dev.icon || dev.common.icon),
     rooms = [],
     lang = systemLang  || 'en';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
@@ -2475,8 +2571,8 @@ function getDashCard(dev) {
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
-        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        lq = (dev.link_quality) > 0 ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
+        status = (dev.link_quality) > 0 ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage ? '': `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
