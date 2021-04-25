@@ -127,7 +127,6 @@ function getCoordinatorCard(dev) {
 function getGroupCard(dev) {
     const id = (dev._id ? dev._id: ''),
         title = dev.common.name,
-        img_src = dev.icon || dev.common.icon,
         lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
         rooms = [],
         lang = systemLang  || 'en';
@@ -986,6 +985,7 @@ function showNetworkMap(devices, map){
     }
 
     const createNode = function(dev, mapEntry) {
+        if (dev.common && dev.common.type == 'group') return undefined;
         const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const node = {
             id: dev._id,
@@ -1016,16 +1016,17 @@ function showNetworkMap(devices, map){
                 return;
             }
 
-            if (dev.info && (dev.common && dev.common.type != 'group')) {
-                let node;
-                if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-                    node = createNode(dev, mapEntry);
+            let node;
+            if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
+                node = createNode(dev, mapEntry);
+                if (node) {
                     nodes[mapEntry.ieeeAddr] = node;
                 }
-                else {
-                    node = nodes[mapEntry.ieeeAddr];
-                }
-
+            }
+            else {
+                node = nodes[mapEntry.ieeeAddr];
+            }
+            if (node) {
                 const parentDev = getDevice(mapEntry.parent);
                 const to = parentDev ? parentDev._id : undefined;
                 const from = dev._id;
@@ -1156,11 +1157,15 @@ function showNetworkMap(devices, map){
         const node = nodesArray.find((node) => { return node.id == dev._id; });
         if (!node) {
             const node = createNode(dev);
-            node.font = {color:'#ff0000'};
-            if (dev.info && dev.info.device._type == 'Coordinator') {
-                node.font = {color:'#000000'};
+
+            if (node)
+            {
+                node.font = {color:'#ff0000'};
+                if (dev.info && dev.info.device._type == 'Coordinator') {
+                    node.font = {color:'#000000'};
+                }
+                nodesArray.push(node);
             }
-            nodesArray.push(node);
         }
     });
 
