@@ -59,7 +59,7 @@
     "Select your settings. Then click RUN to send command to your Zigbee device.": "Wähle deine Einstellungen. Klicke dann auf Ausführen, um den Befehl an das ZigBee-Gerät zu senden.",
     "Select Attribute": "Attribut auswählen",
     "Select Command": "Befehl auswählen",
-    "Select a device": "Wählen Sie ein Gerät aus",
+    "Select a device": "Gerät auswählen",
     "Select an Endpoint": "Wählen Sie einen Endpunkt",
     "Select cid": "Wählen Sie eine Cluster-ID aus",
     "Send Functional command": "Funktionsbefehl senden",
