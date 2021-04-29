@@ -1267,8 +1267,8 @@ function showNetworkMap(devices, map){
 
 function redrawMap() {
     if (network != undefined && devices.length > 0) {
-        const width = $('.adapter-body').width() || $('#main').width(),
-            height = ($('.adapter-body').height() || ($('#main').height()-45)) -120;
+        const width = ($('.adapter-body').width() || $('#main').width()) - 20,
+            height = ($('.adapter-body').height() || ($('#main').height())) -120;
         network.setSize(width, height);
         network.redraw();
         network.fit();

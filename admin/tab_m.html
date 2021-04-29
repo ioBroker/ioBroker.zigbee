@@ -72,6 +72,8 @@
     }
     #main {
         margin-bottom: -50px;
+        height: 100%;
+        overflow-y: auto;
     }
     .page:not(.active) {
         /* prevents 'all pages visible for a moment at first load' (because pages are loaded before materialize is loaded)*/
@@ -209,6 +211,9 @@
     .m .page {
         height: calc(100% - 120px);
         overflow: auto;
+    }
+    #map {
+        margin: 0px;
     }
     #tab-main .main-toolbar-table .filter-input {
         display: inline-table;
