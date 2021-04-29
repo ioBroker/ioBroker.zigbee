@@ -192,7 +192,7 @@ function getGroupCard(dev) {
 function getCard(dev) {
     const title = dev.common.name,
         id = dev._id,
-        type = dev.common.type,
+        type = dev.common.type.replace('/','_'),
         img_src = dev.icon || dev.common.icon,
         rooms = [],
         lang = systemLang  || 'en';
