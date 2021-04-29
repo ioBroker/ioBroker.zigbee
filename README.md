@@ -104,6 +104,10 @@ You can thank the authors by these links:
 
 ## Changelog
 
+### 1.5.2 (2021-04-29)
+* (asgothian) Groups on dashboard
+
+
 ### 1.5.1 (2021-04-14)
 * (kirovilya) Dashboard
 * (asgothian) Groups (reworked)
