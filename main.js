@@ -151,7 +151,7 @@ class Zigbee extends utils.Adapter {
 
         this.subscribeStates('*');
         // set connection false before connect to zigbee
-        this.setState('info.connection', false);
+        this.setState('info.connection', false, true);
         const zigbeeOptions = this.getZigbeeOptions();
         this.zbController = new ZigbeeController();
         this.zbController.on('log', this.onLog.bind(this));
@@ -230,7 +230,7 @@ class Zigbee extends utils.Adapter {
 
             await this.zbController.start();
         } catch (error) {
-            this.setState('info.connection', false);
+            this.setState('info.connection', false, true);
             this.log.error(`Failed to start Zigbee`);
             if (error.stack) {
                 this.log.error(error.stack);
@@ -246,7 +246,7 @@ class Zigbee extends utils.Adapter {
     async onZigbeeAdapterDisconnected() {
         this.reconnectCounter = 5;
         this.log.error('Adapter disconnected, stopping');
-        this.setState('info.connection', false);
+        this.setState('info.connection', false, true);
         await this.callPluginMethod('stop');
         this.tryToReconnect();
     }
@@ -316,7 +316,7 @@ class Zigbee extends utils.Adapter {
             }
         }
 
-        this.setState('info.connection', true);
+        this.setState('info.connection', true, true);
 
         const devicesFromDB = await this.zbController.getClients(false);
         for (const device of devicesFromDB) {
