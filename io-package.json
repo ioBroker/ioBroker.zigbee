@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.5.2",
+        "version": "1.5.3",
         "news": {
             "1.5.0": {
                 "en": "Dashboard"
