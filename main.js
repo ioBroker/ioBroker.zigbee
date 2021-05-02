@@ -744,11 +744,11 @@ class Zigbee extends utils.Adapter {
 
     onPairing(message, data) {
         if (Number.isInteger(data)) {
-            this.setState('info.pairingCountdown', data);
+            this.setState('info.pairingCountdown', data, true);
         }
         if (data === 0) {
             // set pairing mode off
-            this.setState('info.pairingMode', false);
+            this.setState('info.pairingMode', false,true);
         }
         if (data) {
             this.logToPairing(`${message}: ${data.toString()}`);
@@ -758,7 +758,7 @@ class Zigbee extends utils.Adapter {
     }
 
     logToPairing(message) {
-        this.setState('info.pairingMessage', message);
+        this.setState('info.pairingMessage', message, true);
     }
 
     onLog(level, msg, data) {
