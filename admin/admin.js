@@ -789,7 +789,6 @@ function load(settings, onChange) {
         $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
         $('.collapsible').collapsible();
-        $('.tooltipped').tooltip();
         Materialize.Tabs.init($('.tabs'));
         $('#device-search').keyup(function (event) {
             doFilter(event.target.value.toLowerCase());
