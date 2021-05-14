@@ -48,7 +48,7 @@
     "Parent/Child/Unknown": "Parent/Child/Unbekannt",
     "Previous Parents": "Letzte Parents",
     "Read Firmware": "Firmware lesen",
-    "Refresh": "Aktualisierung",
+    "Refresh": "Aktualisieren",
     "Rename device": "Gerät umbenennen",
     "Reset Info": "Ein Soft-Reset startet nur den CC253x Adapter und die zugehörige Software neu. Ein Hard-Reset setzt die Liste ALLER gekoppelten Geräte und die CC253x Einstellungen zurück! Alle Geräte müssen anschließend neu gekoppelt werden!",
     "Reset confirmation": "Reset bestätigen",
