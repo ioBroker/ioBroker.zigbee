@@ -153,7 +153,7 @@ class Zigbee extends utils.Adapter {
         // set connection false before connect to zigbee
         this.setState('info.connection', false, true);
         const zigbeeOptions = this.getZigbeeOptions();
-        this.zbController = new ZigbeeController();
+        this.zbController = new ZigbeeController(this);
         this.zbController.on('log', this.onLog.bind(this));
         this.zbController.on('ready', this.onZigbeeAdapterReady.bind(this));
         this.zbController.on('disconnect', this.onZigbeeAdapterDisconnected.bind(this));
