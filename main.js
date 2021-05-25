@@ -15,7 +15,7 @@ const originalLogMethod = debug.log;
 
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
-const pathLib = require('path');
+const path = require('path');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const SerialListPlugin = require('./lib/seriallist');
 const CommandsPlugin = require('./lib/commands');
@@ -704,8 +704,9 @@ class Zigbee extends utils.Adapter {
 
     getZigbeeOptions() {
         // file path for db
-        const dataDir = (this.systemConfig) ? this.systemConfig.dataDir : '';
-        const dbDir = pathLib.normalize(utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_'));
+        let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), "");
+        dbDir = dbDir.replace('.', '_');        
+        
         if (this.systemConfig && !fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
         const port = this.config.port;
         if (!port) {
