@@ -704,7 +704,7 @@ class Zigbee extends utils.Adapter {
 
     getZigbeeOptions() {
         // file path for db
-        let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), "");
+        let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), '');
         dbDir = dbDir.replace('.', '_');        
         
         if (this.systemConfig && !fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
