@@ -707,7 +707,13 @@ class Zigbee extends utils.Adapter {
         let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), '');
         dbDir = dbDir.replace('.', '_');        
         
-        if (this.systemConfig && !fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
+        if (this.systemConfig && !fs.existsSync(dbDir)) {
+            try {
+                fs.mkdirSync(dbDir);
+            } catch (e) {
+                this.log.error(`Cannot create directory ${dbDir}: ${e}`);
+            }
+        }
         const port = this.config.port;
         if (!port) {
             this.log.error('Serial port not selected! Go to settings page.');
