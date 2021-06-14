@@ -181,6 +181,11 @@
                 "zh-cn": "Zigbee"
             },
             "fa-icon": "</i><img style='width:24px;margin-bottom:-6px;' src='/adapter/zigbee/zigbee.svg'><i>"
+        },
+        "plugins": {
+            "sentry": {
+                "dsn": "https://c829e2ad996d45d1bdb2247805699883@o831057.ingest.sentry.io/5812498"
+            }
         }
     },
     "native": {

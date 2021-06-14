@@ -237,6 +237,20 @@ class Zigbee extends utils.Adapter {
             } else {
                 this.log.error(error);
             }
+            if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
+                const sentryInstance = this.getPluginInstance('sentry');
+                if (sentryInstance) {
+                    const Sentry = sentryInstance.getSentryObject();
+                    if (error.stack) {
+                        Sentry.captureException(error);
+                    } else {
+                        Sentry && Sentry.withScope(scope => {
+                            scope.setLevel('error');
+                            Sentry.captureMessage(error);
+                        });
+                    }
+                }
+            }
             if (this.reconnectCounter > 0) {
                 this.tryToReconnect();
             }
