@@ -15,7 +15,7 @@ const originalLogMethod = debug.log;
 
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
-const pathLib = require('path');
+const path = require('path');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const SerialListPlugin = require('./lib/seriallist');
 const CommandsPlugin = require('./lib/commands');
@@ -151,9 +151,9 @@ class Zigbee extends utils.Adapter {
 
         this.subscribeStates('*');
         // set connection false before connect to zigbee
-        this.setState('info.connection', false);
+        this.setState('info.connection', false, true);
         const zigbeeOptions = this.getZigbeeOptions();
-        this.zbController = new ZigbeeController();
+        this.zbController = new ZigbeeController(this);
         this.zbController.on('log', this.onLog.bind(this));
         this.zbController.on('ready', this.onZigbeeAdapterReady.bind(this));
         this.zbController.on('disconnect', this.onZigbeeAdapterDisconnected.bind(this));
@@ -230,7 +230,7 @@ class Zigbee extends utils.Adapter {
 
             await this.zbController.start();
         } catch (error) {
-            this.setState('info.connection', false);
+            this.setState('info.connection', false, true);
             this.log.error(`Failed to start Zigbee`);
             if (error.stack) {
                 this.log.error(error.stack);
@@ -246,7 +246,7 @@ class Zigbee extends utils.Adapter {
     async onZigbeeAdapterDisconnected() {
         this.reconnectCounter = 5;
         this.log.error('Adapter disconnected, stopping');
-        this.setState('info.connection', false);
+        this.setState('info.connection', false, true);
         await this.callPluginMethod('stop');
         this.tryToReconnect();
     }
@@ -316,7 +316,7 @@ class Zigbee extends utils.Adapter {
             }
         }
 
-        this.setState('info.connection', true);
+        this.setState('info.connection', true, true);
 
         const devicesFromDB = await this.zbController.getClients(false);
         for (const device of devicesFromDB) {
@@ -614,7 +614,7 @@ class Zigbee extends utils.Adapter {
                     }
                 }
                 try {
-                    this.log.debug(`Calling publish to state for ${safeJsonStringify(payload_obj.device)} with ${safeJsonStringify(stateList)}`)
+                    this.log.debug(`Calling publish to state for ${safeJsonStringify(payload_obj.device)} with ${safeJsonStringify(stateList)}`);
                     await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, payload.options);
                     return {success: true};
                 }
@@ -704,9 +704,16 @@ class Zigbee extends utils.Adapter {
 
     getZigbeeOptions() {
         // file path for db
-        const dataDir = (this.systemConfig) ? this.systemConfig.dataDir : '';
-        const dbDir = pathLib.normalize(utils.controllerDir + '/' + dataDir + this.namespace.replace('.', '_'));
-        if (this.systemConfig && !fs.existsSync(dbDir)) fs.mkdirSync(dbDir);
+        let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), '');
+        dbDir = dbDir.replace('.', '_');        
+        
+        if (this.systemConfig && !fs.existsSync(dbDir)) {
+            try {
+                fs.mkdirSync(dbDir);
+            } catch (e) {
+                this.log.error(`Cannot create directory ${dbDir}: ${e}`);
+            }
+        }
         const port = this.config.port;
         if (!port) {
             this.log.error('Serial port not selected! Go to settings page.');
@@ -744,11 +751,11 @@ class Zigbee extends utils.Adapter {
 
     onPairing(message, data) {
         if (Number.isInteger(data)) {
-            this.setState('info.pairingCountdown', data);
+            this.setState('info.pairingCountdown', data, true);
         }
         if (data === 0) {
             // set pairing mode off
-            this.setState('info.pairingMode', false);
+            this.setState('info.pairingMode', false,true);
         }
         if (data) {
             this.logToPairing(`${message}: ${data.toString()}`);
@@ -758,7 +765,7 @@ class Zigbee extends utils.Adapter {
     }
 
     logToPairing(message) {
-        this.setState('info.pairingMessage', message);
+        this.setState('info.pairingMessage', message, true);
     }
 
     onLog(level, msg, data) {
