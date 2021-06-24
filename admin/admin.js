@@ -496,16 +496,6 @@ function showDevices() {
         } else {
             card.children(".back").removeClass("hide");
         }
-        setTimeout(function() {
-            const flipped = card.hasClass("flipped");
-            if (flipped) {
-                card.children(".back").removeClass("hide");
-                card.children(".front").addClass("hide");
-            } else {
-                card.children(".front").removeClass("hide");
-                card.children(".back").addClass("hide");
-            }
-        }, 500);
     });
 
     shuffleInstance = new Shuffle($("#devices"), {
