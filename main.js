@@ -105,6 +105,32 @@ class Zigbee extends utils.Adapter {
         }
     }
 
+    sendError(error, message) {
+        if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
+            const sentryInstance = this.getPluginInstance('sentry');
+            if (sentryInstance) {
+                const Sentry = sentryInstance.getSentryObject();
+                if (Sentry) {
+                    if (message) {
+                        Sentry.configureScope(scope => {
+                            scope.addBreadcrumb({
+                                type: "error", // predefined types
+                                category: "error message",
+                                level: Sentry.Severity.Error,
+                                message: message
+                            });
+                        });
+                    }
+                    if (typeof error == 'string') {
+                        Sentry.captureException(new Error(error));
+                    } else {
+                        Sentry.captureException(error);
+                    }
+                }
+            }
+        }
+    }
+
     filterError(errormessage, message, error) {
         if (error.code === undefined)
         {
@@ -237,20 +263,7 @@ class Zigbee extends utils.Adapter {
             } else {
                 this.log.error(error);
             }
-            if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
-                const sentryInstance = this.getPluginInstance('sentry');
-                if (sentryInstance) {
-                    const Sentry = sentryInstance.getSentryObject();
-                    if (error.stack) {
-                        Sentry.captureException(error);
-                    } else {
-                        Sentry && Sentry.withScope(scope => {
-                            scope.setLevel('error');
-                            Sentry.captureMessage(error);
-                        });
-                    }
-                }
-            }
+            this.sendError(error, `Failed to start Zigbee`);
             if (this.reconnectCounter > 0) {
                 this.tryToReconnect();
             }
