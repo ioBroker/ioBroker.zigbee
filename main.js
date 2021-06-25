@@ -738,8 +738,10 @@ class Zigbee extends utils.Adapter {
             }
             callback();
         } catch (error) {
-            this.log.error(`Unload error (${error.stack})`);
-            this.sendError(error, `Unload error (${error.stack})`);
+            if (error) {
+                this.log.error(`Unload error (${error.stack})`);
+            }
+            this.sendError(error, `Unload error`);
             callback();
         }
     }
