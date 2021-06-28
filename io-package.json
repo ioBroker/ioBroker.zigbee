@@ -167,6 +167,9 @@
         "dataFolder": "zigbee_%INSTANCE%",
         "compact": true,
         "materializeTab": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "tier": 2,
         "adminTab": {
             "name": {
                 "en": "Zigbee",
