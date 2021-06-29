@@ -226,9 +226,9 @@ function getCard(dev) {
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
-                  <div class="card hoverable">
+                  <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
-                    <div class="back face hide">
+                    <div class="back face">
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
@@ -489,13 +489,10 @@ function showDevices() {
     });
     $(".flip").click(function(){
         const card = $(this).parents(".card");
-        const flipped = card.hasClass("flipped");
         card.toggleClass("flipped");
-        if (flipped) {
-            card.children(".front").removeClass("hide");
-        } else {
-            card.children(".back").removeClass("hide");
-        }
+    });
+    $('#rotate_btn').click(function () {
+        $('.card.flipable').toggleClass("flipped");
     });
 
     shuffleInstance = new Shuffle($("#devices"), {

@@ -1,11 +1,13 @@
 ![Logo](admin/zigbee.png)
 # ioBroker.zigbee
 
-![Number of Installations](http://iobroker.live/badges/zigbee-installed.svg) ![Number of Installations](http://iobroker.live/badges/zigbee-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
-[![Tests](https://travis-ci.org/ioBroker/ioBroker.zigbee.svg?branch=master)](https://travis-ci.org/ioBroker/ioBroker.zigbee)
+![Number of Installations](http://iobroker.live/badges/zigbee-installed.svg)
+![Number of Installations](http://iobroker.live/badges/zigbee-stable.svg)
+[![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 
-[![NPM](https://nodei.co/npm/iobroker.zigbee.png?downloads=true)](https://nodei.co/npm/iobroker.zigbee/)
+![Test and Release](https://github.com/ioBroker/iobroker.zigbee/workflows/Test%20and%20Release/badge.svg)
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/zigbee/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 
 ## ioBroker adapter for Zigbee devices via TI cc2531/cc2530/cc26x2r/cc2538 and deCONZ ConBee/RaspBee.
 
@@ -332,7 +334,7 @@ new Zigbee-herdsman features:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018-2020 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2021 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
