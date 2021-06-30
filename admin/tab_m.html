@@ -244,6 +244,11 @@
         height: 100%;
         width: 100%;
         background: #fff;
+        z-index: 2;
+        -webkit-transform: rotateY( 0deg );
+        -moz-transform: rotateY( 0deg );
+        -o-transform: rotateY( 0deg );
+        transform: rotateY( 0deg );
     }
     .back {
         overflow:hidden;
@@ -253,10 +258,10 @@
         height: 100%;
         width: 100%;
         background: #fff;
-        -webkit-transform: rotateY( 180deg );
-        -moz-transform: rotateY( 180deg );
-        -o-transform: rotateY( 180deg );
-        transform: rotateY( 180deg );
+        -webkit-transform: rotateY( -180deg );
+        -moz-transform: rotateY( -180deg );
+        -o-transform: rotateY( -180deg );
+        transform: rotateY( -180deg );
     }
     .card.flipped {
         -webkit-transform: rotateY( 180deg );
@@ -354,7 +359,7 @@
         </div>
         <div id="tabs" class="tabs-content row">
             <div id="tab-main" class="col s12 page active">
-                <div class="navbar-fixed" style="height: 36px; margin-top: -5px;">
+                <div class="navbar-fixed" style="height: 36px;">
                     <nav style="height: 36px; margin-left: -12px; line-height: 24px;">
                         <ul id="nav-mobile" class="left">
                             <li>
