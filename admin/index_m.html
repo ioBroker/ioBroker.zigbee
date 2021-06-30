@@ -248,6 +248,11 @@
         height: 100%;
         width: 100%;
         background: #fff;
+        z-index: 2;
+        -webkit-transform: rotateY( 0deg );
+        -moz-transform: rotateY( 0deg );
+        -o-transform: rotateY( 0deg );
+        transform: rotateY( 0deg );
     }
     .back {
         overflow:hidden;
@@ -257,10 +262,10 @@
         height: 100%;
         width: 100%;
         background: #fff;
-        -webkit-transform: rotateY( 180deg );
-        -moz-transform: rotateY( 180deg );
-        -o-transform: rotateY( 180deg );
-        transform: rotateY( 180deg );
+        -webkit-transform: rotateY( -180deg );
+        -moz-transform: rotateY( -180deg );
+        -o-transform: rotateY( -180deg );
+        transform: rotateY( -180deg );
     }
     .card.flipped {
         -webkit-transform: rotateY( 180deg );
