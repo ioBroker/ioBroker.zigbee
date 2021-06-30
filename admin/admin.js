@@ -155,9 +155,9 @@ function getGroupCard(dev) {
     const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
     const dashCard = getDashCard(dev,`img/group_${memberCount}.png` );
     const card = `<div id="${id}" class="device">
-                  <div class="card hoverable">
+                  <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
-                    <div class="back face hide">
+                    <div class="back face">
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
