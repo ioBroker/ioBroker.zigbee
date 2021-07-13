@@ -99,8 +99,9 @@ You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
 * to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
 
-
 <!--
+    Placeholder for the next version (at the beginning of the line):
+    
     https://github.com/AlCalzone/release-script#usage
     npm run release minor -- --all 0.9.8 -> 0.10.0
     npm run release patch -- --all 0.9.8 -> 0.9.9
