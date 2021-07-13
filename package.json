@@ -68,6 +68,7 @@
     "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235",
     "test:js": "mocha --opts test/mocha.custom.opts",
     "lint": "npm run lint:js",
-    "lint:js": "eslint"
+    "lint:js": "eslint",
+    "release": "release-script"
   }
 }
