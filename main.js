@@ -105,18 +105,46 @@ class Zigbee extends utils.Adapter {
         }
     }
 
+    sendError(error, message) {
+        if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
+            const sentryInstance = this.getPluginInstance('sentry');
+            if (sentryInstance) {
+                const Sentry = sentryInstance.getSentryObject();
+                if (Sentry) {
+                    if (message) {
+                        Sentry.configureScope(scope => {
+                            scope.addBreadcrumb({
+                                type: "error", // predefined types
+                                category: "error message",
+                                level: Sentry.Severity.Error,
+                                message: message
+                            });
+                        });
+                    }
+                    if (typeof error == 'string') {
+                        Sentry.captureException(new Error(error));
+                    } else {
+                        Sentry.captureException(error);
+                    }
+                }
+            }
+        }
+    }
+
     filterError(errormessage, message, error) {
         if (error.code === undefined)
         {
             let em =  error.stack.match(/failed \((.+?)\) at/);
             if (!em) em = error.stack.match(/failed \((.+?)\)/);
             this.log.error(`${message} no error code (${(em ? em[1]:'undefined')})`);
+            this.sendError(error, `${message} no error code`);
             this.log.debug(`Stack trace for ${em}: ${error.stack}`);
             return;
         }
         const ecode = errorCodes[error.code];
         if (ecode === undefined) {
             this.log.error(errormessage);
+            this.sendError(error, errormessage);
             return;
         }
         switch (ecode.severity) {
@@ -126,9 +154,13 @@ class Zigbee extends utils.Adapter {
                 break;
             case E_WARN: this.log.warn(`${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            case E_ERROR: this.log.error(`${message}: Code ${error.code} (${ecode.message})`);
+            case E_ERROR:
+                this.log.error(`${message}: Code ${error.code} (${ecode.message})`);
+                this.sendError(error, `${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            default: this.log.error(`${message}: Code ${error.code} (malformed error)`);
+            default: 
+                this.log.error(`${message}: Code ${error.code} (malformed error)`);
+                this.sendError(error, `${message}: Code ${error.code} (malformed error)`);
         }
     }
 
@@ -237,6 +269,7 @@ class Zigbee extends utils.Adapter {
             } else {
                 this.log.error(error);
             }
+            this.sendError(error, `Failed to start Zigbee`);
             if (this.reconnectCounter > 0) {
                 this.tryToReconnect();
             }
@@ -246,6 +279,7 @@ class Zigbee extends utils.Adapter {
     async onZigbeeAdapterDisconnected() {
         this.reconnectCounter = 5;
         this.log.error('Adapter disconnected, stopping');
+        this.sendError('Adapter disconnected, stopping');
         this.setState('info.connection', false, true);
         await this.callPluginMethod('stop');
         this.tryToReconnect();
@@ -493,7 +527,8 @@ class Zigbee extends utils.Adapter {
             }
             const converter = mappedModel.toZigbee.find((c) => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
             if (!converter) {
-                this.log.error(`No converter available for '${model}' with keys: prop = '${stateDesc.prop}', setattr = '${stateDesc.setattr}', id = '${stateDesc.id}' `);
+                this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
                 return;
             }
 
@@ -574,6 +609,7 @@ class Zigbee extends utils.Adapter {
                 payload_obj = JSON.parse();
             } catch (e) {
                 this.log.error(`Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
+                this.sendError(e, `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
                 return {success:false, error: `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`};
             }
         } else if (typeof payload === 'object') {
@@ -590,15 +626,18 @@ class Zigbee extends utils.Adapter {
                 const entity = await this.zbController.resolveEntity(devID);
                 if (!entity) {
                     this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`);
+                    this.sendError(`Device ${safeJsonStringify(payload_obj.device)} not found`);
                     return {success: false, error: `Device ${safeJsonStringify(payload_obj.device)} not found`};
                 }
                 const mappedModel = entity.mapped;
                 if (!mappedModel) {
                     this.log.error(`No Model for Device ${safeJsonStringify(payload_obj.device)}`);
+                    this.sendError(`No Model for Device ${safeJsonStringify(payload_obj.device)}`);
                     return {success: false, error: `No Model for Device ${safeJsonStringify(payload_obj.device)}`};
                 }
                 if (typeof payload_obj.payload !== 'object') {
                     this.log.error(`Illegal payload type for ${safeJsonStringify(payload_obj.device)}`);
+                    this.sendError(`Illegal payload type for ${safeJsonStringify(payload_obj.device)}`);
                     return {success: false, error: `Illegal payload type for ${safeJsonStringify(payload_obj.device)}`};
                 }
                 for (const key in payload_obj.payload) {
@@ -671,8 +710,10 @@ class Zigbee extends utils.Adapter {
                         await plugin[method]();
                     }
                 } catch (error) {
-                    if (error && !error.hasOwnProperty('code'))
+                    if (error && !error.hasOwnProperty('code')) {
                         this.log.error(`Failed to call '${plugin.constructor.name}' '${method}' (${error.stack})`);
+                        this.sendError(error, `Failed to call '${plugin.constructor.name}' '${method}'`);
+                    }
                     throw error;
                 }
             }
@@ -697,7 +738,10 @@ class Zigbee extends utils.Adapter {
             }
             callback();
         } catch (error) {
-            this.log.error(`Unload error (${error.stack})`);
+            if (error) {
+                this.log.error(`Unload error (${error.stack})`);
+            }
+            this.sendError(error, `Unload error`);
             callback();
         }
     }
@@ -712,11 +756,13 @@ class Zigbee extends utils.Adapter {
                 fs.mkdirSync(dbDir);
             } catch (e) {
                 this.log.error(`Cannot create directory ${dbDir}: ${e}`);
+                this.sendError(`Cannot create directory ${dbDir}: ${e}`);
             }
         }
         const port = this.config.port;
         if (!port) {
             this.log.error('Serial port not selected! Go to settings page.');
+            this.sendError('Serial port not selected! Go to settings page.');
         }
         const panID = parseInt(this.config.panID ? this.config.panID : 0x1a62);
         const channel = parseInt(this.config.channel ? this.config.channel : 11);
@@ -777,6 +823,7 @@ class Zigbee extends utils.Adapter {
                     if (data)
                         data = data.toString();
                     this.logToPairing('Error: ' + msg + '. ' + data, true);
+                    this.sendError('Error: ' + msg + '. ' + data);
                     break;
                 case 'debug':
                     logger = this.log.debug;
@@ -799,8 +846,6 @@ class Zigbee extends utils.Adapter {
             }
         }
     }
-
-
 }
 
 
