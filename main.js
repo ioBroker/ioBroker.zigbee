@@ -402,9 +402,6 @@ class Zigbee extends utils.Adapter {
 
     async onZigbeeEvent(type, entity, message){
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
-        if (!entity.mapped) {
-            return;
-        }
         const device = entity.device,
             mappedModel = entity.mapped,
             model = (entity.mapped) ? entity.mapped.model : entity.device.modelID,
@@ -418,6 +415,17 @@ class Zigbee extends utils.Adapter {
         // always publish link_quality
         if (message.linkquality) {
             this.publishToState(devId, model, {linkquality: message.linkquality});
+        }
+        // publish raw event to "from_zigbee"
+        // some cleanup
+        const msgForState = Object.assign({}, message);
+        delete msgForState['device'];
+        delete msgForState['endpoint'];
+        msgForState['endpoint_id'] = message.endpoint.ID;
+        this.publishToState(devId, model, {msg_from_zigbee: safeJsonStringify(msgForState)});
+        
+        if (!entity.mapped) {
+            return;
         }
         let converters = mappedModel.fromZigbee.filter(c => c && c.cluster === cluster && (
             (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
