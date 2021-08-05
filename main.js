@@ -414,7 +414,7 @@ class Zigbee extends utils.Adapter {
         await this.checkIfModelUpdate(entity);
         // always publish link_quality
         if (message.linkquality) {
-            this.publishToState(devId, model, {linkquality: map(message.linkquality,0,255,0,254)});
+            this.publishToState(devId, model, {linkquality: 0 + (254 - 0) * (message.linkquality - 0) / (255 - 0)});
         }
         // publish raw event to "from_zigbee"
         // some cleanup
