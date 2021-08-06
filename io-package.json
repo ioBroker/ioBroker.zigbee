@@ -3,7 +3,7 @@
         "name": "zigbee",
         "version": "1.5.7",
         "news": {
-            "1.5.0": {
+            "1.5.6": {
                 "en": "Dashboard"
             },
             "1.4.1": {
@@ -202,7 +202,8 @@
         "adapterType": "zstack",
         "debugHerdsman": false,
         "disablePing": false,
-        "external": ""
+        "external": "",
+        "startWithInconsistent": false
     },
     "instanceObjects": [
         {
