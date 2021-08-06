@@ -31,7 +31,7 @@ const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman', 'disablePing', 'external',
+    'adapterType', 'debugHerdsman', 'disablePing', 'external', 'startWithInconsistent',
 ];
 
 function getDeviceByID(ID) {

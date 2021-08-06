@@ -800,6 +800,7 @@ class Zigbee extends utils.Adapter {
             disablePing: this.config.disablePing,
             transmitPower: this.config.transmitPower,
             extPanIdFix: extPanIdFix,
+            startWithInconsistent: this.config.startWithInconsistent || false,
         };
     }
 
