@@ -442,14 +442,13 @@ function showDevices() {
             {
                 const card = getGroupCard(d);
                 html += card;
+                continue;
             }
-            continue;
         };
-        if (d.info.device._type == 'Coordinator') {
+        if (d.info && d.info.device._type == 'Coordinator') {
             const card = getCoordinatorCard(d);
             html += card;
-        }
-        else {
+        } else {
         //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
                 devGroups[d._id] = d.groups;
