@@ -3,6 +3,9 @@
         "name": "zigbee",
         "version": "1.5.7",
         "news": {
+            "1.6.0": {
+                "en": "Improvements and new devices"
+            },
             "1.5.6": {
                 "en": "Dashboard"
             },

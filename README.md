@@ -112,6 +112,12 @@ You can thank the authors by these links:
 
 ## Changelog
 
+### 1.6.0 (2021-08-09)
+* Update to latest zigbee-herdsman and zigbee-herdsman-converters
+* (PeterVoronov) Update support composite exposes
+* (kirovilya) UI fixes
+* (kirovilya) Sentry support
+
 ### 1.5.6 (2021-05-26)
 * (kirovilya) new UI add
 
