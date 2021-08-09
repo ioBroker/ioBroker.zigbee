@@ -116,15 +116,12 @@ You can thank the authors by these links:
 Attention!
 
 After introducing a new z-stack startup procedure into zigbee-herdsman, we got some problems with our adapter in version 1.5.6.
-
 This was discussed [here](https://github.com/ioBroker/ioBroker.zigbee/issues/1110) and [here](https://github.com/Koenkk/zigbee-herdsman/issues/376)
 
 Unfortunately, not all user sticks were able to work successfully with this new init routine. This mainly affected the TI cc2538 based sticks with the 2019 year's firmware. All subsequent firmwares and sticks have no problems when starting the adapter or they can be fixed.
 
 At the moment, there is no working solution to this problem, except for updating the firmware of such sticks to a newer one.
-
 As a fallback, it is proposed to use the old version of zigbee-herdsman 0.13.93, but some of the devices and functionality may not work.
-
 Therefore, we made a separate version 1.6.0o especially for this case. It can be installed from github at https://github.com/ioBroker/ioBroker.zigbee/tarball/old_herdsman
 
 * Update to latest zigbee-herdsman and zigbee-herdsman-converters
