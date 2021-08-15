@@ -30,6 +30,7 @@ const StatesController = require('./lib/statescontroller');
 const ExcludePlugin = require('./lib/exclude');
 const zigbeeHerdsmanConverters = require('zigbee-herdsman-converters');
 const vm = require('vm');
+const util = require('util');
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -164,8 +165,9 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    debugLog (data) {
-        this.log.debug(data.slice(data.indexOf('zigbee-herdsman')));
+    debugLog (data, ...args) {
+        const message = (args) ? util.format(data, ...args) : data;
+        this.log.debug(message.slice(message.indexOf('zigbee-herdsman')));
     }
 
     async onReady() {
