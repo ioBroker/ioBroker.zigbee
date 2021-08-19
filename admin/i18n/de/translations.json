@@ -23,7 +23,7 @@
     "Device details": "Gerätedetails",
     "Device information": "Geräteinformation",
     "Device map info": "<p>Du kannst auf ein Gerät klicken um mehr Details zu sehen.</p> Jedes Gerät kann nur ein Parent haben. Geräte können ihre Parents auch selbstständig wechseln, es gibt keine Möglichkeit einen bestimmten Parent zu erzwingen. (Falls mehrere Parent Links angezeigt werden, kommt das vermutlich von noch nicht aktualisierten Daten.)<br>Geräte lassen sich verschieben für bessere Übersicht.<br>Schwache und Offline Links werden in rot angezeigt. Wenn der Gerätename rot dargestellt wird, hat das Gerät keine Verbindungen. Wenn ein Gerät nur 'Letzte Parents' Verbindungen hat, ist das kein Problem, es hat vermutlich nur seit einer Weile keine Daten geschickt.",
-    "Devices": "Geräte",
+    "Devices": "Devices",
     "Disable LED for cc2531": "LED auf CC2531 deaktivieren",
     "Disable Queue": "Queue deaktivieren",
     "Do you really want to delete device": "Möchtest du das Gerät wirklich löschen?",
