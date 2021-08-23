@@ -581,13 +581,15 @@ class Zigbee extends utils.Adapter {
             try {
                 const result = await converter.convertSet(target, key, preparedValue, meta);
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
-                if (stateModel && !isGroup)
-                    this.acknowledgeState(deviceId, model, stateDesc, value);
-                // process sync state list
-                this.processSyncStatesList(deviceId, model, syncStateList);
-                if (isGroup) {
-                    await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
-                    this.acknowledgeState(deviceId, model, stateDesc, value);
+                if (result !== undefined) {
+                    if (stateModel && !isGroup)
+                        this.acknowledgeState(deviceId, model, stateDesc, value);
+                    // process sync state list
+                    this.processSyncStatesList(deviceId, model, syncStateList);
+                    if (isGroup) {
+                        await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
+                        this.acknowledgeState(deviceId, model, stateDesc, value);
+                    }
                 }
             } catch(error) {
                 this.filterError(`Error ${error.code} on send command to ${deviceId}.`+
