@@ -97,7 +97,7 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
-* to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
+* to Arthur Rupp https://paypal.me/ArthurRupp
 
 <!--
     Placeholder for the next version (at the beginning of the line):
@@ -111,6 +111,10 @@ You can thank the authors by these links:
 -->
 
 ## Changelog
+
+### 1.6.1 (2021-08)
+* (kirovilya) herdsman compatibility
+
 
 ### 1.6.0 (2021-08-09)
 Attention!
