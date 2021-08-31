@@ -117,7 +117,7 @@ You can thank the authors by these links:
 
 
 ### 1.6.0 (2021-08-09)
-Attention!
+## Attention! Attention! Attention! Attention! Attention! Attention! Attention!
 
 After introducing a new z-stack startup procedure into zigbee-herdsman, we got some problems with our adapter in version 1.5.6.
 This was discussed [here](https://github.com/ioBroker/ioBroker.zigbee/issues/1110) and [here](https://github.com/Koenkk/zigbee-herdsman/issues/376)
