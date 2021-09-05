@@ -5,9 +5,9 @@ os:
 sudo: required
 language: node_js
 node_js:
-  - '10'
   - '12'
   - '14'
+  - '16'
 before_install:
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo ln -s `which node` `which node`js; fi'
   - 'if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then which nodejs || which node; fi'
@@ -38,8 +38,4 @@ script:
   - 'npm run test:package'
   - 'npm run test:unit'
   - 'npm run test:integration'
-  - if [ "$TRAVIS_OS_NAME" != "windows" ]; then
-    if [ "$TRAVIS_COMMIT_RANGE" != "" ]; then COMMIT_RANGE=$TRAVIS_COMMIT_RANGE; else COMMIT_RANGE="HEAD^..HEAD"; fi;
-    echo "Lint check of commit range $COMMIT_RANGE";
-    lint-diff $COMMIT_RANGE;
-    fi;
+  - 'if [ "$TRAVIS_OS_NAME" != "windows" ]; then if [ "$TRAVIS_COMMIT_RANGE" != "" ]; then COMMIT_RANGE=$TRAVIS_COMMIT_RANGE; else COMMIT_RANGE="HEAD^..HEAD"; fi; echo "Lint check of commit range $COMMIT_RANGE"; lint-diff $COMMIT_RANGE; fi;'
