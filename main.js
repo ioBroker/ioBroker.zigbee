@@ -317,25 +317,31 @@ class Zigbee extends utils.Adapter {
             const adapterType = this.config.adapterType || 'zstack';
             if (adapterType === 'zstack') {
                 if (configExtPanId != networkExtPanId) {
-                    // try to read from nvram
-                    const result = await this.zbController.herdsman.adapter.znp.request(
-                        1, // Subsystem.SYS
-                        'osalNvRead',
-                        {
-                            id: 45, // EXTENDED_PAN_ID
-                            len: 0x08,
-                            offset: 0x00,
-                        },
-                        null, [
-                            0, // ZnpCommandStatus.SUCCESS
-                            2, // ZnpCommandStatus.INVALID_PARAM
-                        ]
-                    );
-                    const nwExtPanId = '0x'+result.payload.value.reverse().toString('hex');
-                    this.log.debug(`Config value ${configExtPanId} : nw value ${nwExtPanId}`);
-                    if (configExtPanId != nwExtPanId) {
-                        networkExtPanId = nwExtPanId;
-                        needChange = true;
+                    try {
+                        // try to read from nvram
+                        const result = await this.zbController.herdsman.adapter.znp.request(
+                            1, // Subsystem.SYS
+                            'osalNvRead',
+                            {
+                                id: 45, // EXTENDED_PAN_ID
+                                len: 0x08,
+                                offset: 0x00,
+                            },
+                            null, [
+                                0, // ZnpCommandStatus.SUCCESS
+                                2, // ZnpCommandStatus.INVALID_PARAM
+                            ]
+                        );
+                        const nwExtPanId = '0x'+result.payload.value.reverse().toString('hex');
+                        this.log.debug(`Config value ${configExtPanId} : nw value ${nwExtPanId}`);
+                        if (configExtPanId != nwExtPanId) {
+                            networkExtPanId = nwExtPanId;
+                            needChange = true;
+                        }
+                    } catch (e) {
+                        this.log.error(`Unable to apply ExtPanID changes: ${e}`);
+                        this.sendError(e, `Unable to apply ExtPanID changes`);
+                        needChange = false;
                     }
                 } else {
                     needChange = true;
