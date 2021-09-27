@@ -187,12 +187,17 @@ function getGroupCard(dev) {
     return card;
 }
 
-
+function sanitizeImageParameter(parameter) {
+    const replaceByDash = [/\?/g, /&/g, /[^a-z\d\- _./:]/gi, /[/]/gi];
+    let sanitized = parameter;
+    replaceByDash.forEach((r) => sanitized = sanitized.replace(r, '_'));
+    return sanitized;
+}
 
 function getCard(dev) {
     const title = dev.common.name,
         id = dev._id,
-        type = (dev.common.type ? dev.common.type.replace('/','_'):'unknown'),
+        type = (dev.common.type ? sanitizeImageParameter(dev.common.type):'unknown'),
         img_src = dev.icon || dev.common.icon,
         rooms = [],
         lang = systemLang  || 'en';
@@ -2185,7 +2190,7 @@ function genDevInfo(device) {
             }).join('');
         }
     };
-    const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${mapped.model}.html" target="_blank" rel="noopener noreferrer">${mapped.model}</a>`;
+    const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeImageParameter(mapped.model)}.html" target="_blank" rel="noopener noreferrer">${sanitizeImageParameter(mapped.model)}</a>`;
     const mappedInfo = (!mapped) ? '' :
         `<div style="font-size: 0.9em">
             <ul>
