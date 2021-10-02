@@ -1,11 +1,13 @@
 ![Logo](admin/zigbee.png)
 # ioBroker.zigbee
 
-![Number of Installations](http://iobroker.live/badges/zigbee-installed.svg) ![Number of Installations](http://iobroker.live/badges/zigbee-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
-[![Tests](https://travis-ci.org/ioBroker/ioBroker.zigbee.svg?branch=master)](https://travis-ci.org/ioBroker/ioBroker.zigbee)
+![Number of Installations](http://iobroker.live/badges/zigbee-installed.svg)
+![Number of Installations](http://iobroker.live/badges/zigbee-stable.svg)
+[![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 
-[![NPM](https://nodei.co/npm/iobroker.zigbee.png?downloads=true)](https://nodei.co/npm/iobroker.zigbee/)
+![Test and Release](https://github.com/ioBroker/iobroker.zigbee/workflows/Test%20and%20Release/badge.svg)
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/zigbee/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 
 ## ioBroker adapter for Zigbee devices via TI cc2531/cc2530/cc26x2r/cc2538 and deCONZ ConBee/RaspBee.
 
@@ -15,7 +17,7 @@ With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others mo
 
 ### Texas Instruments SoC
 ..
-For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc26x2r, cc2538](https://github.com/Koenkk/Z-Stack-firmware)
+For work, you need one of the following Adapters [all are listed here](https://www.zigbee2mqtt.io/information/supported_adapters.html) , flashed with a special ZNP firmware: [cc2531, cc2530, cc26x2r, cc2538](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
@@ -95,14 +97,44 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
-* to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
+* to Arthur Rupp https://paypal.me/ArthurRupp
 
 <!--
     Placeholder for the next version (at the beginning of the line):
-    ### __WORK IN PROGRESS__
+    
+    https://github.com/AlCalzone/release-script#usage
+    npm run release minor -- --all 0.9.8 -> 0.10.0
+    npm run release patch -- --all 0.9.8 -> 0.9.9
+    npm run release prerelease beta -- --all v0.2.1 -> v0.2.2-beta.0
+    Placeholder for the next version (at the beginning of the line):
+    ### **WORK IN PROGRESS**
 -->
 
 ## Changelog
+
+### 1.6.1 (2021-08)
+* (kirovilya) herdsman compatibility
+
+
+### 1.6.0 (2021-08-09)
+## Attention! Attention! Attention! Attention! Attention! Attention! Attention!
+
+After introducing a new z-stack startup procedure into zigbee-herdsman, we got some problems with our adapter in version 1.5.6.
+This was discussed [here](https://github.com/ioBroker/ioBroker.zigbee/issues/1110) and [here](https://github.com/Koenkk/zigbee-herdsman/issues/376)
+
+Unfortunately, not all user sticks were able to work successfully with this new init routine. This mainly affected the TI cc2538 based sticks with the 2019 year's firmware. All subsequent firmwares and sticks have no problems when starting the adapter or they can be fixed.
+
+At the moment, there is no working solution to this problem, except for updating the firmware of such sticks to a newer one.
+As a fallback, it is proposed to use the old version of zigbee-herdsman 0.13.93, but some of the devices and functionality may not work.
+Therefore, we made a separate version 1.6.0o especially for this case. It can be installed from github at https://github.com/ioBroker/ioBroker.zigbee/tarball/old_herdsman
+
+* Update to latest zigbee-herdsman and zigbee-herdsman-converters
+* (PeterVoronov) Update support composite exposes
+* (kirovilya) UI fixes
+* (kirovilya) Sentry support
+
+### 1.5.6 (2021-05-26)
+* (kirovilya) new UI add
 
 ### 1.5.5 (2021-05-05)
 * Fixes for new zigbee-herdsman-converters
@@ -332,7 +364,7 @@ new Zigbee-herdsman features:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018-2020 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2021 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -50,7 +50,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [12.x, 14.x, 16.x]
         os: [ubuntu-latest, macos-latest]
 
     steps:
@@ -115,13 +115,13 @@ jobs:
 
 #     If you like, activate automated version publish to NPM
 #     Only if commit contains a version, see : https://github.com/AlCalzone/release-script
-#
-#      - name: Publish package to npm
-#        run: |
-#          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-#          npm whoami
-#          npm publish
-#
+
+      - name: Publish package to npm
+        run: |
+          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          npm whoami
+          npm publish
+
 #      - name: Create Github Release
 #        uses: actions/create-release@v1
 #        env:

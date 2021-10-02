@@ -1,9 +1,18 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.5.6",
+        "version": "1.6.3",
         "news": {
-            "1.5.0": {
+            "1.6.3": {
+                "en": "Some fixes and updates"
+            },
+            "1.6.2": {
+                "en": "Some fixes and updates"
+            },
+            "1.6.0": {
+                "en": "Improvements and new devices"
+            },
+            "1.5.6": {
                 "en": "Dashboard"
             },
             "1.4.1": {
@@ -167,6 +176,9 @@
         "dataFolder": "zigbee_%INSTANCE%",
         "compact": true,
         "materializeTab": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "tier": 2,
         "adminTab": {
             "name": {
                 "en": "Zigbee",
@@ -181,6 +193,11 @@
                 "zh-cn": "Zigbee"
             },
             "fa-icon": "</i><img style='width:24px;margin-bottom:-6px;' src='/adapter/zigbee/zigbee.svg'><i>"
+        },
+        "plugins": {
+            "sentry": {
+                "dsn": "https://c829e2ad996d45d1bdb2247805699883@o831057.ingest.sentry.io/5812498"
+            }
         }
     },
     "native": {
@@ -194,7 +211,8 @@
         "adapterType": "zstack",
         "debugHerdsman": false,
         "disablePing": false,
-        "external": ""
+        "external": "",
+        "startWithInconsistent": false
     },
     "instanceObjects": [
         {

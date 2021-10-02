@@ -105,19 +105,34 @@
         width: 100%;
         height: 100%;
         position: relative;
-        transition: transform .5s;
-        -webkit-transition: -webkit-transform .5s;
-        transform-style: preserve-3d;
+        -webkit-transition: -webkit-transform 0.5s;
+        -moz-transition: -moz-transform 0.5s;
+        -o-transition: -o-transform 0.5s;
+        transition: transform 0.5s;
         -webkit-transform-style: preserve-3d;
+        -moz-transform-style: preserve-3d;
+        -o-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-transform-origin: 50% 50%;
+        transform-origin: 50% 50%;
     }
     .m .card .zcard {
         padding: 10px;
+    }
+    .m .card div {
+        -webkit-backface-visibility: hidden;
+        -moz-backface-visibility: hidden;
+        -o-backface-visibility: hidden;
+        backface-visibility: hidden;
     }
     .device {
         padding: 5px;
         width: 330px;
         height: 200px;
-        perspective: 600px;
+        -webkit-perspective: 800px;
+        -moz-perspective: 800px;
+        -o-perspective: 800px;
+        perspective: 800px;
     }
     .m .zcard .card-title {
         font-size: 16px;
@@ -228,19 +243,35 @@
         margin-bottom: 0;
     }
     .face {
-        position: absolute;
+        overflow:hidden;
+        position:absolute;
         height: 100%;
         width: 100%;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
+        background: #fff;
+        z-index: 2;
+        -webkit-transform: rotateY( 0deg );
+        -moz-transform: rotateY( 0deg );
+        -o-transform: rotateY( 0deg );
+        transform: rotateY( 0deg );
     }
     .back {
-        transform: rotateY( 180deg );
-        -webkit-transform: rotateY(180deg);
+        overflow:hidden;
+        position:absolute;
+        display: block;
+        box-sizing: border-box;
+        height: 100%;
+        width: 100%;
+        background: #fff;
+        -webkit-transform: rotateY( -180deg );
+        -moz-transform: rotateY( -180deg );
+        -o-transform: rotateY( -180deg );
+        transform: rotateY( -180deg );
     }
     .card.flipped {
-        transform: rotateY(180deg);
-        -webkit-transform: rotateY(180deg);
+        -webkit-transform: rotateY( 180deg );
+        -moz-transform: rotateY( 180deg );
+        -o-transform: rotateY( 180deg );
+        transform: rotateY( 180deg );
     }
     .m .switch label .lever {
         width: 30px;
@@ -332,29 +363,41 @@
         </div>
         <div id="tabs" class="tabs-content row">
             <div id="tab-main" class="col s12 page active">
-                <div class="navbar-fixed" style="height: 36px">
-                    <nav style="height: 36px; margin-left: -12px">
-                        <div class="nav-wrapper main-toolbar-table">
-                            <div class="col s4 m4 l4 xl3 main-toolbar-table-types-tools main-toolbar-table-filter input-field" style="line-height: 24px;">
-                                <i class="material-icons prefix" style="line-height: 24px; height: 30px;">search</i>
-                                <input id="device-search" class="filter-input translateP" placeholder="Искать" autocomplete="new-password" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Filter">
-                                <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
-                            </div>
-                            <div class="col s4 m4 l4 xl3 input-field" style="line-height: 24px;">
-                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
-                                <a id="device-order-btn" class="dropdown-trigger btn" href="#" data-target="device-order">Default</a>
-                                <ul id="device-order" class="dropdown-content" tabindex="0">
-                                    <li class="device-order-item" data-type="a-z" tabindex="0"><a class="translate" data-lang="A-Z">A-Z</a></li>
-                                    <li class="device-order-item" data-type="default" tabindex="0"><a class="translate" data-lang="Default">Default</a></li>
-                                </ul>
-                            </div>
-                            <div class="col s4 m4 l4 xl3 input-field" style="line-height: 24px;">
-                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">art_track</i>
-                                <a id="room-filter-btn" class="dropdown-trigger btn" href="#" data-target="room-filter">All</a>
-                                <ul id="room-filter" class="dropdown-content" tabindex="0">
-                                </ul>
-                            </div>
-                        </div>
+                <div class="navbar-fixed" style="height: 36px;">
+                    <nav style="height: 36px; margin-left: -12px; line-height: 24px;">
+                        <ul id="nav-mobile" class="left">
+                            <li>
+                                <a id="rotate_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Rotate cards">
+                                    <i class="material-icons large icon-blue">3d_rotation</i>
+                                </a>
+                            </li>
+                            <li>
+                                <div class="col main-toolbar-table-types-tools main-toolbar-table-filter input-field" style="line-height: 24px;">
+                                    <i class="material-icons prefix" style="line-height: 24px;">search</i>
+                                    <input id="device-search" class="filter-input translateP" placeholder="Искать" autocomplete="new-password" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Filter">
+                                    <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
+                                </div>
+                                
+                            </li>
+                            <li>
+                                <div class="col input-field" style="line-height: 24px;">
+                                    <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
+                                    <a id="device-order-btn" class="dropdown-trigger btn" href="#" data-target="device-order">Default</a>
+                                    <ul id="device-order" class="dropdown-content" tabindex="0">
+                                        <li class="device-order-item" data-type="a-z" tabindex="0"><a class="translate" data-lang="A-Z">A-Z</a></li>
+                                        <li class="device-order-item" data-type="default" tabindex="0"><a class="translate" data-lang="Default">Default</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="col input-field" style="line-height: 24px;">
+                                    <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">art_track</i>
+                                    <a id="room-filter-btn" class="dropdown-trigger btn" href="#" data-target="room-filter">All</a>
+                                    <ul id="room-filter" class="dropdown-content" tabindex="0">
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
                     </nav>
                 </div>
                 <div id="devices" class="row">
@@ -490,6 +533,10 @@
                         <input id="external" type="text" class="value"/>
                         <label class="translate" for="external">Paths to files, semicolon (;) splitted</label>
                     </div>
+                </div>
+                <div class="input-field col s12 m12 l12 col-disableLed">
+                    <input id="startWithInconsistent" type="checkbox" class="value" />
+                    <label class="translate" for="startWithInconsistent">Force start adapter with inconsistent configuration (not recommended). Please update the adapter to compatible firmware and recreate your network as soon as possible.</label>
                 </div>
             </div>
 

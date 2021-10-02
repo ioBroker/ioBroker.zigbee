@@ -31,7 +31,7 @@ const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman', 'disablePing', 'external',
+    'adapterType', 'debugHerdsman', 'disablePing', 'external', 'startWithInconsistent',
 ];
 
 function getDeviceByID(ID) {
@@ -155,9 +155,9 @@ function getGroupCard(dev) {
     const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
     const dashCard = getDashCard(dev,`img/group_${memberCount}.png` );
     const card = `<div id="${id}" class="device">
-                  <div class="card hoverable">
+                  <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
-                    <div class="back face hide">
+                    <div class="back face">
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
@@ -187,12 +187,17 @@ function getGroupCard(dev) {
     return card;
 }
 
-
+function sanitizeImageParameter(parameter) {
+    const replaceByDash = [/\?/g, /&/g, /[^a-z\d\- _./:]/gi, /[/]/gi];
+    let sanitized = parameter;
+    replaceByDash.forEach((r) => sanitized = sanitized.replace(r, '_'));
+    return sanitized;
+}
 
 function getCard(dev) {
     const title = dev.common.name,
         id = dev._id,
-        type = (dev.common.type ? dev.common.type.replace('/','_'):'unknown'),
+        type = (dev.common.type ? sanitizeImageParameter(dev.common.type):'unknown'),
         img_src = dev.icon || dev.common.icon,
         rooms = [],
         lang = systemLang  || 'en';
@@ -226,9 +231,9 @@ function getCard(dev) {
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
-                  <div class="card hoverable">
+                  <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
-                    <div class="back face hide">
+                    <div class="back face">
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
@@ -442,14 +447,13 @@ function showDevices() {
             {
                 const card = getGroupCard(d);
                 html += card;
+                continue;
             }
-            continue;
         };
-        if (d.info.device._type == 'Coordinator') {
+        if (d.info && d.info.device._type == 'Coordinator') {
             const card = getCoordinatorCard(d);
             html += card;
-        }
-        else {
+        } else {
         //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
                 devGroups[d._id] = d.groups;
@@ -489,23 +493,10 @@ function showDevices() {
     });
     $(".flip").click(function(){
         const card = $(this).parents(".card");
-        const flipped = card.hasClass("flipped");
         card.toggleClass("flipped");
-        if (flipped) {
-            card.children(".front").removeClass("hide");
-        } else {
-            card.children(".back").removeClass("hide");
-        }
-        setTimeout(function() {
-            const flipped = card.hasClass("flipped");
-            if (flipped) {
-                card.children(".back").removeClass("hide");
-                card.children(".front").addClass("hide");
-            } else {
-                card.children(".front").removeClass("hide");
-                card.children(".back").addClass("hide");
-            }
-        }, 500);
+    });
+    $('#rotate_btn').click(function () {
+        $('.card.flipable').toggleClass("flipped");
     });
 
     shuffleInstance = new Shuffle($("#devices"), {
@@ -2199,7 +2190,7 @@ function genDevInfo(device) {
             }).join('');
         }
     };
-    const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${mapped.model}.html" target="_blank" rel="noopener noreferrer">${mapped.model}</a>`;
+    const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeImageParameter(mapped.model)}.html" target="_blank" rel="noopener noreferrer">${sanitizeImageParameter(mapped.model)}</a>`;
     const mappedInfo = (!mapped) ? '' :
         `<div style="font-size: 0.9em">
             <ul>
