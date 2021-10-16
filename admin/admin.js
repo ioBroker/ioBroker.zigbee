@@ -187,17 +187,16 @@ function getGroupCard(dev) {
     return card;
 }
 
-function sanitizeImageParameter(parameter) {
-    const replaceByDash = [/\?/g, /\s/g, /&/g, /[^a-z\d\- _./:]/gi, /[/]/gi];
-    let sanitized = parameter;
-    replaceByDash.forEach((r) => sanitized = sanitized.replace(r, '_'));
-    return sanitized;
+function sanitizeModelParameter(parameter) {
+    const replaceByUnderscore = /[\s/]/g;
+    return parameter.replace(replaceByUnderscore, '_');
 }
 
 function getCard(dev) {
     const title = dev.common.name,
         id = dev._id,
-        type = (dev.common.type ? sanitizeImageParameter(dev.common.type):'unknown'),
+        type = (dev.common.type ? dev.common.type : 'unknown'),
+        type_url = (dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown'),
         img_src = dev.icon || dev.common.icon,
         rooms = [],
         lang = systemLang  || 'en';
@@ -211,7 +210,7 @@ function getCard(dev) {
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
-    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
