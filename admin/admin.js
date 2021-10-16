@@ -2434,7 +2434,7 @@ function showExclude() {
         const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(exclude_id)}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
 
         const card = `
-                    <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3">
+                    <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3" style="height: 135px;padding-bottom: 10px;">
                         <div class="card hoverable">
                             <div class="card-content zcard">
                                 <i class="left"><img src="${exclude_dev.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';"></i>
