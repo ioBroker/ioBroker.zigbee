@@ -188,7 +188,7 @@ function getGroupCard(dev) {
 }
 
 function sanitizeImageParameter(parameter) {
-    const replaceByDash = [/\?/g, /&/g, /[^a-z\d\- _./:]/gi, /[/]/gi];
+    const replaceByDash = [/\?/g, /\s/g, /&/g, /[^a-z\d\- _./:]/gi, /[/]/gi];
     let sanitized = parameter;
     replaceByDash.forEach((r) => sanitized = sanitized.replace(r, '_'));
     return sanitized;
