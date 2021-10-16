@@ -188,7 +188,7 @@ function getGroupCard(dev) {
 }
 
 function sanitizeImageParameter(parameter) {
-    const replaceByDash = [/\?/g, /\s/g, /&/g, /[^a-z\d\- _./:]/gi, /[/]/gi];
+    const replaceByDash = [/\?/g, /&/g, /[^a-z\d\-_./:]/gi, /[/]/gi];
     let sanitized = parameter;
     replaceByDash.forEach((r) => sanitized = sanitized.replace(r, '_'));
     return sanitized;
@@ -2432,7 +2432,7 @@ function showExclude() {
         const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}};
         // exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
 
-        const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${exclude_id}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
+        const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeImageParameter(exclude_id)}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
 
         const card = `
                     <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3">
