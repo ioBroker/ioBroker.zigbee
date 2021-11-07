@@ -154,7 +154,7 @@ function getGroupCard(dev) {
                 </div>`);
     const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
     const dashCard = getDashCard(dev,`img/group_${memberCount}.png` );
-    const card = `<div id="${id}" class="device">
+    const card = `<div id="${id}" class="device group">
                   <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
                     <div class="back face">
@@ -660,7 +660,7 @@ function getDevices() {
 }
 
 function getDeviceCards() {
-    return $('#devices .device');
+    return $('#devices .device').not(".group");
 }
 
 function getDeviceCard(devId) {

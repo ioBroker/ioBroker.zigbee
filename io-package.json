@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.6.4",
+        "version": "1.6.5",
         "news": {
+            "1.6.5": {
+                "en": "Some fixes and updates"
+            },
             "1.6.3": {
                 "en": "Some fixes and updates"
             },
