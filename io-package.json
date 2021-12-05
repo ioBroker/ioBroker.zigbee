@@ -210,6 +210,7 @@
         }
     },
     "native": {
+        "ignoredDevices": "",
         "port": "",
         "panID": 6754,
         "extPanID": "DDDDDDDDDDDDDDDD",

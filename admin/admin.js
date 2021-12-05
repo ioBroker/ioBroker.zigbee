@@ -30,7 +30,7 @@ let devices = [],
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const savedSettings = [
-    'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
+    'ignoredDevices', 'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
     'adapterType', 'debugHerdsman', 'disablePing', 'external', 'startWithInconsistent',
 ];
 
