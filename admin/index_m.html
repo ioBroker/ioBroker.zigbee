@@ -144,7 +144,7 @@
         border: none;
         bottom: 0;
         height: 50px;
-        background: #fff;
+        /*background: #fff;*/
         right: 0;
         /*text-align: right;*/
         padding: 10px;
@@ -174,17 +174,41 @@
     i.icon-green {
         color: green;
     }
+    .m.react-dark i.icon-green {
+        color: green!important;
+    }
+    .m.react-blue i.icon-green {
+        color: green!important;
+    }
     i.icon-black {
         color: black;
     }
     i.icon-blue {
         color: blue;
     }
+    .m.react-dark i.icon-blue {
+        color: rgb(100, 181, 246)!important;
+    }
+    .m.react-blue i.icon-blue {
+        color: rgb(100, 181, 246)!important;
+    }
     i.icon-red {
         color: red;
     }
+    .m.react-dark i.icon-red {
+        color: red!important;
+    }
+    .m.react-blue i.icon-red {
+        color: red!important;
+    }
     i.icon-orange {
         color: orange;
+    }
+    .m.react-dark i.icon-orange {
+        color: orange!important;
+    }
+    .m.react-blue i.icon-orange {
+        color: orange!important;
     }
     .m .btn-small.btn-flat {
         padding: 0 4px;
@@ -247,7 +271,7 @@
         position:absolute;
         height: 100%;
         width: 100%;
-        background: #fff;
+        /*background: #fff;*/
         z-index: 2;
         -webkit-transform: rotateY( 0deg );
         -moz-transform: rotateY( 0deg );
@@ -261,7 +285,7 @@
         box-sizing: border-box;
         height: 100%;
         width: 100%;
-        background: #fff;
+        /*background: #fff;*/
         -webkit-transform: rotateY( -180deg );
         -moz-transform: rotateY( -180deg );
         -o-transform: rotateY( -180deg );
@@ -310,6 +334,25 @@
     }
     .m .idletime {
         padding-left: 15px;
+    }
+    .m.react-blue .switch label input[type="checkbox"]:checked + .lever {
+        background-color: #436a93;
+    }
+    .m.react-blue .switch label .lever {
+        background-color: #4dabf5;
+    }
+    .m.react-blue .switch label .lever:after {
+        background-color: #436a93;
+    }
+
+    .m.react-dark .switch label input[type="checkbox"]:checked + .lever {
+        background-color: #436a93;
+    }
+    .m.react-dark .switch label .lever {
+        background-color: #4dabf5;
+    }
+    .m.react-dark .switch label .lever:after {
+        background-color: #436a93;
     }
 </style>
 </head>
@@ -752,8 +795,8 @@
                 </div>
             </div>
             <div id="tab-exclude" class="col s12 page">
-                <div class="col s4">
-                    <p class="translate">ExcludeTextTranslation</p>&nbsp;
+                <div class="row">
+                    <p class="translate">ExcludeTextTranslation</p>
                 </div>
                 <div class="fixed-action-btn" style="margin-bottom: 100px">
                     <a id="add_exclude" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add exlude"><i class="material-icons large">add</i></a>
