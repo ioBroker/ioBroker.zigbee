@@ -101,5 +101,5 @@
     "№": "Nr",
     "Excludes": "wyklucz",
     "ExcludeTextTranslation": "Możesz dodać tutaj kilka urządzeń, które powinny zostać wyłączone z naszego opisu. Używasz tylko ekspozycji z zigbee-herdsman-converter. Po dodaniu zrestartuj adapter",
-    "SettingsExclude": "Adapter rozruchu wymuszonego z niespójną konfiguracją (niezalecane). Zaktualizuj adapter do zgodnego oprogramowania układowego i jak najszybciej odtwórz sieć."
+    "SettingsExclude": "Wystaruj Adapter bez zgodnej konfiguracji (uwaga). Zaktualizuj adapter i jak najszybciej odtwórz sieć."
 }
