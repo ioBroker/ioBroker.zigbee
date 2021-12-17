@@ -100,5 +100,6 @@
     "zigbee-shepherd": "Tutaj możesz edytować nieprzetworzone dane do wysłania. Nie używaj tego, jeśli nie jesteś pewien, co robisz! Użyj formatu JSON (nazwy atrybutów w podwójnych cudzysłowach!). Można również dodać dodatkowe właściwości. Zobacz przykłady powyżej. (Format używany przez zigbee-shepherd)",
     "№": "Nr",
     "Excludes": "wyklucz",
-    "ExcludeTextTranslation": "Możesz dodać tutaj kilka urządzeń, które powinny zostać wyłączone z naszego opisu. Używasz tylko ekspozycji z zigbee-herdsman-converter. Po dodaniu zrestartuj adapter"
+    "ExcludeTextTranslation": "Możesz dodać tutaj kilka urządzeń, które powinny zostać wyłączone z naszego opisu. Używasz tylko ekspozycji z zigbee-herdsman-converter. Po dodaniu zrestartuj adapter",
+    "SettingsExclude": "Adapter rozruchu wymuszonego z niespójną konfiguracją (niezalecane). Zaktualizuj adapter do zgodnego oprogramowania układowego i jak najszybciej odtwórz sieć."
 }
