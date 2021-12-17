@@ -100,5 +100,7 @@
     "Excludes": "ausschließen",
     "ExcludeTextTranslation": "Sie können hier einige Geräte hinzufügen, die von unserer Verarbeitungausgeschlossen werden sollten. Sie verwenden dann nur exposes vom ZigBee-Herdsman-Converter. Nach dem Hinzufügen starten Sie bitte den Adapter neu.",
     "Please contribute your discoveries": "Bitte geben Sie uns Ihre Vorschläge",
-    "zigbee-shepherd": "Sie können die zu sendenden Rohdaten hier bearbeiten. Verwenden Sie diese nicht, wenn Sie sich nicht sicher sind, was Sie tun! Verwenden Sie das JSON-Format (Attributnamen in doppelten Anführungszeichen!). Es können auch zusätzliche Eigenschaften hinzugefügt werden. Siehe Beispiele oben. (Format wie von zigbee-shepherd verwendet)"
+    "zigbee-shepherd": "Sie können die zu sendenden Rohdaten hier bearbeiten. Verwenden Sie diese nicht, wenn Sie sich nicht sicher sind, was Sie tun! Verwenden Sie das JSON-Format (Attributnamen in doppelten Anführungszeichen!). Es können auch zusätzliche Eigenschaften hinzugefügt werden. Siehe Beispiele oben. (Format wie von zigbee-shepherd verwendet)",
+    "SettingsExclude": "Erzwingen Sie den Start des Adapters mit inkonsistenter Konfiguration (nicht empfohlen). Bitte aktualisieren Sie den Adapter auf kompatible Firmware und erstellen Sie Ihr Netzwerk so schnell wie möglich neu."
+    
 }
