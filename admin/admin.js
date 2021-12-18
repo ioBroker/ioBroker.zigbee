@@ -258,6 +258,9 @@ function getCard(dev) {
                                 <button name="edit" class="right btn-flat btn-small">
                                     <i class="material-icons icon-green">edit</i>
                                 </button>
+                                <button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
+                                    <i class="material-icons icon-red">sync</i>
+                                </button>
                                 ${permitJoinBtn}
                             </div>
                         </div>
@@ -547,6 +550,10 @@ function showDevices() {
     });
     $("a.btn-flat[name='close']").click((e) => {
         closeReval(e);
+    });
+    $(".card-reveal-buttons button[name='reconfigure']").click(function() {
+        const dev_block = $(this).parents('div.device');
+        reconfigureDlg(getDevId(dev_block));
     });
 
     showNetworkMap(devices, map);
@@ -2170,7 +2177,7 @@ function genDevInfo(device) {
     const dev = (device && device.info) ? device.info.device : undefined;
     const mapped = (device && device.info) ? device.info.mapped : undefined;
     if (!dev) return `<div class="truncate">No info</div>`;
-    const genRow = function(name, value) {
+    const genRow = function(name, value, refresh) {
         if (value === undefined) {
             return '';
         } else {
@@ -2234,7 +2241,7 @@ function genDevInfo(device) {
                     ${genRow('date code', dev._dateCode)}
                     ${genRow('build', dev._softwareBuildID)}
                     ${genRow('interviewed', dev._interviewCompleted)}
-                    ${genRow('configured', (dev.meta.configured === 1))}
+                    ${genRow('configured', (dev.meta.configured === 1), true)}
                 </ul>
             </div>
         </div>
@@ -2250,17 +2257,19 @@ function showDevInfo(id){
     $('#modaldevinfo').modal('open');
 }
 
+let waitingTimeout, waitingInt;
 
 function showWaitingDialog(text, timeout){
     let countDown = timeout;
-    const waitingInt = setInterval(function() {
+    waitingInt = setInterval(function() {
         countDown -= 1;
         const percent = 100-100*countDown/timeout;
         $('#waiting_progress_line').css('width', `${percent}%`);
     }, 1000);
-    setTimeout(function() {
+    waitingTimeout = setTimeout(function() {
         $('#waiting_progress_line').css('width', `0%`);
         clearTimeout(waitingInt);
+        clearTimeout(waitingTimeout);
         $('#modalWaiting').modal('close');
     }, timeout*1000);
     $('#waiting_message').text(text);
@@ -2268,6 +2277,8 @@ function showWaitingDialog(text, timeout){
 }
 
 function closeWaitingDialog(){
+    if (waitingInt) clearTimeout(waitingInt);
+    if (waitingTimeout) clearTimeout(waitingTimeout);
     $('#modalWaiting').modal('close');
 }
 
@@ -2701,4 +2712,27 @@ function removeDevice(id) {
             devices.splice(ind, 1);
         }
     }
+}
+
+function reconfigureDlg(id) {
+    const text = translateWord(`Do you really want to reconfigure device?`);
+    $('#modalreconfigure').find('p').text(text);
+    $("#modalreconfigure a.btn[name='yes']").unbind('click');
+    $("#modalreconfigure a.btn[name='yes']").click(() => {
+        reconfigureDevice(id, force);
+    });
+    $('#modalreconfigure').modal('open');
+    Materialize.updateTextFields();
+}
+
+function reconfigureDevice(id) {
+    sendTo(namespace, 'reconfigure', {id: id}, function (msg) {
+        closeWaitingDialog();
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            }
+        }
+    });
+    showWaitingDialog('Device is being reconfigure', 30);
 }
