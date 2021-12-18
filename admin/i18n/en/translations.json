@@ -100,5 +100,6 @@
     "zigbee-shepherd": "You may edit the raw data to send here. Do not use this if you are not sure of what you are doing! Use JSON format (attribute names in double quotes!). Additional properties may be added too. See examples above. (Format as used by zigbee-shepherd)",
     "№": "№",
     "Excludes": "to exclude",
-    "ExcludeTextTranslation": "Here you can add some devices that should be excluded from our description. They only use \"exposes\" from zigbee-herdsman-converter. After adding, please restart the adapter."
+    "ExcludeTextTranslation": "Here you can add some devices that should be excluded from our description. They only use \"exposes\" from zigbee-herdsman-converter. After adding, please restart the adapter.",
+    "SettingsExclude": "Force start adapter with inconsistent configuration (not recommended). Please update the adapter to compatible firmware and recreate your network as soon as possible."
 }
