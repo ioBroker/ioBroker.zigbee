@@ -258,6 +258,9 @@ function getCard(dev) {
                                 <button name="edit" class="right btn-flat btn-small">
                                     <i class="material-icons icon-green">edit</i>
                                 </button>
+                                <button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
+                                    <i class="material-icons icon-red">sync</i>
+                                </button>
                                 ${permitJoinBtn}
                             </div>
                         </div>
@@ -547,6 +550,10 @@ function showDevices() {
     });
     $("a.btn-flat[name='close']").click((e) => {
         closeReval(e);
+    });
+    $(".card-reveal-buttons button[name='reconfigure']").click(function() {
+        const dev_block = $(this).parents('div.device');
+        reconfigureDlg(getDevId(dev_block));
     });
 
     showNetworkMap(devices, map);
@@ -2174,8 +2181,7 @@ function genDevInfo(device) {
         if (value === undefined) {
             return '';
         } else {
-            const refreshBtn = (refresh) ? `<a name="${name}" class="right tooltipped" style="margin-top: -5px" href="#" title="Reconfigure"><i class="material-icons">sync</i></a>` : '';
-            return `<li><span class="label">${name}:${refreshBtn}</span><span>${value}</span></li>`;
+            return `<li><span class="label">${name}:</span><span>${value}</span></li>`;
         }
     };
     const genRowValues = function(name, value) {
@@ -2248,11 +2254,6 @@ function genDevInfo(device) {
 function showDevInfo(id){
     const info = genDevInfo(getDeviceByID(id));
     $('#devinfo').html(info);
-    // hook reconfigure
-    $("#modaldevinfo a[name='configured']").click(() => {
-        $('#modaldevinfo').modal('close');
-        reconfigureDlg(id);
-    });
     $('#modaldevinfo').modal('open');
 }
 

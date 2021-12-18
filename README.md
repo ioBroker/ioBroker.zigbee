@@ -112,9 +112,15 @@ You can thank the authors by these links:
 
 ## Changelog
 
+### 1.6.9 (2021-12)
+* (simatec) fix admin Dark-Mode
+* (asgothian) Expose Access Handling
+* (arteck) translations
+* (asgothian) fix groups
+* (agross) use different normalization rules
+
 ### 1.6.1 (2021-08)
 * (kirovilya) herdsman compatibility
-
 
 ### 1.6.0 (2021-08-09)
 ## Attention! Attention! Attention! Attention! Attention! Attention! Attention!
