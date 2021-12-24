@@ -34,7 +34,7 @@
     "ExtPanID": "ID de panela estendida",
     "ExtPanIDText": "PAN ID estendido é o ID de rede principal, comparável ao SSID de redes wi-fi. Esta identificação nunca deve ser alterada para redes existentes, caso contrário, você terá que redefinir e reparar seus dispositivos. Se você usar vários adaptadores Zigbee, <b>certifique-se de</b> que eles usam ExtPanIDs exclusivos. Basta inserir 16 caracteres hexadecimais aleatórios (af e 0-9).",
     "Force delete (for lost devices)": "Forçar exclusão (para dispositivos perdidos)",
-    "Groups": "Groups",
+    "Groups": "Grupos",
     "Hard-Reset": "Hard-Reset",
     "Hide": "ocultar",
     "Let's pairing!": "Vamos emparelhar!",
