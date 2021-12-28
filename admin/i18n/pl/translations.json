@@ -23,7 +23,7 @@
     "Device details": "Urządzenia",
     "Device information": "Informacje o urządzeniu",
     "Device map info": "<b>Kliknij urządzenie, aby wyświetlić więcej szczegółów.</b> Każde urządzenie może mieć tylko jednego rodzica. Urządzenia mogą tam samodzielnie zmieniać rodziców. Nie ma sposobu, aby narzucić urządzenie konkretnemu rodzicowi. (jeśli widzisz więcej niż jeden link nadrzędny, mogą to być nieaktualne dane). <br> Możesz także przenosić urządzenia, aby uzyskać lepszą widoczność. <br> Słabe linki i linki offline są wyświetlane na czerwono. Jeśli etykieta urządzenia ma kolor czerwony, nie znaleziono żadnych linków. Nie ma problemu, jeśli urządzenie ma tylko linki „Poprzedni rodzic”, może po prostu nie wysyłać nowych danych od pewnego czasu.",
-    "Devices": "urządzenia",
+    "Devices": "Urządzenia",
     "Disable LED for cc2531": "Wyłącz LED dla cc2531",
     "Disable Queue": "Wyłącz Queue",
     "Do you really want to delete device": "Czy naprawdę chcesz usunąć urządzenie?",
