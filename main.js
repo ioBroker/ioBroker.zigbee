@@ -159,7 +159,7 @@ class Zigbee extends utils.Adapter {
                 this.log.error(`${message}: Code ${error.code} (${ecode.message})`);
                 this.sendError(error, `${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            default: 
+            default:
                 this.log.error(`${message}: Code ${error.code} (malformed error)`);
                 this.sendError(error, `${message}: Code ${error.code} (malformed error)`);
         }
@@ -306,6 +306,7 @@ class Zigbee extends utils.Adapter {
 
     async onZigbeeAdapterReady() {
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+        this.log.warn("config :" + JSON.stringify(this.config));
         this.log.info(`Zigbee started`);
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
@@ -431,7 +432,7 @@ class Zigbee extends utils.Adapter {
         delete msgForState['endpoint'];
         msgForState['endpoint_id'] = message.endpoint.ID;
         this.publishToState(devId, model, {msg_from_zigbee: safeJsonStringify(msgForState)});
-        
+
         if (!entity.mapped) {
             return;
         }
@@ -771,8 +772,8 @@ class Zigbee extends utils.Adapter {
     getZigbeeOptions() {
         // file path for db
         let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), '');
-        dbDir = dbDir.replace('.', '_');        
-        
+        dbDir = dbDir.replace('.', '_');
+
         if (this.systemConfig && !fs.existsSync(dbDir)) {
             try {
                 fs.mkdirSync(dbDir);
