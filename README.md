@@ -1,11 +1,13 @@
 ![Logo](admin/zigbee.png)
 # ioBroker.zigbee
 
-![Number of Installations](http://iobroker.live/badges/zigbee-installed.svg) ![Number of Installations](http://iobroker.live/badges/zigbee-stable.svg) [![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
-[![Tests](https://travis-ci.org/ioBroker/ioBroker.zigbee.svg?branch=master)](https://travis-ci.org/ioBroker/ioBroker.zigbee)
+![Number of Installations](http://iobroker.live/badges/zigbee-installed.svg)
+![Number of Installations](http://iobroker.live/badges/zigbee-stable.svg)
+[![NPM version](http://img.shields.io/npm/v/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 
-[![NPM](https://nodei.co/npm/iobroker.zigbee.png?downloads=true)](https://nodei.co/npm/iobroker.zigbee/)
+![Test and Release](https://github.com/ioBroker/iobroker.zigbee/workflows/Test%20and%20Release/badge.svg)
+[![Translation status](https://weblate.iobroker.net/widgets/adapters/-/zigbee/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 
 ## ioBroker adapter for Zigbee devices via TI cc2531/cc2530/cc26x2r/cc2538 and deCONZ ConBee/RaspBee.
 
@@ -14,8 +16,8 @@ With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others mo
 ## Hardware
 
 ### Texas Instruments SoC
-
-For work, you need one of the following devices, flashed with a special ZNP firmware: [cc2531, cc2530, cc26x2r, cc2538](https://github.com/Koenkk/Z-Stack-firmware)
+..
+For work, you need one of the following Adapters [all are listed here](https://www.zigbee2mqtt.io/information/supported_adapters.html) , flashed with a special ZNP firmware: [cc2531, cc2530, cc26x2r, cc2538](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
@@ -69,8 +71,6 @@ It is a Zigbee feature, intended for example to switch bulbs synchronized. Assig
 
 Note: Not all devices support groups (not supported by end devices like sensors).
 
-### Network Map
-
 
 ### Binding
 
@@ -97,9 +97,183 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
-* to Arthur Rupp https://paypal.me/pools/c/8gWlKqAfIF
+* to Arthur Rupp https://paypal.me/ArthurRupp
+
+<!--
+    Placeholder for the next version (at the beginning of the line):
+    
+    https://github.com/AlCalzone/release-script#usage
+    npm run release minor -- --all 0.9.8 -> 0.10.0
+    npm run release patch -- --all 0.9.8 -> 0.9.9
+    npm run release prerelease beta -- --all v0.2.1 -> v0.2.2-beta.0
+    Placeholder for the next version (at the beginning of the line):
+    ### **WORK IN PROGRESS**
+-->
 
 ## Changelog
+
+### 1.6.9 (2021-12)
+* (simatec) fix admin Dark-Mode
+* (asgothian) Expose Access Handling
+* (arteck) translations
+* (asgothian) fix groups
+* (agross) use different normalization rules
+
+### 1.6.1 (2021-08)
+* (kirovilya) herdsman compatibility
+
+### 1.6.0 (2021-08-09)
+## Attention! Attention! Attention! Attention! Attention! Attention! Attention!
+
+After introducing a new z-stack startup procedure into zigbee-herdsman, we got some problems with our adapter in version 1.5.6.
+This was discussed [here](https://github.com/ioBroker/ioBroker.zigbee/issues/1110) and [here](https://github.com/Koenkk/zigbee-herdsman/issues/376)
+
+Unfortunately, not all user sticks were able to work successfully with this new init routine. This mainly affected the TI cc2538 based sticks with the 2019 year's firmware. All subsequent firmwares and sticks have no problems when starting the adapter or they can be fixed.
+
+At the moment, there is no working solution to this problem, except for updating the firmware of such sticks to a newer one.
+As a fallback, it is proposed to use the old version of zigbee-herdsman 0.13.93, but some of the devices and functionality may not work.
+Therefore, we made a separate version 1.6.0o especially for this case. It can be installed from github at https://github.com/ioBroker/ioBroker.zigbee/tarball/old_herdsman
+
+* Update to latest zigbee-herdsman and zigbee-herdsman-converters
+* (PeterVoronov) Update support composite exposes
+* (kirovilya) UI fixes
+* (kirovilya) Sentry support
+
+### 1.5.6 (2021-05-26)
+* (kirovilya) new UI add
+
+### 1.5.5 (2021-05-05)
+* Fixes for new zigbee-herdsman-converters
+* UI fixes
+
+### 1.5.3 (2021-04-30)
+* (arteck) Fix for js-controller 3.3.*
+
+### 1.5.2 (2021-04-29)
+* (asgothian) Groups on dashboard
+
+
+### 1.5.1 (2021-04-14)
+* (kirovilya) Dashboard
+* (asgothian) Groups (reworked)
+* [Experimental support EZSP protocol for EFR32 chips](https://github.com/Koenkk/zigbee-herdsman/issues/319) (zigbee-herdsman)
+
+
+### 1.4.4 (2021-02-14)
+* (kirovilya) External converters https://www.zigbee2mqtt.io/information/configuration.html#external-converters-configuration
+* (asgothian) Enhancement ping process
+* (asgothian) Devive query state-button
+* (asgothian) State Cleanup button
+* (arteck) Setting to use exposes instead of internal device description
+
+
+### 1.4.1 (2020-12)
+* (o0shojo0o) added a kelvin posibility into colortemp
+* (asgothian) Hue_calibration for exposed devices (Use requires PR on zigbee-herdsman-converters, PR is being worked on)
+* (asgothian) fix Tuya Thermostat: restore lost property "preset"
+* (asgothian) Change for Device Availability: Stagger initial ping by 200 ms to prevent network congestion due to a large number of ping requests
+* (asgothian) Change for Device Availability: Ping request triggered on reconnect. Before the herdsman Ping function is used, the adapter attempts to read the "state" dp. If this is successful, no ping is sent and the state is set
+* (asgothian) Change for Device Availability: Set link Quality to 0 when a device is not connected, 10 when it is reconnecting.
+* (asgothian) fix for message "illegal properties x,y" - remove color and color_temp from readable states on device available again (Issue #607)
+* (asgothian) RGB Color can now be entered as "named" color. Implemented names are taken from the list of extended web colors on wikipedia (https://en.wikipedia.org/wiki/Web_colors)
+* (asgothian) change in how RGB color is parsed. Incomplete colors will now be parsed successfully. #FFF will result in R 0, G 15, B 255
+* (asgothian) change in OTA: Message that a device does not respond for OTA query downgraded to "info" from "error"
+* (asgothian) new coordinator card
+
+
+### 1.4.0 (2020-12)
+* Many new devices available
+
+Starting from version 1.4.0, new devices in iobroker.zigbee will be added automatically, based on the *exposes* described in zigbee-herdsman-converters.
+The *exposes* section describes the device's capabilities, events and control commands. In iobroker.zigbee these descriptions are converted to iobroker states.
+This means that the new device is described correctly enough in zigbee-herdsman-converters to start working with iobroker.zigbee (do not need to add it to our /lib/devices files.js and /lib/states.js).
+
+The only thing that is not described (yet, it may change in the future) in zigbee-herdsman-converters is the device image. This is why the device icon on network map uses external links to the resource https://www.zigbee2mqtt.io/images/devices/*.
+If you want to use local images, then you need to put the image file in /admin/img and briefly describe the device in the /lib/devices.js file without the *states*:
+```
+{
+    models: [‘01MINIZB’],
+    icon: 'img/ITEAD01ZBMINI. png',
+}
+```
+in this case, the *states* attribute will be formed based on the *exposes* description and the image will be local.
+
+### 1.3.1 (2020-10-30)
+* [Experimental Zigate support](https://github.com/Koenkk/zigbee-herdsman/issues/242) (zigbee-herdsman)
+* New devices by: 
+    asgothian, arteck, kirovilya, PaulchenPlump
+
+### 1.3.0 (2020-10-07)
+* More stable (zigbee-herdsman)
+* Backup prior database and nv-data (for z-stack 3) before start adapter
+* Allow to select bind cluster
+* Admin Tab support (experimental)
+* (UncleSamSwiss, DutchmanNL) Translation
+* New devices by: 
+    arteck, kirovilya, Shade, krumbholz, fre, Alex18081, ae, asgothian, 
+    Strunzdesign, kairauer, VLGorskij, Hesse-Bub, PaulchenPlump, blackrozes
+
+### 1.2.1 (2020-08-16)
+* Fixes after changing device identify method
+* (Garfonso) Allow to unbind from coordinator
+
+### 1.2.0 (2020-08-09)
+* Serialport 9.0.0. (zigbee-herdsman)
+* Drop support Node < 10 (zigbee-herdsman)
+* Device now identify (for zigbee-herdsman-converters) by model not zigbeeModel
+
+Improvements and fixes:
+* (Strunzdesign) Fixed the mapping between bulb levels and adapter levels
+* (kirovilya) Fix ota for unavailable devices
+* (kirovilya) Lazy states - created only when an event arrives
+* (kirovilya) States generator - states are created depending on the device and its endpoints
+* (Shade) Fixed WXKG11LM clicks
+* (allofmex) Improved DeveloperTab logs
+* (allofmex) Add humidity and temperature calibration state to Tuya RH3052
+* (kirovilya) Fixed a typo due to which extPanID was not set
+* (allofmex) Retry reconnect gateway all the time for tcp connected gateway
+* (kirovilya) Allow to collect zigbee-herdsman logs to iobroker logs
+* (kirovilya) Additional states for QBKG12LM
+
+New devices:
+* (kirovilya) BlitzWolf BW-IS3, Paulmann 500.67, Paulmann 798.09
+* (kirovilya) DiY Geiger counter https://modkam.ru/?p=1591
+* (kirovilya) DiY 8 Relays + 8 switches https://modkam.ru/?p=1638
+* (kirovilya) DiY Freepad https://github.com/diyruz/freepad
+* (kirovilya) Neo Zigbee Siren Alarm https://szneo.com/en/products/show.php?id=241
+* (Shade) RB 278 T
+* (arteck) TS0601_thermostat
+* (arteck) TS0121
+* (arteck) GL-D-004Z
+* (Shade) WXKG07LM
+* (drohne200) 1746430P7
+* (sebastian) 4058075816459
+* (itProfi) SGMHM-I1
+* (arteck) owvfni3
+* (arteck) TS0001, TS0111
+* (Daniel Dreier) Paulmann 500.45
+* (arteck) ZK-EU-2U
+* (Newan) Busch-Jaeger 6735/6736/6737
+* (andrico21) ZM-L03E-Z
+* (arteck) 915005106701, 9290018187B
+* (frankjoke) HGZB-20-UK, GL-W-001Z
+* (arteck) 4034031P7, 3435011P7
+* (arteck) TS0041
+* (agross) 5062231P7, 5062431P7
+* (kirovilya) TI0001-switch, TI0001-socket
+* (arteck) RB 178 T
+* (arteck) HGZB-07A, AV2010/22, AV2010/22A, TS0041, TS0043
+* (nbars) E1744
+* (Florian Look) GS361A-H04
+* (arteck) ICZB-IW11SW
+* (kirovilya) HS2WD-E
+* (Sacred-Shadow) FL 130 C
+* (arteck) HS3SA, 9290022169, 4096730U7, AC10787, SP 220, SP 222, SP 224, 07004D, BW-IS2, InstaRemote
+* (kirovilya) MCLH-08, MCLH-05
+* (Sacred-Shadow) 1746130P7
+* (mar565) GUNNARP panel round
+* (Erdnuss3003) 4090531P7
+
 
 ### 1.1.1 (2020-04-17)
 * (kirovilya) Critical. Fixed error starting adapter if cc-chip was only flashed
@@ -191,182 +365,12 @@ new Zigbee-herdsman features:
 * Some design update
 * Binding
 
-### freeze shepherd
-
-### 0.11.5 (2019-10-26)
-* (allofmex) Improved publish-to-zigbee queue
-* (arteck) Gledopto GL-B-001Z
-* (kirovilya) iHORN Temperature & humidity sensor
-* (kirovilya) Trust ZLED-TUNE9, DIYRuZ contact, Lonsonho Plug
-* (kirovilya) IKEA driver 30W
-* (allofmex) Hue Smart Plug
-* (arteck) LST004
-
-### 0.11.4 (2019-09-30)
-* (Asgothian) Danalock V3 BTZB
-* (Asgothian) GroupErrorInGetDevices
-* (Asgothian) new Dev Innr RB 245
-* (Asgothian) new Dev RS 225
-* (Asgothian) new Dev Heiman COSensor
-* (Asgothian) Improved device configuration method
-* (Stabilostil) Fix for install error if running zigbee-adapter is updated
-
-### 0.11.3 (2019-09-11)
-* (kirovilya) Update Z-Stack 3 compatible
-* (kirovilya) Restore lumi.sensor_ht
-* (kirovilya) OSRAM SMART+ spot GU5.3 tunable white #340
-* (allofmex) Temperature and illuminance calibration added for hue motion sensors
-* (kirovilya) new Trust lamp
-* (kirovilya) DiY 20 button keypad (http://modkam.ru/?p=1114)
-* (kirovilya) Xiaomi/Aqara: double click for b186acn01, Hold and Shake state for some switch
-* (kirovilya) Hieman HS2SK, Tuya temperature sensor
-* (kirovilya) Konke: button, temperature, contact, motion
-
-### 0.11.2 (2019-06-29)
-* (allofmex) Hue sml sensitivity, Hue motion sensitivity
-* (arteck) Innr RB 250 C, Gledopto GL-D-003Z, GL-G-001Z, GL-FL-004TZ, Philips LPT001
-* (kirovilya) OSRAM CLA60 RGBW Z3, Xiaomi curtain ZNCLDJ11LM
-* (kirovilya) Implement a time response for some xiaomi devices
-* (arteck) Heiman smoke sensor, TRADFRI bulb E14 WS opal 600lm, Innr RB265
-
-### 0.11.1 (2019-06-15)
-* fix wrong initial extPanID. Sorry that need to repairing all devices again.
-* fix code for aqara cube
-
-### 0.11.0 (2019-06-14)
-* Support both Z-Stack 1.2 and 3.0 [coordinator firmware](https://github.com/Koenkk/Z-Stack-firmware/tree/master/coordinator)
-* Serialport 7.1.5
-* (arteck) Adjustable time for pairing
-* (kirovilya) Additional xiaomi plug states and decoupled mode for xiaomi wall switches
-* (kirovilya) New DIY devices [ZigUP](https://github.com/formtapez/ZigUP) and [DIYRUZ_R4_5](http://modkam.ru/?p=1054)
-* (arteck) JIAWEN FB56-ZCW08KU1.2, Nue / 3A FNB56-ZCW25FB1.9, HOMA1031, Trust CSW_ADUROLIGHT
-* (allofmex) security update
-* (allofmex) brightness fix
-* (Asgothian) Osram Gardenpole Mini
-* (Asgothian) Innr Plugs (BY 265 C, BY 165 C, RB265
-* (Asgothian) Fix for Ikea Tradfri repeater (image)
-* (sonntam) tint enhancements
-* (stream2me) support for Danalock V3
-
-### 0.10.3 (2019-03-27)
-* fixes
-* (kirovilya) Aqara Wireless Relay Controller, Smart LED Driver
-* (asgothian) eCozy Thermostat, Nue / 3A, Gledopto GL-C-006 GL-C-009, Philips SML002, OSRAM Outdoor Lantern W RGBW, TRADFRI motion sensor
-* (arteck) sensor_86sw2 new states
-* (allofmex) Improved device configuration and network map
-* (allofmex) security update
-* (allofmex) brightness fix
-
-### 0.10.2 (2019-03-15)
-* some fixes
-* (allofmex) Visualize mesh newtwork map, "available" state, configuration requests
-* (Apollon77) Update test framework
-* (sonntam) Tint remote
-* (arteck) OSRAM Lightify Switch Mini, rwl021 dimmer
-* (asgothian) TRADFRI signal repeater, Innr SP 120, Xiaomi Gas detector
-
-### 0.9.2 (2019-02-25)
-No support of node.js 4 any more
-* (bluefox) Xiaomi Lock was added
-* (nisiode) Some fixes
-* (sonntam) Some fixes
-* (arteck) Heiman SmokeSensor
-* (asgothian, allofmex) Eurotronic support
-
-### 0.9.1 (2019-01-29)
-* Groups and new Developer tab were added
-
-### 0.9.0 (2019-01-28)
-* (arteck) Many new devices
-* (allofmex) Developer tab
-* (modmax) Reading attributes
-* (kirovilya) Groups support
-
-### 0.8.0 (2018-11-29)
-
-**BREAKING CHANGES**:
-* (kirovilya) Rename state "isopen" to "opened".
-* (kirovilya) Change brightness interval from 0..254 to 0..100
-
-Other changes:
-* (kirovilya) Fix for admin2
-* (kirovilya) + Gledopto
-* (kirovilya) + Mijia vibration sensor
-* (kirovilya) Common state "link_quality"
-* (arteck) + Philips LLC010, LLC011, LLC012, LTW001, LTW004, LTW010, LTW012, LTC001, LCT024
-* (arteck) + Osram PAR 16 50 RGBW - LIGHTIFY
-* (arteck) + Innr RS 128 T, RS 185 C
-* (arteck) + DE FLS-PP3
-* (arteck) + Ilux LEColorLight
-* (kirovilya) Light state "transition_time" for brightness, color, colortemp
-
-
-### 0.7.7 (2018-10-21)
-* (arteck) Fix 'is open' state
-
-### 0.7.6 (2018-10-19)
-* (kirovilya, arteck) New models and devices
-
-### 0.7.5 (2018-10-02)
-* (kirovilya) Support zigbee-shepherd-converters 4.*
-
-### 0.7.4 (2018-10-01)
-* (kirovilya) Allow enter port without selector
-
-### 0.7.3 (2018-09-27)
-* (arteck) Bugfix and new devices: Classic A60 W clear - LIGHTIFY and Surface Light TW
-* (kirovilya) Occupancy timeout state for motion sensor
-* (kirovilya) Serialport selector
-
-### 0.7.1 (2018-08-14)
-* (kirovilya) Network map feature
-* (kirovilya) Allow pairing through router
-* (kirovilya) Change battery percent interval to 2700..3200
-* (arteck) New devices: Hue LTW010, Osram Flex RGBW
-* (kirovilya) Triple and quadruple clicks for WXKG11LM
-* (kirovilya) isopen - magnet state, in contrast to contact
-* (kirovilya) Option "Disable LED for cc2531"
-
-### 0.6.0 (2018-07-05)
-* (kirovilya) More new devices from zigbee-shepherd-converters
-* (kirovilya) Some layout fixes in admin
-* (kirovilya) Fix battery for smoke sensor
-
-### 0.5.9 (2018-06-27)
-* (arteck) New devices: Osram LED PAR16, Osram Smart+ plug, Philips Hue bulb
-* (kirovilya) Turn on/off lights when change brightness > 0 and = 0
-
-### 0.5.8 (2018-06-26)
-* (kirovilya) Allow backup/restore zigbee-database for js-controller 1.5.0
-* (kirovilya) New device - Jiawen bulb
-* (kirovilya) Allow remove device with setup key
-* (from zigbee-shepherd-converters) Change battery percent interval to 3000-2700
-
-### 0.5.7 (2018-06-19)
-* (kirovilya) Update states on adapter start (for restored shepherd.db)
-* (kirovilya) Brightness - not percent - range 0..255
-
-### 0.5.6 (2018-06-14)
-* (kirovilya) Configuration panID (zigbee network identifier)
-* (kirovilya) Moved to ioBroker organization
-
-### 0.5.5 (2018-06-11)
-* (kirovilya) Return runing on NodeJS 4.*
-
-### 0.5.4 (2018-06-10)
-* (kirovilya) Public version
-
-### 0.5.0 (2018-06-06)
-* (kirovilya) All refactored
-
-### 0.0.1 (2018-02-07)
-* (kirovilya) First version
 
 
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018-2020 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2021 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

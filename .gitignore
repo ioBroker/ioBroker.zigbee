@@ -6,3 +6,6 @@ node_modules
 nbproject
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
+.vscode/launch.json
+debugidentify.js
+.devcontainer

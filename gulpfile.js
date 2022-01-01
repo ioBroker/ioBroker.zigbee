@@ -2,16 +2,17 @@
  * ioBroker gulpfile
  * Date: 2019-01-22
  */
-"use strict";
+/*eslint no-unused-vars: ['off']*/
+'use strict';
 
-const gulp = require("gulp");
-const fs = require("fs");
-const pkg = require("./package.json");
-const iopackage = require("./io-package.json");
+const gulp = require('gulp');
+const fs = require('fs');
+const pkg = require('./package.json');
+const iopackage = require('./io-package.json');
 const version = (pkg && pkg.version) ? pkg.version : iopackage.common.version;
-const fileName = "words.js";
-const EMPTY = "";
-const translate = require("./lib/tools.js").translateText;
+const fileName = 'words.js';
+const EMPTY = '';
+const translate = require('./lib/tools.js').translateText;
 const languages = {
     en: {},
     de: {},
@@ -22,7 +23,7 @@ const languages = {
     it: {},
     es: {},
     pl: {},
-    "zh-cn": {}
+    'zh-cn': {}
 };
 
 function lang2data(lang, isFlat) {
@@ -51,15 +52,15 @@ function lang2data(lang, isFlat) {
 function readWordJs(src) {
     try {
         let words;
-        if (fs.existsSync(src + "js/" + fileName)) {
-            words = fs.readFileSync(src + "js/" + fileName).toString();
+        if (fs.existsSync(src + 'js/' + fileName)) {
+            words = fs.readFileSync(src + 'js/' + fileName).toString();
         } else {
             words = fs.readFileSync(src + fileName).toString();
         }
         words = words.substring(words.indexOf('{'), words.length);
         words = words.substring(0, words.lastIndexOf(';'));
      
-        const resultFunc = new Function("return " + words + ";");
+        const resultFunc = new Function('return ' + words + ';');
 
         return resultFunc();
     } catch (e) {
@@ -341,7 +342,7 @@ async function translateNotExisting(obj, baseText) {
     }
 
     if (t) {
-        for (let l in languages) {
+        for (const l in languages) {
             if (!obj[l]) {
                 obj[l] = await translate(t, l);
             }
@@ -371,7 +372,7 @@ gulp.task('adminLanguages2words', function (done) {
     done();
 });
 
-gulp.task("updatePackages", function (done) {
+gulp.task('updatePackages', function (done) {
     iopackage.common.version = pkg.version;
     iopackage.common.news = iopackage.common.news || {};
     if (!iopackage.common.news[pkg.version]) {
@@ -379,20 +380,20 @@ gulp.task("updatePackages", function (done) {
         const newNews = {};
 
         newNews[pkg.version] = {
-            en: "news",
-            de: "neues",
-            ru: "новое",
-            pt: "novidades",
-            nl: "nieuws",
-            fr: "nouvelles",
-            it: "notizie",
-            es: "noticias",
-            pl: "nowości",
-            "zh-cn": "新"
+            en: 'news',
+            de: 'neues',
+            ru: 'новое',
+            pt: 'novidades',
+            nl: 'nieuws',
+            fr: 'nouvelles',
+            it: 'notizie',
+            es: 'noticias',
+            pl: 'nowości',
+            'zh-cn': '新'
         };
         iopackage.common.news = Object.assign(newNews, news);
     }
-    fs.writeFileSync("io-package.json", JSON.stringify(iopackage, null, 4));
+    fs.writeFileSync('io-package.json', JSON.stringify(iopackage, null, 4));
     done();
 });
 
@@ -423,8 +424,8 @@ gulp.task('updateReadme', function (done) {
 gulp.task('translate', async function (done) {
     if (iopackage && iopackage.common) {
         if (iopackage.common.news) {
-            for (let k in iopackage.common.news) {
-                let nw = iopackage.common.news[k];
+            for (const k in iopackage.common.news) {
+                const nw = iopackage.common.news[k];
                 await translateNotExisting(nw);
             }
         }
@@ -436,13 +437,13 @@ gulp.task('translate', async function (done) {
         }
 
         if (fs.existsSync('./admin/i18n/en/translations.json')) {
-            let enTranslations = require('./admin/i18n/en/translations.json');
-            for (let l in languages) {
+            const enTranslations = require('./admin/i18n/en/translations.json');
+            for (const l in languages) {
                 let existing = {};
                 if (fs.existsSync('./admin/i18n/' + l + '/translations.json')) {
                     existing = require('./admin/i18n/' + l + '/translations.json');
                 }
-                for (let t in enTranslations) {
+                for (const t in enTranslations) {
                     if (!existing[t]) {
                         existing[t] = await translate(enTranslations[t], l);
                     }
@@ -458,6 +459,6 @@ gulp.task('translate', async function (done) {
     fs.writeFileSync('io-package.json', JSON.stringify(iopackage, null, 4));
 });
 
-gulp.task("translateAndUpdateWordsJS", gulp.series("translate", "adminLanguages2words", "adminWords2languages"));
+gulp.task('translateAndUpdateWordsJS', gulp.series('translate', 'adminLanguages2words', 'adminWords2languages'));
 
 gulp.task('default', gulp.series('updatePackages', 'updateReadme'));
