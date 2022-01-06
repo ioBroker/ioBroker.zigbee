@@ -1,8 +1,11 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.6.10",
+        "version": "1.6.11",
         "news": {
+            "1.6.11": {
+                "en": "Some changes for tuya-devices"
+            },
             "1.6.10": {
                 "en": "Small herdsman fixes and new devices"
             },
