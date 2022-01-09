@@ -418,7 +418,7 @@
                                     <input id="device-search" class="filter-input translateP" placeholder="Искать" autocomplete="new-password" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Filter">
                                     <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
                                 </div>
-                                
+
                             </li>
                             <li>
                                 <div class="col input-field" style="line-height: 24px;">
@@ -564,7 +564,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div id="tab-groups" class="col s12 page">
                 <div class="row">
                     <div class="col s12">
@@ -606,47 +606,110 @@
     </div>
 
     <div class="materialize-dialogs m">
-        <div id="modaledit" class="modal">
-            <div class="modal-content">
-                <!-- <h3 class="translate">Config device</h3> -->
-                <div class="row">
-                    <div class="input-field">
-                        <input id="d_name" type="text" class="value validate">
-                        <label for="d_name" class="translate">Name</label>
-                    </div>
-                    <div class="input-field groups">
-                        <select id="d_groups" class="materialSelect" multiple><option value="1">Значение</option></select>
-                        <label for="d_groups" class="translate">Groups</label>
-                    </div>
+      <div id="modaledit" class="modal">
+          <div class="modal-content">
+            <h3 class="translate">Config device</h3>
+            <div class="row">
+              <div class="col">
+                <div class="input-field">
+                    <input id="d_name" type="text" class="value validate">
+                    <label for="d_name" class="translate">Name</label>
                 </div>
+              </div>
             </div>
-            <div class="modal-footer">
-                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            <div class="row epid0">
+              <div class="col">
+                <div class=endpointid>
+                  <p class="translate device_with_endpoint">Main Endpoint</p>
+                </div>
+              </div>
+              <div class="col">
+                <div class="input-field groups">
+                    <select id="d_groups_ep0" class="materialSelect" multiple><option value="1">Значение</option></select>
+                    <label for="d_groups_ep0" class="translate">Groups</label>
+                </div>
+              </div>
             </div>
-        </div>
+            <div class="row epid1">
+              <div class="col epid">
+                <div class=endpointid>
+                  <p class="translate device_with_endpoint">Sub Endpoint 1</p>
+                </div>
+              </div>
+              <div class="col">
+                <div class="input-field groups">
+                    <select id="d_groups_ep1" class="materialSelect" multiple><option value="1">Значение</option></select>
+                    <label for="d_groups_ep1" class="translate">Groups</label>
+                </div>
+              </div>
+            </div>
+            <div class="row epid2">
+              <div class="col epid">
+                <div class=endpointid>
+                  <p class="translate device_with_endpoint">Sub Endpoint 2</p>
+                </div>
+              </div>
+              <div class="col">
+                <div class="input-field groups">
+                    <select id="d_groups_ep2" class="materialSelect" multiple><option value="1">Значение</option></select>
+                    <label for="d_groups_ep2" class="translate">Groups</label>
+                </div>
+              </div>
+            </div>
+            <div class="row epid3">
+              <div class="col epid">
+                <div class=endpointid>
+                  <p class="translate device_with_endpoint">Sub Endpoint 3</p>
+                </div>
+              </div>
+              <div class="col">
+                <div class="input-field groups">
+                    <select id="d_groups_ep3" class="materialSelect" multiple><option value="1">Значение</option></select>
+                    <label for="d_groups_ep3" class="translate">Groups</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+              <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+          </div>
+      </div>
 
-        <div id="groupedit" class="modal">
-            <div class="modal-content">
-                <h3 class="translate">Add/Edit Group</h3>
-                <div class="row">
-                    <div class="input-field col s12 m4 l2">
-                        <input id="g_index" type="number" min="1" class="value validate">
-                        <label for="g_index" class="translate">№</label>
+      <div id="groupedit" class="modal">
+          <div class="modal-content">
+              <div class = "addgroup">
+                  <h3 class="translate">Add Group</h3>
+              </div>
+              <div class = "editgroup">
+                  <h3 class="translate">Edit Group</h3>
+              </div>
+              <div class="row">
+                  <div class="col s4 m4 l2">
+                    <div class="input-field groupid">
+                      <input id="g_index" type="number" min="1" class="value validate">
+                      <label for="g_index" class="translate">№</label>
                     </div>
+                  </div>
+                  <div class="input-field col s8 m8 l10">
+                      <input id="g_name" type="text" class="value validate">
+                      <label for="g_name" class="translate">Name</label>
+                  </div>
+              </div>
+              <div class="row hide">
+                <div class="col s12">
+                  <div class="input-field members">
+                    <label for="g_members" class="translate">Members</label>
+                    <select id="g_members" class="materialSelect" multiple><option value="1">Значение</option></select>
+                  </div>
                 </div>
-                <div class="row">
-                    <div class="input-field col s12">
-                        <input id="g_name" type="text" class="value validate">
-                        <label for="g_name" class="translate">Name</label>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-            </div>
-        </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+              <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+          </div>
+      </div>
 
         <div id="modaldelete" class="modal">
             <div class="modal-content">

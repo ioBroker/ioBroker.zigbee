@@ -141,12 +141,12 @@ function getGroupCard(dev) {
     let memberCount = 0;
     let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
                 <ul>`;
-                info = info.concat(`<li><span class="labelinfo">Group ${id.replace(namespace+'.group_', '')}</span></li>`);
+                info = info.concat(`<li><span text-align:leftclass="labelinfo">Group ${id.replace(namespace+'.group_', '')}</span></li>`);
     if (dev.memberinfo === undefined) {
         info = info.concat(`<li><span class="labelinfo">No devices in group</span></li>`);
     } else {
         for (let m=0;m < dev.memberinfo.length; m++) {
-            info = info.concat(`<li><span class="labelinfo">${dev.memberinfo[m].name}</span><span> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
+            info = info.concat(`<li><span align:"left">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid}</span><span align:"right"> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
         }
         memberCount = (dev.memberinfo.length<8?dev.memberinfo.length:7);
     };
@@ -351,23 +351,98 @@ function cleanConfirmation() {
     Materialize.updateTextFields();
 }
 
+function EndPointIDfromEndPoint(ep)
+{
+  if (ep && ep.deviceIeeeAddress && ep.ID)
+    return `${ep.deviceIeeeAddress}:${ep.ID}`;
+  return 'unidentified';
+}
+
 function editName(id, name) {
+  console.log('editName called with '+name);
     const dev = devices.find((d) => d._id == id);
+    const endpoints = [];
+    const currentgroupbyep = {};
     $('#modaledit').find("input[id='d_name']").val(name);
-    if (dev.info && dev.info.device._type == 'Router') {
-        list2select('#d_groups', groups, devGroups[id] || []);
-        $('#modaledit').find('.input-field.groups').removeClass('hide');
-    } else {
-        $('#modaledit').find('.input-field.groups').addClass('hide');
-    }
+//    if (dev.info && dev.info.device._type == 'Router') {
+      const groupables = [];
+      if (dev && dev.info && dev.info.endpoints) {
+        for (const ep of dev.info.endpoints) {
+          if (ep.inputClusters.includes(4)) {
+            groupables.push({ epid:EndPointIDfromEndPoint(ep), ep:ep, memberOf:[]});
+          }
+        }
+      }
+      const numEP = groupables.length;
+//      console.log('groupables: '+JSON.stringify(groupables));
+      $('#modaledit').find('.row.epid0').addClass('hide');
+      $('#modaledit').find('.row.epid1').addClass('hide');
+      $('#modaledit').find('.row.epid2').addClass('hide');
+      $('#modaledit').find('.row.epid3').addClass('hide');
+      if (numEP > 0) {
+        // go through all the groups. Find the ones to list for each groupable
+        if (numEP == 1) {
+          $('#modaledit').find('.endpointid').addClass('hide');
+          $('#modaledit').find("translate.device_with_endpoint").innerHtml = name;
+        }
+        else {
+          $('#modaledit').find('.endpointid').removeClass('hide');
+        }
+        for (const d of devices) {
+          if (d && d.common && d.common.type == 'group') {
+            if (d.hasOwnProperty("memberinfo")) {
+              for (const member of d.memberinfo) {
+                const epid = EndPointIDfromEndPoint(member.ep)
+                for (var i=0;i<groupables.length;i++) {
+                  if (groupables[i].epid == epid) {
+                    groupables[i].memberOf.push(d.native.id.replace('group_', ''));
+                  }
+                }
+              }
+            }
+          }
+        }
+        console.log("groupables: " + JSON.stringify(groupables));
+        for (var i = 0;i<groupables.length;i++)
+        {
+          if (i > 1) {
+            $('#modaledit').find("translate.device_with_endpoint").innerHtml = name + ' ' + groupables[i].epid;
+          }
+          $('#modaledit').find('.row.epid'+i).removeClass('hide');
+          list2select('#d_groups_ep'+i, groups, groupables[i].memberOf || []);
+        }
+      }
+//    } else {
+//        $('#modaledit').find('.input-field.endpoints').addClass('hide');
+//        $('#modaledit').find('.input-field.groups').addClass('hide');
+//    }
     $("#modaledit a.btn[name='save']").unbind('click');
     $("#modaledit a.btn[name='save']").click(() => {
         const newName = $('#modaledit').find("input[id='d_name']").val(),
             newGroups = $('#d_groups').val();
-        updateDev(id, newName, newGroups);
+            groupsbyid = {};
+        if (groupables.length  > 0) {
+          for (var i = 0;i<groupables.length;i++) {
+            const ng = $('#d_groups_ep'+i).val();
+            if (ng.toString() != groupables[i].memberOf.toString())
+            groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
+          }
+        }
+        console.log('grpid ' + JSON.stringify(groupsbyid));
+        updateDev(id, newName, groupsbyid);
     });
     $('#modaledit').modal('open');
     Materialize.updateTextFields();
+}
+
+function GenerateGroupChange(oldmembers, newmembers)
+{
+  let grpchng = [];
+  for (const oldg of oldmembers)
+    if (!newmembers.includes(oldg)) grpchng.push('-'+oldg);
+  for (const newg of newmembers)
+    if (!oldmembers.includes(newg)) grpchng.push(newg)
+  return grpchng;
 }
 
 function deleteDevice(id, force) {
@@ -532,7 +607,7 @@ function showDevices() {
         const dev_block = $(this).parents('div.device'),
             id = dev_block.attr('id').replace(namespace+'.group_', ''),
             name = getDevName(dev_block);
-        editGroupName(id, name);
+        editGroupName(id, name, false);
     });
     $("button.btn-floating[name='join']").click(function() {
         const dev_block = $(this).parents('div.device');
@@ -770,11 +845,11 @@ function load(settings, onChange) {
 
     $('#add_group').click(function() {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
-        editGroupName(maxind+1, '');
+        editGroupName(maxind+1, 'Group ' + maxind+1, true);
     });
     $('#add_grp_btn').click(function() {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
-        editGroupName(maxind+1, '');
+        editGroupName(maxind+1, 'Group ' + maxind+1, true);
         getDevices();
     });
 
@@ -1713,7 +1788,7 @@ function showGroups() {
     $("a.btn-floating[name='groupedit']").click(function() {
         const index = $(this).attr('id'),
             name = groups[index];
-        editGroupName(index, name);
+        editGroupName(index, name, false);
     });
     $("a.btn-floating[name='groupdelete']").click(function() {
         const index = $(this).attr('id'),
@@ -1722,8 +1797,35 @@ function showGroups() {
     });
 }
 
-function editGroupName(id, name) {
+function editGroupName(id, name, isnew) {
+    const dev = devices.find((d) => d._id == id);
+    console.log('devices: '+ JSON.stringify(devices));
+    const groupables = [];
+    for (const d of devices) {
+      if (d && d.info && d.info.endpoints) {
+        for (const ep of d.info.endpoints) {
+          if (ep.inputClusters.includes(4))
+          {
+            groupables.push(ep);
+          }
+        }
+      }
+      console.log('device ' + JSON.stringify(d));
+    }
+
     //var text = 'Enter new name for "'+name+'" ('+id+')?';
+    if (isnew) {
+          $('#groupedit').find('.editgroup').addClass('hide');
+          $('#groupedit').find('.addgroup').removeClass('hide');
+          $('#groupedit').find('.input-field.members').addClass('hide');
+          $('#groupedit').find('.input-field.groupid').removeClass('hide');
+    }
+    else {
+          $('#groupedit').find('.editgroup').removeClass('hide');
+          $('#groupedit').find('.addgroup').addClass('hide');
+          $('#groupedit').find('.input-field.members').removeClass('hide');
+          $('#groupedit').find('.input-field.groupid').addClass('hide');
+    }
     $('#groupedit').find("input[id='g_index']").val(id);
     $('#groupedit').find("input[id='g_name']").val(name);
     $("#groupedit a.btn[name='save']").unbind('click');
@@ -1767,6 +1869,21 @@ function updateDev(id, newName, newGroups) {
     if (dev && dev.common.name != newName) {
         renameDevice(id, newName);
     }
+    const keys = Object.keys(newGroups)
+    if (keys && keys.length)
+    {
+      sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
+          if (msg && msg.error) {
+                  showMessage(msg.error, _('Error'));
+              }
+              else {
+              // save dev-groups on success
+                  dev.groups = newGroups;
+              }
+          showDevices();
+      });
+    }
+/*
     if (dev.info.device._type == 'Router') {
         const oldGroups = devGroups[id] || [];
         if (oldGroups.toString() != newGroups.toString()) {
@@ -1783,6 +1900,7 @@ function updateDev(id, newName, newGroups) {
             });
         }
     }
+*/
 }
 
 function resetConfirmation() {
