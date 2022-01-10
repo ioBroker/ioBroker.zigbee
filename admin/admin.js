@@ -141,7 +141,7 @@ function getGroupCard(dev) {
     let memberCount = 0;
     let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
                 <ul>`;
-                info = info.concat(`<li><span text-align:leftclass="labelinfo">Group ${id.replace(namespace+'.group_', '')}</span></li>`);
+                info = info.concat(`<li><span class="labelinfo">Group ${id.replace(namespace+'.group_', '')}</span></li>`);
     if (dev.memberinfo === undefined) {
         info = info.concat(`<li><span class="labelinfo">No devices in group</span></li>`);
     } else {
@@ -361,8 +361,6 @@ function EndPointIDfromEndPoint(ep)
 function editName(id, name) {
   console.log('editName called with '+name);
     const dev = devices.find((d) => d._id == id);
-    const endpoints = [];
-    const currentgroupbyep = {};
     $('#modaledit').find("input[id='d_name']").val(name);
 //    if (dev.info && dev.info.device._type == 'Router') {
       const groupables = [];
@@ -383,7 +381,6 @@ function editName(id, name) {
         // go through all the groups. Find the ones to list for each groupable
         if (numEP == 1) {
           $('#modaledit').find('.endpointid').addClass('hide');
-          $('#modaledit').find("translate.device_with_endpoint").innerHtml = name;
         }
         else {
           $('#modaledit').find('.endpointid').removeClass('hide');
@@ -418,9 +415,8 @@ function editName(id, name) {
 //    }
     $("#modaledit a.btn[name='save']").unbind('click');
     $("#modaledit a.btn[name='save']").click(() => {
-        const newName = $('#modaledit').find("input[id='d_name']").val(),
-            newGroups = $('#d_groups').val();
-            groupsbyid = {};
+        const newName = $('#modaledit').find("input[id='d_name']").val();
+        const groupsbyid = {};
         if (groupables.length  > 0) {
           for (var i = 0;i<groupables.length;i++) {
             const ng = $('#d_groups_ep'+i).val();
@@ -1798,8 +1794,8 @@ function showGroups() {
 }
 
 function editGroupName(id, name, isnew) {
-    const dev = devices.find((d) => d._id == id);
-    console.log('devices: '+ JSON.stringify(devices));
+    //const dev = devices.find((d) => d._id == id);
+    //console.log('devices: '+ JSON.stringify(devices));
     const groupables = [];
     for (const d of devices) {
       if (d && d.info && d.info.endpoints) {
@@ -1810,7 +1806,7 @@ function editGroupName(id, name, isnew) {
           }
         }
       }
-      console.log('device ' + JSON.stringify(d));
+      //console.log('device ' + JSON.stringify(d));
     }
 
     //var text = 'Enter new name for "'+name+'" ('+id+')?';
