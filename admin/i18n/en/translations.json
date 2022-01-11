@@ -81,7 +81,7 @@
     "The value to send to your device (use douple-quotes if a number is a string).": "The value to send to your device (use double-quotes if a number is a string).",
     "This page is needed only for advanced users that like to extend adapter functionalities!": "This page is needed only for advanced users that like to extend adapter functionalities!",
     "Touchlink reset and pairing": "Touchlink reset and pairing",
-    "Transport Kex Text": "Transport Key is the network encryption key. Please choose a random key sequence <b>before</b> you pair your devices. Just enter 32 random hex character (a-f and 0-9). If you change the key later, you will have to repair your devices.",
+    "Transport Key Text": "Transport Key is the network encryption key. Please choose a random key sequence <b>before</b> you pair your devices. Just enter 32 random hex character (a-f and 0-9). If you change the key later, you will have to repair your devices.",
     "Transport Key": "Transport Key",
     "Type": "Type",
     "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Unbind remote from coordinator (necessary for some remotes like HUE Dimmer Switch)",
