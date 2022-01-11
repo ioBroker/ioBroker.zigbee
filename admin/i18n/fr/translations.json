@@ -81,7 +81,7 @@
     "The value to send to your device (use douple-quotes if a number is a string).": "La valeur à envoyer à votre appareil (utilisez des guillemets doubles si un nombre est une chaîne).",
     "This page is needed only for advanced users that like to extend adapter functionalities!": "Cette page n'est nécessaire que pour les utilisateurs avancés souhaitant étendre les fonctionnalités de l'adaptateur!",
     "Touchlink reset and pairing": "Réinitialisation et couplage de Touchlink",
-    "Transport Kex Text": "La clé de transport est la clé de chiffrement du réseau.  Choisissez s.v.p. une chaîne <b>avant</b> de coupler vos dispositifs. Entrez simplement 32 caractères hexadécimaux aléatoires (a-f et 0-9). Si vous changez la clé plus tard, vous devez re-coupler vos  dispositifs.",
+    "Transport Key Text": "La clé de transport est la clé de chiffrement du réseau.  Choisissez s.v.p. une chaîne <b>avant</b> de coupler vos dispositifs. Entrez simplement 32 caractères hexadécimaux aléatoires (a-f et 0-9). Si vous changez la clé plus tard, vous devez re-coupler vos  dispositifs.",
     "Transport Key": "Clé de transport",
     "Type": "Type",
     "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Dissocier la télécommande de coordination (nécessaire pour certaines télécommandes comme HUE Dimmer Switch)",
