@@ -80,7 +80,7 @@
     "Target endpoint": "Doel eindpunt",
     "The value to send to your device (use douple-quotes if a number is a string).": "De waarde die naar uw apparaat moet worden verzonden (gebruik dubbele aanhalingstekens als een getal een tekenreeks is).",
     "Touchlink reset and pairing": "Touchlink resetten en koppelen",
-    "Transport Kex Text": "Transportsleutel is de netwerkversleutelingssleutel. Kies een willekeurige toetsenreeks <b> voordat </b> u uw apparaten koppelt. Voer gewoon 32 willekeurige hexadecimale tekens in (a-f en 0-9). Als u de sleutel later wijzigt, moet u alle apparaten opnieuw aanleren.",
+    "Transport Key Text": "Transportsleutel is de netwerkversleutelingssleutel. Kies een willekeurige toetsenreeks <b> voordat </b> u uw apparaten koppelt. Voer gewoon 32 willekeurige hexadecimale tekens in (a-f en 0-9). Als u de sleutel later wijzigt, moet u alle apparaten opnieuw aanleren.",
     "Transport Key": "Transport sleutel",
     "Type": "Type",
     "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Ontkoppel afstandsbediening van Coorinator (noodzakelijk voor sommige afstandsbedieningen zoals HUE Dimmer Switch)",

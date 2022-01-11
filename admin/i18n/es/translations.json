@@ -81,7 +81,7 @@
     "The value to send to your device (use douple-quotes if a number is a string).": "El valor para enviar a su dispositivo (use comillas dobles si un número es una cadena).",
     "This page is needed only for advanced users that like to extend adapter functionalities!": "Esta página es necesaria solo para usuarios avanzados que deseen ampliar las funcionalidades del adaptador.",
     "Touchlink reset and pairing": "Restablecimiento y emparejamiento de Touchlink",
-    "Transport Kex Text": "Transport Key es la clave de cifrado de red. ",
+    "Transport Key Text": "Transport Key es la clave de cifrado de red. ",
     "Transport Key": "Transporte clave",
     "Type": "Tipo",
     "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Desvincule el control remoto del Coordinador (necesario para algunos controles remotos como HUE Dimmer Switch)",

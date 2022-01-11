@@ -81,7 +81,7 @@
     "The value to send to your device (use douple-quotes if a number is a string).": "要发送到设备的值（如果数字是字符串，请使用双引号）。",
     "This page is needed only for advanced users that like to extend adapter functionalities!": "只有喜欢扩展适配器功能的高级用户才需要此页面！",
     "Touchlink reset and pairing": "触摸链接重置和配对",
-    "Transport Kex Text": "传输密钥是网络加密密钥。",
+    "Transport Key Text": "传输密钥是网络加密密钥。",
     "Transport Key": "运输钥匙",
     "Type": "类型",
     "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "从Coorinator取消绑定遥控器（对于某些遥控器，例如HUE Dimmer Switch，这是必需的）",
