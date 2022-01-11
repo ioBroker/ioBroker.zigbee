@@ -113,7 +113,7 @@ You can thank the authors by these links:
 ## Changelog
 
 ### 1.6.12 (2022-01)
-* (asgothian) Groups were newly revised
+* (asgothian) Groups were newly revised (read here https://github.com/ioBroker/ioBroker.zigbee/pull/1327)
 
 
 ### 1.6.9 (2021-12)
