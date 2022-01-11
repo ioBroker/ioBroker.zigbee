@@ -114,6 +114,7 @@ You can thank the authors by these links:
 
 ### 1.6.12 (2022-01)
 * (asgothian) Groups were newly revised (read here https://github.com/ioBroker/ioBroker.zigbee/pull/1327)
+  object device.group is obsolet..the old one is no longer up to date
 
 
 ### 1.6.9 (2021-12)
