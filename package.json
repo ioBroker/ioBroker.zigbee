@@ -18,8 +18,8 @@
     "node": ">=10"
   },
   "dependencies": {
-    "zigbee-herdsman": "0.13.192",
-    "zigbee-herdsman-converters": "14.0.378",
+    "zigbee-herdsman": "0.13.194",
+    "zigbee-herdsman-converters": "14.0.383",
     "@iobroker/adapter-core": "^2.4.0",
     "tar": "^6.0.5",
     "typescript": "^4.0.5"
