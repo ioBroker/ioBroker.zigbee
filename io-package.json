@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.6.12",
+        "version": "1.6.13",
         "news": {
             "1.6.12": {
                 "de": "Gruppen wurden überarbeitet",
