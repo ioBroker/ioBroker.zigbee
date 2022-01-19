@@ -11,13 +11,19 @@
 
 ## ioBroker adapter for Zigbee devices via TI cc2531/cc2530/cc26x2r/cc2538 and deCONZ ConBee/RaspBee.
 
-With the Zigbee-coordinator based on Texas Instruments SoC cc253x (and others models) or deCONZ ConBee/RaspBee modules, it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
+With the Zigbee-coordinator based on Texas Instruments SoC, deCONZ ConBee/RaspBee modules, Silicon Labs EZSP v8 or ZIGate USB-TTL it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
 
+
+One coordinator device is required for each zigbee Adapter instance. The device must be flashed with the respective coordinator firmware. A list of supported coordinators, the necessary equipment for the firmware and the device preparation process for different coordinator devices are described [here (in English)](https://www.zigbee2mqtt.io/guide/adapters/) or [here (in Russian)](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
+
+
 ### Texas Instruments SoC
-..
-For work, you need one of the following Adapters [all are listed here](https://www.zigbee2mqtt.io/information/supported_adapters.html) , flashed with a special ZNP firmware: [cc2531, cc2530, cc26x2r, cc2538](https://github.com/Koenkk/Z-Stack-firmware)
+
+Recommended devices are based on either the CC2652 or CC1352 chip. Devices based on cc253x chips are still supported but are no longer recommended.
+Only CC26xx/cc1352/cc2538 Devices support extraction of the NVRam backup which should allow to swap coordinator hardware without having to reconnect all zigbee devices to the network.
+Current firmware files for these devices can be found [on GitHub](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
 <span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
@@ -26,17 +32,30 @@ For work, you need one of the following Adapters [all are listed here](https://w
 <span><img src="docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
 <span><img src="docs/de/img/cc26x2r.PNG" width="100"></span>
 
-The necessary equipment for the firmware and the device preparation process are described [here (in English)](https://www.zigbee2mqtt.io/getting_started/what_do_i_need.html) or [here (in Russian)](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
 
 ### Dresden Elektronik SoC
 
-(experimental support)
-
 <span><img src="docs/en/img/deconz.png"></span>
 
-ConBee I
-ConBee II
-RaspBee
+recommended:
+- ConBee II
+- RaspBee II
+
+no longer recommended:
+- ConBee I
+- RaspBee
+
+While Conbee/RaspBee Support is no longer considered experimental in the zigbee-herdsman and zigbee-herdsman-converters libraries used by the zigbee Adapter, use of these devices with the adapter may limit functionality. Known issues are:
+- link quality display may be incorrect
+- device map metrics may be incorrect
+- NVRam Backup is not supported.
+
+### Silicon Labs EZPS v8 / Zigate USB-TTL
+
+Support for these chipsets is experimental. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) with regards to the state of the integration into the zigbee-herdsman and zigbee-herdsman-converters libraries.
+
+
+
 
 
 ## Work with adapter
@@ -101,7 +120,7 @@ You can thank the authors by these links:
 
 <!--
     Placeholder for the next version (at the beginning of the line):
-    
+
     https://github.com/AlCalzone/release-script#usage
     npm run release minor -- --all 0.9.8 -> 0.10.0
     npm run release patch -- --all 0.9.8 -> 0.9.9
@@ -114,6 +133,15 @@ You can thank the authors by these links:
 ### 1.6.13 (2022-01)
 
 * (kirovilya) update to Zigbee-Herdsman 0.14
+* (asgothian) Group rework part 2:
+  - state device.groups will now be deleted with state Cleanup
+  - state info.groups is now obsolete and will be deleted at adapter start (after transferring data to
+    the new storage)
+* (asgothian) Device name persistance.
+  - Changes to device names made within the zigbee adapter are stored in the file dev_names.json. This file
+    is not deleted when the adapter is removed, and will be referenced when a device is added to the zigbee adapter. Deleting and reinstalling the adapter will no longer remove custom device names, nor will deleting and adding the device anew.
+* (asgothian) Readme edit to reflect the current information on zigbee coordinator hardware.
+
 
 ### 1.6.12 (2022-01)
 * (asgothian) Groups were newly revised (read [here](https://github.com/ioBroker/ioBroker.zigbee/pull/1327) )
@@ -208,7 +236,7 @@ in this case, the *states* attribute will be formed based on the *exposes* descr
 
 ### 1.3.1 (2020-10-30)
 * [Experimental Zigate support](https://github.com/Koenkk/zigbee-herdsman/issues/242) (zigbee-herdsman)
-* New devices by: 
+* New devices by:
     asgothian, arteck, kirovilya, PaulchenPlump
 
 ### 1.3.0 (2020-10-07)
@@ -217,8 +245,8 @@ in this case, the *states* attribute will be formed based on the *exposes* descr
 * Allow to select bind cluster
 * Admin Tab support (experimental)
 * (UncleSamSwiss, DutchmanNL) Translation
-* New devices by: 
-    arteck, kirovilya, Shade, krumbholz, fre, Alex18081, ae, asgothian, 
+* New devices by:
+    arteck, kirovilya, Shade, krumbholz, fre, Alex18081, ae, asgothian,
     Strunzdesign, kairauer, VLGorskij, Hesse-Bub, PaulchenPlump, blackrozes
 
 ### 1.2.1 (2020-08-16)
