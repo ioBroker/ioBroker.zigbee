@@ -838,6 +838,10 @@ class Zigbee extends utils.Adapter {
         this.setState('info.pairingMessage', message, true);
     }
 
+    expandFileName(fn) {
+      return path.join(utils.getAbsoluteInstanceDataDir(this), fn);
+    }
+
     onLog(level, msg, data) {
         if (msg) {
             let logger = this.log.info;

@@ -246,6 +246,7 @@
         height: calc(100% - 140px)!important;
         padding-top: 5px;
         padding-bottom: 5px;
+        overflow: auto;
     }
     .m .page {
         height: calc(100% - 120px);
@@ -1093,6 +1094,22 @@
             </div>
             <div class="modal-footer">
                 <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
+            </div>
+        </div>
+        <div id="modalgrouplist" class="modal modal-fixed-footer modal-fixed-header">
+            <div class="modal-header">
+                <h5 class="translate">Groups
+                                    <a name="add" class="modal-action modal-close waves-effect waves-green btn green translate">Add Group</a>
+                </h5>
+            </div>
+            <div class="modal-content">
+                <div id="grouplist" class="row">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+              <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+              <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
 
