@@ -306,7 +306,6 @@ class Zigbee extends utils.Adapter {
 
     async onZigbeeAdapterReady() {
         if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
-        this.log.warn("config :" + JSON.stringify(this.config));
         this.log.info(`Zigbee started`);
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
