@@ -129,7 +129,7 @@ function getGroupCard(dev) {
         title = dev.common.name,
         lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
         rooms = [],
-        numid = parseInt(id.replace(namespace+'.group_', ''));
+        numid = parseInt(id.replace(namespace+'.group_', '')),
         lang = systemLang  || 'en';
     for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
@@ -1858,7 +1858,7 @@ function updateGroup(id, newId, newName) {
         if (msg && ms.error) {
             showMessage(msg.error, _('Error'));
         }
-        getDevices(); 
+        getDevices();
     });
 }
 
@@ -2387,7 +2387,6 @@ function showDevInfo(id){
 }
 
 function showGroupList(show){
-    const info = JSON.stringify(groups);
     const htmlsections = [];
     for (const groupid in devGroups) {
       const dev = devGroups[groupid];
@@ -2414,21 +2413,7 @@ function showGroupList(show){
         </div>
         `);
     }
-/*
-    <label for="members_${groupid}" class="translate">Members</label>
-</div class="input-field col s8 m8 8">
-        ${selectables.join('')}
-        <label class="translate">Members</label>
-</div>
-<div class=col s1 m1 l1">
-<button name="editgrp_${groupid}" class="right btn-flat btn-small">
-    <i class="material-icons icon-green">edit</i>
-</button>
-</div>
-//<div class=col s4 m4 l4">
-//${members.join('<br>')}
-//</div>
-*/
+
     $('#grouplist').html(htmlsections.join(''));
     $('#add').click(function() {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
