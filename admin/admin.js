@@ -129,6 +129,7 @@ function getGroupCard(dev) {
         title = dev.common.name,
         lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
         rooms = [],
+        numid = parseInt(id.replace(namespace+'.group_', '')),
         lang = systemLang  || 'en';
     for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
@@ -137,11 +138,12 @@ function getGroupCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
+    devGroups[numid] = dev;
     const room = rooms.join(',') || '&nbsp';
     let memberCount = 0;
     let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
                 <ul>`;
-                info = info.concat(`<li><span class="labelinfo">Group ${id.replace(namespace+'.group_', '')}</span></li>`);
+                info = info.concat(`<li><span class="labelinfo">Group ${numid}</span></li>`);
     if (dev.memberinfo === undefined) {
         info = info.concat(`<li><span class="labelinfo">No devices in group</span></li>`);
     } else {
@@ -512,7 +514,6 @@ function showDevices() {
         }
         return 0;
     });
-    devGroups = {};
     for (let i=0;i < devices.length; i++) {
         const d = devices[i];
         if (!d.info) {
@@ -529,7 +530,7 @@ function showDevices() {
         } else {
         //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
-                devGroups[d._id] = d.groups;
+//                devGroups[d._id] = d.groups;
                 if (typeof d.groups.map == 'function') {
                     d.groupNames = d.groups.map(item=>{
                         return groups[item] || '';
@@ -840,13 +841,14 @@ function load(settings, onChange) {
     });
 
     $('#add_group').click(function() {
+//        showGroupList(true);
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
         editGroupName(maxind+1, 'Group ' + maxind+1, true);
     });
     $('#add_grp_btn').click(function() {
+//        showGroupList(true);
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
         editGroupName(maxind+1, 'Group ' + maxind+1, true);
-        getDevices();
     });
 
     $(document).ready(function() {
@@ -1830,7 +1832,7 @@ function editGroupName(id, name, isnew) {
             newName = $('#groupedit').find("input[id='g_name']").val();
         updateGroup(id, newId, newName);
 //        showGroups();
-        getDevices();
+//        getDevices();
     });
     $('#groupedit').modal('open');
     Materialize.updateTextFields();
@@ -1844,7 +1846,7 @@ function deleteGroupConfirmation(id, name) {
     $("#modaldelete a.btn[name='yes']").click(() => {
         deleteGroup(id);
 //        showGroups();
-        getDevices();
+//        getDevices();
     });
     $('#modaldelete').modal('open');
 }
@@ -1852,12 +1854,22 @@ function deleteGroupConfirmation(id, name) {
 function updateGroup(id, newId, newName) {
     delete groups[id];
     groups[newId] = newName;
-    sendTo(namespace, 'renameGroup', { id: newId, name: newName} );
+    sendTo(namespace, 'renameGroup', { id: newId, name: newName}, function(msg) {
+        if (msg && ms.error) {
+            showMessage(msg.error, _('Error'));
+        }
+        getDevices();
+    });
 }
 
 function deleteGroup(id) {
     delete groups[id];
-    sendTo(namespace, 'deleteGroup', id );
+    sendTo(namespace, 'deleteGroup', id , function(msg) {
+        if (msg && ms.error) {
+            showMessage(msg.error, _('Error'));
+        }
+        getDevices();
+    });
 }
 
 function updateDev(id, newName, newGroups) {
@@ -1869,6 +1881,7 @@ function updateDev(id, newName, newGroups) {
     if (keys && keys.length)
     {
       sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
+          closeWaitingDialog();
           if (msg && msg.error) {
                   showMessage(msg.error, _('Error'));
               }
@@ -1878,6 +1891,8 @@ function updateDev(id, newName, newGroups) {
               }
           showDevices();
       });
+      showWaitingDialog('Updating group memberships', 10);
+
     }
 /*
     if (dev.info.device._type == 'Router') {
@@ -2369,6 +2384,47 @@ function showDevInfo(id){
     const info = genDevInfo(getDeviceByID(id));
     $('#devinfo').html(info);
     $('#modaldevinfo').modal('open');
+}
+
+function showGroupList(show){
+    const htmlsections = [];
+    for (const groupid in devGroups) {
+      const dev = devGroups[groupid];
+      const grpname = (dev.common && dev.common.name?dev.common.name:'Group '+groupid);
+      const selectables = [];
+      const members = [];
+      if (dev && dev.memberinfo)
+      {
+        selectables.push(`<select id="members_${groupid}" multiple>`)
+        for (let m=0;m<dev.memberinfo.length; m++) {
+          members.push(`${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (${dev.memberinfo[m].ieee})`)
+          selectables.push(`<option value="${m}">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (...${dev.memberinfo[m].ieee.slice(-4)})</option>`);
+        }
+        selectables.push('</select>');
+      }
+      htmlsections.push(`
+        <div class="row">
+          <div class="col s4 m4 l4">
+              <h5>${grpname}<h5>
+          </div>
+          <div class=col s7 m7 l7">
+          ${members.join('<br>')}
+          </div>
+        </div>
+        `);
+    }
+
+    $('#grouplist').html(htmlsections.join(''));
+    $('#add').click(function() {
+        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
+        editGroupName(maxind+1, 'Group ' + maxind+1, true);
+        showGroupList(false);
+    });
+
+    $("#modalgrouplist a.btn[name='save']").unbind('click');
+    $("#modalgrouplist a.btn[name='save']").click(() => {
+    });
+    if (show) $('#modalgrouplist').modal('open');
 }
 
 let waitingTimeout, waitingInt;
