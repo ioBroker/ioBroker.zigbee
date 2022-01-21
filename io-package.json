@@ -1,8 +1,18 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.6.13",
+        "version": "1.6.14",
         "news": {
+            "1.6.14": {
+                "de": "Gruppen wurden überarbeitet 2",
+                "en": "Groups were newly revised 2",
+                "ru": "Группы были пересмотрены 2"
+            },
+            "1.6.13": {
+                "de": "shc 14.xx",
+                "en": "shc 14.xx",
+                "ru": "shc 14.xx"
+            },
             "1.6.12": {
                 "de": "Gruppen wurden überarbeitet",
                 "en": "Groups were newly revised",
