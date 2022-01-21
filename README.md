@@ -130,9 +130,7 @@ You can thank the authors by these links:
 -->
 
 ## Changelog
-### 1.6.13 (2022-01)
-
-* (kirovilya) update to Zigbee-Herdsman 0.14
+### 1.6.14 (2022-01)
 * (asgothian) Group rework part 2:
   - state device.groups will now be deleted with state Cleanup
   - state info.groups is now obsolete and will be deleted at adapter start (after transferring data to
@@ -141,6 +139,11 @@ You can thank the authors by these links:
   - Changes to device names made within the zigbee adapter are stored in the file dev_names.json. This file
     is not deleted when the adapter is removed, and will be referenced when a device is added to the zigbee adapter. Deleting and reinstalling the adapter will no longer remove custom device names, nor will deleting and adding the device anew.
 * (asgothian) Readme edit to reflect the current information on zigbee coordinator hardware.
+* (arteck) Zigbee-Herdsman 0.14.4, Zigbee-Herdsman-Converters 14.0.394
+
+### 1.6.13 (2022-01)
+
+* (kirovilya) update to Zigbee-Herdsman 0.14
 
 
 ### 1.6.12 (2022-01)
