@@ -131,6 +131,15 @@ You can thank the authors by these links:
 
 ## Changelog
 ### 1.6.14 (2022-01)
+* (asgothian) OTA limitation
+  - devices with the available state set to false are excluded from OTA updates (and the update check)
+  - devices with link_quality 0 are excluded from OTA updates (and the update check)
+* (asgothian) Device deactivation:
+  - Devices can be marked inactive from the device card.
+  - inactive devices are not pinged
+  - state changes by the user are not sent to inactive devices.
+  - when a pingable device is marked active (from being inactive) it will be pinged again.
+  - inactive devices are excluded from OTA updates.
 * (asgothian) Group rework part 2:
   - state device.groups will now be deleted with state Cleanup
   - state info.groups is now obsolete and will be deleted at adapter start (after transferring data to
