@@ -132,7 +132,7 @@ You can thank the authors by these links:
 ## Changelog
 
 ### 1.6.15 (2022-02-08)
-* (arteck) Battery status was changed for xiaomi devices
+* (arteck) Battery status % calculation was changed for xiaomi devices
 * 
 
 ### 1.6.14 (2022-01)
