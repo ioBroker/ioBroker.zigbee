@@ -126,14 +126,18 @@ You can thank the authors by these links:
     npm run release patch -- --all 0.9.8 -> 0.9.9
     npm run release prerelease beta -- --all v0.2.1 -> v0.2.2-beta.0
     Placeholder for the next version (at the beginning of the line):
-    ### **WORK IN PROGRESS**
+
 -->
 
+
 ## Changelog
+### 1.6.16 (2022-02-16) (2022-02-16)
+* (arteck) admin dep fix
+*
 
 ### 1.6.15 (2022-02-08)
 * (arteck) Battery status % calculation was changed for xiaomi devices
-* 
+*
 
 ### 1.6.14 (2022-01)
 * (asgothian) OTA limitation
@@ -159,11 +163,9 @@ You can thank the authors by these links:
 
 * (kirovilya) update to Zigbee-Herdsman 0.14
 
-
 ### 1.6.12 (2022-01)
 * (asgothian) Groups were newly revised (read [here](https://github.com/ioBroker/ioBroker.zigbee/pull/1327) )
    -  object device.groups is obsolet..the old one is no longer up to date
-
 
 ### 1.6.9 (2021-12)
 * (simatec) fix admin Dark-Mode
@@ -176,21 +178,6 @@ You can thank the authors by these links:
 * (kirovilya) herdsman compatibility
 
 ### 1.6.0 (2021-08-09)
-## Attention! Attention! Attention! Attention! Attention! Attention! Attention!
-
-After introducing a new z-stack startup procedure into zigbee-herdsman, we got some problems with our adapter in version 1.5.6.
-This was discussed [here](https://github.com/ioBroker/ioBroker.zigbee/issues/1110) and [here](https://github.com/Koenkk/zigbee-herdsman/issues/376)
-
-Unfortunately, not all user sticks were able to work successfully with this new init routine. This mainly affected the TI cc2538 based sticks with the 2019 year's firmware. All subsequent firmwares and sticks have no problems when starting the adapter or they can be fixed.
-
-At the moment, there is no working solution to this problem, except for updating the firmware of such sticks to a newer one.
-As a fallback, it is proposed to use the old version of zigbee-herdsman 0.13.93, but some of the devices and functionality may not work.
-Therefore, we made a separate version 1.6.0o especially for this case. It can be installed from github at https://github.com/ioBroker/ioBroker.zigbee/tarball/old_herdsman
-
-* Update to latest zigbee-herdsman and zigbee-herdsman-converters
-* (PeterVoronov) Update support composite exposes
-* (kirovilya) UI fixes
-* (kirovilya) Sentry support
 
 ### 1.5.6 (2021-05-26)
 * (kirovilya) new UI add
@@ -205,12 +192,10 @@ Therefore, we made a separate version 1.6.0o especially for this case. It can be
 ### 1.5.2 (2021-04-29)
 * (asgothian) Groups on dashboard
 
-
 ### 1.5.1 (2021-04-14)
 * (kirovilya) Dashboard
 * (asgothian) Groups (reworked)
 * [Experimental support EZSP protocol for EFR32 chips](https://github.com/Koenkk/zigbee-herdsman/issues/319) (zigbee-herdsman)
-
 
 ### 1.4.4 (2021-02-14)
 * (kirovilya) External converters https://www.zigbee2mqtt.io/information/configuration.html#external-converters-configuration
@@ -218,7 +203,6 @@ Therefore, we made a separate version 1.6.0o especially for this case. It can be
 * (asgothian) Devive query state-button
 * (asgothian) State Cleanup button
 * (arteck) Setting to use exposes instead of internal device description
-
 
 ### 1.4.1 (2020-12)
 * (o0shojo0o) added a kelvin posibility into colortemp
@@ -232,7 +216,6 @@ Therefore, we made a separate version 1.6.0o especially for this case. It can be
 * (asgothian) change in how RGB color is parsed. Incomplete colors will now be parsed successfully. #FFF will result in R 0, G 15, B 255
 * (asgothian) change in OTA: Message that a device does not respond for OTA query downgraded to "info" from "error"
 * (asgothian) new coordinator card
-
 
 ### 1.4.0 (2020-12)
 * Many new devices available
@@ -327,7 +310,6 @@ New devices:
 * (mar565) GUNNARP panel round
 * (Erdnuss3003) 4090531P7
 
-
 ### 1.1.1 (2020-04-17)
 * (kirovilya) Critical. Fixed error starting adapter if cc-chip was only flashed
 * (kirovilya) Nue/3A FNB56-ZSW02LX2.0
@@ -417,8 +399,6 @@ new Zigbee-herdsman features:
 * More new devices
 * Some design update
 * Binding
-
-
 
 ## License
 The MIT License (MIT)

@@ -1,8 +1,13 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.6.15",
+        "version": "1.6.16",
         "news": {
+             "1.6.16": {
+                "de": "admin dep fix",
+                "en": "admin dep fix",
+                "ru": "admin dep fix"
+            },        
              "1.6.15": {
                 "de": "Batterie Status wurde geändert",
                 "en": "Battery status was changed",
