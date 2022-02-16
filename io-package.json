@@ -231,13 +231,15 @@
                 "dsn": "https://c829e2ad996d45d1bdb2247805699883@o831057.ingest.sentry.io/5812498"
             }
         },
+        "globalDependencies": [
+            {
+                "admin": ">=5.1.25"
+            }
+        ],
         "dependencies": [
-          {
-            "admin": ">=3.0.0"
-          },
-          {
-            "js-controller": ">=1.4.2"
-          }
+            {
+                "js-controller": ">=3.3.0"
+            }
         ]
     },
     "native": {
