@@ -84,7 +84,7 @@
     "Transport Key Text": "传输密钥是网络加密密钥。",
     "Transport Key": "运输钥匙",
     "Type": "类型",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "从Coorinator取消绑定遥控器（对于某些遥控器，例如HUE Dimmer Switch，这是必需的）",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "从Coordinator取消绑定遥控器（对于某些遥控器，例如HUE Dimmer Switch，这是必需的）",
     "View config": "查看配置",
     "Waiting": "等候",
     "Write Attribute": "写属性",

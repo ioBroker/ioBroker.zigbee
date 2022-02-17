@@ -84,7 +84,7 @@
     "Transport Key Text": "La clé de transport est la clé de chiffrement du réseau.  Choisissez s.v.p. une chaîne <b>avant</b> de coupler vos dispositifs. Entrez simplement 32 caractères hexadécimaux aléatoires (a-f et 0-9). Si vous changez la clé plus tard, vous devez re-coupler vos  dispositifs.",
     "Transport Key": "Clé de transport",
     "Type": "Type",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Dissocier la télécommande de coordination (nécessaire pour certaines télécommandes comme HUE Dimmer Switch)",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "Dissocier la télécommande de coordination (nécessaire pour certaines télécommandes comme HUE Dimmer Switch)",
     "View config": "Afficher la configuration",
     "Waiting": "Attendre",
     "Write Attribute": "Ecrire attribut",

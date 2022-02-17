@@ -84,7 +84,7 @@
     "Transport Key Text": "Transport Key es la clave de cifrado de red. ",
     "Transport Key": "Transporte clave",
     "Type": "Tipo",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Desvincule el control remoto del Coordinador (necesario para algunos controles remotos como HUE Dimmer Switch)",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "Desvincule el control remoto del Coordinador (necesario para algunos controles remotos como HUE Dimmer Switch)",
     "View config": "Ver configuración",
     "Waiting": "Esperando",
     "Write Attribute": "Escribir atributo",

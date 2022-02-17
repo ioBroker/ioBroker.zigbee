@@ -83,7 +83,7 @@
     "Transport Key Text": "Transportsleutel is de netwerkversleutelingssleutel. Kies een willekeurige toetsenreeks <b> voordat </b> u uw apparaten koppelt. Voer gewoon 32 willekeurige hexadecimale tekens in (a-f en 0-9). Als u de sleutel later wijzigt, moet u alle apparaten opnieuw aanleren.",
     "Transport Key": "Transport sleutel",
     "Type": "Type",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Ontkoppel afstandsbediening van Coorinator (noodzakelijk voor sommige afstandsbedieningen zoals HUE Dimmer Switch)",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "Ontkoppel afstandsbediening van Coordinator (noodzakelijk voor sommige afstandsbedieningen zoals HUE Dimmer Switch)",
     "View config": "Bekijk configuratie",
     "Waiting": "Wachtende",
     "Write Attribute": "Schrijf attribuut",

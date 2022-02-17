@@ -84,7 +84,7 @@
     "Transport Key Text": "Transport Key is the network encryption key. Please choose a random key sequence <b>before</b> you pair your devices. Just enter 32 random hex character (a-f and 0-9). If you change the key later, you will have to repair your devices.",
     "Transport Key": "Transport Key",
     "Type": "Type",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Unbind remote from coordinator (necessary for some remotes like HUE Dimmer Switch)",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "Unbind remote from coordinator (necessary for some remotes like HUE Dimmer Switch)",
     "View config": "View config",
     "Waiting": "Waiting",
     "Write Attribute": "Write attribute",

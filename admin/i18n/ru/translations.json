@@ -84,7 +84,7 @@
     "Transport Key Text": "Транспортный ключ - это сетевой ключ шифрования. Пожалуйста, выберите случайную последовательность <b>перед</b> подключением устройств. Просто введите 32 случайных шестнадцатеричных символа (a-f и 0-9). Если вы поменяете ключ позже, вам придется снова спаривать свои устройства.",
     "Transport Key": "Транспортный ключ",
     "Type": "Тип",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Отсоедините пульт от Coorinator (необходим для некоторых пультов, таких как HUE Dimmer Switch)",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "Отсоедините пульт от координатора (необходим для некоторых пультов, таких как HUE Dimmer Switch)",
     "View config": "Посмотреть конфигурацию",
     "Waiting": "Ожидание",
     "Write Attribute": "Запись атрибута",

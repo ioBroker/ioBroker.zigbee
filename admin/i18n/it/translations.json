@@ -84,7 +84,7 @@
     "Transport Key Text": "La chiave di trasporto è la chiave di crittografia della rete. ",
     "Transport Key": "Chiave di trasporto",
     "Type": "genere",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Sblocca il telecomando da Coorinator (necessario per alcuni telecomandi come HUE Dimmer Switch)",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "Sblocca il telecomando da Coordinator (necessario per alcuni telecomandi come HUE Dimmer Switch)",
     "View config": "Visualizza config",
     "Waiting": "In attesa",
     "Write Attribute": "Scrivi attributo",

@@ -83,7 +83,7 @@
     "Transport Key Text": "Transportschlüssel ist der Netzwerkverschlüsselungsschlüssel. Bitte wähle eine zufällige Schlüsselsequenz <b>bevor</b> du Geräte koppelst. Gib einfach 32 zufällige Hex-Zeichen ein (a-f und 0-9). Wenn du den Schlüssel später änderst, musst du alle Geräte neu koppeln.",
     "Transport Key": "Transportschlüssel",
     "Type": "Typ",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Entkoppele die Fernbedienung vom Koordinator (erforderlich für einige Fernbedienungen wie HUE Dimmer Switch)",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "Entkoppele die Fernbedienung vom Koordinator (erforderlich für einige Fernbedienungen wie HUE Dimmer Switch)",
     "View config": "Konfiguration anzeigen",
     "Waiting": "Warten",
     "Write Attribute": "Attribut schreiben",

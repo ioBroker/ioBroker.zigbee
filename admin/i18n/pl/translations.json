@@ -84,7 +84,7 @@
     "Transport Key Text": "Klucz transportowy to sieciowy klucz szyfrowania.",
     "Transport Key": "Klucz transportowy",
     "Type": "Rodzaj",
-    "Unbind remote from Coorinator (necessary for some remotes like HUE Dimmer Switch)": "Odłącz pilota od Coorinatora (niezbędny do niektórych pilotów, takich jak HUE Dimmer Switch)",
+    "Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)": "Odłącz pilota od Coordinatora (niezbędny do niektórych pilotów, takich jak HUE Dimmer Switch)",
     "View config": "Wyświetl config",
     "Waiting": "Czekaj",
     "Write Attribute": "Napisz atrybut",
