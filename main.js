@@ -656,7 +656,6 @@ class Zigbee extends utils.Adapter {
                 const isDevice =  payload.device.indexOf('group_') == -1;
                 const stateList = [];
                 const devID = (isDevice ? `0x${payload.device}`:parseInt(payload.device.replace('group_', '')));
-                this.log.warn(`A ${payload.device} ${devID}`);
 
                 const entity = await this.zbController.resolveEntity(devID);
                 if (!entity) {
