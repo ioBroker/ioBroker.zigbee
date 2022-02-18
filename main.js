@@ -507,6 +507,21 @@ class Zigbee extends utils.Adapter {
             const stateDesc = changedState.stateDesc;
             const value = changedState.value;
 
+            if (stateDesc.id == 'send_payload') {
+                try {
+                    const json_value = JSON.parse(value);
+                } catch (error) {
+                    this.warn(`send_payload: ${value} does not parse as JSON Object : ${error.message}`);
+                    return;
+                }
+                const payload = { device:deviceId, payload:value };
+                const result = await(sendPayload(payload));
+                if (result.HasOwnProperty('success') && result.success) {
+                    this.acknowledgeState(deviceId, model, stateDesc, value);
+                }
+                return;
+            }
+
             if (stateDesc.isOption) {
                 // acknowledge state with given value
                 this.acknowledgeState(deviceId, model, stateDesc, value);
@@ -615,8 +630,6 @@ class Zigbee extends utils.Adapter {
     // not exposed as states. It serves as a wrapper function for "publishFromState" with
     // extended parameter checking
     //
-    // This function is NEVER called from within the adapter itself. The entire structure
-    // is built for end user use.
     // The payload can either be a JSON object or the string representation of a JSON object
     // The following keys are supported in the object:
     // device: name of the device. For a device zigbee.0.0011223344556677 this would be 0011223344556677
