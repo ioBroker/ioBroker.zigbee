@@ -510,14 +510,14 @@ class Zigbee extends utils.Adapter {
             if (stateDesc.id == 'send_payload') {
                 try {
                     const json_value = JSON.parse(value);
+                    const payload = { device:deviceId.replace('0x', ''), payload:json_value };
+                    const result = await(this.SendPayload(payload));
+                    if (result.hasOwnProperty('success') && result.success) {
+                        this.acknowledgeState(deviceId, model, stateDesc, value);
+                    }
                 } catch (error) {
                     this.warn(`send_payload: ${value} does not parse as JSON Object : ${error.message}`);
                     return;
-                }
-                const payload = { device:deviceId.replace('0x', ''), payload:value };
-                const result = await(this.SendPayload(payload));
-                if (result.hasOwnProperty('success') && result.success) {
-                    this.acknowledgeState(deviceId, model, stateDesc, value);
                 }
                 return;
             }
