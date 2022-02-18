@@ -515,7 +515,7 @@ class Zigbee extends utils.Adapter {
                     return;
                 }
                 const payload = { device:deviceId, payload:value };
-                const result = await(sendPayload(payload));
+                const result = await(SendPayload(payload));
                 if (result.HasOwnProperty('success') && result.success) {
                     this.acknowledgeState(deviceId, model, stateDesc, value);
                 }
