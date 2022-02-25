@@ -760,10 +760,10 @@ class Zigbee extends utils.Adapter {
         this.log.debug(`onDeviceStatusUpdate: ${deviceId}: ${status}`);
 
         try {
-            let colorIeee = '#46a100';
+            let colorIeee = '#46a100ff';
 
             if (!status) {
-                colorIeee = '#ff0400'; // dev is offline
+                colorIeee = '#ff0400ff'; // dev is offline
             }
 
             if (!this.config.colorize) {
