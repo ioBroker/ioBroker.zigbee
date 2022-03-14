@@ -770,11 +770,14 @@ class Zigbee extends utils.Adapter {
                 colorIeee = null;
             }
 
-            await this.extendObjectAsync(deviceId, {
+            //    fast fix 
+     /*       await this.extendObjectAsync(deviceId, {
                 common: {
                     color: colorIeee
                 }
             });
+            */
+            
         } catch (e) {
             this.log.error(e.toString());
         }
