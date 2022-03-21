@@ -45,8 +45,6 @@ const E_DEBUG=2;
 const E_WARN=3;
 const E_ERROR=4;
 
-let _pairingMode = false;
-
 const errorCodes = {
     9999: { severity:E_INFO, message:'No response'},
     233: { severity:E_DEBUG, message:'MAC NO ACK'},
@@ -519,7 +517,7 @@ class Zigbee extends utils.Adapter {
                         this.acknowledgeState(deviceId, model, stateDesc, value);
                     }
                 } catch (error) {
-                    this.warn(`send_payload: ${value} does not parse as JSON Object : ${error.message}`);
+                    this.log.warn(`send_payload: ${value} does not parse as JSON Object : ${error.message}`);
                     return;
                 }
                 return;
@@ -548,6 +546,7 @@ class Zigbee extends utils.Adapter {
                                         await converter.convertGet(entity.device.endpoints[0], ckey, {});
                                     } catch (error) {
                                         this.log.warn(`Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after query with '${JSON.stringify(error)}'`);
+
                                     }
                                 }
                             }
@@ -758,10 +757,8 @@ class Zigbee extends utils.Adapter {
     }
     async onDeviceStatusUpdate(deviceId, status) {
         if (!deviceId) return;
-              
+
         this.log.debug(`onDeviceStatusUpdate: ${deviceId}: ${status}`);
-        
-        if (_pairingMode) return;
 
         try {
             let colorIeee = '#46a100ff';
@@ -773,13 +770,12 @@ class Zigbee extends utils.Adapter {
             if (!this.config.colorize) {
                 colorIeee = null;
             }
-            
+
             await this.extendObjectAsync(deviceId, {
                 common: {
                     color: colorIeee
                 }
-            });     
-            
+            });
         } catch (e) {
             this.log.error(e.toString());
         }
@@ -864,12 +860,10 @@ class Zigbee extends utils.Adapter {
     onPairing(message, data) {
         if (Number.isInteger(data)) {
             this.setState('info.pairingCountdown', data, true);
-            _pairingMode = true;
         }
         if (data === 0) {
             // set pairing mode off
             this.setState('info.pairingMode', false,true);
-            _pairingMode = false;
         }
         if (data) {
             this.logToPairing(`${message}: ${data.toString()}`);
