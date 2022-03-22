@@ -1,7 +1,7 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.6.16",
+        "version": "1.6.17",
         "news": {
              "1.6.16": {
                 "de": "admin dep fix",
