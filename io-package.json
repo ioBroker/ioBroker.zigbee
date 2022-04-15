@@ -350,7 +350,7 @@
                 "def": ""
             },
             "native": {}
-        }
+        },
         {
             "_id": "info.undefinedDevices",
             "type": "state",
