@@ -351,5 +351,17 @@
             },
             "native": {}
         }
+        {
+            "_id": "info.undefinedDevices",
+            "type": "state",
+            "common": {
+                "name": "Recorded undefined devices",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        }
     ]
 }
