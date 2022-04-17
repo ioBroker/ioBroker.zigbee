@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "1.6.17",
+  "version": "1.6.16",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -18,6 +18,7 @@
     "node": ">=10"
   },
   "dependencies": {
+
     "zigbee-herdsman": "0.14.26",
     "zigbee-herdsman-converters": "14.0.487",
     "@iobroker/adapter-core": "^2.4.0",
