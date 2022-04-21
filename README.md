@@ -131,9 +131,11 @@ You can thank the authors by these links:
 
 
 ## Changelog
-### 1.6.16 (2022-02-16)
+### 1.6.18 (2022-04-21)
 * (arteck) fix pairing modus
 
+### 1.6.17 (2022-04)
+ rollback 
 
 ### 1.6.16 (2022-02-16)
 * (arteck) admin dep fix
