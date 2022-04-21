@@ -132,9 +132,12 @@ You can thank the authors by these links:
 
 ## Changelog
 ### 1.6.16 (2022-02-16)
+* (arteck) fix pairing modus
+
+
+### 1.6.16 (2022-02-16)
 * (arteck) admin dep fix
 * (arteck) colored objects for online/offline state
-
 
 ### 1.6.15 (2022-02-08)
 * (arteck) Battery status % calculation was changed for xiaomi devices
