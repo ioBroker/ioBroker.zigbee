@@ -1,8 +1,13 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.6.17",
+        "version": "1.6.18",
         "news": {
+            "1.6.18": {
+                "de": "fix pairing mode",
+                "en": "fix pairing mode",
+                "ru": "fix pairing mode"
+            },        
              "1.6.16": {
                 "de": "admin dep fix",
                 "en": "admin dep fix",

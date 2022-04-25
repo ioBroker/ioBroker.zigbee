@@ -898,11 +898,13 @@ class Zigbee extends utils.Adapter {
         if (Number.isInteger(data)) {
             _pairingMode = true;
             this.setState('info.pairingCountdown', data, true);
+            _pairingMode = true;
         }
         if (data === 0) {
             // set pairing mode off
             _pairingMode = false;
             this.setState('info.pairingMode', false,true);
+            _pairingMode = false;
         }
         if (data) {
             this.logToPairing(`${message}: ${data.toString()}`);
