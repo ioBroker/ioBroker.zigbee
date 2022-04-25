@@ -795,7 +795,7 @@ class Zigbee extends utils.Adapter {
 
         this.log.debug(`onDeviceStatusUpdate: ${deviceId}: ${status}`);
 
-       if (_pairingMode) return;
+        if (_pairingMode) return;
 
         try {
             let colorIeee = '#46a100ff';
