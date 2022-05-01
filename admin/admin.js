@@ -2763,7 +2763,7 @@ function getDashCard(dev, groupImage) {
         } else if (stateDef.role == 'level.dimmer' && stateDef.write) {
             val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
         } else if (stateDef.role == 'level.color.temperature' && stateDef.write) {
-            val = `<span class="range-field dash"><input type="range" min="200" max="9000" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
+            val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
         } else if (stateDef.type == 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
