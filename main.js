@@ -199,7 +199,6 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('event', this.onZigbeeEvent.bind(this));
         this.zbController.on('msg', this.onZigbeeEvent.bind(this));
         this.zbController.on('publish', this.publishToState.bind(this));
-        this.zbController.on('deviceStatusUpdate', this.onDeviceStatusUpdate.bind(this));
         this.zbController.configure(zigbeeOptions);
         await this.callPluginMethod('configure', [zigbeeOptions]);
 
@@ -757,34 +756,7 @@ class Zigbee extends utils.Adapter {
             }
         }
     }
-    async onDeviceStatusUpdate(deviceId, status) {
-        if (!deviceId) return;
-
-        this.log.debug(`onDeviceStatusUpdate: ${deviceId}: ${status}`);
-
-        if (_pairingMode) return;
-        
-        try {
-            let colorIeee = '#46a100ff';
-
-            if (!status) {
-                colorIeee = '#ff0400ff'; // dev is offline
-            }
-
-            if (!this.config.colorize) {
-                colorIeee = null;
-            }
-
-            await this.extendObjectAsync(deviceId, {
-                common: {
-                    color: colorIeee
-                }
-            });
-        } catch (e) {
-            this.log.error(e.toString());
-        }
-    }
-
+   
     /**
      * @param {() => void} callback
      */
