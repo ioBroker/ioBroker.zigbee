@@ -131,6 +131,11 @@ You can thank the authors by these links:
 
 
 ## Changelog
+
+### 1.6.19 (2022-05-18)
+* (arteck) available status in admin is colored
+* 
+
 ### 1.6.18 (2022-04-21)
 * (arteck) fix pairing modus
 
