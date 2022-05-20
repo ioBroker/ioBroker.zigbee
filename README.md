@@ -134,7 +134,8 @@ You can thank the authors by these links:
 
 ### 1.6.x (2022-05-18)
 * (arteck) available status in admin is colored
-* 
+* (arteck) disable Backups checkbox in settings
+* (arteck) we keep last 10 backup files 
 
 ### 1.6.18 (2022-04-21)
 * (arteck) fix pairing modus

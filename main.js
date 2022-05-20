@@ -828,6 +828,7 @@ class Zigbee extends utils.Adapter {
             disableLed: this.config.disableLed,
             disablePing: this.config.disablePing,
             transmitPower: this.config.transmitPower,
+            disableBackup: this.config.disableBackup,
             extPanIdFix: extPanIdFix,
             startWithInconsistent: this.config.startWithInconsistent || false,
         };
