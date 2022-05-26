@@ -165,6 +165,7 @@
         "adapterType": "zstack",
         "debugHerdsman": false,
         "disablePing": false,
+        "disableBackup": false,
         "external": "",
         "startWithInconsistent": false
     },
