@@ -136,7 +136,7 @@ You can thank the authors by these links:
 * (arteck) available status in admin is colored
 * (arteck) disable Backups checkbox in settings
 * (arteck) we keep last 10 backup files 
-* (arteck) download missing icons automatically
+* (arteck) download missing icons automatically (manual upload needed)
 
 ### 1.6.18 (2022-04-21)
 * (arteck) fix pairing modus
