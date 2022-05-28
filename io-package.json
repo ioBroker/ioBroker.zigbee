@@ -187,16 +187,16 @@
                 "zh-cn": "重要通知!"
               },
               "text": {
-                  "en": "This new version cleans the file backup (under \opt\iobroker\iobroker-data\zigbee_0\) of the adapter. Only the last 10 backups are kept.",
-                  "de": "Diese neue Version bereinigt das Datei backup (unter \opt\iobroker\iobroker-data\zigbee_0\) des Adapter. Es werden nur die letzten 10 Sicherungen behalten.",
-                  "ru": "Эта новая версия очищает резервную копию файла (в папке \opt\iobroker\iobroker-data\zigbee_0\) адаптера. Сохраняются только последние 10 резервных копий.",
-                  "pt": "Esta nova versão limpa o backup do arquivo (em \opt\iobroker\iobroker-data\zigbee_0\) do adaptador. Apenas os últimos 10 backups são mantidos.",
-                  "nl": "Deze nieuwe versie maakt de bestandsback-up schoon (onder \opt\iobroker\iobroker-data\zigbee_0\) van de adapter. Alleen de laatste 10 back-ups worden bewaard.",
-                  "fr": "Cette nouvelle version nettoie le fichier de sauvegarde (sous \opt\iobroker\iobroker-data\zigbee_0\) de l'adaptateur. Seules les 10 dernières sauvegardes sont conservées.",
-                  "it": "Questa nuova versione pulisce il backup del file (in \opt\iobroker\iobroker-data\zigbee_0\) dell'adattatore. Vengono mantenuti solo gli ultimi 10 backup.",
-                  "es": "Esta nueva versión limpia la copia de seguridad del archivo (en \opt\iobroker\iobroker-data\zigbee_0\) del adaptador. Solo se conservan las últimas 10 copias de seguridad.",
-                  "pl": "Ta nowa wersja czyści kopię pliku (w \opt\iobroker\iobroker-data\zigbee_0\) adaptera. Przechowywanych jest tylko 10 ostatnich kopii.",
-                  "zh-cn": "这个新版本清理了适配器的文件备份（在 \opt\iobroker\iobroker-data\zigbee_0\ 下）。仅保留最后 10 个备份。"
+                  "en": "This new version cleans the file backup (under \\opt\\iobroker\\iobroker-data\\zigbee_0\\) of the adapter. Only the last 10 backups are kept.",
+                  "de": "Diese neue Version bereinigt das Datei backup (unter \\opt\\iobroker\\iobroker-data\\zigbee_0\\) des Adapter. Es werden nur die letzten 10 Sicherungen behalten.",
+                  "ru": "Эта новая версия очищает резервную копию файла (в папке \\opt\\iobroker\\iobroker-data\\zigbee_0\\) адаптера. Сохраняются только последние 10 резервных копий.",
+                  "pt": "Esta nova versão limpa o backup do arquivo (em \\opt\\iobroker\\iobroker-data\\zigbee_0\\) do adaptador. Apenas os últimos 10 backups são mantidos.",
+                  "nl": "Deze nieuwe versie maakt de bestandsback-up schoon (onder \\opt\\iobroker\\iobroker-data\\zigbee_0\\) van de adapter. Alleen de laatste 10 back-ups worden bewaard.",
+                  "fr": "Cette nouvelle version nettoie le fichier de sauvegarde (sous \\opt\\iobroker\\iobroker-data\\zigbee_0\\) de l'adaptateur. Seules les 10 dernières sauvegardes sont conservées.",
+                  "it": "Questa nuova versione pulisce il backup del file (in \\opt\\iobroker\\iobroker-data\\zigbee_0\\) dell'adattatore. Vengono mantenuti solo gli ultimi 10 backup.",
+                  "es": "Esta nueva versión limpia la copia de seguridad del archivo (en \\opt\\iobroker\\iobroker-data\\zigbee_0\\) del adaptador. Solo se conservan las últimas 10 copias de seguridad.",
+                  "pl": "Ta nowa wersja czyści kopię pliku (w \\opt\\iobroker\\iobroker-data\\zigbee_0\\) adaptera. Przechowywanych jest tylko 10 ostatnich kopii.",
+                  "zh-cn": "这个新版本清理了适配器的文件备份（在 \\opt\\iobroker\\iobroker-data\\zigbee_0\\ 下）。仅保留最后 10 个备份。"
               },
               "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
               "level": "warn",
