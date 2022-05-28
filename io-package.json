@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.7.1",
+        "version": "1.7.2",
         "news": {
+            "1.7.2": {
+               "en": "corr download missing icon",
+               "de": "korrektur download fehlendes Icon",
+               "ru": "Корр скачать отсутствует значок",
+               "pt": "corr baixar ícone ausente",
+               "nl": "corr download ontbreekt icoon",
+               "fr": "corr télécharger l'icône manquante",
+               "it": "corr download icona mancante",
+               "es": "falta el icono de descarga corr",
+               "pl": "brak ikony pobierania corr",
+               "zh-cn": "更正下载丢失的图标"
+            },        
             "1.7.1": {
               "en": "Device status is displayed in admin interface with color and icon.\nInternal adapter backups can be disabled (for backups with BackItUp Adapter).\nOnly last 10 backups are kept (currently they accumulate and need to be deleted manually).\nNew function for missing icons in Admin Object tree.",
               "de": "Der Gerätestatus wird in der Admin-Oberfläche mit Farbe und Symbol angezeigt.\nInterne Adapter-Backups können deaktiviert werden (für Backups mit BackItUp Adapter).\nNur die letzten 10 Backups werden aufbewahrt (derzeit sammeln sie sich an und müssen manuell gelöscht werden).\nNeue Funktion für fehlende Symbole im Admin-Objektbaum.",

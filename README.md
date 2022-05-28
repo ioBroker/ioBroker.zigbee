@@ -126,11 +126,14 @@ You can thank the authors by these links:
     npm run release patch -- --all 0.9.8 -> 0.9.9
     npm run release prerelease beta -- --all v0.2.1 -> v0.2.2-beta.0
     Placeholder for the next version (at the beginning of the line):
-    
+     ## **WORK IN PROGRESS**
 -->
 
 
 ## Changelog
+### 1.7.2 (2022-05-28)
+* (arteck) download missing icons corr
+
 ### 1.7.1 (2022-05-28)
 * (arteck) available status in admin is colored
 * (arteck) disable Backups checkbox in settings
