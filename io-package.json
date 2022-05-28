@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.7.0",
+        "version": "1.7.1",
         "news": {
-            "1.7.0": {
+            "1.7.1": {
               "en": "Device status is displayed in admin interface with color and icon.\nInternal adapter backups can be disabled (for backups with BackItUp Adapter).\nOnly last 10 backups are kept (currently they accumulate and need to be deleted manually).\nNew function for missing icons in Admin Object tree.",
               "de": "Der Gerätestatus wird in der Admin-Oberfläche mit Farbe und Symbol angezeigt.\nInterne Adapter-Backups können deaktiviert werden (für Backups mit BackItUp Adapter).\nNur die letzten 10 Backups werden aufbewahrt (derzeit sammeln sie sich an und müssen manuell gelöscht werden).\nNeue Funktion für fehlende Symbole im Admin-Objektbaum.",
               "ru": "Состояние устройства отображается в административном интерфейсе цветом и значком.\nВнутренние резервные копии адаптера могут быть отключены (для резервных копий с помощью BackItUp Adapter).\nХранятся только последние 10 резервных копий (в настоящее время они накапливаются и должны быть удалены вручную).\nНовая функция для отсутствуют значки в дереве объектов администрирования.",
