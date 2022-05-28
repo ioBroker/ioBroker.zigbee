@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.6.18",
+        "version": "1.7.0",
         "news": {
+            "1.7.0": {
+              "en": "Device status is displayed in admin interface with color and icon.\\nInternal adapter backups can be disabled (for backups with BackItUp Adapter).\\nOnly last 10 backups are kept (currently they accumulate and need to be deleted manually).\\nNew function for missing icons in Admin Object tree.",
+              "de": "Der Gerätestatus wird in der Admin-Oberfläche mit Farbe und Symbol angezeigt.\\nInterne Adapter-Backups können deaktiviert werden (für Backups mit BackItUp Adapter).\\nNur die letzten 10 Backups werden aufbewahrt (derzeit sammeln sie sich an und müssen manuell gelöscht werden).\\nNeue Funktion für fehlende Symbole im Admin-Objektbaum.",
+              "ru": "Состояние устройства отображается в административном интерфейсе цветом и значком.\\nВнутренние резервные копии адаптера могут быть отключены (для резервных копий с помощью BackItUp Adapter).\\nХранятся только последние 10 резервных копий (в настоящее время они накапливаются и должны быть удалены вручную).\\nНовая функция для отсутствуют значки в дереве объектов администрирования.",
+              "pt": "O status do dispositivo é exibido na interface de administração com cor e ícone.\\nOs backups do adaptador interno podem ser desabilitados (para backups com o BackItUp Adapter).\\nSomente os últimos 10 backups são mantidos (atualmente eles se acumulam e precisam ser excluídos manualmente).\\nNova função para ícones ausentes na árvore de objetos de administração.",
+              "nl": "Apparaatstatus wordt weergegeven in de beheerdersinterface met kleur en pictogram.\\nInterne adapterback-ups kunnen worden uitgeschakeld (voor back-ups met BackItUp Adapter).\\nAlleen de laatste 10 back-ups worden bewaard (momenteel worden deze verzameld en moeten ze handmatig worden verwijderd).\\nNieuwe functie voor ontbrekende pictogrammen in Admin Object-structuur.",
+              "fr": "L'état de l'appareil est affiché dans l'interface d'administration avec une couleur et une icône.\\nLes sauvegardes de l'adaptateur interne peuvent être désactivées (pour les sauvegardes avec l'adaptateur BackItUp).\\nSeules les 10 dernières sauvegardes sont conservées (actuellement, elles s'accumulent et doivent être supprimées manuellement).\\nNouvelle fonction pour icônes manquantes dans l'arborescence des objets d'administration.",
+              "it": "Lo stato del dispositivo viene visualizzato nell'interfaccia di amministrazione con un colore e un'icona.\\nI backup interni dell'adattatore possono essere disabilitati (per i backup con l'adattatore BackItUp).\\nSono conservati solo gli ultimi 10 backup (attualmente si accumulano e devono essere eliminati manualmente).\\nNuova funzione per icone mancanti nell'albero degli oggetti amministratore.",
+              "es": "El estado del dispositivo se muestra en la interfaz de administración con color e icono.\\nLas copias de seguridad del adaptador interno se pueden desactivar (para copias de seguridad con el adaptador BackItUp).\\nSolo se conservan las últimas 10 copias de seguridad (actualmente se acumulan y deben eliminarse manualmente).\\nNueva función para Faltan iconos en el árbol de objetos de administración.",
+              "pl": "Stan urządzenia jest wyświetlany w interfejsie administratora za pomocą koloru i ikony.\\nWewnętrzne kopie adaptera można wyłączyć (dla kopii zapasowych z BackItUp Adapter).\\nZachowywanych jest tylko 10 ostatnich kopii (obecnie są one gromadzone i należy je usunąć ręcznie).\\nNowa funkcja dla brakujące ikony w drzewie Admin Object.",
+              "zh-cn": "设备状态以颜色和图标显示在管理界面中。\\n可以禁用内部适配器备份（对于使用 BackItUp 适配器的备份）。\\n仅保留最后 10 个备份（当前它们累积并需要手动删除）。\\n新功能管理对象树中缺少图标。"
+            },        
             "1.6.18": {
                 "de": "fix pairing mode",
                 "en": "fix pairing mode",
@@ -70,16 +82,16 @@
             "zh-cn": "Zigbee"
         },
         "desc": {
-            "en": "Zigbee adapter for Xiaomi (and other) devices via TI cc2531/cc2530",
-            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через TI cc2531/cc2530",
-            "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über TI cc2531 / cc2530",
-            "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via TI cc2531 / cc2530",
-            "nl": "Zigbee-adapter voor Xiaomi (en andere) apparaten via TI cc2531 / cc2530",
-            "fr": "Adaptateur Zigbee pour périphériques Xiaomi (et autres) via TI cc2531 / cc2530",
-            "it": "Adattatore Zigbee per dispositivi Xiaomi (e altri) tramite TI cc2531 / cc2530",
-            "es": "Adaptador Zigbee para dispositivos Xiaomi (y otros) a través de TI cc2531 / cc2530",
-            "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem TI cc2531 / cc2530",
-            "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过TI cc2531 / cc2530"
+            "en": "Zigbee adapter for Xiaomi (and other) devices via Chip cc26xx/cc25xx",
+            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через Chip cc26xx/cc25xx",
+            "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über Chip cc26xx/cc25xx",
+            "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via Chip cc26xx/cc25xx",
+            "nl": "Zigbee-adapter voor Xiaomi (en andere) apparaten via Chip cc26xx/cc25xx",
+            "fr": "Adaptateur Zigbee pour périphériques Xiaomi (et autres) Chip cc26xx/cc25xx",
+            "it": "Adattatore Zigbee per dispositivi Xiaomi (e altri) tramite Chip cc26xx/cc25xx",
+            "es": "Adaptador Zigbee para dispositivos Xiaomi (y otros) a través de Chip cc26xx/cc25xx",
+            "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem Chip cc26xx/cc25xx",
+            "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过Chip cc26xx/cc25xx"
         },
         "authors": [
             "Kirov Ilya<kirovilya@gmail.com>"
@@ -152,7 +164,60 @@
             {
                 "js-controller": ">=3.3.0"
             }
-        ]
+        ],
+        "messages": [
+            {
+              "condition": {
+                "operand": "and",
+                "rules": [
+                  "oldVersion<1.6.18",
+                  "newVersion>=1.7.0"
+                ]
+              },              
+              "title": {
+                "en": "Important notice!",
+                "de": "Wichtiger Hinweis!",
+                "ru": "Важное замечание!",
+                "pt": "Notícia importante!",
+                "nl": "Belangrijke mededeling!",
+                "fr": "Avis important!",
+                "it": "Avviso IMPORTANTE!",
+                "es": "Noticia importante!",
+                "pl": "Ważna uwaga!",
+                "zh-cn": "重要通知!"
+              },
+              "text": {
+                  "en": "This new version cleans the file backup (under \opt\iobroker\iobroker-data\zigbee_0\) of the adapter. Only the last 10 backups are kept.",
+                  "de": "Diese neue Version bereinigt das Datei backup (unter \opt\iobroker\iobroker-data\zigbee_0\) des Adapter. Es werden nur die letzten 10 Sicherungen behalten.",
+                  "ru": "Эта новая версия очищает резервную копию файла (в папке \opt\iobroker\iobroker-data\zigbee_0\) адаптера. Сохраняются только последние 10 резервных копий.",
+                  "pt": "Esta nova versão limpa o backup do arquivo (em \opt\iobroker\iobroker-data\zigbee_0\) do adaptador. Apenas os últimos 10 backups são mantidos.",
+                  "nl": "Deze nieuwe versie maakt de bestandsback-up schoon (onder \opt\iobroker\iobroker-data\zigbee_0\) van de adapter. Alleen de laatste 10 back-ups worden bewaard.",
+                  "fr": "Cette nouvelle version nettoie le fichier de sauvegarde (sous \opt\iobroker\iobroker-data\zigbee_0\) de l'adaptateur. Seules les 10 dernières sauvegardes sont conservées.",
+                  "it": "Questa nuova versione pulisce il backup del file (in \opt\iobroker\iobroker-data\zigbee_0\) dell'adattatore. Vengono mantenuti solo gli ultimi 10 backup.",
+                  "es": "Esta nueva versión limpia la copia de seguridad del archivo (en \opt\iobroker\iobroker-data\zigbee_0\) del adaptador. Solo se conservan las últimas 10 copias de seguridad.",
+                  "pl": "Ta nowa wersja czyści kopię pliku (w \opt\iobroker\iobroker-data\zigbee_0\) adaptera. Przechowywanych jest tylko 10 ostatnich kopii.",
+                  "zh-cn": "这个新版本清理了适配器的文件备份（在 \opt\iobroker\iobroker-data\zigbee_0\ 下）。仅保留最后 10 个备份。"
+              },
+              "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
+              "level": "warn",
+              "linkText": {
+                  "en": "Readme",
+                  "de": "Liesmich",
+                  "ru": "Прочти меня",
+                  "pt": "Leia-me",
+                  "nl": "Leesmij",
+                  "fr": "Lisez-moi",
+                  "it": "Leggimi",
+                  "es": "Léame",
+                  "pl": "Readme",
+                  "zh-cn": "自述文件"
+              },
+              "buttons": [
+                "agree",
+                "cancel"
+              ]
+            }
+        ]                                     
     },
     "native": {
         "port": "",

@@ -131,8 +131,7 @@ You can thank the authors by these links:
 
 
 ## Changelog
-
-### 1.6.x (2022-05-18)
+### 1.7.0 (2022-05-28)
 * (arteck) available status in admin is colored
 * (arteck) disable Backups checkbox in settings
 * (arteck) we keep last 10 backup files 
@@ -142,7 +141,7 @@ You can thank the authors by these links:
 * (arteck) fix pairing modus
 
 ### 1.6.17 (2022-04)
- rollback 
+ rollback
 
 ### 1.6.16 (2022-02-16)
 * (arteck) admin dep fix
@@ -150,7 +149,6 @@ You can thank the authors by these links:
 
 ### 1.6.15 (2022-02-08)
 * (arteck) Battery status % calculation was changed for xiaomi devices
-
 
 ### 1.6.14 (2022-01)
 * (asgothian) OTA limitation
