@@ -96,17 +96,7 @@
         "authors": [
             "Kirov Ilya<kirovilya@gmail.com>"
         ],
-        "license": "MIT",
-        "docs": {
-            "en": "docs/en/readme.md",
-            "ru": "docs/ru/readme.md",
-            "de": "docs/de/readme.md",
-            "es": "docs/es/readme.md",
-            "it": "docs/it/readme.md",
-            "fr": "docs/fr/readme.md",
-            "nl": "docs/nl/readme.md",
-            "pt": "docs/pt/readme.md"
-        },
+        "license": "MIT",       
         "platform": "Javascript/Node.js",
         "mode": "daemon",
         "icon": "zigbee.png",
