@@ -1,9 +1,9 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.7.3",
+        "version": "1.7.4",
         "news": {
-              "1.7.3": {
+              "1.7.4": {
                   "en": "missing icons with multiple description",
                   "de": "fehlende Symbole mit mehrfacher Beschreibung",
                   "ru": "отсутствующие значки с несколькими описаниями",
