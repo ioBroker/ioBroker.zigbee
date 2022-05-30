@@ -131,6 +131,9 @@ You can thank the authors by these links:
 
 
 ## Changelog
+### 1.7.3 (2022-05-30)
+ * (arteck) missing icons with multiple description
+
 ### 1.7.2 (2022-05-28)
 * (arteck) download missing icons corr
 

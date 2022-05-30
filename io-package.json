@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.7.2",
+        "version": "1.7.3",
         "news": {
+              "1.7.3": {
+                  "en": "missing icons with multiple description",
+                  "de": "fehlende Symbole mit mehrfacher Beschreibung",
+                  "ru": "отсутствующие значки с несколькими описаниями",
+                  "pt": "ícones ausentes com descrição múltipla",
+                  "nl": "ontbrekende pictogrammen met meerdere beschrijvingen",
+                  "fr": "icônes manquantes avec plusieurs descriptions",
+                  "it": "icone mancanti con descrizione multipla",
+                  "es": "faltan iconos con descripción múltiple",
+                  "pl": "brakujące ikony z wieloma opisami",
+                  "zh-cn": "缺少具有多个描述的图标"
+            },        
             "1.7.2": {
                "en": "corr download missing icon",
                "de": "korrektur download fehlendes Icon",
