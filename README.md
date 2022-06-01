@@ -131,8 +131,11 @@ You can thank the authors by these links:
 
 
 ## Changelog
+### 1.7.5 (2022-06-01)
+* (arteck) error message for undefined devices or icons
+
 ### 1.7.4 (2022-05-30) 
- * (arteck) missing icons with multiple description
+* (arteck) missing icons with multiple description
 
 ### 1.7.2 (2022-05-28)
 * (arteck) download missing icons corr
