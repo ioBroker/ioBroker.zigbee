@@ -1271,13 +1271,14 @@ function showNetworkMap(devices, map){
         // may be moved to edge.chosen.label if fixed
         function doSelection(select, edges, data) {
             edges.forEach((edgeId => {
-                const options = data.edges._data[edgeId];
+                const id = (typeof edgeId === 'string') ? edgeId : edgeId.id;
+                const options = data.edges._data.get(id);
                 if (select) {
                     options.font.size = 15;
                 } else {
                     options.font.size = 0;
                 }
-                network.clustering.updateEdge(edgeId, options);
+                network.clustering.updateEdge(id, options);
             }));
         }
 
