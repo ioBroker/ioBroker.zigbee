@@ -101,5 +101,8 @@
     "№": "№",
     "Excludes": "to exclude",
     "ExcludeTextTranslation": "Here you can add some devices that should be excluded from our description. They only use \"exposes\" from zigbee-herdsman-converter. After adding, please restart the adapter.",
-    "SettingsExclude": "Force start adapter with inconsistent configuration (not recommended). Please update the adapter to compatible firmware and recreate your network as soon as possible."
+    "SettingsExclude": "Force start adapter with inconsistent configuration (not recommended). Please update the adapter to compatible firmware and recreate your network as soon as possible.",
+    "Others": "other settings.",
+    "disable internal Backup": "disable internal Backup",
+    "Disable active availability check": "Disable active availability check"
 }
