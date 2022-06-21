@@ -16,7 +16,7 @@
     "Command": "Komenda",
     "Command Type": "Typ polecenia",
     "Configure reporting": "Skonfiguruj raportowanie",
-    "Countdown": "Czas od 0 do 255 sek",
+    "Countdown": "Countdown między 0 a 255 sekundem podczas parowania nowych komponentów Zigbee z koordynatorem",
     "Delete confirmation": "Usuń potwierdzenie",
     "Developer": "Developer",
     "Device": "Urządzenie",
@@ -101,5 +101,8 @@
     "№": "Nr",
     "Excludes": "wyklucz",
     "ExcludeTextTranslation": "Możesz dodać tutaj kilka urządzeń, które powinny zostać wyłączone z naszego opisu. Używasz tylko ekspozycji z zigbee-herdsman-converter. Po dodaniu zrestartuj adapter",
-    "SettingsExclude": "Wystaruj Adapter bez zgodnej konfiguracji (uwaga). Zaktualizuj adapter i jak najszybciej odtwórz sieć."
+    "SettingsExclude": "Wystaruj Adapter bez zgodnej konfiguracji (uwaga). Zaktualizuj adapter i jak najszybciej odtwórz sieć.",
+    "Others": "inne ustawienia",
+    "disable internal Backup": "wyłącz wewnętrzną kopię",
+    "Disable active availability check": "Wyłącz aktywne sprawdzanie dostępności"
 }

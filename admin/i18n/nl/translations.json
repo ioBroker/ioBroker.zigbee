@@ -16,7 +16,7 @@
     "Command": "Commando",
     "Command Type": "Commando type",
     "Configure reporting": "Configureer rapportage",
-    "Countdown": "Aftellen tussen 0 en 255 sec",
+    "Countdown": "Aftellen tussen 0 en 255 sec tijdens het pairen van nieuwe Zigbee componenten met de coördinator.",
     "Delete confirmation": "Bevestig verwijderen",
     "Developer": "Ontwikkelaar",
     "Device": "Apparaat",
@@ -98,5 +98,11 @@
     "transmitPower": "CC1352P and CC26X2R1 zendvermogen",
     "zigbee-shepherd": "U kunt de onbewerkte gegevens bewerken om hier naartoe te sturen. Gebruik dit niet als u niet zeker weet wat u doet! Gebruik het JSON-formaat (attribuutnamen tussen dubbele aanhalingstekens!). Er kunnen ook aanvullende eigenschappen worden toegevoegd. Zie voorbeelden hierboven. (Formaat zoals gebruikt door zigbee-shepherd)",
     "№": "№",
-    "This page is needed only for advanced users that like to extend adapter functionalities!": "Deze pagina is alleen bedoeld voor gevorderden welke de adapter functionaliteit uit willen breiden!"
+    "This page is needed only for advanced users that like to extend adapter functionalities!": "Deze pagina is alleen bedoeld voor gevorderden welke de adapter functionaliteit uit willen breiden!",
+    "Excludes": "uitsluiten",
+    "Others": "andere instellingen",
+    "disable internal Backup": "interne back-up uitschakelen",
+    "Disable active availability check": "Actieve beschikbaarheidscontrole uitschakelen",
+    "SettingsExclude": "Forceer de adapter met een inconsistente configuratie (niet aanbevolen). Update de adapter naar compatibele firmware en maak uw netwerk zo snel mogelijk opnieuw aan.",
+    "ExcludeTextTranslation": "Hier kunt u enkele apparaten toevoegen die moeten worden uitgesloten van onze beschrijving. Ze gebruiken alleen \"exposes\" van zigbee-herdsman-converter. Na het toevoegen moet u de adapter opnieuw opstarten."
 }
