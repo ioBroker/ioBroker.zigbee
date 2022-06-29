@@ -50,12 +50,14 @@ While Conbee/RaspBee Support is no longer considered experimental in the zigbee-
 - device map metrics may be incorrect
 - NVRam Backup is not supported.
 
-### Silicon Labs EZPS v8 / Zigate USB-TTL
+### Silicon Labs SoC
 
-Support for these chipsets is experimental. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) with regards to the state of the integration into the zigbee-herdsman and zigbee-herdsman-converters libraries.
+Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based adapters is experimental. The initial support for EZSP v8 is still not yet considered stable and the project is in need of more developers volenteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/319) with regards to the state of Silabs EmberZNet Serial Protocol (EZSP) adapter implementation integration into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
+### ZiGate SoC
 
+Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable and the project is in need of more developers volenteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regards to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
 ## Work with adapter
