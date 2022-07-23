@@ -134,7 +134,7 @@ You can thank the authors by these links:
 
 ## Changelog
 
-## **WORK IN PROGRESS**
+### **WORK IN PROGRESS**
 * (kirovilya) fix selecting nodes in admin
 * (arteck) ikea fix  
 
