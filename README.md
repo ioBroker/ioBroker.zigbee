@@ -133,6 +133,11 @@ You can thank the authors by these links:
 
 
 ## Changelog
+
+## **WORK IN PROGRESS**
+* (kirovilya) fix selecting nodes in admin
+* (arteck) ikea fix  
+
 ### 1.7.5 (2022-06-01)
 * (arteck) error message for undefined devices or icons
 

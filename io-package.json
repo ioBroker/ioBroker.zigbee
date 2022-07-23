@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.7.5",
+        "version": "1.7.6",
         "news": {
+           "1.7.6": {
+                  "en": "ikea fix ",
+                  "de": "ikea fix "        
+            },        
             "1.7.5": {
                   "en": "error message for undefined devices or icons ",
                   "de": "Fehlermeldung für undefinierte Geräte oder Symbole",
