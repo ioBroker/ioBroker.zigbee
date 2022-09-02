@@ -23,7 +23,7 @@
     "Device details": "Détails du dispositif",
     "Device information": "Informations sur le dispositif",
     "Device map info": "<b>Cliquez sur un dispositif pour voir plus de détails.</b> Chaque dispositif ne peut avoir qu'un seul parent. Les appareils peuvent changer les parents par eux-mêmes. Il n'y a aucun moyen de forcer un appareil à un parent spécifique. (Si vous voyez plus d'un lien parent, il peut s'agir de données obsolètes.) <br> Vous pouvez également déplacer des appareils pour une meilleure visibilité. <br> Les liens faibles et hors ligne sont affichés en rouge. Si une étiquette de dispositif est rouge, aucun lien n'a été trouvé. Pas de problème si un appareil n'a que des liens «Parents précédents», il se peut qu'il n'ait tout simplement pas envoyé de nouvelles données depuis un certain temps.",
-    "Devices": "Dispositifs",
+    "Devices": "Devices",
     "Disable LED for cc2531": "Désactiver DEL pour cc2531",
     "Disable Queue": "Désactiver la queue",
     "Do you really want to delete device": "Voulez-vous vraiment supprimer le dispositif ?",
