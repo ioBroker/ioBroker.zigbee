@@ -2769,11 +2769,18 @@ function getDashCard(dev, groupImage) {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
         } else if (stateDef.states && stateDef.write) {
-            const sts = stateDef.states.split(';');
-            const options = sts.map((item) => {
-                const v = item.split(':');
-                return `<option value="${v[0]}" ${(val == v[0]) ? "selected" : ""}>${v[1]}</option>`;
-            });
+            let options;
+            if(typeof stateDef.states == "string") {
+                const sts = stateDef.states.split(';');
+                options = sts.map((item) => {
+                    const v = item.split(':');
+                    return `<option value="${v[0]}" ${(val == v[0]) ? "selected" : ""}>${v[1]}</option>`;
+                });
+            } else {
+                options = stateDef.states.map((item) => {
+                    return `<option value="${item.key}" ${(val == item.key) ? "selected" : ""}>${item.val}</option>`;
+                });
+            }
             val = `<select class="browser-default enum" style="height: 16px; padding: 0px; width: auto; display: inline-block">${options.join('')}</select>`;
         } else {
             val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
