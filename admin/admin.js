@@ -2779,7 +2779,7 @@ function getDashCard(dev, groupImage) {
             } else {
                 options = [];
                 for(const [key, value] of Object.entries(stateDef.states)) {
-                    options.push(`<option value="${key}" ${(val == key) ? "selected" : ""}>${value}</option>`;)
+                    options.push(`<option value="${key}" ${(val == key) ? "selected" : ""}>${value}</option>`);
                 }
             }
             val = `<select class="browser-default enum" style="height: 16px; padding: 0px; width: auto; display: inline-block">${options.join('')}</select>`;
