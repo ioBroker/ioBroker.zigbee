@@ -133,7 +133,7 @@ You can thank the authors by these links:
 
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.7.7 (2022-11-24)
 * dep update
 
 ### 1.7.6 (2022-07-23)
