@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "zigbee",
-        "version": "1.7.6",
+        "version": "1.7.7",
         "news": {
+           "1.7.7": {
+                  "en": "Update dependencies",
+                  "de": "Update dependencies"        
+            },        
            "1.7.6": {
                   "en": "ikea fix ",
                   "de": "ikea fix "        

@@ -128,11 +128,14 @@ You can thank the authors by these links:
     npm run release patch -- --all 0.9.8 -> 0.9.9
     npm run release prerelease beta -- --all v0.2.1 -> v0.2.2-beta.0
     Placeholder for the next version (at the beginning of the line):
-     ## **WORK IN PROGRESS**
+    ### **WORK IN PROGRESS**
 -->
 
 
 ## Changelog
+### **WORK IN PROGRESS**
+* dep update
+
 ### 1.7.6 (2022-07-23)
 * (kirovilya) fix selecting nodes in admin
 * (arteck) ikea fix
