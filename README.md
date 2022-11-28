@@ -113,7 +113,7 @@ You can thank the authors by these links:
 -->
 
 ## Changelog
-### 1.8.0 (2022-11-28)
+### **WORK IN PROGRESS**
 * (bluefox) Packages updated
 * (bluefox) Added names of serial ports in configuration dialog
 
