@@ -34,7 +34,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm i
 
       - name: Lint source code
         run: npm run lint
@@ -50,7 +50,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [14.x, 16.x, 18.x]
         os: [ubuntu-latest, macos-latest]
 
     steps:
@@ -63,7 +63,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm i
 
       - name: Run unit tests
         run: npm run test:unit

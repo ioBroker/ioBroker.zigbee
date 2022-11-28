@@ -10,17 +10,12 @@
 [![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 
 ## ioBroker adapter for Zigbee devices via TI cc2531/cc2530/cc26x2r/cc2538 and deCONZ ConBee/RaspBee.
-
-With the Zigbee-coordinator based on Texas Instruments SoC, deCONZ ConBee/RaspBee modules, Silicon Labs EZSP v8 or ZIGate USB-TTL it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
+With the Zigbee-coordinator based on `Texas Instruments SoC, deCONZ ConBee/RaspBee` modules, `Silicon Labs EZSP v8` or `ZIGate USB-TTL` it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
-
-
 One coordinator device is required for each zigbee Adapter instance. The device must be flashed with the respective coordinator firmware. A list of supported coordinators, the necessary equipment for the firmware and the device preparation process for different coordinator devices are described [here (in English)](https://www.zigbee2mqtt.io/guide/adapters/) or [here (in Russian)](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
 
-
 ### Texas Instruments SoC
-
 Recommended devices are based on either the CC2652 or CC1352 chip. Devices based on cc253x chips are still supported but are no longer recommended.
 Only CC26xx/cc1352/cc2538 Devices support extraction of the NVRam backup which should allow to swap coordinator hardware without having to reconnect all zigbee devices to the network.
 Current firmware files for these devices can be found [on GitHub](https://github.com/Koenkk/Z-Stack-firmware)
@@ -32,9 +27,7 @@ Current firmware files for these devices can be found [on GitHub](https://github
 <span><img src="docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
 <span><img src="docs/de/img/cc26x2r.PNG" width="100"></span>
 
-
 ### Dresden Elektronik SoC
-
 <span><img src="docs/en/img/deconz.png"></span>
 
 recommended:
@@ -45,30 +38,24 @@ no longer recommended:
 - ConBee I
 - RaspBee
 
-While Conbee/RaspBee Support is no longer considered experimental in the zigbee-herdsman and zigbee-herdsman-converters libraries used by the zigbee Adapter, use of these devices with the adapter may limit functionality. Known issues are:
+While `Conbee/RaspBee` Support is no longer considered experimental in the zigbee-herdsman and zigbee-herdsman-converters libraries used by the zigbee Adapter, use of these devices with the adapter may limit functionality. Known issues are:
 - link quality display may be incorrect
 - device map metrics may be incorrect
 - NVRam Backup is not supported.
 
 ### Silicon Labs SoC
-
-Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based adapters is experimental. The initial support for EZSP v8 is still not yet considered stable and the project is in need of more developers volenteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/319) with regards to the state of Silabs EmberZNet Serial Protocol (EZSP) adapter implementation integration into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
-
+Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based adapters is experimental. The initial support for EZSP v8 is still not yet considered stable and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/319) with regard to the state of Silabs EmberZNet Serial Protocol (EZSP) adapter implementation integration into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 ### ZiGate SoC
-
-Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable and the project is in need of more developers volenteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regards to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
-
+Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regard to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 ## Work with adapter
-
 ![](docs/tutorial/zigbee.png)
 
 To start the driver, you must specify the name of the port on which the Zigbee-module (stick) is connected. Usually this is the port `/dev/ttyACM0` or `/dev/ttyUSB0` for the UART-connection. Or you can find with `ls -l /dev/serial/by-id` the device direct.
 
 open the settings and change port
 ![](docs/tutorial/settings.png)
-
 
 For Windows this will be the COM port number.
 
@@ -92,18 +79,14 @@ It is a Zigbee feature, intended for example to switch bulbs synchronized. Assig
 
 Note: Not all devices support groups (not supported by end devices like sensors).
 
-
 ### Binding
-
 https://www.zigbee2mqtt.io/information/binding
 
 ### Developer Tab
-
-This is a tool for advanced users to test currently unsupported devices or enhance this adapters functionality. More instructions can be found on tab.
+This is a tool for advanced users to test currently unsupported devices or enhance this adapter's functionality. More instructions can be found on tab.
 ![](docs/tutorial/tab-dev-1.png)
 
 ## Additional info
-
 There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality on the same technologies, where you can work with the same devices using the MQTT protocol. Therefore, if any improvements or support for new zigbee-devices occur in the Zigbee2MQTT project, we can transfer and add the same functionality to this adapter. If you notice this, then write the issue - we'll postpone it.
 
 There are knowledge bases that can be useful for working with Zigbee-devices and equipment:
@@ -111,11 +94,9 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 * in Russian https://myzigbee.ru/
 
 ## Supported devices
-
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
 ## Donate
-
 You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
 * to Arthur Rupp https://paypal.me/ArthurRupp
@@ -130,7 +111,6 @@ You can thank the authors by these links:
     Placeholder for the next version (at the beginning of the line):
     ### **WORK IN PROGRESS**
 -->
-
 
 ## Changelog
 ### 1.7.7 (2022-11-24)
@@ -179,8 +159,8 @@ You can thank the authors by these links:
   - when a pingable device is marked active (from being inactive) it will be pinged again.
   - inactive devices are excluded from OTA updates.
 * (asgothian) Group rework part 2:
-  - state device.groups will now be deleted with state Cleanup
-  - state info.groups is now obsolete and will be deleted at adapter start (after transferring data to
+  - state `device.groups` will now be deleted with state Cleanup
+  - state `info.groups` is now obsolete and will be deleted at adapter start (after transferring data to
     the new storage)
 * (asgothian) Device name persistance.
   - Changes to device names made within the zigbee adapter are stored in the file dev_names.json. This file
@@ -194,7 +174,7 @@ You can thank the authors by these links:
 
 ### 1.6.12 (2022-01)
 * (asgothian) Groups were newly revised (read [here](https://github.com/ioBroker/ioBroker.zigbee/pull/1327) )
-   -  object device.groups is obsolet..the old one is no longer up to date
+   -  object `device.groups` is obsolet. The old one is no longer up to date
 
 ### 1.6.9 (2021-12)
 * (simatec) fix admin Dark-Mode
