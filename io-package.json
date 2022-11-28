@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.0",
+    "version": "1.8.1",
     "news": {
+      "1.8.1": {
+        "en": "Packages updated\nAdded names of serial ports in configuration dialog",
+        "de": "Pakete aktualisiert\nNamen der seriellen Ports im Konfigurationsdialog hinzugefügt",
+        "ru": "Пакеты обновлены\nДобавлены имена серийных портов в диалоге конфигурации",
+        "pt": "Pacotes atualizados\nNomes adicionados de portas seriais na caixa de diálogo de configuração",
+        "nl": "Verpakking geüpload\nNamen van serie havens in configuration dialog",
+        "fr": "Packages updated\nAjout de noms de ports série dans le dialogue de configuration",
+        "it": "Pacchetti aggiornati\nAggiunto i nomi delle porte seriali nella finestra di dialogo di configurazione",
+        "es": "Paquetes actualizados\nNombres añadidos de los puertos serie en el diálogo de configuración",
+        "pl": "Pakiet\nDodane nazwy portów seryjnych w dialogach konfiguracyjnych",
+        "uk": "Пакети оновлені\nДодано імена серійних портів у діалоговому вікні конфігурації",
+        "zh-cn": "更新的包装\n加 口号港口"
+      },
       "1.7.7": {
         "en": "Update dependencies",
         "de": "Update dependencies"
