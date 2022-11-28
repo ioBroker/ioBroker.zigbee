@@ -597,21 +597,22 @@ function showDevices() {
         deleteGroupConfirmation(id, getDevName(dev_block));
     });
     $('.card-reveal-buttons button[name=\'edit\']').click(function () {
-        const dev_block = $(this).parents('div.device'),
-            id = getDevId(dev_block),
-            name = getDevName(dev_block);
+        const dev_block = $(this).parents('div.device');
+        const id = getDevId(dev_block);
+        const name = getDevName(dev_block);
         editName(id, name);
     });
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
-        const dev_block = $(this).parents('div.device'),
-            id = dev_block.attr('id').replace(namespace + '.group_', ''),
-            name = getDevName(dev_block);
+        const dev_block = $(this).parents('div.device');
+        const id = dev_block.attr('id').replace(namespace + '.group_', '');
+        const name = getDevName(dev_block);
         editGroupName(id, name, false);
     });
     $('button.btn-floating[name=\'join\']').click(function () {
         const dev_block = $(this).parents('div.device');
-        if (!$('#pairing').hasClass('pulse'))
+        if (!$('#pairing').hasClass('pulse')) {
             joinProcess(getDevId(dev_block));
+        }
         showPairingProcess();
     });
     $('.card-reveal-buttons button[name=\'info\']').click(function () {
@@ -685,10 +686,8 @@ function checkFwUpdate() {
 function letsPairing() {
     messages = [];
     sendTo(namespace, 'letsPairing', {}, function (msg) {
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            }
+        if (msg && msg.error) {
+            showMessage(msg.error, _('Error'));
         }
     });
 }
@@ -696,10 +695,8 @@ function letsPairing() {
 function touchlinkReset() {
     messages = [];
     sendTo(namespace, 'touchlinkReset', {}, function (msg) {
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            }
+        if (msg && msg.error) {
+            showMessage(msg.error, _('Error'));
         }
     });
 }
@@ -707,10 +704,8 @@ function touchlinkReset() {
 function joinProcess(devId) {
     messages = [];
     sendTo(namespace, 'letsPairing', {id: devId}, function (msg) {
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            }
+        if (msg && msg.error) {
+            showMessage(msg.error, _('Error'));
         }
     });
 }
@@ -726,7 +721,6 @@ function getCoordinatorInfo() {
         }
     });
 }
-
 
 function getDevices() {
     getCoordinatorInfo();
@@ -773,17 +767,25 @@ function getMap() {
 // the function loadSettings has to exist ...
 // eslint-disable-next-line no-unused-vars
 function load(settings, onChange) {
-    if (settings.panID === undefined) settings.panID = 6754;
-    if (settings.extPanID === undefined) settings.extPanID = 'DDDDDDDDDDDDDDDD';
+    settings.panID = settings.panID || 6754;
+    settings.extPanID = settings.extPanID || 'DDDDDDDDDDDDDDDD';
     // fix for previous wrong value
-    if (settings.extPanID === 'DDDDDDDDDDDDDDD') settings.extPanID = 'DDDDDDDDDDDDDDDD';
-    if (settings.precfgkey === undefined) settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
-    if (settings.channel === undefined) settings.channel = 11;
-    if (settings.disablePing === undefined) settings.disablePing = false;
+    if (settings.extPanID === 'DDDDDDDDDDDDDDD') {
+        settings.extPanID = 'DDDDDDDDDDDDDDDD';
+    }
+    settings.precfgkey = settings.precfgkey || '01030507090B0D0F00020406080A0C0D';
+    if (settings.channel === undefined){
+        settings.channel = 11;
+    }
+    if (settings.disablePing === undefined) {
+        settings.disablePing = false;
+    }
 
     // example: select elements with id=key and class=value and insert value
     for (const key in settings) {
-        if (savedSettings.indexOf(key) === -1) continue;
+        if (savedSettings.indexOf(key) === -1) {
+            continue;
+        }
         // example: select elements with id=key and class=value and insert value
         const value = $('#' + key + '.value');
         if (value.attr('type') === 'checkbox') {
@@ -820,8 +822,9 @@ function load(settings, onChange) {
         showPairingProcess();
     });
     $('#pairing').click(function () {
-        if (!$('#pairing').hasClass('pulse'))
+        if (!$('#pairing').hasClass('pulse')) {
             letsPairing();
+        }
         showPairingProcess();
     });
 

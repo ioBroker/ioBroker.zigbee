@@ -64,9 +64,9 @@ class Zigbee extends utils.Adapter {
             name: 'zigbee',
             systemConfig: true,
         }));
-        this.on('ready', this.onReady.bind(this));
-        this.on('unload', this.onUnload.bind(this));
-        this.on('message', this.onMessage.bind(this));
+        this.on('ready', () => this.onReady());
+        this.on('unload', callback => this.onUnload(callback));
+        this.on('message', obj => this.onMessage(obj));
 
         this.query_device_block = [];
 
@@ -313,12 +313,12 @@ class Zigbee extends utils.Adapter {
     }
 
     async onZigbeeAdapterReady() {
-        if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+        this.reconnectTimer && clearTimeout(this.reconnectTimer);
         this.log.info(`Zigbee started`);
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
         if (!extPanIdFix) {
-            const configExtPanId = this.config.extPanID ? '0x' + this.config.extPanID.toLowerCase() : '0xdddddddddddddddd';
+            const configExtPanId = this.config.extPanID ? `0x${this.config.extPanID.toLowerCase()}` : '0xdddddddddddddddd';
             let networkExtPanId = (await this.zbController.herdsman.getNetworkParameters()).extendedPanID;
             let needChange = false;
             this.log.debug(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
@@ -340,7 +340,7 @@ class Zigbee extends utils.Adapter {
                                 2, // ZnpCommandStatus.INVALID_PARAM
                             ]
                         );
-                        const nwExtPanId = '0x' + result.payload.value.reverse().toString('hex');
+                        const nwExtPanId = `0x${result.payload.value.reverse().toString('hex')}`;
                         this.log.debug(`Config value ${configExtPanId} : nw value ${nwExtPanId}`);
                         if (configExtPanId !== nwExtPanId) {
                             networkExtPanId = nwExtPanId;
@@ -417,7 +417,7 @@ class Zigbee extends utils.Adapter {
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
         const device = entity.device;
         const mappedModel = entity.mapped;
-        const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
+        const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
         const cluster = message.cluster;
         const devId = device.ieeeAddr.substr(2);
         const meta = {device};
@@ -735,9 +735,8 @@ class Zigbee extends utils.Adapter {
                     const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
                     this.log.debug(`new device ${dev.ieeeAddr} ${dev.networkAddress} ${model} `);
                     this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${model}`, true);
-                    this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () => {
-                        this.stController.syncDevStates(dev, model);
-                    });
+                    this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () =>
+                        this.stController.syncDevStates(dev, model));
                 }
                 //                else this.log.warn(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
             });
