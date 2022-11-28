@@ -1389,12 +1389,14 @@ function getComPorts(onChange) {
         //     }, 1000);
         //     return;
         // }
-        if (!list) return;
+        if (!list) {
+            return;
+        }
         const element = $('#ports');
         for (let j = 0; j < list.length; j++) {
-            element.append('<li><a href="#!">' + list[j].comName +'</a></li>');
+            element.append('<li><a href="#!">' + list[j].comName + (list[j].name ? (' [' + list[j].name + ']') : '') + '</a></li>');
         }
-        $('#ports a').click(function() {
+        $('#ports a').click(function () {
             $('#port').val($(this).text());
             Materialize.updateTextFields();
             onChange();
