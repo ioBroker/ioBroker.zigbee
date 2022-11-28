@@ -17,6 +17,9 @@
   "engines": {
     "node": ">=10"
   },
+  "optionalDependencies": {
+    "serialport": "^10.5.0"
+  },
   "dependencies": {
     "zigbee-herdsman": "0.14.76",
     "zigbee-herdsman-converters": "14.0.676",
@@ -61,12 +64,12 @@
   "files": [
     "admin/",
     "lib/",
+    "docs/",
     "support/",
     "io-package.json",
     "LICENSE",
     "main.js"
   ],
-  "optionalDependencies": {},
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
@@ -80,7 +83,6 @@
     "test:integration": "mocha test/integration --exit",
     "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235",
     "test:js": "mocha --opts test/mocha.custom.opts",
-    "lint": "eslint --ext .ts \"packages/*/src/**/*.ts\"",
     "release": "release-script",
     "release-patch": "release-script patch --yes --no-update-lockfile",
     "release-minor": "release-script minor --yes --no-update-lockfile",

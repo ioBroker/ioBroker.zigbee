@@ -38,7 +38,7 @@ function getDeviceByID(ID) {
     return devices.find((devInfo) => {
         try {
             return devInfo._id == ID;
-        }  catch (e) {
+        } catch (e) {
             //console.log("No dev with ieee " + ieeeAddr);
         }
     });
@@ -48,17 +48,18 @@ function getDevice(ieeeAddr) {
     return devices.find((devInfo) => {
         try {
             return devInfo.info.device._ieeeAddr == ieeeAddr;
-        }  catch (e) {
+        } catch (e) {
             //console.log("No dev with ieee " + ieeeAddr);
         }
     });
 }
+
 // eslint-disable-next-line no-unused-vars
 function getDeviceByNetwork(nwk) {
     return devices.find((devInfo) => {
         try {
             return devInfo.info.device._networkAddress == nwk;
-        }  catch (e) {
+        } catch (e) {
             //console.log("No dev with nwkAddr " + nwk);
         }
     });
@@ -125,12 +126,12 @@ function getCoordinatorCard(dev) {
 }
 
 function getGroupCard(dev) {
-    const id = (dev._id ? dev._id: ''),
+    const id = (dev._id ? dev._id : ''),
         title = dev.common.name,
         lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
         rooms = [],
-        numid = parseInt(id.replace(namespace+'.group_', '')),
-        lang = systemLang  || 'en';
+        numid = parseInt(id.replace(namespace + '.group_', '')),
+        lang = systemLang || 'en';
     for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
             rooms.push(dev.rooms[r][lang]);
@@ -143,19 +144,20 @@ function getGroupCard(dev) {
     let memberCount = 0;
     let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
                 <ul>`;
-                info = info.concat(`<li><span class="labelinfo">Group ${numid}</span></li>`);
+    info = info.concat(`<li><span class="labelinfo">Group ${numid}</span></li>`);
     if (dev.memberinfo === undefined) {
         info = info.concat(`<li><span class="labelinfo">No devices in group</span></li>`);
     } else {
-        for (let m=0;m < dev.memberinfo.length; m++) {
+        for (let m = 0; m < dev.memberinfo.length; m++) {
             info = info.concat(`<li><span align:"left">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid}</span><span align:"right"> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
         }
-        memberCount = (dev.memberinfo.length<8?dev.memberinfo.length:7);
-    };
+        memberCount = (dev.memberinfo.length < 8 ? dev.memberinfo.length : 7);
+    }
+    ;
     info = info.concat(`                    </ul>
                 </div>`);
     const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
-    const dashCard = getDashCard(dev,`img/group_${memberCount}.png` );
+    const dashCard = getDashCard(dev, `img/group_${memberCount}.png`);
     const card = `<div id="${id}" class="device group">
                   <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
@@ -202,7 +204,7 @@ function getCard(dev) {
         img_src = dev.icon || dev.common.icon,
         rooms = [],
         isActive = (dev.common.deactivated ? false : true),
-        lang = systemLang  || 'en';
+        lang = systemLang || 'en';
     for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
             rooms.push(dev.rooms[r][lang]);
@@ -216,25 +218,25 @@ function getCard(dev) {
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
-        battery_cls = (isActive ? getBatteryCls(dev.battery):''),
+        battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
         lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
-        status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (isActive ? `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`:''),
+        status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (isActive ? `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>` : ''),
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-                        <li><span class="labelinfo">ieee:</span><span>0x${id.replace(namespace+'.', '')}</span></li>
-                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString()+' (0x'+nwk.toString(16)+')' : ''}</span></li>
+                        <li><span class="labelinfo">ieee:</span><span>0x${id.replace(namespace + '.', '')}</span></li>
+                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
                         <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
                         <li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
         permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive?'Deactivate':'Activate')}"><i class="material-icons icon-${(isActive?'red':'green')}">power_settings_new</i></button>`,
+        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons icon-${(isActive ? 'red' : 'green')}">power_settings_new</i></button>`,
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
-                  <div class="card hoverable flipable  ${isActive?'':'bg_red'}">
+                  <div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
                     <div class="front face">${dashCard}</div>
                     <div class="back face">
                         <div class="card-content zcard">
@@ -274,6 +276,7 @@ function getCard(dev) {
                 </div>`;
     return card;
 }
+
 /*
 function openReval(e, id, name){
     const $card = $(e.target).closest('.card');
@@ -301,7 +304,7 @@ function openReval(e, id, name){
     });
 }
 */
-function closeReval(e, id){
+function closeReval(e, id) {
     const $cardReveal = $(e.target).closest('.card-reveal');
     const $revealName = $cardReveal[0].getAttribute('name');
     if ($revealName == 'edit' && id) {
@@ -320,21 +323,21 @@ function closeReval(e, id){
         translateY: 0,
         duration: 225,
         easing: 'easeInOutQuad',
-        complete: function(anim) {
+        complete: function (anim) {
             const el = anim.animatables[0].target;
-            $(el).css({ display: 'none'});
+            $(el).css({display: 'none'});
             $card.css('overflow', $card.data('initialOverflow'));
         }
     });
 }
 
 function deleteConfirmation(id, name) {
-    const text = translateWord('Do you really want to delete device') + ' "'+name+'" ('+id+')?';
+    const text = translateWord('Do you really want to delete device') + ' "' + name + '" (' + id + ')?';
     $('#modaldelete').find('p').text(text);
     $('#force').prop('checked', false);
     $('#forcediv').removeClass('hide');
-    $("#modaldelete a.btn[name='yes']").unbind('click');
-    $("#modaldelete a.btn[name='yes']").click(() => {
+    $('#modaldelete a.btn[name=\'yes\']').unbind('click');
+    $('#modaldelete a.btn[name=\'yes\']').click(() => {
         const force = $('#force').prop('checked');
         deleteDevice(id, force);
     });
@@ -347,8 +350,8 @@ function cleanConfirmation() {
     $('#modalclean').find('p').text(text);
     $('#cforce').prop('checked', false);
     $('#cforcediv').removeClass('hide');
-    $("#modalclean a.btn[name='yes']").unbind('click');
-    $("#modalclean a.btn[name='yes']").click(() => {
+    $('#modalclean a.btn[name=\'yes\']').unbind('click');
+    $('#modalclean a.btn[name=\'yes\']').click(() => {
         const force = $('#cforce').prop('checked');
         cleanDeviceStates(force);
     });
@@ -356,78 +359,75 @@ function cleanConfirmation() {
     Materialize.updateTextFields();
 }
 
-function EndPointIDfromEndPoint(ep)
-{
-  if (ep && ep.deviceIeeeAddress && ep.ID)
-    return `${ep.deviceIeeeAddress}:${ep.ID}`;
-  return 'unidentified';
+function EndPointIDfromEndPoint(ep) {
+    if (ep && ep.deviceIeeeAddress && ep.ID)
+        return `${ep.deviceIeeeAddress}:${ep.ID}`;
+    return 'unidentified';
 }
 
 function editName(id, name) {
-  console.log('editName called with '+name);
+    console.log('editName called with ' + name);
     const dev = devices.find((d) => d._id == id);
-    $('#modaledit').find("input[id='d_name']").val(name);
+    $('#modaledit').find('input[id=\'d_name\']').val(name);
 //    if (dev.info && dev.info.device._type == 'Router') {
-      const groupables = [];
-      if (dev && dev.info && dev.info.endpoints) {
+    const groupables = [];
+    if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
-          if (ep.inputClusters.includes(4)) {
-            groupables.push({ epid:EndPointIDfromEndPoint(ep), ep:ep, memberOf:[]});
-          }
+            if (ep.inputClusters.includes(4)) {
+                groupables.push({epid: EndPointIDfromEndPoint(ep), ep: ep, memberOf: []});
+            }
         }
-      }
-      const numEP = groupables.length;
+    }
+    const numEP = groupables.length;
 //      console.log('groupables: '+JSON.stringify(groupables));
-      $('#modaledit').find('.row.epid0').addClass('hide');
-      $('#modaledit').find('.row.epid1').addClass('hide');
-      $('#modaledit').find('.row.epid2').addClass('hide');
-      $('#modaledit').find('.row.epid3').addClass('hide');
-      if (numEP > 0) {
+    $('#modaledit').find('.row.epid0').addClass('hide');
+    $('#modaledit').find('.row.epid1').addClass('hide');
+    $('#modaledit').find('.row.epid2').addClass('hide');
+    $('#modaledit').find('.row.epid3').addClass('hide');
+    if (numEP > 0) {
         // go through all the groups. Find the ones to list for each groupable
         if (numEP == 1) {
-          $('#modaledit').find('.endpointid').addClass('hide');
-        }
-        else {
-          $('#modaledit').find('.endpointid').removeClass('hide');
+            $('#modaledit').find('.endpointid').addClass('hide');
+        } else {
+            $('#modaledit').find('.endpointid').removeClass('hide');
         }
         for (const d of devices) {
-          if (d && d.common && d.common.type == 'group') {
-            if (d.hasOwnProperty("memberinfo")) {
-              for (const member of d.memberinfo) {
-                const epid = EndPointIDfromEndPoint(member.ep)
-                for (var i=0;i<groupables.length;i++) {
-                  if (groupables[i].epid == epid) {
-                    groupables[i].memberOf.push(d.native.id.replace('group_', ''));
-                  }
+            if (d && d.common && d.common.type == 'group') {
+                if (d.hasOwnProperty('memberinfo')) {
+                    for (const member of d.memberinfo) {
+                        const epid = EndPointIDfromEndPoint(member.ep);
+                        for (var i = 0; i < groupables.length; i++) {
+                            if (groupables[i].epid == epid) {
+                                groupables[i].memberOf.push(d.native.id.replace('group_', ''));
+                            }
+                        }
+                    }
                 }
-              }
             }
-          }
         }
-        console.log("groupables: " + JSON.stringify(groupables));
-        for (var i = 0;i<groupables.length;i++)
-        {
-          if (i > 1) {
-            $('#modaledit').find("translate.device_with_endpoint").innerHtml = name + ' ' + groupables[i].epid;
-          }
-          $('#modaledit').find('.row.epid'+i).removeClass('hide');
-          list2select('#d_groups_ep'+i, groups, groupables[i].memberOf || []);
+        console.log('groupables: ' + JSON.stringify(groupables));
+        for (var i = 0; i < groupables.length; i++) {
+            if (i > 1) {
+                $('#modaledit').find('translate.device_with_endpoint').innerHtml = name + ' ' + groupables[i].epid;
+            }
+            $('#modaledit').find('.row.epid' + i).removeClass('hide');
+            list2select('#d_groups_ep' + i, groups, groupables[i].memberOf || []);
         }
-      }
+    }
 //    } else {
 //        $('#modaledit').find('.input-field.endpoints').addClass('hide');
 //        $('#modaledit').find('.input-field.groups').addClass('hide');
 //    }
-    $("#modaledit a.btn[name='save']").unbind('click');
-    $("#modaledit a.btn[name='save']").click(() => {
-        const newName = $('#modaledit').find("input[id='d_name']").val();
+    $('#modaledit a.btn[name=\'save\']').unbind('click');
+    $('#modaledit a.btn[name=\'save\']').click(() => {
+        const newName = $('#modaledit').find('input[id=\'d_name\']').val();
         const groupsbyid = {};
-        if (groupables.length  > 0) {
-          for (var i = 0;i<groupables.length;i++) {
-            const ng = $('#d_groups_ep'+i).val();
-            if (ng.toString() != groupables[i].memberOf.toString())
-            groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
-          }
+        if (groupables.length > 0) {
+            for (var i = 0; i < groupables.length; i++) {
+                const ng = $('#d_groups_ep' + i).val();
+                if (ng.toString() != groupables[i].memberOf.toString())
+                    groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
+            }
         }
         console.log('grpid ' + JSON.stringify(groupsbyid));
         updateDev(id, newName, groupsbyid);
@@ -436,14 +436,13 @@ function editName(id, name) {
     Materialize.updateTextFields();
 }
 
-function GenerateGroupChange(oldmembers, newmembers)
-{
-  let grpchng = [];
-  for (const oldg of oldmembers)
-    if (!newmembers.includes(oldg)) grpchng.push('-'+oldg);
-  for (const newg of newmembers)
-    if (!oldmembers.includes(newg)) grpchng.push(newg)
-  return grpchng;
+function GenerateGroupChange(oldmembers, newmembers) {
+    let grpchng = [];
+    for (const oldg of oldmembers)
+        if (!newmembers.includes(oldg)) grpchng.push('-' + oldg);
+    for (const newg of newmembers)
+        if (!oldmembers.includes(newg)) grpchng.push(newg);
+    return grpchng;
 }
 
 function deleteDevice(id, force) {
@@ -474,6 +473,7 @@ function cleanDeviceStates(force) {
     });
     showWaitingDialog('Device is being removed', 10);
 }
+
 function renameDevice(id, name) {
     sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
@@ -490,7 +490,7 @@ function showDevices() {
     let html = '';
     const lang = systemLang || 'en';
     // sort by rooms
-    devices.sort((a, b)=>{
+    devices.sort((a, b) => {
         const roomsA = [], roomsB = [];
         for (const r in a.rooms) {
             if (a.rooms[r].hasOwnProperty(lang)) {
@@ -517,29 +517,28 @@ function showDevices() {
         }
         return 0;
     });
-    for (let i=0;i < devices.length; i++) {
+    for (let i = 0; i < devices.length; i++) {
         const d = devices[i];
         if (!d.info) {
-            if (d.common && d.common.type == 'group')
-            {
+            if (d.common && d.common.type == 'group') {
                 const card = getGroupCard(d);
                 html += card;
                 continue;
             }
-        };
+        }
+        ;
         if (d.info && d.info.device._type == 'Coordinator') {
             const card = getCoordinatorCard(d);
             html += card;
         } else {
-        //if (d.groups && d.info && d.info.device._type == "Router") {
+            //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
 //                devGroups[d._id] = d.groups;
                 if (typeof d.groups.map == 'function') {
-                    d.groupNames = d.groups.map(item=>{
+                    d.groupNames = d.groups.map(item => {
                         return groups[item] || '';
                     }).join(', ');
-                }
-                else {
+                } else {
                     d.groupNames = '..';
                 }
             }
@@ -551,13 +550,13 @@ function showDevices() {
     hookControls();
 
     // update rooms filter
-    const allRooms = new Set(devices.map((item)=>item.rooms).flat().map((room)=>{
+    const allRooms = new Set(devices.map((item) => item.rooms).flat().map((room) => {
         if (room && room.hasOwnProperty(lang)) {
             return room[lang];
         } else {
             return room;
         }
-    }).filter((item)=>item != undefined));
+    }).filter((item) => item != undefined));
     const roomSelector = $('#room-filter');
     roomSelector.empty();
     roomSelector.append(`<li class="device-order-item" data-type="All" tabindex="0"><a class="translate" data-lang="All">All</a></li>`);
@@ -568,69 +567,69 @@ function showDevices() {
         $('#room-filter-btn').text($(this).text());
         doFilter();
     });
-    $(".flip").click(function(){
-        const card = $(this).parents(".card");
-        card.toggleClass("flipped");
+    $('.flip').click(function () {
+        const card = $(this).parents('.card');
+        card.toggleClass('flipped');
     });
     $('#rotate_btn').click(function () {
-        $('.card.flipable').toggleClass("flipped");
+        $('.card.flipable').toggleClass('flipped');
     });
 
-    shuffleInstance = new Shuffle($("#devices"), {
+    shuffleInstance = new Shuffle($('#devices'), {
         itemSelector: '.device',
         sizer: '.js-shuffle-sizer',
     });
     doFilter();
 
-    const getDevName = function(dev_block) {
+    const getDevName = function (dev_block) {
         return dev_block.find('#dName').text();
     };
-    const getDevId = function(dev_block) {
+    const getDevId = function (dev_block) {
         return dev_block.attr('id');
     };
-    $(".card-reveal-buttons button[name='delete']").click(function() {
+    $('.card-reveal-buttons button[name=\'delete\']').click(function () {
         const dev_block = $(this).parents('div.device');
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
-    $(".card-reveal-buttons button[name='deletegrp']").click(function() {
+    $('.card-reveal-buttons button[name=\'deletegrp\']').click(function () {
         const dev_block = $(this).parents('div.device');
-        const id = dev_block.attr('id').replace(namespace+'.group_', '');
+        const id = dev_block.attr('id').replace(namespace + '.group_', '');
         deleteGroupConfirmation(id, getDevName(dev_block));
     });
-    $(".card-reveal-buttons button[name='edit']").click(function() {
+    $('.card-reveal-buttons button[name=\'edit\']').click(function () {
         const dev_block = $(this).parents('div.device'),
             id = getDevId(dev_block),
             name = getDevName(dev_block);
         editName(id, name);
     });
-    $(".card-reveal-buttons button[name='editgrp']").click(function() {
+    $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
         const dev_block = $(this).parents('div.device'),
-            id = dev_block.attr('id').replace(namespace+'.group_', ''),
+            id = dev_block.attr('id').replace(namespace + '.group_', ''),
             name = getDevName(dev_block);
         editGroupName(id, name, false);
     });
-    $("button.btn-floating[name='join']").click(function() {
+    $('button.btn-floating[name=\'join\']').click(function () {
         const dev_block = $(this).parents('div.device');
         if (!$('#pairing').hasClass('pulse'))
             joinProcess(getDevId(dev_block));
         showPairingProcess();
     });
-    $(".card-reveal-buttons button[name='info']").click(function() {
+    $('.card-reveal-buttons button[name=\'info\']').click(function () {
         const dev_block = $(this).parents('div.device');
         showDevInfo(getDevId(dev_block));
     });
-    $("a.btn[name='done']").click((e) => {
+    $('a.btn[name=\'done\']').click((e) => {
         const dev_block = $(this).parents('div.device');
         closeReval(e, getDevId(dev_block), getDevName(dev_block));
     });
-    $("a.btn-flat[name='close']").click((e) => {
+    $('a.btn-flat[name=\'close\']').click((e) => {
         closeReval(e);
     });
-    $(".card-reveal-buttons button[name='reconfigure']").click(function() {
+    $('.card-reveal-buttons button[name=\'reconfigure\']').click(function () {
         const dev_block = $(this).parents('div.device');
         reconfigureDlg(getDevId(dev_block));
     });
-    $(".card-reveal-buttons button[name='swapactive']").click(function() {
+    $('.card-reveal-buttons button[name=\'swapactive\']').click(function () {
         const dev_block = $(this).parents('div.device');
         swapActive(getDevId(dev_block));
     });
@@ -641,10 +640,10 @@ function showDevices() {
 
 function checkFwUpdate() {
     const deviceCards = getDeviceCards();
-    const getFwInfoNode = function(deviceCard) {
+    const getFwInfoNode = function (deviceCard) {
         return deviceCard.find('.fw_info');
     };
-    const createBtn = function(icon, hint, disabled, color) {
+    const createBtn = function (icon, hint, disabled, color) {
         const disabledAttr = disabled ? '[disabled]="true"' : '';
         if (!color) {
             color = !disabled ? 'icon-green' : '';
@@ -652,14 +651,14 @@ function checkFwUpdate() {
         return `<button name="fw_update" class="left btn-flat btn-small" title="${hint}" ${disabledAttr}>
             <i class="material-icons ${color}">${icon}</i></button>`;
     };
-    const callback = function(msg) {
+    const callback = function (msg) {
         if (msg) {
             const deviceCard = getDeviceCard(msg.device);
             const devId = getDevId(deviceCard.attr('id'));
             const fwInfoNode = getFwInfoNode(deviceCard);
             if (msg.status == 'available') {
                 fwInfoNode.html(createBtn('system_update', 'Click to start firmware update', false));
-                $(fwInfoNode).find("button[name='fw_update']").click(() => {
+                $(fwInfoNode).find('button[name=\'fw_update\']').click(() => {
                     fwInfoNode.html(createBtn('check_circle', 'Firmware update started, check progress in logs.', true, 'icon-blue'));
                     sendTo(namespace, 'startOta', {devId: devId}, (msg) => {
                         fwInfoNode.html(createBtn('check_circle', 'Finished, see logs.', true));
@@ -669,13 +668,13 @@ function checkFwUpdate() {
             } else if (msg.status == 'not_available') {
                 fwInfoNode.html(createBtn('check_circle', 'Up-to-date', true));
             } else if (msg.status == 'fail') {
-                fwInfoNode.html(createBtn('check_circle', 'Firmware check failed, '+msg.msg, true, 'icon-red'));
+                fwInfoNode.html(createBtn('check_circle', 'Firmware check failed, ' + msg.msg, true, 'icon-red'));
             } else {
                 fwInfoNode.html(createBtn('not_interested', 'No firmware update available', true));
             }
         }
     };
-    for (let i=0;i < deviceCards.length; i++) {
+    for (let i = 0; i < deviceCards.length; i++) {
         const deviceCard = $(deviceCards[i]);
         const devId = getDevId(deviceCard.attr('id'));
         getFwInfoNode(deviceCard).html('<span class="left" style="padding-top:8px">checking...</span>');
@@ -746,7 +745,7 @@ function getDevices() {
 }
 
 function getDeviceCards() {
-    return $('#devices .device').not(".group");
+    return $('#devices .device').not('.group');
 }
 
 function getDeviceCard(devId) {
@@ -810,35 +809,35 @@ function load(settings, onChange) {
     // Signal to admin, that no changes yet
     onChange(false);
 
-    $('#state_cleanup_btn').click(function() {
+    $('#state_cleanup_btn').click(function () {
         cleanConfirmation();
     });
-    $('#fw_check_btn').click(function() {
+    $('#fw_check_btn').click(function () {
         checkFwUpdate();
     });
-    $('#touchlink_btn').click(function() {
+    $('#touchlink_btn').click(function () {
         touchlinkReset();
         showPairingProcess();
     });
-    $('#pairing').click(function() {
+    $('#pairing').click(function () {
         if (!$('#pairing').hasClass('pulse'))
             letsPairing();
         showPairingProcess();
     });
 
-    $('#refresh').click(function() {
+    $('#refresh').click(function () {
         getMap();
     });
 
-    $('#reset-btn').click(function() {
+    $('#reset-btn').click(function () {
         resetConfirmation();
     });
 
-    $('#viewconfig').click(function() {
+    $('#viewconfig').click(function () {
         showViewConfig();
     });
 
-    $('#scan').click(function() {
+    $('#scan').click(function () {
         showChannels();
     });
 
@@ -847,18 +846,18 @@ function load(settings, onChange) {
         showGroups();
     });
 
-    $('#add_group').click(function() {
+    $('#add_group').click(function () {
 //        showGroupList(true);
-        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
-        editGroupName(maxind+1, 'Group ' + maxind+1, true);
+        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
+        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
     });
-    $('#add_grp_btn').click(function() {
+    $('#add_grp_btn').click(function () {
 //        showGroupList(true);
-        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
-        editGroupName(maxind+1, 'Group ' + maxind+1, true);
+        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
+        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('.modal').modal({
             startingTop: '30%',
             endingTop: '10%',
@@ -882,7 +881,7 @@ function load(settings, onChange) {
         $('#pairing').attr('data-tooltip', transText);
     }
 
-    $('ul.tabs').on('click', 'a', function(e) {
+    $('ul.tabs').on('click', 'a', function (e) {
         if ($(e.target).attr('id') == 'tabmap') {
             redrawMap();
         }
@@ -891,11 +890,11 @@ function load(settings, onChange) {
         }
     });
 
-    $('#add_exclude').click(function() {
+    $('#add_exclude').click(function () {
         addExcludeDialog();
     });
 
-    $('#add_binding').click(function() {
+    $('#add_binding').click(function () {
         addBindingDialog();
     });
 
@@ -934,7 +933,7 @@ function save(callback) {
         const $this = $(this);
         if (savedSettings.indexOf($this.attr('id')) === -1) return;
         if ($this.hasClass('validate') && $this.hasClass('invalid')) {
-            showMessage('Invalid input for ' +$this.attr('id'), _('Error'));
+            showMessage('Invalid input for ' + $this.attr('id'), _('Error'));
             return;
         }
         if ($this.attr('type') === 'checkbox') {
@@ -948,7 +947,7 @@ function save(callback) {
 
 
 function getDevId(adapterDevId) {
-    return adapterDevId.split('.').slice(0,3).join('.');
+    return adapterDevId.split('.').slice(0, 3).join('.');
 }
 
 // subscribe to changes
@@ -975,7 +974,7 @@ socket.on('stateChange', function (id, state) {
             } else {
                 $('#pairing').addClass('pulse');
                 $('#pairing').html(state.val);
-                const percent = 100-100*state.val/($('#countDown').val() || 60);
+                const percent = 100 - 100 * state.val / ($('#countDown').val() || 60);
                 $('#progress_line').css('width', `${percent}%`);
             }
         } else if (id.match(/\.info\.pairingMessage$/)) {
@@ -1021,6 +1020,7 @@ socket.on('objectChange', function (id, obj) {
         }
     }
 });
+
 /*
 socket.emit('getObject', 'system.config', function (err, res) {
     if (!err && res && res.common) {
@@ -1033,45 +1033,47 @@ socket.emit('getObject', 'system.config', function (err, res) {
 function putEventToNode(devId) {
     if (network) {
         const nodesArray = Object.values(network.body.data.nodes._data);
-        const node = nodesArray.find((node) => { return node.id == devId; });
+        const node = nodesArray.find((node) => {
+            return node.id == devId;
+        });
         if (node) {
             const exists = networkEvents.find((event) => {
                 return event.node == node.id;
             });
             if (!exists) {
                 networkEvents.push({node: node.id, radius: 0, forward: true});
-            // } else {
-            //     exists.radius = 0;
-            //     exists.forward = true;
+                // } else {
+                //     exists.radius = 0;
+                //     exists.forward = true;
             }
         }
     }
 }
 
-function showNetworkMap(devices, map){
+function showNetworkMap(devices, map) {
     // create an object with nodes
     const nodes = {};
     // create an array with edges
     const edges = [];
 
     if (map.lqis == undefined || map.lqis.length === 0) { // first init
-        $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function() {
+        $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function () {
             updateMapFilter();
         });
     }
 
-    const createNode = function(dev, mapEntry) {
+    const createNode = function (dev, mapEntry) {
         if (dev.common && dev.common.type == 'group') return undefined;
         const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const node = {
             id: dev._id,
-            label: (dev.link_quality >0 ? dev.common.name:`${dev.common.name}\n(disconnected)`) ,
-            title: dev._id.replace(namespace+'.', '') + extInfo,
+            label: (dev.link_quality > 0 ? dev.common.name : `${dev.common.name}\n(disconnected)`),
+            title: dev._id.replace(namespace + '.', '') + extInfo,
             shape: 'circularImage',
             image: dev.icon,
             imagePadding: {top: 5, bottom: 5, left: 5, right: 5},
             color: {background: 'white', highlight: {background: 'white'}},
-            font: {color:'#007700'},
+            font: {color: '#007700'},
             borderWidth: 1,
             borderWidthSelected: 4,
         };
@@ -1085,7 +1087,7 @@ function showNetworkMap(devices, map){
     };
 
     if (map.lqis) {
-        map.lqis.forEach((mapEntry)=>{
+        map.lqis.forEach((mapEntry) => {
             const dev = getDevice(mapEntry.ieeeAddr);
             if (!dev) {
                 //console.log("No dev with ieee "+mapEntry.ieeeAddr);
@@ -1098,8 +1100,7 @@ function showNetworkMap(devices, map){
                 if (node) {
                     nodes[mapEntry.ieeeAddr] = node;
                 }
-            }
-            else {
+            } else {
                 node = nodes[mapEntry.ieeeAddr];
             }
             if (node) {
@@ -1117,7 +1118,7 @@ function showNetworkMap(devices, map){
 
                 if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
                     // // parent/child
-                    if (mapEntry.status !== 'online' ) {
+                    if (mapEntry.status !== 'online') {
                         label = label + ' (off)';
                         linkColor = '#ff0000';
                     }
@@ -1134,8 +1135,8 @@ function showNetworkMap(devices, map){
                 if (reverse) {
                     // update reverse edge
                     edge = reverse;
-                    edge.label += '\n'+label;
-                    edge.arrows.from = { enabled: false, scaleFactor: 0.5 }; // start hidden if node is not selected
+                    edge.label += '\n' + label;
+                    edge.arrows.from = {enabled: false, scaleFactor: 0.5}; // start hidden if node is not selected
                     if (mapEntry.relationship == 1) { //
                         edge.color.color = linkColor;
                         edge.color.highlight = linkColor;
@@ -1150,7 +1151,7 @@ function showNetworkMap(devices, map){
                             size: 0, // start hidden
                             color: linkColor
                         },
-                        arrows: { to: { enabled: false, scaleFactor: 0.5 }},
+                        arrows: {to: {enabled: false, scaleFactor: 0.5}},
                         //arrowStrikethrough: false,
                         color: {
                             color: linkColor,
@@ -1164,7 +1165,7 @@ function showNetworkMap(devices, map){
                                 values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
                             },
                             label: () => {
-                            // see onMapSelect workaround
+                                // see onMapSelect workaround
                                 //                        values.size = 10;
                             }
                         },
@@ -1230,15 +1231,16 @@ function showNetworkMap(devices, map){
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
     devices.forEach((dev) => {
-        const node = nodesArray.find((node) => { return node.id == dev._id; });
+        const node = nodesArray.find((node) => {
+            return node.id == dev._id;
+        });
         if (!node) {
             const node = createNode(dev);
 
-            if (node)
-            {
-                node.font = {color:'#ff0000'};
+            if (node) {
+                node.font = {color: '#ff0000'};
                 if (dev.info && dev.info.device._type == 'Coordinator') {
-                    node.font = {color:'#000000'};
+                    node.font = {color: '#000000'};
                 }
                 nodesArray.push(node);
             }
@@ -1260,7 +1262,7 @@ function showNetworkMap(devices, map){
             shape: 'box'
         },
         layout: {
-            improvedLayout:true,
+            improvedLayout: true,
         }
     };
 
@@ -1310,25 +1312,26 @@ function showNetworkMap(devices, map){
         if (networkEvents.length > 0) {
             network.redraw();
             const toDelete = [];
-            networkEvents.forEach((event, index)=>{
+            networkEvents.forEach((event, index) => {
                 if (event.radius >= 1) {
                     toDelete.push(index);
                 } else {
                     event.radius += 0.08;
                 }
             });
-            toDelete.forEach((index)=>{
+            toDelete.forEach((index) => {
                 networkEvents.splice(index, 1);
             });
         }
     }
-    network.on('beforeDrawing', function(ctx) {
+
+    network.on('beforeDrawing', function (ctx) {
         if (networkEvents.length > 0) {
-            networkEvents.forEach((event)=>{
+            networkEvents.forEach((event) => {
                 const inode = event.node;
                 const nodePosition = network.getPositions();
                 event.radius = (event.radius > 1) ? 1 : event.radius;
-                const cap = Math.cos(event.radius*Math.PI/2);
+                const cap = Math.cos(event.radius * Math.PI / 2);
                 const colorCircle = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
                 const colorBorder = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
                 ctx.strokeStyle = colorCircle;
@@ -1345,11 +1348,11 @@ function showNetworkMap(devices, map){
 function redrawMap() {
     if (network != undefined && devices.length > 0) {
         const width = ($('.adapter-body').width() || $('#main').width()) - 20,
-            height = ($('.adapter-body').height() || ($('#main').height())) -120;
+            height = ($('.adapter-body').height() || ($('#main').height())) - 120;
         network.setSize(width, height);
         network.redraw();
         network.fit();
-        network.moveTo({offset:{x:0.5 * width, y:0.5 * height}});
+        network.moveTo({offset: {x: 0.5 * width, y: 0.5 * height}});
     }
 }
 
@@ -1363,9 +1366,9 @@ function updateMapFilter() {
     const invisColor = $('#filterMesh').is(':checked') ? 0.2 : 0;
     mapEdges.forEach((edge) => {
         if (((edge.relationship === 0 || edge.relationship === 1) && showParent)
-                || (edge.relationship === 2 && showSibl)
-              || (edge.relationship === 3 && showParent) // ignore relationship "unknown"
-                || (edge.relationship === 4 && showPrvChild)) {
+            || (edge.relationship === 2 && showSibl)
+            || (edge.relationship === 3 && showParent) // ignore relationship "unknown"
+            || (edge.relationship === 4 && showPrvChild)) {
             edge.color.opacity = 1.0;
         } else {
             edge.color.opacity = invisColor;
@@ -1394,10 +1397,10 @@ function getComPorts(onChange) {
         }
         const element = $('#ports');
         for (let j = 0; j < list.length; j++) {
-            element.append('<li><a href="#!">' + list[j].comName + (list[j].name ? (' [' + list[j].name + ']') : '') + '</a></li>');
+            element.append('<li><a href="#!" data-value="' + list[j].comName + '">' + list[j].comName + (list[j].label ? (' [' + list[j].label + ']') : '') + '</a></li>');
         }
         $('#ports a').click(function () {
-            $('#port').val($(this).text());
+            $('#port').val($(this).data('value'));
             Materialize.updateTextFields();
             onChange();
         });
@@ -1407,29 +1410,33 @@ function getComPorts(onChange) {
 function loadDeveloperTab() {
     // fill device selector
     updateSelect('#dev', devices,
-        function(key, device) {
+        function (key, device) {
             if (device.hasOwnProperty('info')) {
-                if (device.info.device._type == 'Coordinator') {
+                if (device.info.device._type === 'Coordinator') {
                     return null;
                 }
                 return `${device.common.name} (${device.info.name})`;
             } else { // fallback if device in list but not paired
-                device.common.name + ' ' +device.native.id;
+                return device.common.name + ' ' + device.native.id;
             }
         },
-        function(key, device) {
+        function (key, device) {
             return device._id;
         });
     // add groups to device selector
     const groupList = [];
     for (const key in groups) {
-        groupList.push({'_id': namespace+'.'+key.toString(16).padStart(16, '0'), 'groupId': key, 'groupName': groups[key]});
+        groupList.push({
+            _id: namespace + '.' + key.toString(16).padStart(16, '0'),
+            groupId: key,
+            groupName: groups[key]
+        });
     }
     updateSelect('#dev', groupList,
-        function(key, device) {
-            return 'Group '+device.groupId+': '+device.groupName;
+        function (key, device) {
+            return 'Group ' + device.groupId + ': ' + device.groupName;
         },
-        function(key, device) {
+        function (key, device) {
             return device._id;
         }, true);
 
@@ -1439,10 +1446,10 @@ function loadDeveloperTab() {
     populateSelector('#type', 'typeList', this.value);
 
     if (responseCodes == false) {
-        const getValue = function() { // convert to number if needed
+        const getValue = function () { // convert to number if needed
             let attrData = $('#value-input').val();
             if (attrData.startsWith('"') && attrData.endsWith('"')) {
-                attrData = attrData.substr(1, attrData.length -2);
+                attrData = attrData.substr(1, attrData.length - 2);
             } else {
                 const numValue = Number(attrData);
                 attrData = !isNaN(numValue) ? numValue : attrData;
@@ -1467,35 +1474,38 @@ function loadDeveloperTab() {
             return data;
         };
 
-        const prepareExpertData = function() {
+        const prepareExpertData = function () {
             try {
                 return JSON.parse($('#expert-json').val());
             } catch (exception) {
                 showDevRunInfo('JSON error', exception, 'yellow');
             }
         };
-        const setExpertData = function(prop, value, removeIfEmpty = true) {
+        const setExpertData = function (prop, value, removeIfEmpty = true) {
             if (!$('#expert-mode').is(':checked')) {
                 return;
             }
-            if (!removeIfEmpty && value == null) { value = ''; }
+            if (!removeIfEmpty && value == null) {
+                value = '';
+            }
             let data;
             if (prop) {
                 data = prepareExpertData();
                 // https://stackoverflow.com/a/6394168/6937282
-                const assignVal = function index(obj,is, value) {
+                const assignVal = function index(obj, is, value) {
                     if (typeof is == 'string') {
-                        return index(obj,is.split('.'), value);
-                    } else if (is.length==1 && value!==undefined) {
+                        return index(obj, is.split('.'), value);
+                    } else if (is.length === 1 && value !== undefined) {
                         if (value == null) {
                             return delete obj[is[0]];
                         } else {
                             return obj[is[0]] = value;
                         }
-                    } else if (is.length==0) {
+                    } else if (!is.length) {
                         return obj;
-                    } else
-                        return index(obj[is[0]],is.slice(1), value);
+                    } else {
+                        return index(obj[is[0]], is.slice(1), value);
+                    }
                 };
                 assignVal(data, prop, value);
             } else {
@@ -1505,7 +1515,7 @@ function loadDeveloperTab() {
         };
 
         // init event listener only at first load
-        $('#dev-selector').change(function() {
+        $('#dev-selector').change(function () {
             if (this.selectedIndex <= 0) {
                 return;
             }
@@ -1516,48 +1526,48 @@ function loadDeveloperTab() {
 
             const epList = device ? device.info.device._endpoints : null;
             updateSelect('#ep', epList,
-                function(key, ep) {
+                function (key, ep) {
                     return ep.ID;
                 },
-                function(key, ep) {
+                function (key, ep) {
                     return ep.ID;
                 });
             setExpertData('devId', this.value);
             setExpertData('ep', $('#ep-selector').val(), false);
         });
 
-        $('#ep-selector').change(function() {
+        $('#ep-selector').change(function () {
             setExpertData('ep', this.value);
         });
 
-        $('#cid-selector').change(function() {
+        $('#cid-selector').change(function () {
             populateSelector('#attrid', 'attrIdList', this.value);
-            if ($('#cmd-type-selector').val() == 'functional') {
+            if ($('#cmd-type-selector').val() === 'functional') {
                 const cid = $('#cid-selector option:selected').val();
                 populateSelector('#cmd', 'cmdListFunctional', cid);
             }
             setExpertData('cid', this.value);
         });
 
-        $('#cmd-type-selector').change(function() {
-            if (this.value == 'foundation') {
+        $('#cmd-type-selector').change(function () {
+            if (this.value === 'foundation') {
                 populateSelector('#cmd', 'cmdListFoundation');
-            } else if (this.value == 'functional') {
+            } else if (this.value === 'functional') {
                 const cid = $('#cid-selector option:selected').val();
                 populateSelector('#cmd', 'cmdListFunctional', cid);
             }
             setExpertData('cmdType', this.value);
         });
 
-        $('#cmd-selector').change(function() {
+        $('#cmd-selector').change(function () {
             setExpertData('cmd', this.value);
         });
-        $('#attrid-selector').change(function() {
-            setExpertData('zclData', {[this.value]:{}});
+        $('#attrid-selector').change(function () {
+            setExpertData('zclData', {[this.value]: {}});
         });
 
         // value selector checkbox
-        $('#value-needed').change(function() {
+        $('#value-needed').change(function () {
             const attr = $('#attrid-selector').val();
             let attrData = null;
             if (this.checked === true) {
@@ -1566,17 +1576,17 @@ function loadDeveloperTab() {
             } else {
                 $('#value-input').attr('disabled', 'disabled');
             }
-            setExpertData('zclData.'+attr, attrData);
+            setExpertData('zclData.' + attr, attrData);
             $('#type-selector').select();
             Materialize.updateTextFields();
         });
 
-        $('#value-input').keyup(function() {
+        $('#value-input').keyup(function () {
             const attr = $('#attrid-selector').val();
-            setExpertData('zclData.'+attr, getValue());
+            setExpertData('zclData.' + attr, getValue());
         });
 
-        $('#expert-mode').change(function() {
+        $('#expert-mode').change(function () {
             if (this.checked === true) {
                 setExpertData();
                 $('#expert-json-box').css('display', 'inline-block');
@@ -1587,7 +1597,7 @@ function loadDeveloperTab() {
             Materialize.updateTextFields();
         });
 
-        $('#dev-send-btn').click(function() {
+        $('#dev-send-btn').click(function () {
             let data;
             if ($('#expert-mode').is(':checked')) {
                 data = prepareExpertData();
@@ -1595,7 +1605,7 @@ function loadDeveloperTab() {
                 data = prepareData();
             }
             sendToZigbee(data.devId, data.ep, data.cid, data.cmd, data.cmdType, data.zclData, data.cfg, function (reply) {
-                console.log('Reply from zigbee: '+ JSON.stringify(reply));
+                console.log('Reply from zigbee: ' + JSON.stringify(reply));
                 if (reply.hasOwnProperty('localErr')) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
                 } else if (reply.hasOwnProperty('localStatus')) {
@@ -1636,25 +1646,34 @@ function loadDeveloperTab() {
  */
 function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
     if (!id) {
-        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please select Device and Endpoint!'});}
+        if (callback) {
+            callback({localErr: 'Incomplete', errMsg: 'Please select Device and Endpoint!'});
+        }
         return;
     }
     if (!cid || !cmd || !cmdType) {
-        if (callback) {callback({localErr: 'Incomplete', errMsg: 'Please choose ClusterId, Command, CommandType and AttributeId!'});}
+        if (callback) {
+            callback({
+                localErr: 'Incomplete',
+                errMsg: 'Please choose ClusterId, Command, CommandType and AttributeId!'
+            });
+        }
         return;
     }
     const data = {id: id, ep: ep, cid: cid, cmd: cmd, cmdType: cmdType, zclData: zclData, cfg: cfg};
-    if (callback) {callback({localStatus: 'Send', errMsg: 'Waiting for reply...'});}
+    if (callback) {
+        callback({localStatus: 'Send', errMsg: 'Waiting for reply...'});
+    }
 
-    const sendTimeout = setTimeout(function() {
+    const sendTimeout = setTimeout(function () {
         if (callback) {
             callback({localErr: 'Timeout', errMsg: 'We did not receive any response.'});
         }
     }, 15000);
 
-    console.log('Send to zigbee, id '+id+ ',ep '+ep+', cid '+cid+', cmd '+cmd+', cmdType '+cmdType+', zclData '+JSON.stringify(zclData));
+    console.log('Send to zigbee, id ' + id + ',ep ' + ep + ', cid ' + cid + ', cmd ' + cmd + ', cmdType ' + cmdType + ', zclData ' + JSON.stringify(zclData));
 
-    sendTo(namespace, 'sendToZigbee', data, function(reply) {
+    sendTo(namespace, 'sendToZigbee', data, function (reply) {
         clearTimeout(sendTimeout);
         if (callback) {
             callback(reply);
@@ -1667,11 +1686,10 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
  */
 function showDevRunInfo(result, text, level) {
     const card = $('#devActResult');
-    if (level == 'yellow') {
-        card.removeClass( 'white-text' ).addClass( 'yellow-text' );
-    }
-    else {
-        card.removeClass( 'yellow-text' ).addClass( 'white-text' );
+    if (level === 'yellow') {
+        card.removeClass('white-text').addClass('yellow-text');
+    } else {
+        card.removeClass('yellow-text').addClass('white-text');
     }
     $('#devActResult').text(result);
     $('#devInfoMsg').text(text);
@@ -1679,13 +1697,13 @@ function showDevRunInfo(result, text, level) {
 
 function addDevLog(reply) {
     const statusCode = reply.statusCode;
-    let logHtml = '<span>'+JSON.stringify(reply.msg)+'</span><br>';
+    let logHtml = '<span>' + JSON.stringify(reply.msg) + '</span><br>';
     if (responseCodes != undefined) {
         const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
         if (statusCode == 0) {
-            logHtml = '<span class="green-text">'+status+'</span>   '+logHtml;
+            logHtml = '<span class="green-text">' + status + '</span>   ' + logHtml;
         } else {
-            logHtml = '<span class="yellow-text">'+status+'</span>   '+logHtml;
+            logHtml = '<span class="yellow-text">' + status + '</span>   ' + logHtml;
         }
     }
     const logView = $('#dev_result_log');
@@ -1697,7 +1715,7 @@ function addDevLog(reply) {
  * Query adapter and update select with result
  */
 function populateSelector(selectId, key, cid) {
-    $(selectId+'>option:enabled').remove(); // remove existing elements
+    $(selectId + '>option:enabled').remove(); // remove existing elements
     $(selectId).select();
     if (cid == '-2') {
         updateSelect(selectId, null);
@@ -1708,7 +1726,7 @@ function populateSelector(selectId, key, cid) {
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
                 (attrName, attr) => {
-                    return attrName + ' ('+attr.ID +', type '+attr.type+')';
+                    return attrName + ' (' + attr.ID + ', type ' + attr.type + ')';
                 },
                 (attrName) => {
                     return attrName;
@@ -1716,7 +1734,7 @@ function populateSelector(selectId, key, cid) {
         } else if (key === 'typeList') {
             updateSelect(selectId, list,
                 (name, val) => {
-                    return name +' ('+val+')';
+                    return name + ' (' + val + ')';
                 },
                 (name, val) => {
                     return val;
@@ -1724,7 +1742,7 @@ function populateSelector(selectId, key, cid) {
         } else {
             updateSelect(selectId, list,
                 (propName, propInfo) => {
-                    return propName +' ('+propInfo.ID+')';
+                    return propName + ' (' + propInfo.ID + ')';
                 },
                 (propName) => {
                     return propName;
@@ -1734,32 +1752,31 @@ function populateSelector(selectId, key, cid) {
 }
 
 function updateSelect(id, list, getText, getId, append = false) {
-    const selectId = id+'-selector';
+    const selectId = id + '-selector';
     const mySelect = $(selectId);
     if (!append) {
-        $(selectId+'>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
+        $(selectId + '>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
         mySelect.select();
     }
     if (list == null && !append) {
         const infoOption = new Option('Nothing available');
         infoOption.disabled = true;
-        mySelect.append( infoOption);
-    }
-    else {
+        mySelect.append(infoOption);
+    } else {
         const keys = Object.keys(list); // is index in case of array
-        for (let i=0; i<keys.length; i++) {
+        for (let i = 0; i < keys.length; i++) {
             const key = keys[i];
             const item = list[key];
             const optionText = getText(key, item);
             if (optionText == null) {
                 continue;
             }
-            mySelect.append( new Option(optionText, getId(key, item)));
+            mySelect.append(new Option(optionText, getId(key, item)));
         }
     }
 
-    if ($(id+'-c-input').length > 0) {
-        mySelect.append( new Option('CUSTOM', -2));
+    if ($(id + '-c-input').length > 0) {
+        mySelect.append(new Option('CUSTOM', -2));
     }
     // update select element (Materialize)
     mySelect.select();
@@ -1788,17 +1805,17 @@ function showGroups() {
     const element = $('#groups_table');
     for (const j in groups) {
         if (groups.hasOwnProperty(j)) {
-            element.append(`<tr id="group_${j}" class="group"><td>${j}</td><td><div>${groups[j]}<span class="right">`+
-            `<a id="${j}" name="groupedit" class="waves-effect green btn-floating"><i class="material-icons">edit</i></a>`+
-            `<a id="${j}" name="groupdelete" class="waves-effect red btn-floating"><i class="material-icons">delete</i></a></span></div></td></tr>`);
+            element.append(`<tr id="group_${j}" class="group"><td>${j}</td><td><div>${groups[j]}<span class="right">` +
+                `<a id="${j}" name="groupedit" class="waves-effect green btn-floating"><i class="material-icons">edit</i></a>` +
+                `<a id="${j}" name="groupdelete" class="waves-effect red btn-floating"><i class="material-icons">delete</i></a></span></div></td></tr>`);
         }
     }
-    $("a.btn-floating[name='groupedit']").click(function() {
+    $('a.btn-floating[name=\'groupedit\']').click(function () {
         const index = $(this).attr('id'),
             name = groups[index];
         editGroupName(index, name, false);
     });
-    $("a.btn-floating[name='groupdelete']").click(function() {
+    $('a.btn-floating[name=\'groupdelete\']').click(function () {
         const index = $(this).attr('id'),
             name = groups[index];
         deleteGroupConfirmation(index, name);
@@ -1810,53 +1827,51 @@ function editGroupName(id, name, isnew) {
     //console.log('devices: '+ JSON.stringify(devices));
     const groupables = [];
     for (const d of devices) {
-      if (d && d.info && d.info.endpoints) {
-        for (const ep of d.info.endpoints) {
-          if (ep.inputClusters.includes(4))
-          {
-            groupables.push(ep);
-          }
+        if (d && d.info && d.info.endpoints) {
+            for (const ep of d.info.endpoints) {
+                if (ep.inputClusters.includes(4)) {
+                    groupables.push(ep);
+                }
+            }
         }
-      }
-      //console.log('device ' + JSON.stringify(d));
+        //console.log('device ' + JSON.stringify(d));
     }
 
     //var text = 'Enter new name for "'+name+'" ('+id+')?';
     if (isnew) {
-          $('#groupedit').find('.editgroup').addClass('hide');
-          $('#groupedit').find('.addgroup').removeClass('hide');
-          $('#groupedit').find('.input-field.members').addClass('hide');
-          $('#groupedit').find('.input-field.groupid').removeClass('hide');
+        $('#groupedit').find('.editgroup').addClass('hide');
+        $('#groupedit').find('.addgroup').removeClass('hide');
+        $('#groupedit').find('.input-field.members').addClass('hide');
+        $('#groupedit').find('.input-field.groupid').removeClass('hide');
+    } else {
+        $('#groupedit').find('.editgroup').removeClass('hide');
+        $('#groupedit').find('.addgroup').addClass('hide');
+        $('#groupedit').find('.input-field.members').removeClass('hide');
+        $('#groupedit').find('.input-field.groupid').addClass('hide');
     }
-    else {
-          $('#groupedit').find('.editgroup').removeClass('hide');
-          $('#groupedit').find('.addgroup').addClass('hide');
-          $('#groupedit').find('.input-field.members').removeClass('hide');
-          $('#groupedit').find('.input-field.groupid').addClass('hide');
-    }
-    $('#groupedit').find("input[id='g_index']").val(id);
-    $('#groupedit').find("input[id='g_name']").val(name);
-    $("#groupedit a.btn[name='save']").unbind('click');
-    $("#groupedit a.btn[name='save']").click(() => {
-        const newId = $('#groupedit').find("input[id='g_index']").val(),
-            newName = $('#groupedit').find("input[id='g_name']").val();
+    $('#groupedit').find('input[id=\'g_index\']').val(id);
+    $('#groupedit').find('input[id=\'g_name\']').val(name);
+    $('#groupedit a.btn[name=\'save\']').unbind('click');
+    $('#groupedit a.btn[name=\'save\']').click(() => {
+        const newId = $('#groupedit').find('input[id=\'g_index\']').val(),
+            newName = $('#groupedit').find('input[id=\'g_name\']').val();
         updateGroup(id, newId, newName);
-//        showGroups();
-//        getDevices();
+        // showGroups();
+        // getDevices();
     });
     $('#groupedit').modal('open');
     Materialize.updateTextFields();
 }
 
 function deleteGroupConfirmation(id, name) {
-    const text = translateWord('Do you really whant to delete group') + ' "'+name+'" ('+id+')?';
+    const text = translateWord('Do you really whant to delete group') + ' "' + name + '" (' + id + ')?';
     $('#modaldelete').find('p').text(text);
     $('#forcediv').addClass('hide');
-    $("#modaldelete a.btn[name='yes']").unbind('click');
-    $("#modaldelete a.btn[name='yes']").click(() => {
+    $('#modaldelete a.btn[name=\'yes\']').unbind('click');
+    $('#modaldelete a.btn[name=\'yes\']').click(() => {
         deleteGroup(id);
-//        showGroups();
-//        getDevices();
+        // showGroups();
+        // getDevices();
     });
     $('#modaldelete').modal('open');
 }
@@ -1864,8 +1879,8 @@ function deleteGroupConfirmation(id, name) {
 function updateGroup(id, newId, newName) {
     delete groups[id];
     groups[newId] = newName;
-    sendTo(namespace, 'renameGroup', { id: newId, name: newName}, function(msg) {
-        if (msg && ms.error) {
+    sendTo(namespace, 'renameGroup', {id: newId, name: newName}, function (msg) {
+        if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
         getDevices();
@@ -1874,8 +1889,8 @@ function updateGroup(id, newId, newName) {
 
 function deleteGroup(id) {
     delete groups[id];
-    sendTo(namespace, 'deleteGroup', id , function(msg) {
-        if (msg && ms.error) {
+    sendTo(namespace, 'deleteGroup', id, function (msg) {
+        if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
         getDevices();
@@ -1883,58 +1898,55 @@ function deleteGroup(id) {
 }
 
 function updateDev(id, newName, newGroups) {
-    const dev = devices.find((d) => d._id == id);
-    if (dev && dev.common.name != newName) {
+    const dev = devices.find((d) => d._id === id);
+    if (dev && dev.common.name !== newName) {
         renameDevice(id, newName);
     }
-    const keys = Object.keys(newGroups)
-    if (keys && keys.length)
-    {
-      sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
-          closeWaitingDialog();
-          if (msg && msg.error) {
-                  showMessage(msg.error, _('Error'));
-              }
-              else {
-              // save dev-groups on success
-                  dev.groups = newGroups;
-              }
-          showDevices();
-      });
-      showWaitingDialog('Updating group memberships', 10);
+    const keys = Object.keys(newGroups);
+    if (keys && keys.length) {
+        sendTo(namespace, 'updateGroupMembership', {id: id, groups: newGroups}, function (msg) {
+            closeWaitingDialog();
+            if (msg && msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                // save dev-groups on success
+                dev.groups = newGroups;
+            }
+            showDevices();
+        });
+        showWaitingDialog('Updating group memberships', 10);
 
     }
-/*
-    if (dev.info.device._type == 'Router') {
-        const oldGroups = devGroups[id] || [];
-        if (oldGroups.toString() != newGroups.toString()) {
-            devGroups[id] = newGroups;
-            sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
-                if (msg && msg.error) {
-                        showMessage(msg.error, _('Error'));
-                    }
-                    else {
-                    // save dev-groups on success
-                        dev.groups = newGroups;
-                    }
-                showDevices();
-            });
+    /*
+        if (dev.info.device._type == 'Router') {
+            const oldGroups = devGroups[id] || [];
+            if (oldGroups.toString() != newGroups.toString()) {
+                devGroups[id] = newGroups;
+                sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
+                    if (msg && msg.error) {
+                            showMessage(msg.error, _('Error'));
+                        }
+                        else {
+                        // save dev-groups on success
+                            dev.groups = newGroups;
+                        }
+                    showDevices();
+                });
+            }
         }
-    }
-*/
+    */
 }
 
 function resetConfirmation() {
     $('#modalreset').modal('open');
     const btn = $('#modalreset .modal-content a.btn');
     btn.unbind('click');
-    btn.click(function(e) {
+    btn.click(function (e) {
         sendTo(namespace, 'reset', {mode: e.target.id}, function (err) {
             if (err) {
                 console.log(err);
-            }
-            else {
-                console.log('Reseted');
+            } else {
+                console.log('Reset done');
             }
         });
     });
@@ -1944,7 +1956,7 @@ function showViewConfig() {
     $('#modalviewconfig').modal('open');
 }
 
-function prepareBindingDialog(bindObj){
+function prepareBindingDialog(bindObj) {
     const binddevices = devices.slice();
     binddevices.unshift('');
     const bind_source = (bindObj) ? [bindObj.bind_source] : [''];
@@ -1955,12 +1967,12 @@ function prepareBindingDialog(bindObj){
     const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
     // fill device selector
     list2select('#bind_source', binddevices, bind_source,
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return 'Select source device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device._type == 'Coordinator') {
+                if (device.info.device._type === 'Coordinator') {
                     return null;
                 }
                 // check for output clusters
@@ -1980,19 +1992,18 @@ function prepareBindingDialog(bindObj){
                     return null;
                 }
                 return device.common.name;
-            }
-            else { // fallback if device in list but not paired
-                device.common.name + ' ' +device.native.id;
+            } else { // fallback if device in list but not paired
+                return device.common.name + ' ' + device.native.id;
             }
         },
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return '';
             } else {
                 return device._id;
             }
         },
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return 'disabled';
             } else if (device.icon) {
@@ -2007,12 +2018,12 @@ function prepareBindingDialog(bindObj){
         bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
     }
     list2select('#bind_target', bindtargets, bind_target,
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return 'Select target device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device._type == 'Coordinator') {
+                if (device.info.device._type === 'Coordinator') {
                     return null;
                 }
                 // check for input clusters
@@ -2038,14 +2049,14 @@ function prepareBindingDialog(bindObj){
                 }
             }
         },
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return '';
             } else {
                 return device._id;
             }
         },
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return 'disabled';
             } else if (device.icon) {
@@ -2064,13 +2075,17 @@ function prepareBindingDialog(bindObj){
         const epList = device ? device.info.endpoints : [];
         const sClusterList = epList.map((ep) => {
             const clusters = ep.outputClusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {return i != null;});
-            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {return i != null;});
+                return allowClusters.includes(cl) ? {ID: ep.ID + '_' + cl, name: allowClustersName[cl]} : null;
+            }).filter((i) => {
+                return i != null;
+            });
+            return clusters.length == 0 ? null : [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter((i) => {
+            return i != null;
+        });
         list2select('#bind_source_ep', sClusterList, (selected) ? [selected] : [],
             (key, ep) => {
-                return ep.ID+' '+ep.name;
+                return ep.ID + ' ' + ep.name;
             },
             (key, ep) => {
                 return ep.ID;
@@ -2086,13 +2101,20 @@ function prepareBindingDialog(bindObj){
         const epList = device ? device.info.endpoints : [];
         const tClusterList = epList.map((ep) => {
             const clusters = ep.inputClusters.map((cl) => {
-                return (allowClusters.includes(cl) && (!sourceCl || sourceCl == cl)) ? {ID: ep.ID+'_'+cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {return i != null;});
-            return clusters.length == 0 ? null: [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {return i != null;});
+                return (allowClusters.includes(cl) && (!sourceCl || sourceCl == cl)) ? {
+                    ID: ep.ID + '_' + cl,
+                    name: allowClustersName[cl]
+                } : null;
+            }).filter((i) => {
+                return i != null;
+            });
+            return !clusters.length ? null : [{ID: ep.ID, name: 'all'}, clusters];
+        }).flat(2).filter(i => {
+            return i != null;
+        });
         list2select('#bind_target_ep', tClusterList, (selected) ? [selected] : [],
             (key, ep) => {
-                return ep.ID+' '+ep.name;
+                return ep.ID + ' ' + ep.name;
             },
             (key, ep) => {
                 return ep.ID;
@@ -2100,7 +2122,7 @@ function prepareBindingDialog(bindObj){
         );
     };
 
-    $('#bind_source').change(function() {
+    $('#bind_source').change(function () {
         if (this.selectedIndex <= 0) {
             return;
         }
@@ -2112,7 +2134,7 @@ function prepareBindingDialog(bindObj){
         configureSourceEp();
     }
 
-    $('#bind_target').change(function() {
+    $('#bind_target').change(function () {
         if (this.selectedIndex <= 0) {
             return;
         }
@@ -2125,7 +2147,7 @@ function prepareBindingDialog(bindObj){
         configureTargetEp();
     }
 
-    $('#bind_source_ep').change(function() {
+    $('#bind_source_ep').change(function () {
         $('#bind_target').trigger('change');
     });
 
@@ -2134,8 +2156,8 @@ function prepareBindingDialog(bindObj){
 }
 
 function addBindingDialog() {
-    $("#bindingmodaledit a.btn[name='save']").unbind('click');
-    $("#bindingmodaledit a.btn[name='save']").click(() => {
+    $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
+    $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
         const //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
             bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
             bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
@@ -2159,10 +2181,8 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, un
         unbind_from_coordinator
     }, function (msg) {
         closeWaitingDialog();
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            }
+        if (msg && msg.error) {
+            showMessage(msg.error, _('Error'));
         }
         getBinding();
     });
@@ -2179,10 +2199,8 @@ function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_tar
         unbind_from_coordinator
     }, function (msg) {
         closeWaitingDialog();
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            }
+        if (msg && msg.error) {
+            showMessage(msg.error, _('Error'));
         }
         getBinding();
     });
@@ -2190,8 +2208,8 @@ function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_tar
 }
 
 function editBindingDialog(bindObj) {
-    $("#bindingmodaledit a.btn[name='save']").unbind('click');
-    $("#bindingmodaledit a.btn[name='save']").click(() => {
+    $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
+    $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
         const //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
             bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
             bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
@@ -2227,9 +2245,9 @@ function showBinding() {
                                 <i class="right">${target_icon}</i>
                                 <div style="min-height:72px; font-size: 0.8em" class="truncate">
                                     <ul>
-                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace+'.', '')}</span></li>
+                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
                                         <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
-                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace+'.', '')}</span></li>
+                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
                                         <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
                                     </ul>
                                 </div>
@@ -2251,11 +2269,11 @@ function showBinding() {
         element.append(card);
     });
 
-    $("#binding button[name='delete']").click(function() {
+    $('#binding button[name=\'delete\']').click(function () {
         const bind_id = $(this).parents('.binding')[0].id;
         deleteBindingConfirmation(bind_id);
     });
-    $("#binding button[name='edit']").click(function() {
+    $('#binding button[name=\'edit\']').click(function () {
         const bind_id = $(this).parents('.binding')[0].id;
         const bindObj = binding.find((b) => b.id == bind_id);
         if (bindObj) {
@@ -2282,8 +2300,8 @@ function deleteBindingConfirmation(id) {
     $('#modaldelete').find('p').text(text);
     //$('#forcediv').removeClass('hide');
     $('#forcediv').addClass('hide');
-    $("#modaldelete a.btn[name='yes']").unbind('click');
-    $("#modaldelete a.btn[name='yes']").click(() => {
+    $('#modaldelete a.btn[name=\'yes\']').unbind('click');
+    $('#modaldelete a.btn[name=\'yes\']').click(() => {
         deleteBinding(id);
     });
     $('#modaldelete').modal('open');
@@ -2316,14 +2334,14 @@ function genDevInfo(device) {
     const dev = (device && device.info) ? device.info.device : undefined;
     const mapped = (device && device.info) ? device.info.mapped : undefined;
     if (!dev) return `<div class="truncate">No info</div>`;
-    const genRow = function(name, value, refresh) {
+    const genRow = function (name, value, refresh) {
         if (value === undefined) {
             return '';
         } else {
             return `<li><span class="label">${name}:</span><span>${value}</span></li>`;
         }
     };
-    const genRowValues = function(name, value) {
+    const genRowValues = function (name, value) {
         if (value === undefined) {
             return '';
         } else {
@@ -2358,7 +2376,7 @@ function genDevInfo(device) {
             </div>`;
     }
     const imgSrc = device.icon || device.common.icon;
-    const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px' onerror="this.onerror=null;this.src='img/unavailable.png';"><div class="divider"></div>`: '';
+    const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px' onerror="this.onerror=null;this.src='img/unavailable.png';"><div class="divider"></div>` : '';
     const info =
         `<div class="col s12 m6 l6 xl6">
             ${imgInfo}
@@ -2390,29 +2408,28 @@ function genDevInfo(device) {
     return info;
 }
 
-function showDevInfo(id){
+function showDevInfo(id) {
     const info = genDevInfo(getDeviceByID(id));
     $('#devinfo').html(info);
     $('#modaldevinfo').modal('open');
 }
 
-function showGroupList(show){
+function showGroupList(show) {
     const htmlsections = [];
     for (const groupid in devGroups) {
-      const dev = devGroups[groupid];
-      const grpname = (dev.common && dev.common.name?dev.common.name:'Group '+groupid);
-      const selectables = [];
-      const members = [];
-      if (dev && dev.memberinfo)
-      {
-        selectables.push(`<select id="members_${groupid}" multiple>`)
-        for (let m=0;m<dev.memberinfo.length; m++) {
-          members.push(`${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (${dev.memberinfo[m].ieee})`)
-          selectables.push(`<option value="${m}">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (...${dev.memberinfo[m].ieee.slice(-4)})</option>`);
+        const dev = devGroups[groupid];
+        const grpname = (dev.common && dev.common.name ? dev.common.name : 'Group ' + groupid);
+        const selectables = [];
+        const members = [];
+        if (dev && dev.memberinfo) {
+            selectables.push(`<select id="members_${groupid}" multiple>`);
+            for (let m = 0; m < dev.memberinfo.length; m++) {
+                members.push(`${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (${dev.memberinfo[m].ieee})`);
+                selectables.push(`<option value="${m}">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (...${dev.memberinfo[m].ieee.slice(-4)})</option>`);
+            }
+            selectables.push('</select>');
         }
-        selectables.push('</select>');
-      }
-      htmlsections.push(`
+        htmlsections.push(`
         <div class="row">
           <div class="col s4 m4 l4">
               <h5>${grpname}<h5>
@@ -2425,38 +2442,38 @@ function showGroupList(show){
     }
 
     $('#grouplist').html(htmlsections.join(''));
-    $('#add').click(function() {
-        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a,b) => a>b ? a : b, 0));
-        editGroupName(maxind+1, 'Group ' + maxind+1, true);
+    $('#add').click(function () {
+        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
+        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
         showGroupList(false);
     });
 
-    $("#modalgrouplist a.btn[name='save']").unbind('click');
-    $("#modalgrouplist a.btn[name='save']").click(() => {
+    $('#modalgrouplist a.btn[name=\'save\']').unbind('click');
+    $('#modalgrouplist a.btn[name=\'save\']').click(() => {
     });
     if (show) $('#modalgrouplist').modal('open');
 }
 
 let waitingTimeout, waitingInt;
 
-function showWaitingDialog(text, timeout){
+function showWaitingDialog(text, timeout) {
     let countDown = timeout;
-    waitingInt = setInterval(function() {
+    waitingInt = setInterval(function () {
         countDown -= 1;
-        const percent = 100-100*countDown/timeout;
+        const percent = 100 - 100 * countDown / timeout;
         $('#waiting_progress_line').css('width', `${percent}%`);
     }, 1000);
-    waitingTimeout = setTimeout(function() {
+    waitingTimeout = setTimeout(function () {
         $('#waiting_progress_line').css('width', `0%`);
         clearTimeout(waitingInt);
         clearTimeout(waitingTimeout);
         $('#modalWaiting').modal('close');
-    }, timeout*1000);
+    }, timeout * 1000);
     $('#waiting_message').text(text);
     $('#modalWaiting').modal('open');
 }
 
-function closeWaitingDialog(){
+function closeWaitingDialog() {
     if (waitingInt) clearTimeout(waitingInt);
     if (waitingTimeout) clearTimeout(waitingTimeout);
     $('#modalWaiting').modal('close');
@@ -2473,7 +2490,7 @@ function showChannels() {
                 $('#modalchannels').modal('open');
                 let info = '';
                 for (let ch = 11; ch < 27; ch++) {
-                    const value = msg.energyvalues[ch-11];
+                    const value = msg.energyvalues[ch - 11];
                     info +=
                         `<div style="padding-top: 10px">
                             <span class="">№ ${ch}: ${value}%</span>
@@ -2531,7 +2548,7 @@ function prepareExcludeDialog(excludeObj) {
 
     list2select('#exclude_target', onlyOneTargets, exclude_target,
 
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return 'Select model';
             }
@@ -2544,14 +2561,14 @@ function prepareExcludeDialog(excludeObj) {
                 return device.common.type;
             }
         },
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return '';
             } else {
                 return device._id;
             }
         },
-        function(key, device) {
+        function (key, device) {
             if (device == '') {
                 return 'disabled';
             } else if (device.icon) {
@@ -2565,8 +2582,8 @@ function prepareExcludeDialog(excludeObj) {
 }
 
 function addExcludeDialog() {
-    $("#excludemodaledit a.btn[name='save']").unbind('click');
-    $("#excludemodaledit a.btn[name='save']").click(() => {
+    $('#excludemodaledit a.btn[name=\'save\']').unbind('click');
+    $('#excludemodaledit a.btn[name=\'save\']').click(() => {
         const exclude_id = $('#excludemodaledit').find('#exclude_target option:selected').val();
 
         const ids = devices.map(el => el._id);
@@ -2649,7 +2666,7 @@ function showExclude() {
         element.append(card);
     });
 
-    $("#exclude button[name='delete']").click(function() {
+    $('#exclude button[name=\'delete\']').click(function () {
         const exclude_id = $(this).parents('.exclude')[0].id;
         deleteExcludeConfirmation(exclude_id);
         deleteExclude(exclude_id);
@@ -2657,14 +2674,13 @@ function showExclude() {
 }
 
 
-
 function deleteExcludeConfirmation(id) {
     const text = translateWord('Do you really want to delete exclude?');
     $('#modaldelete').find('p').text(text);
     //$('#forcediv').removeClass('hide');
     $('#forcediv').addClass('hide');
-    $("#modaldelete a.btn[name='yes']").unbind('click');
-    $("#modaldelete a.btn[name='yes']").click(() => {
+    $('#modaldelete a.btn[name=\'yes\']').unbind('click');
+    $('#modaldelete a.btn[name=\'yes\']').click(() => {
         deleteExclude(id);
     });
     $('#modaldelete').modal('open');
@@ -2705,7 +2721,7 @@ function doFilter(inputText) {
                             } else {
                                 return room;
                             }
-                        }).filter((item)=>item != undefined).map((item)=>item.toLowerCase().trim());
+                        }).filter((item) => item != undefined).map((item) => item.toLowerCase().trim());
                         valid = rooms.includes(roomFilter);
                     } else {
                         valid = false;
@@ -2722,9 +2738,9 @@ function doFilter(inputText) {
 function doSort() {
     if (shuffleInstance) {
         const sortOrder = $('#device-order-btn').text().toLowerCase();
-        if (sortOrder == 'default') {
+        if (sortOrder === 'default') {
             shuffleInstance.sort({});
-        } else if (sortOrder == 'a-z') {
+        } else if (sortOrder === 'a-z') {
             shuffleInstance.sort({
                 by: sortByTitle
             });
@@ -2738,12 +2754,12 @@ function sortByTitle(element) {
 
 function getDashCard(dev, groupImage) {
     const title = dev.common.name,
-    id = dev._id,
-    type = dev.common.type,
-    img_src = (groupImage ? groupImage: dev.icon || dev.common.icon),
-    isActive = (dev.common.deactivated ? false : true),
-    rooms = [],
-    lang = systemLang  || 'en';
+        id = dev._id,
+        type = dev.common.type,
+        img_src = (groupImage ? groupImage : dev.icon || dev.common.icon),
+        isActive = !dev.common.deactivated,
+        rooms = [],
+        lang = systemLang || 'en';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
@@ -2752,46 +2768,46 @@ function getDashCard(dev, groupImage) {
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>':''),
-        status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '': `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
-        permitJoinBtn = (isActive && dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : ''),
+        status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
+        permitJoinBtn = (isActive && dev.info && dev.info.device._type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
-    const info = (dev.statesDef) ? dev.statesDef.map((stateDef)=>{
+    const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
         let val = stateDef.val || '';
-        if (stateDef.role == 'switch' && stateDef.write) {
-            val = `<span class="switch"><label><input type="checkbox" ${(val) ? "checked" : ""}><span class="lever"></span></label></span>`;
-        } else if (stateDef.role == 'level.dimmer' && stateDef.write) {
-            val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
-        } else if (stateDef.role == 'level.color.temperature' && stateDef.write) {
-            val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ""} /></span>`;
-        } else if (stateDef.type == 'boolean') {
+        if (stateDef.role === 'switch' && stateDef.write) {
+            val = `<span class="switch"><label><input type="checkbox" ${(val) ? 'checked' : ''}><span class="lever"></span></label></span>`;
+        } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
+            val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
+        } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
+            val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
+        } else if (stateDef.type === 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
-            val = `<label class="dash"><input type="checkbox" ${(val == true) ? "checked='checked'" : ""} ${disabled}/><span></span></label>`;
+            val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
         } else if (stateDef.states && stateDef.write) {
             let options;
-            if(typeof stateDef.states == "string") {
+            if (typeof stateDef.states == 'string') {
                 const sts = stateDef.states.split(';');
                 options = sts.map((item) => {
                     const v = item.split(':');
-                    return `<option value="${v[0]}" ${(val == v[0]) ? "selected" : ""}>${v[1]}</option>`;
+                    return `<option value="${v[0]}" ${(val == v[0]) ? 'selected' : ''}>${v[1]}</option>`;
                 });
             } else {
                 options = [];
-                for(const [key, value] of Object.entries(stateDef.states)) {
-                    options.push(`<option value="${key}" ${(val == key) ? "selected" : ""}>${value}</option>`);
+                for (const [key, value] of Object.entries(stateDef.states)) {
+                    options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${value}</option>`);
                 }
             }
-            val = `<select class="browser-default enum" style="height: 16px; padding: 0px; width: auto; display: inline-block">${options.join('')}</select>`;
+            val = `<select class="browser-default enum" style="height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
         } else {
             val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
         return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
     }).join('') : '';
     const dashCard = `
-        <div class="card-content zcard ${isActive?'':'bg_red'}">
+        <div class="card-content zcard ${isActive ? '' : 'bg_red'}">
             <div class="flip" style="cursor: pointer">
             <span class="top right small" style="border-radius: 50%">
                 ${idleTime}
@@ -2804,7 +2820,7 @@ function getDashCard(dev, groupImage) {
             <i class="left">${image}</i>
             <div style="min-height:88px; font-size: 0.8em; height: 130px; overflow-y: auto" class="truncate">
                 <ul>
-                    ${(isActive?info:'Device deactivated')}
+                    ${(isActive ? info : 'Device deactivated')}
                 </ul>
             </div>
             <div class="footer right-align"></div>
@@ -2817,19 +2833,19 @@ function setDashStates(id, state) {
     const devId = getDevId(id);
     const dev = getDeviceByID(devId);
     if (dev) {
-        const stateDef = dev.statesDef.find((stateDef)=> stateDef.id == id);
+        const stateDef = dev.statesDef.find((stateDef) => stateDef.id == id);
         if (stateDef) {
             const sid = id.split('.').join('_');
-            if (stateDef.role == 'switch' && stateDef.write) {
-                $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
-            } else if (stateDef.role == 'level.dimmer' && stateDef.write) {
-                $(`#${sid}`).find("input[type='range']").prop('value', state.val);
-            } else if (stateDef.role == 'level.color.temperature' && stateDef.write) {
-                $(`#${sid}`).find("input[type='range']").prop('value', state.val);
+            if (stateDef.role === 'switch' && stateDef.write) {
+                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+            } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
+                $(`#${sid}`).find('input[type=\'range\']').prop('value', state.val);
+            } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
+                $(`#${sid}`).find('input[type=\'range\']').prop('value', state.val);
             } else if (stateDef.states && stateDef.write) {
                 $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
-            } else if (stateDef.type == 'boolean') {
-                $(`#${sid}`).find("input[type='checkbox']").prop('checked', state.val);
+            } else if (stateDef.type === 'boolean') {
+                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
             } else {
                 $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
             }
@@ -2838,23 +2854,23 @@ function setDashStates(id, state) {
 }
 
 function hookControls() {
-    $("input[type='checkbox']").change(function (event) {
+    $('input[type=\'checkbox\']').change(function (event) {
         const val = $(this).is(':checked');
-        const id = $(this).parents(".state").attr('oid');
+        const id = $(this).parents('.state').attr('oid');
         sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
             //console.log(data);
         });
     });
-    $("input[type='range']").change(function (event) {
+    $('input[type=\'range\']').change(function (event) {
         const val = $(this).val();
-        const id = $(this).parents(".state").attr('oid');
+        const id = $(this).parents('.state').attr('oid');
         sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
             //console.log(data);
         });
     });
-    $(".state select").on( "change", function () {
+    $('.state select').on('change', function () {
         const val = $(this).val();
-        const id = $(this).parents(".state").attr('oid');
+        const id = $(this).parents('.state').attr('oid');
         sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
             //console.log(data);
         });
@@ -2862,12 +2878,12 @@ function hookControls() {
 }
 
 function getIdleTime(value) {
-    return (value) ? moment(new Date(value)).fromNow(true) : "";
+    return (value) ? moment(new Date(value)).fromNow(true) : '';
 }
 
 function updateCardTimer() {
     if (devices) {
-        devices.forEach((dev)=>{
+        devices.forEach((dev) => {
             const id = dev._id;
             if (id) {
                 const rid = id.split('.').join('_');
@@ -2884,9 +2900,7 @@ function updateDevice(id) {
                 showMessage(devs.error, _('Error'));
             } else {
                 removeDevice(id);
-                devs.forEach((dev)=>{
-                    devices.push(dev);
-                })
+                devs.forEach(dev => devices.push(dev));
                 showDevices();
             }
         }
@@ -2904,21 +2918,21 @@ function removeDevice(id) {
 }
 
 function swapActive(id) {
-  const dev = getDeviceByID(id);
-  if (dev && dev.common) {
-     dev.common.deactivated = !(dev.common.deactivated)
-     sendTo(namespace, 'setDeviceActivated', {id: id, deactivated: dev.common.deactivated}, function () {
-        showDevices();
-    });
-  }
+    const dev = getDeviceByID(id);
+    if (dev && dev.common) {
+        dev.common.deactivated = !(dev.common.deactivated);
+        sendTo(namespace, 'setDeviceActivated', {id: id, deactivated: dev.common.deactivated}, function () {
+            showDevices();
+        });
+    }
 }
 
 function reconfigureDlg(id) {
     const text = translateWord(`Do you really want to reconfigure device?`);
     $('#modalreconfigure').find('p').text(text);
-    $("#modalreconfigure a.btn[name='yes']").unbind('click');
-    $("#modalreconfigure a.btn[name='yes']").click(() => {
-        reconfigureDevice(id, force);
+    $('#modalreconfigure a.btn[name=\'yes\']').unbind('click');
+    $('#modalreconfigure a.btn[name=\'yes\']').click(() => {
+        reconfigureDevice(id/*, force*/);
     });
     $('#modalreconfigure').modal('open');
     Materialize.updateTextFields();

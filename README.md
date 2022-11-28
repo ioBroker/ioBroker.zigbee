@@ -113,6 +113,10 @@ You can thank the authors by these links:
 -->
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (bluefox) Packages updated
+* (bluefox) Added names of serial ports in configuration dialog
+
 ### 1.7.7 (2022-11-24)
 * dep update
 
