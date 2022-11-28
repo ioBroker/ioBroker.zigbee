@@ -138,7 +138,7 @@ class Zigbee extends utils.Adapter {
         if (error.code === undefined) {
             let em = error.stack.match(/failed \((.+?)\) at/);
             em = em || error.stack.match(/failed \((.+?)\)/);
-            this.log.error(`${message} no error code (${(em ? em[1]:'undefined')})`);
+            this.log.error(`${message} no error code (${(em ? em[1] : 'undefined')})`);
             this.sendError(error, `${message} no error code`);
             this.log.debug(`Stack trace for ${em}: ${error.stack}`);
             return;
@@ -172,7 +172,7 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    debugLog (data, ...args) {
+    debugLog(data, ...args) {
         const message = (args) ? util.format(data, ...args) : data;
         this.log.debug(message.slice(message.indexOf('zigbee-herdsman')));
     }
@@ -250,8 +250,7 @@ class Zigbee extends utils.Adapter {
         try {
             const DebugIdentify = require('./debugidentify');
             debugversion = DebugIdentify.ReportIdentifier();
-        }
-        catch {
+        } catch {
             debugversion = ' npm ...';
         }
 
@@ -297,7 +296,7 @@ class Zigbee extends utils.Adapter {
     }
 
     tryToReconnect() {
-        this.reconnectTimer = setTimeout(()=>{
+        this.reconnectTimer = setTimeout(() => {
             if (this.config.port.includes('tcp://')) {
                 // Controller connect though Wi-Fi.
                 // Unlikely USB dongle, connection broken may only cause user unplugged the dongle,
@@ -414,9 +413,7 @@ class Zigbee extends utils.Adapter {
         });
     }
 
-
-
-    async onZigbeeEvent(type, entity, message){
+    async onZigbeeEvent(type, entity, message) {
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
         const device = entity.device;
         const mappedModel = entity.mapped;
@@ -499,7 +496,7 @@ class Zigbee extends utils.Adapter {
         });
     }
 
-    async publishFromState(deviceId, model, stateModel, stateList, options){
+    async publishFromState(deviceId, model, stateModel, stateList, options) {
         let isGroup = false;
         if (model === 'group') {
             isGroup = true;
@@ -522,7 +519,7 @@ class Zigbee extends utils.Adapter {
                 try {
                     const json_value = JSON.parse(value);
                     const payload = {device: deviceId.replace('0x', ''), payload: json_value};
-                    const result = await(this.sendPayload(payload));
+                    const result = await this.sendPayload(payload);
                     if (result.hasOwnProperty('success') && result.success) {
                         this.acknowledgeState(deviceId, model, stateDesc, value);
                     }
@@ -635,8 +632,8 @@ class Zigbee extends utils.Adapter {
                     }
                 }
             } catch (error) {
-                this.filterError(`Error ${error.code} on send command to ${deviceId}.`+
-                   ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
+                this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
+                    ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
             }
         });
     }
@@ -662,7 +659,10 @@ class Zigbee extends utils.Adapter {
             } catch (e) {
                 this.log.error(`Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
                 this.sendError(e, `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
-                return {success: false, error: `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`};
+                return {
+                    success: false,
+                    error: `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`
+                };
             }
         } else if (typeof payload === 'object') {
             payloadObj = payload;
@@ -672,7 +672,7 @@ class Zigbee extends utils.Adapter {
             try {
                 const isDevice = !payload.device.includes('group_');
                 const stateList = [];
-                const devID = isDevice ? `0x${payload.device}`:parseInt(payload.device.replace('group_', ''));
+                const devID = isDevice ? `0x${payload.device}` : parseInt(payload.device.replace('group_', ''));
 
                 const entity = await this.zbController.resolveEntity(devID);
                 if (!entity) {
@@ -713,8 +713,8 @@ class Zigbee extends utils.Adapter {
                     await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, payload.options);
                     return {success: true};
                 } catch (error) {
-                    this.filterError(`Error ${error.code} on send command to ${payload.device}.`+
-                       ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
+                    this.filterError(`Error ${error.code} on send command to ${payload.device}.` +
+                        ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
                     return {success: false, error};
                 }
             } catch (e) {
@@ -857,7 +857,7 @@ class Zigbee extends utils.Adapter {
         }
         if (data === 0) {
             // set pairing mode off
-            this.setState('info.pairingMode', false,true);
+            this.setState('info.pairingMode', false, true);
             _pairingMode = false;
         }
         if (data) {
