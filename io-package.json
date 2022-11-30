@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.3",
+    "version": "1.8.4",
     "news": {
+      "1.8.4": {
+        "en": "fix for new code"
+       
+      },
       "1.8.3": {
         "en": "back to old source",
         "de": "zurück zur alten quelle",

@@ -40,20 +40,19 @@ const createByteArray = function (hexString) {
     return bytes;
 };
 
-const E_INFO=1;
-const E_DEBUG=2;
-const E_WARN=3;
-const E_ERROR=4;
+const E_INFO  = 1;
+const E_DEBUG = 2;
+const E_WARN  = 3;
+const E_ERROR = 4;
 
 let _pairingMode = false;
 
 const errorCodes = {
-    9999: { severity:E_INFO, message:'No response'},
-    233: { severity:E_DEBUG, message:'MAC NO ACK'},
-    205: { severity:E_WARN, message:'No network route'},
-    134: { severity:E_WARN, message:'Unnsupported Attribute'},
+    9999: {severity: E_INFO, message: 'No response'},
+    233: {severity: E_DEBUG, message: 'MAC NO ACK'},
+    205: {severity: E_WARN, message: 'No network route'},
+    134: {severity: E_WARN, message: 'Unsupported Attribute'},
 };
-
 
 class Zigbee extends utils.Adapter {
     /**
@@ -65,9 +64,9 @@ class Zigbee extends utils.Adapter {
             name: 'zigbee',
             systemConfig: true,
         }));
-        this.on('ready', this.onReady.bind(this));
-        this.on('unload', this.onUnload.bind(this));
-        this.on('message', this.onMessage.bind(this));
+        this.on('ready', () => this.onReady());
+        this.on('unload', callback => this.onUnload(callback));
+        this.on('message', obj => this.onMessage(obj));
 
         this.query_device_block = [];
 
@@ -93,14 +92,15 @@ class Zigbee extends utils.Adapter {
                 case 'SendToDevice': {
                     let rv = {
                         success: false,
-                        loc:-1,
+                        loc: -1,
                     };
+
                     try {
-                        rv = await this.SendPayload(obj.message);
-                    }
-                    catch (e) {
+                        rv = await this.sendPayload(obj.message);
+                    } catch (e) {
                         rv.error = e;
                     }
+
                     this.sendTo(obj.from, obj.command, rv, obj.callback);
                     break;
                 }
@@ -115,15 +115,15 @@ class Zigbee extends utils.Adapter {
                 const Sentry = sentryInstance.getSentryObject();
                 if (Sentry) {
                     if (message) {
-                        Sentry.configureScope(scope => {
+                        Sentry.configureScope(scope =>
                             scope.addBreadcrumb({
-                                type: "error", // predefined types
-                                category: "error message",
+                                type: 'error', // predefined types
+                                category: 'error message',
                                 level: Sentry.Severity.Error,
-                                message: message
-                            });
-                        });
+                                message
+                            }));
                     }
+
                     if (typeof error == 'string') {
                         Sentry.captureException(new Error(error));
                     } else {
@@ -135,27 +135,31 @@ class Zigbee extends utils.Adapter {
     }
 
     filterError(errormessage, message, error) {
-        if (error.code === undefined)
-        {
-            let em =  error.stack.match(/failed \((.+?)\) at/);
-            if (!em) em = error.stack.match(/failed \((.+?)\)/);
-            this.log.error(`${message} no error code (${(em ? em[1]:'undefined')})`);
+        if (error.code === undefined) {
+            let em = error.stack.match(/failed \((.+?)\) at/);
+            em = em || error.stack.match(/failed \((.+?)\)/);
+            this.log.error(`${message} no error code (${(em ? em[1] : 'undefined')})`);
             this.sendError(error, `${message} no error code`);
             this.log.debug(`Stack trace for ${em}: ${error.stack}`);
             return;
         }
+
         const ecode = errorCodes[error.code];
         if (ecode === undefined) {
             this.log.error(errormessage);
             this.sendError(error, errormessage);
             return;
         }
+
         switch (ecode.severity) {
-            case E_INFO: this.log.info(`${message}: Code ${error.code} (${ecode.message})`);
+            case E_INFO:
+                this.log.info(`${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            case E_DEBUG: this.log.debug(`${message}: Code ${error.code} (${ecode.message})`);
+            case E_DEBUG:
+                this.log.debug(`${message}: Code ${error.code} (${ecode.message})`);
                 break;
-            case E_WARN: this.log.warn(`${message}: Code ${error.code} (${ecode.message})`);
+            case E_WARN:
+                this.log.warn(`${message}: Code ${error.code} (${ecode.message})`);
                 break;
             case E_ERROR:
                 this.log.error(`${message}: Code ${error.code} (${ecode.message})`);
@@ -164,10 +168,11 @@ class Zigbee extends utils.Adapter {
             default:
                 this.log.error(`${message}: Code ${error.code} (malformed error)`);
                 this.sendError(error, `${message}: Code ${error.code} (malformed error)`);
+                break;
         }
     }
 
-    debugLog (data, ...args) {
+    debugLog(data, ...args) {
         const message = (args) ? util.format(data, ...args) : data;
         this.log.debug(message.slice(message.indexOf('zigbee-herdsman')));
     }
@@ -181,9 +186,8 @@ class Zigbee extends utils.Adapter {
         // external converters
         this.applyExternalConverters();
         // get exclude list from object
-        this.getState('exclude.all', (err, state) => {
-            this.stController.getExcludeExposes(state);
-        });
+        this.getState('exclude.all', (err, state) =>
+            this.stController.getExcludeExposes(state));
 
         this.subscribeStates('*');
         // set connection false before connect to zigbee
@@ -212,7 +216,9 @@ class Zigbee extends utils.Adapter {
         }
         const extfiles = this.config.external.split(';');
         for (const moduleName of extfiles) {
-            if (!moduleName) continue;
+            if (!moduleName) {
+                continue;
+            }
             this.log.info(`Apply converter from module: ${moduleName}`);
             const sandbox = {
                 require,
@@ -231,7 +237,7 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    applyExternalConverters(){
+    applyExternalConverters() {
         for (const definition of this.getExternalDefinition()) {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
@@ -244,24 +250,23 @@ class Zigbee extends utils.Adapter {
         try {
             const DebugIdentify = require('./debugidentify');
             debugversion = DebugIdentify.ReportIdentifier();
-        }
-        catch {
+        } catch {
             debugversion = ' npm ...';
         }
 
         // installed version
         let gitVers = '';
         try {
-            this.log.info('Starting Zigbee ' + debugversion);
+            this.log.info(`Starting Zigbee ${debugversion}`);
 
-            await this.getForeignObject('system.adapter.' + this.namespace, (err, obj) => {
+            await this.getForeignObject(`system.adapter.${this.namespace}`, (err, obj) => {
                 if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
                     const instFrom = obj.common.installedFrom;
-                    gitVers = gitVers + instFrom.replace('tarball','commit');
+                    gitVers = gitVers + instFrom.replace('tarball', 'commit');
                 } else {
                     gitVers = obj.common.installedFrom;
                 }
-                this.log.info('Installed Version: ' + gitVers );
+                this.log.info(`Installed Version: ${gitVers}`);
             });
 
             await this.zbController.start();
@@ -274,6 +279,7 @@ class Zigbee extends utils.Adapter {
                 this.log.error(error);
             }
             this.sendError(error, `Failed to start Zigbee`);
+
             if (this.reconnectCounter > 0) {
                 this.tryToReconnect();
             }
@@ -290,11 +296,11 @@ class Zigbee extends utils.Adapter {
     }
 
     tryToReconnect() {
-        this.reconnectTimer = setTimeout(()=>{
-            if (this.config.port.indexOf('tcp://') !== -1) {
-                // Controller connect though WiFi.
-                // Unlikely USB dongle, connection broken may only caused user unpluged the dongle,
-                // WiFi connected gateway is possible that device connection is broken caused by
+        this.reconnectTimer = setTimeout(() => {
+            if (this.config.port.includes('tcp://')) {
+                // Controller connect though Wi-Fi.
+                // Unlikely USB dongle, connection broken may only cause user unplugged the dongle,
+                // Wi-Fi connected gateway is possible that device connection is broken caused by
                 // AP issue or Zigbee gateway power is turned off unexpectedly.
                 // So try to reconnect gateway every 10 seconds all the time.
                 this.log.info(`Try to reconnect.`);
@@ -303,22 +309,22 @@ class Zigbee extends utils.Adapter {
                 this.reconnectCounter -= 1;
             }
             this.doConnect();
-        }, 10*1000); // every 10 seconds
+        }, 10 * 1000); // every 10 seconds
     }
 
     async onZigbeeAdapterReady() {
-        if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+        this.reconnectTimer && clearTimeout(this.reconnectTimer);
         this.log.info(`Zigbee started`);
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
         if (!extPanIdFix) {
-            const configExtPanId = this.config.extPanID ? '0x'+this.config.extPanID.toLowerCase() : '0xdddddddddddddddd';
+            const configExtPanId = this.config.extPanID ? `0x${this.config.extPanID.toLowerCase()}` : '0xdddddddddddddddd';
             let networkExtPanId = (await this.zbController.herdsman.getNetworkParameters()).extendedPanID;
             let needChange = false;
             this.log.debug(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
             const adapterType = this.config.adapterType || 'zstack';
             if (adapterType === 'zstack') {
-                if (configExtPanId != networkExtPanId) {
+                if (configExtPanId !== networkExtPanId) {
                     try {
                         // try to read from nvram
                         const result = await this.zbController.herdsman.adapter.znp.request(
@@ -334,9 +340,9 @@ class Zigbee extends utils.Adapter {
                                 2, // ZnpCommandStatus.INVALID_PARAM
                             ]
                         );
-                        const nwExtPanId = '0x'+result.payload.value.reverse().toString('hex');
+                        const nwExtPanId = `0x${result.payload.value.reverse().toString('hex')}`;
                         this.log.debug(`Config value ${configExtPanId} : nw value ${nwExtPanId}`);
-                        if (configExtPanId != nwExtPanId) {
+                        if (configExtPanId !== nwExtPanId) {
                             networkExtPanId = nwExtPanId;
                             needChange = true;
                         }
@@ -366,37 +372,36 @@ class Zigbee extends utils.Adapter {
         for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
-                const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
-                this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () => {
-                    this.stController.syncDevStates(device, model);
-                });
+                const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
+                this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () =>
+                    this.stController.syncDevStates(device, model));
             }
         }
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
     async checkIfModelUpdate(entity) {
-        const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID,
+        const model = entity.mapped ? entity.mapped.model : entity.device.modelID,
             device = entity.device,
             devId = device.ieeeAddr.substr(2);
+
         return new Promise((resolve) => {
             this.getObject(devId, (err, obj) => {
-                if (obj && obj.common.type != model) {
+                if (obj && obj.common.type !== model) {
                     // let's change model
                     this.getStatesOf(devId, (err, states) => {
                         if (!err && states) {
                             const chain = [];
-                            states.forEach((state) => {
-                                chain.push(this.deleteStateAsync(devId, null, state._id));
-                            });
-                            Promise.all(chain).then(()=>{
-                                this.stController.deleteDeviceStates(devId, () => {
-                                    this.stController.updateDev(devId, model, model, async () => {
-                                        await this.stController.syncDevStates(device, model);
-                                        resolve();
-                                    });
-                                });
-                            });
+                            states.forEach((state) =>
+                                chain.push(this.deleteStateAsync(devId, null, state._id)));
+
+                            Promise.all(chain)
+                                .then(() =>
+                                    this.stController.deleteDeviceStates(devId, () =>
+                                        this.stController.updateDev(devId, model, model, async () => {
+                                            await this.stController.syncDevStates(device, model);
+                                            resolve();
+                                        })));
                         } else {
                             resolve();
                         }
@@ -408,17 +413,16 @@ class Zigbee extends utils.Adapter {
         });
     }
 
-
-
-    async onZigbeeEvent(type, entity, message){
+    async onZigbeeEvent(type, entity, message) {
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
-        const device = entity.device,
-            mappedModel = entity.mapped,
-            model = (entity.mapped) ? entity.mapped.model : entity.device.modelID,
-            cluster = message.cluster,
-            devId = device.ieeeAddr.substr(2),
-            meta = {device: device};
-        //this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
+        const device = entity.device;
+        const mappedModel = entity.mapped;
+        const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
+        const cluster = message.cluster;
+        const devId = device.ieeeAddr.substr(2);
+        const meta = {device};
+
+        // this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
         meta.logger = this.log;
 
         await this.checkIfModelUpdate(entity);
@@ -439,12 +443,14 @@ class Zigbee extends utils.Adapter {
         }
         let converters = mappedModel.fromZigbee.filter(c => c && c.cluster === cluster && (
             (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
+
         if (!converters.length && type === 'readResponse') {
             converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
                 (c.type instanceof Array) ? c.type.includes('attributeReport') : c.type === 'attributeReport'));
         }
+
         if (!converters.length) {
-            if (type != 'readResponse') {
+            if (type !== 'readResponse') {
                 this.log.debug(
                     `No converter available for '${mappedModel.model}' with cluster '${cluster}' and type '${type}'`
                 );
@@ -476,10 +482,10 @@ class Zigbee extends utils.Adapter {
 
     acknowledgeState(deviceId, model, stateDesc, value) {
         if (model === 'group') {
-            const stateId = this.namespace + '.group_' + deviceId + '.' + stateDesc.id;
+            const stateId = `${this.namespace}.group_${deviceId}.${stateDesc.id}`;
             this.setState(stateId, value, true);
         } else {
-            const stateId = this.namespace + '.' + deviceId.replace('0x', '') + '.' + stateDesc.id;
+            const stateId = `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`;
             this.setState(stateId, value, true);
         }
     }
@@ -490,9 +496,9 @@ class Zigbee extends utils.Adapter {
         });
     }
 
-    async publishFromState(deviceId, model, stateModel, stateList, options){
+    async publishFromState(deviceId, model, stateModel, stateList, options) {
         let isGroup = false;
-        if (model == 'group') {
+        if (model === 'group') {
             isGroup = true;
             deviceId = parseInt(deviceId);
         }
@@ -503,17 +509,17 @@ class Zigbee extends utils.Adapter {
             this.log.debug(`No mapped model for ${model}`);
             return;
         }
-        this.log.debug('Mapped Model: ' +  JSON.stringify(mappedModel));
+        this.log.debug(`Mapped Model: ${JSON.stringify(mappedModel)}`);
 
-        stateList.forEach(async(changedState) => {
+        stateList.forEach(async changedState => {
             const stateDesc = changedState.stateDesc;
             const value = changedState.value;
 
-            if (stateDesc.id == 'send_payload') {
+            if (stateDesc.id === 'send_payload') {
                 try {
                     const json_value = JSON.parse(value);
-                    const payload = { device:deviceId.replace('0x', ''), payload:json_value };
-                    const result = await(this.SendPayload(payload));
+                    const payload = {device: deviceId.replace('0x', ''), payload: json_value};
+                    const result = await this.sendPayload(payload);
                     if (result.hasOwnProperty('success') && result.success) {
                         this.acknowledgeState(deviceId, model, stateDesc, value);
                     }
@@ -532,7 +538,7 @@ class Zigbee extends utils.Adapter {
                 // if this is the device query state => trigger the device query
 
                 // on activation of the 'device_query' state trigger hardware query where possible
-                if (stateDesc.id == 'device_query') {
+                if (stateDesc.id === 'device_query') {
                     if (this.query_device_block.indexOf(deviceId) > -1) {
                         this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
                         return;
@@ -554,16 +560,18 @@ class Zigbee extends utils.Adapter {
                         }
                         this.log.debug(`Device query for '${entity.device.ieeeAddr}' done`);
                         const idToRemove = deviceId;
-                        setTimeout(()=>{
+                        setTimeout(() => {
                             const idx = this.query_device_block.indexOf(idToRemove);
-                            if (idx > -1)  this.query_device_block.splice(idx);
+                            if (idx > -1) {
+                                this.query_device_block.splice(idx);
+                            }
                         }, 10000);
                     }
                     return;
                 }
                 return;
             }
-            const converter = mappedModel.toZigbee.find((c) => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
+            const converter = mappedModel.toZigbee.find(c => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
             if (!converter) {
                 this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
                 this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
@@ -574,7 +582,7 @@ class Zigbee extends utils.Adapter {
             const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
             let syncStateList = [];
             if (stateModel && stateModel.syncStates) {
-                stateModel.syncStates.forEach((syncFunct) => {
+                stateModel.syncStates.forEach(syncFunct => {
                     const res = syncFunct(stateDesc, value, options);
                     if (res) {
                         syncStateList = syncStateList.concat(res);
@@ -593,12 +601,14 @@ class Zigbee extends utils.Adapter {
                 target = await this.zbController.resolveEntity(deviceId, epName);
                 target = target.endpoint;
             }
+
             this.log.debug(`target: ${safeJsonStringify(target)}`);
+
             const meta = {
                 endpoint_name: epName,
                 options: preparedOptions,
                 device: entity.device,
-                mapped: (model == 'group') ? [] : mappedModel,
+                mapped: model === 'group' ? [] : mappedModel,
                 message: {[key]: preparedValue},
                 logger: this.log,
                 state: {},
@@ -610,23 +620,24 @@ class Zigbee extends utils.Adapter {
                 const result = await converter.convertSet(target, key, preparedValue, meta);
                 this.log.debug(`convert result ${safeJsonStringify(result)}`);
                 if (result !== undefined) {
-                    if (stateModel && !isGroup)
+                    if (stateModel && !isGroup) {
                         this.acknowledgeState(deviceId, model, stateDesc, value);
+                    }
                     // process sync state list
                     this.processSyncStatesList(deviceId, model, syncStateList);
+
                     if (isGroup) {
                         await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
                         this.acknowledgeState(deviceId, model, stateDesc, value);
                     }
                 }
-            } catch(error) {
-                this.filterError(`Error ${error.code} on send command to ${deviceId}.`+
-                   ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
+            } catch (error) {
+                this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
+                    ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
             }
         });
     }
-    //
-    //
+
     // This function is introduced to explicitly allow user level scripts to send Commands
     // directly to the zigbee device. It utilizes the zigbee-herdsman-converters to generate
     // the exact zigbee message to be sent and can be used to set device options which are
@@ -639,74 +650,79 @@ class Zigbee extends utils.Adapter {
     // payload: The data to send to the device as JSON object (key/Value pairs)
     // endpoint: optional: the endpoint to send the data to, if supported.
     //
-    async SendPayload(payload) {
+    async sendPayload(payload) {
         this.log.debug(`publishToDevice called with ${safeJsonStringify(payload)}`);
-        let payload_obj = {};
+        let payloadObj = {};
         if (typeof payload === 'string') {
             try {
-                payload_obj = JSON.parse();
+                payloadObj = JSON.parse(payload);
             } catch (e) {
                 this.log.error(`Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
                 this.sendError(e, `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
-                return {success:false, error: `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`};
+                return {
+                    success: false,
+                    error: `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`
+                };
             }
         } else if (typeof payload === 'object') {
-            payload_obj = payload;
+            payloadObj = payload;
         }
-        if (payload_obj.hasOwnProperty('device') && payload_obj.hasOwnProperty('payload'))
-        {
+
+        if (payloadObj.hasOwnProperty('device') && payloadObj.hasOwnProperty('payload')) {
             try {
-                const isDevice =  payload.device.indexOf('group_') == -1;
+                const isDevice = !payload.device.includes('group_');
                 const stateList = [];
-                const devID = (isDevice ? `0x${payload.device}`:parseInt(payload.device.replace('group_', '')));
+                const devID = isDevice ? `0x${payload.device}` : parseInt(payload.device.replace('group_', ''));
 
                 const entity = await this.zbController.resolveEntity(devID);
                 if (!entity) {
-                    this.log.error(`Device ${safeJsonStringify(payload_obj.device)} not found`);
-                    this.sendError(`Device ${safeJsonStringify(payload_obj.device)} not found`);
-                    return {success: false, error: `Device ${safeJsonStringify(payload_obj.device)} not found`};
+                    this.log.error(`Device ${safeJsonStringify(payloadObj.device)} not found`);
+                    this.sendError(`Device ${safeJsonStringify(payloadObj.device)} not found`);
+                    return {success: false, error: `Device ${safeJsonStringify(payloadObj.device)} not found`};
                 }
                 const mappedModel = entity.mapped;
                 if (!mappedModel) {
-                    this.log.error(`No Model for Device ${safeJsonStringify(payload_obj.device)}`);
-                    this.sendError(`No Model for Device ${safeJsonStringify(payload_obj.device)}`);
-                    return {success: false, error: `No Model for Device ${safeJsonStringify(payload_obj.device)}`};
+                    this.log.error(`No Model for Device ${safeJsonStringify(payloadObj.device)}`);
+                    this.sendError(`No Model for Device ${safeJsonStringify(payloadObj.device)}`);
+                    return {success: false, error: `No Model for Device ${safeJsonStringify(payloadObj.device)}`};
                 }
-                if (typeof payload_obj.payload !== 'object') {
-                    this.log.error(`Illegal payload type for ${safeJsonStringify(payload_obj.device)}`);
-                    this.sendError(`Illegal payload type for ${safeJsonStringify(payload_obj.device)}`);
-                    return {success: false, error: `Illegal payload type for ${safeJsonStringify(payload_obj.device)}`};
+                if (typeof payloadObj.payload !== 'object') {
+                    this.log.error(`Illegal payload type for ${safeJsonStringify(payloadObj.device)}`);
+                    this.sendError(`Illegal payload type for ${safeJsonStringify(payloadObj.device)}`);
+                    return {success: false, error: `Illegal payload type for ${safeJsonStringify(payloadObj.device)}`};
                 }
-                for (const key in payload_obj.payload) {
-                    if (payload_obj.payload[key] != undefined) {
-                        const datatype = typeof payload_obj.payload[key];
-                        stateList.push({stateDesc: {
-                            id:key,
-                            prop:key,
-                            role:'state',
-                            type:datatype,
-                            epname:payload_obj.endpoint,
-                        }, value: payload_obj.payload[key], index:0, timeout:0});
+                for (const key in payloadObj.payload) {
+                    if (payloadObj.payload[key] != undefined) {
+                        const datatype = typeof payloadObj.payload[key];
+                        stateList.push({
+                            stateDesc: {
+                                id: key,
+                                prop: key,
+                                role: 'state',
+                                type: datatype,
+                                epname: payloadObj.endpoint,
+                            },
+                            value: payloadObj.payload[key],
+                            index: 0,
+                            timeout: 0,
+                        });
                     }
                 }
                 try {
-                    this.log.debug(`Calling publish to state for ${safeJsonStringify(payload_obj.device)} with ${safeJsonStringify(stateList)}`);
+                    this.log.debug(`Calling publish to state for ${safeJsonStringify(payloadObj.device)} with ${safeJsonStringify(stateList)}`);
                     await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, payload.options);
                     return {success: true};
+                } catch (error) {
+                    this.filterError(`Error ${error.code} on send command to ${payload.device}.` +
+                        ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
+                    return {success: false, error};
                 }
-                catch (error)
-                {
-                    this.filterError(`Error ${error.code} on send command to ${payload.device}.`+
-                       ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
-                    return {success:false, error: error};
-                }
+            } catch (e) {
+                return {success: false, error: e};
             }
-            catch (e) {
-                return {success:false, error: e};
-            }
-
         }
-        return {success:false, error: 'missing parameter device or payload in message ' + JSON.stringify(payload)};
+
+        return {success: false, error: `missing parameter device or payload in message ${JSON.stringify(payload)}`};
     }
 
 
@@ -719,9 +735,8 @@ class Zigbee extends utils.Adapter {
                     const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
                     this.log.debug(`new device ${dev.ieeeAddr} ${dev.networkAddress} ${model} `);
                     this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${model}`, true);
-                    this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () => {
-                        this.stController.syncDevStates(dev, model);
-                    });
+                    this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () =>
+                        this.stController.syncDevStates(dev, model));
                 }
                 //                else this.log.warn(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
             });
@@ -732,7 +747,7 @@ class Zigbee extends utils.Adapter {
         this.log.debug(`Leave device event: ${ieeeAddr}`);
         if (ieeeAddr) {
             const devId = ieeeAddr.substr(2);
-            this.log.debug('Delete device ' + devId + ' from iobroker.');
+            this.log.debug(`Delete device ${devId} from iobroker.`);
             this.stController.deleteDeviceStates(devId);
         }
     }
@@ -756,7 +771,7 @@ class Zigbee extends utils.Adapter {
             }
         }
     }
-   
+
     /**
      * @param {() => void} callback
      */
@@ -841,7 +856,7 @@ class Zigbee extends utils.Adapter {
         }
         if (data === 0) {
             // set pairing mode off
-            this.setState('info.pairingMode', false,true);
+            this.setState('info.pairingMode', false, true);
             _pairingMode = false;
         }
         if (data) {
@@ -856,7 +871,7 @@ class Zigbee extends utils.Adapter {
     }
 
     expandFileName(fn) {
-      return path.join(utils.getAbsoluteInstanceDataDir(this), fn);
+        return path.join(utils.getAbsoluteInstanceDataDir(this), fn);
     }
 
     onLog(level, msg, data) {
@@ -867,8 +882,8 @@ class Zigbee extends utils.Adapter {
                     logger = this.log.error;
                     if (data)
                         data = data.toString();
-                    this.logToPairing('Error: ' + msg + '. ' + data, true);
-                    this.sendError('Error: ' + msg + '. ' + data);
+                    this.logToPairing(`Error: ${msg}. ${data}`, true);
+                    this.sendError(`Error: ${msg}. ${data}`);
                     break;
                 case 'debug':
                     logger = this.log.debug;
@@ -882,9 +897,9 @@ class Zigbee extends utils.Adapter {
             }
             if (data) {
                 if (typeof data === 'string') {
-                    logger(msg + '. ' + data);
+                    logger(`${msg}. ${data}`);
                 } else {
-                    logger(msg + '. ' + safeJsonStringify(data));
+                    logger(`${msg}. ${safeJsonStringify(data)}`);
                 }
             } else {
                 logger(msg);
