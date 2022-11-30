@@ -133,14 +133,12 @@ You can thank the authors by these links:
 
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.8.3 (2022-11-30)
 * (arteck) back to old source
-
 
 ### 1.8.1 (2022-11-28)
 * (bluefox) Packages updated
 * (bluefox) Added names of serial ports in configuration dialog
-
 
 ### 1.7.7 (2022-11-24)
 * dep update
