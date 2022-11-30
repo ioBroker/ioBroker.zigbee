@@ -14,33 +14,36 @@
       "email": "kirovilya@gmail.com"
     }
   ],
-  "engines": {
+   "engines": {
     "node": ">=10"
   },
+  "optionalDependencies": {
+    "serialport": "^10.5.0"
+  },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.4.0",
-    "tar": "^6.0.5",
-    "typescript": "^4.0.5",
     "zigbee-herdsman": "0.14.76",
-    "zigbee-herdsman-converters": "14.0.678"
+    "zigbee-herdsman-converters": "14.0.678",
+    "@iobroker/adapter-core": "^2.6.7",
+    "tar": "^6.1.12",
+    "typescript": "^4.9.3"
   },
   "description": "Zigbee devices",
   "devDependencies": {
     "@alcalzone/release-script": "^3.5.9",
     "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
-    "@iobroker/testing": "^2.5.4",
-    "axios": "^0.21.1",
-    "chai": "^4.3.4",
-    "chai-as-promised": "^7.1.1",
-    "eslint": "^8.14.0",
+    "@iobroker/testing": "^4.1.0",
+    "axios": "^1.2.0",
+    "mixin-deep": "^2.0.1",
+    "eslint": "^8.28.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "chai": "^4.3.7",
+    "chai-as-promised": "^7.1.1",
     "gulp": "^4.0.2",
     "gulp-jsdoc3": "^3.0.0",
     "gulp-replace": "^1.1.3",
-    "mixin-deep": "^1.3.2",
-    "mocha": "^9.1.3"
+    "mocha": "^10.1.0"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
@@ -58,6 +61,15 @@
   ],
   "license": "MIT",
   "main": "main.js",
+  "files": [
+    "admin/",
+    "lib/",
+    "docs/",
+    "support/",
+    "io-package.json",
+    "LICENSE",
+    "main.js"
+  ],
   "readmeFilename": "README.md",
   "repository": {
     "type": "git",
@@ -71,7 +83,9 @@
     "test:integration": "mocha test/integration --exit",
     "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235",
     "test:js": "mocha --opts test/mocha.custom.opts",
-    "lint": "eslint --ext .ts \"packages/*/src/**/*.ts\"",
-    "release": "release-script"
+    "release": "release-script",
+    "release-patch": "release-script patch --yes --no-update-lockfile",
+    "release-minor": "release-script minor --yes --no-update-lockfile",
+    "release-major": "release-script major --yes --no-update-lockfile"
   }
 }
