@@ -133,7 +133,7 @@ You can thank the authors by these links:
 
 
 ## Changelog
-### **WORK IN PROGRESS**
+### 1.8.5 (2022-11-30)
 * (arteck) fix for new code
 
 ### 1.8.3 (2022-11-30)

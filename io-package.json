@@ -1,11 +1,23 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.4",
+    "version": "1.8.5",
     "news": {
+      "1.8.5": {
+        "en": "fix for new code",
+        "de": "fix für neuen code",
+        "ru": "исправить для нового кода",
+        "pt": "corrigir para novo código",
+        "nl": "vertaling:",
+        "fr": "correction du nouveau code",
+        "it": "correzione per nuovo codice",
+        "es": "fijar para nuevo código",
+        "pl": "naprawić nowy kod",
+        "uk": "виправити для нового коду",
+        "zh-cn": "f 新的守则的ix"
+      },
       "1.8.4": {
         "en": "fix for new code"
-       
       },
       "1.8.3": {
         "en": "back to old source",
@@ -44,30 +56,6 @@
       "1.7.6": {
         "en": "ikea fix ",
         "de": "ikea fix "
-      },
-      "1.7.5": {
-        "en": "error message for undefined devices or icons ",
-        "de": "Fehlermeldung für undefinierte Geräte oder Symbole",
-        "ru": "сообщение об ошибке для неопределенных устройств или значков",
-        "pt": "mensagem de erro para dispositivos ou ícones indefinidos",
-        "nl": "foutmelding voor ongedefinieerde apparaten of pictogrammen",
-        "fr": "message d'erreur pour les périphériques ou les icônes non définis",
-        "it": "messaggio di errore per dispositivi o icone non definiti",
-        "es": "mensaje de error para dispositivos o iconos no definidos",
-        "pl": "komunikat o błędzie dla niezdefiniowanych urządzeń lub ikon",
-        "zh-cn": "未定义设备或图标的错误消息"
-      },
-      "1.7.4": {
-        "en": "missing icons with multiple description",
-        "de": "fehlende Symbole mit mehrfacher Beschreibung",
-        "ru": "отсутствующие значки с несколькими описаниями",
-        "pt": "ícones ausentes com descrição múltipla",
-        "nl": "ontbrekende pictogrammen met meerdere beschrijvingen",
-        "fr": "icônes manquantes avec plusieurs descriptions",
-        "it": "icone mancanti con descrizione multipla",
-        "es": "faltan iconos con descripción múltiple",
-        "pl": "brakujące ikony z wieloma opisami",
-        "zh-cn": "缺少具有多个描述的图标"
       }
     },
     "title": "Zigbee",
