@@ -1,335 +1,391 @@
 {
-  "common": {
-    "name": "zigbee",
-    "version": "1.8.1",
-    "news": {
-      "1.8.1": {
-        "en": "Packages updated\nAdded names of serial ports in configuration dialog",
-        "de": "Pakete aktualisiert\nNamen der seriellen Ports im Konfigurationsdialog hinzugefügt",
-        "ru": "Пакеты обновлены\nДобавлены имена серийных портов в диалоге конфигурации",
-        "pt": "Pacotes atualizados\nNomes adicionados de portas seriais na caixa de diálogo de configuração",
-        "nl": "Verpakking geüpload\nNamen van serie havens in configuration dialog",
-        "fr": "Packages updated\nAjout de noms de ports série dans le dialogue de configuration",
-        "it": "Pacchetti aggiornati\nAggiunto i nomi delle porte seriali nella finestra di dialogo di configurazione",
-        "es": "Paquetes actualizados\nNombres añadidos de los puertos serie en el diálogo de configuración",
-        "pl": "Pakiet\nDodane nazwy portów seryjnych w dialogach konfiguracyjnych",
-        "uk": "Пакети оновлені\nДодано імена серійних портів у діалоговому вікні конфігурації",
-        "zh-cn": "更新的包装\n加 口号港口"
-      },
-      "1.7.7": {
-        "en": "Update dependencies",
-        "de": "Update dependencies"
-      },
-      "1.7.6": {
-        "en": "ikea fix ",
-        "de": "ikea fix "
-      },
-      "1.7.5": {
-        "en": "error message for undefined devices or icons ",
-        "de": "Fehlermeldung für undefinierte Geräte oder Symbole",
-        "ru": "сообщение об ошибке для неопределенных устройств или значков",
-        "pt": "mensagem de erro para dispositivos ou ícones indefinidos",
-        "nl": "foutmelding voor ongedefinieerde apparaten of pictogrammen",
-        "fr": "message d'erreur pour les périphériques ou les icônes non définis",
-        "it": "messaggio di errore per dispositivi o icone non definiti",
-        "es": "mensaje de error para dispositivos o iconos no definidos",
-        "pl": "komunikat o błędzie dla niezdefiniowanych urządzeń lub ikon",
-        "zh-cn": "未定义设备或图标的错误消息"
-      },
-      "1.7.4": {
-        "en": "missing icons with multiple description",
-        "de": "fehlende Symbole mit mehrfacher Beschreibung",
-        "ru": "отсутствующие значки с несколькими описаниями",
-        "pt": "ícones ausentes com descrição múltipla",
-        "nl": "ontbrekende pictogrammen met meerdere beschrijvingen",
-        "fr": "icônes manquantes avec plusieurs descriptions",
-        "it": "icone mancanti con descrizione multipla",
-        "es": "faltan iconos con descripción múltiple",
-        "pl": "brakujące ikony z wieloma opisami",
-        "zh-cn": "缺少具有多个描述的图标"
-      },
-      "1.7.2": {
-        "en": "corr download missing icon",
-        "de": "korrektur download fehlendes Icon",
-        "ru": "Корр скачать отсутствует значок",
-        "pt": "corr baixar ícone ausente",
-        "nl": "corr download ontbreekt icoon",
-        "fr": "corr télécharger l'icône manquante",
-        "it": "corr download icona mancante",
-        "es": "falta el icono de descarga corr",
-        "pl": "brak ikony pobierania corr",
-        "zh-cn": "更正下载丢失的图标"
-      },
-      "1.7.1": {
-        "en": "Device status is displayed in admin interface with color and icon.\nInternal adapter backups can be disabled (for backups with BackItUp Adapter).\nOnly last 10 backups are kept (currently they accumulate and need to be deleted manually).\nNew function for missing icons in Admin Object tree.",
-        "de": "Der Gerätestatus wird in der Admin-Oberfläche mit Farbe und Symbol angezeigt.\nInterne Adapter-Backups können deaktiviert werden (für Backups mit BackItUp Adapter).\nNur die letzten 10 Backups werden aufbewahrt (derzeit sammeln sie sich an und müssen manuell gelöscht werden).\nNeue Funktion für fehlende Symbole im Admin-Objektbaum.",
-        "ru": "Состояние устройства отображается в административном интерфейсе цветом и значком.\nВнутренние резервные копии адаптера могут быть отключены (для резервных копий с помощью BackItUp Adapter).\nХранятся только последние 10 резервных копий (в настоящее время они накапливаются и должны быть удалены вручную).\nНовая функция для отсутствуют значки в дереве объектов администрирования.",
-        "pt": "O status do dispositivo é exibido na interface de administração com cor e ícone.\nOs backups do adaptador interno podem ser desabilitados (para backups com o BackItUp Adapter).\nSomente os últimos 10 backups são mantidos (atualmente eles se acumulam e precisam ser excluídos manualmente).\nNova função para ícones ausentes na árvore de objetos de administração.",
-        "nl": "Apparaatstatus wordt weergegeven in de beheerdersinterface met kleur en pictogram.\nInterne adapterback-ups kunnen worden uitgeschakeld (voor back-ups met BackItUp Adapter).\nAlleen de laatste 10 back-ups worden bewaard (momenteel worden deze verzameld en moeten ze handmatig worden verwijderd).\nNieuwe functie voor ontbrekende pictogrammen in Admin Object-structuur.",
-        "fr": "L'état de l'appareil est affiché dans l'interface d'administration avec une couleur et une icône.\nLes sauvegardes de l'adaptateur interne peuvent être désactivées (pour les sauvegardes avec l'adaptateur BackItUp).\nSeules les 10 dernières sauvegardes sont conservées (actuellement, elles s'accumulent et doivent être supprimées manuellement).\nNouvelle fonction pour icônes manquantes dans l'arborescence des objets d'administration.",
-        "it": "Lo stato del dispositivo viene visualizzato nell'interfaccia di amministrazione con un colore e un'icona.\nI backup interni dell'adattatore possono essere disabilitati (per i backup con l'adattatore BackItUp).\nSono conservati solo gli ultimi 10 backup (attualmente si accumulano e devono essere eliminati manualmente).\nNuova funzione per icone mancanti nell'albero degli oggetti amministratore.",
-        "es": "El estado del dispositivo se muestra en la interfaz de administración con color e icono.\nLas copias de seguridad del adaptador interno se pueden desactivar (para copias de seguridad con el adaptador BackItUp).\nSolo se conservan las últimas 10 copias de seguridad (actualmente se acumulan y deben eliminarse manualmente).\nNueva función para Faltan iconos en el árbol de objetos de administración.",
-        "pl": "Stan urządzenia jest wyświetlany w interfejsie administratora za pomocą koloru i ikony.\nWewnętrzne kopie adaptera można wyłączyć (dla kopii zapasowych z BackItUp Adapter).\nZachowywanych jest tylko 10 ostatnich kopii (obecnie są one gromadzone i należy je usunąć ręcznie).\nNowa funkcja dla brakujące ikony w drzewie Admin Object.",
-        "zh-cn": "设备状态以颜色和图标显示在管理界面中。\n可以禁用内部适配器备份（对于使用 BackItUp 适配器的备份）。\n仅保留最后 10 个备份（当前它们累积并需要手动删除）。\n新功能管理对象树中缺少图标。"
-      }
-    },
-    "title": "Zigbee",
-    "titleLang": {
-      "en": "Zigbee",
-      "ru": "Zigbee",
-      "de": "ZigBee",
-      "pt": "Zigbee",
-      "nl": "Zigbee",
-      "fr": "Zigbee",
-      "it": "Zigbee",
-      "es": "zigbee",
-      "pl": "Zigbee",
-      "zh-cn": "Zigbee"
-    },
-    "desc": {
-      "en": "Zigbee adapter for Xiaomi (and other) devices via Chip cc26xx/cc25xx",
-      "ru": "Zigbee адаптер для Xiaomi (и других) устройств через Chip cc26xx/cc25xx",
-      "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über Chip cc26xx/cc25xx",
-      "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via Chip cc26xx/cc25xx",
-      "nl": "Zigbee-adapter voor Xiaomi (en andere) apparaten via Chip cc26xx/cc25xx",
-      "fr": "Adaptateur Zigbee pour périphériques Xiaomi (et autres) Chip cc26xx/cc25xx",
-      "it": "Adattatore Zigbee per dispositivi Xiaomi (e altri) tramite Chip cc26xx/cc25xx",
-      "es": "Adaptador Zigbee para dispositivos Xiaomi (y otros) a través de Chip cc26xx/cc25xx",
-      "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem Chip cc26xx/cc25xx",
-      "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过Chip cc26xx/cc25xx"
-    },
-    "authors": [
-      "Kirov Ilya<kirovilya@gmail.com>"
-    ],
-    "license": "MIT",
-    "platform": "Javascript/Node.js",
-    "mode": "daemon",
-    "icon": "zigbee.png",
-    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
-    "enabled": true,
-    "keywords": [
-      "zigbee",
-      "xiaomi",
-      "cc2531",
-      "cc2530",
-      "cc2538",
-      "cc2652",
-      "deconz",
-      "conbee",
-      "raspbee"
-    ],
-    "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
-    "loglevel": "info",
-    "type": "hardware",
-    "materialize": true,
-    "messagebox": true,
-    "stopBeforeUpdate": true,
-    "dataFolder": "zigbee_%INSTANCE%",
-    "compact": true,
-    "materializeTab": true,
-    "connectionType": "local",
-    "dataSource": "push",
-    "tier": 2,
-    "adminTab": {
-      "name": {
-        "en": "Zigbee",
-        "de": "Zigbee",
-        "ru": "Zigbee",
-        "pt": "Zigbee",
-        "nl": "Zigbee",
-        "fr": "Zigbee",
-        "it": "Zigbee",
-        "es": "Zigbee",
-        "pl": "Zigbee",
-        "zh-cn": "Zigbee"
-      },
-      "fa-icon": "</i><img style='width:24px;margin-bottom:-6px;' src='/adapter/zigbee/zigbee.svg'><i>"
-    },
-    "plugins": {
-      "sentry": {
-        "dsn": "https://c829e2ad996d45d1bdb2247805699883@o831057.ingest.sentry.io/5812498"
-      }
-    },
-    "globalDependencies": [
-      {
-        "admin": ">=5.1.25"
-      }
-    ],
-    "dependencies": [
-      {
-        "js-controller": ">=3.3.0"
-      }
-    ],
-    "messages": [
-      {
-        "condition": {
-          "operand": "and",
-          "rules": [
-            "oldVersion<=1.6.18",
-            "newVersion>=1.7.0"
-          ]
+    "common": {
+        "name": "zigbee",
+        "version": "1.8.2",
+        "news": {
+            "1.8.2": {
+                  "en": "back to old source",
+                  "de": "back to old source"       
+            },        
+            "1.8.1": {
+              "en": "Packages updated\nAdded names of serial ports in configuration dialog",
+              "de": "Pakete aktualisiert\nNamen der seriellen Ports im Konfigurationsdialog hinzugefügt",
+              "ru": "Пакеты обновлены\nДобавлены имена серийных портов в диалоге конфигурации",
+              "pt": "Pacotes atualizados\nNomes adicionados de portas seriais na caixa de diálogo de configuração",
+              "nl": "Verpakking geüpload\nNamen van serie havens in configuration dialog",
+              "fr": "Packages updated\nAjout de noms de ports série dans le dialogue de configuration",
+              "it": "Pacchetti aggiornati\nAggiunto i nomi delle porte seriali nella finestra di dialogo di configurazione",
+              "es": "Paquetes actualizados\nNombres añadidos de los puertos serie en el diálogo de configuración",
+              "pl": "Pakiet\nDodane nazwy portów seryjnych w dialogach konfiguracyjnych",
+              "uk": "Пакети оновлені\nДодано імена серійних портів у діалоговому вікні конфігурації",
+              "zh-cn": "更新的包装\n加 口号港口"
+            },
+           "1.7.7": {
+                  "en": "Update dependencies",
+                  "de": "Update dependencies"        
+            },        
+           "1.7.6": {
+                  "en": "ikea fix ",
+                  "de": "ikea fix "        
+            },        
+            "1.7.5": {
+                  "en": "error message for undefined devices or icons ",
+                  "de": "Fehlermeldung für undefinierte Geräte oder Symbole",
+                  "ru": "сообщение об ошибке для неопределенных устройств или значков",
+                  "pt": "mensagem de erro para dispositivos ou ícones indefinidos",
+                  "nl": "foutmelding voor ongedefinieerde apparaten of pictogrammen",
+                  "fr": "message d'erreur pour les périphériques ou les icônes non définis",
+                  "it": "messaggio di errore per dispositivi o icone non definiti",
+                  "es": "mensaje de error para dispositivos o iconos no definidos",
+                  "pl": "komunikat o błędzie dla niezdefiniowanych urządzeń lub ikon",
+                  "zh-cn": "未定义设备或图标的错误消息"
+            },        
+              "1.7.4": {
+                  "en": "missing icons with multiple description",
+                  "de": "fehlende Symbole mit mehrfacher Beschreibung",
+                  "ru": "отсутствующие значки с несколькими описаниями",
+                  "pt": "ícones ausentes com descrição múltipla",
+                  "nl": "ontbrekende pictogrammen met meerdere beschrijvingen",
+                  "fr": "icônes manquantes avec plusieurs descriptions",
+                  "it": "icone mancanti con descrizione multipla",
+                  "es": "faltan iconos con descripción múltiple",
+                  "pl": "brakujące ikony z wieloma opisami",
+                  "zh-cn": "缺少具有多个描述的图标"
+            },        
+            "1.7.2": {
+               "en": "corr download missing icon",
+               "de": "korrektur download fehlendes Icon",
+               "ru": "Корр скачать отсутствует значок",
+               "pt": "corr baixar ícone ausente",
+               "nl": "corr download ontbreekt icoon",
+               "fr": "corr télécharger l'icône manquante",
+               "it": "corr download icona mancante",
+               "es": "falta el icono de descarga corr",
+               "pl": "brak ikony pobierania corr",
+               "zh-cn": "更正下载丢失的图标"
+            },        
+            "1.7.1": {
+              "en": "Device status is displayed in admin interface with color and icon.\nInternal adapter backups can be disabled (for backups with BackItUp Adapter).\nOnly last 10 backups are kept (currently they accumulate and need to be deleted manually).\nNew function for missing icons in Admin Object tree.",
+              "de": "Der Gerätestatus wird in der Admin-Oberfläche mit Farbe und Symbol angezeigt.\nInterne Adapter-Backups können deaktiviert werden (für Backups mit BackItUp Adapter).\nNur die letzten 10 Backups werden aufbewahrt (derzeit sammeln sie sich an und müssen manuell gelöscht werden).\nNeue Funktion für fehlende Symbole im Admin-Objektbaum.",
+              "ru": "Состояние устройства отображается в административном интерфейсе цветом и значком.\nВнутренние резервные копии адаптера могут быть отключены (для резервных копий с помощью BackItUp Adapter).\nХранятся только последние 10 резервных копий (в настоящее время они накапливаются и должны быть удалены вручную).\nНовая функция для отсутствуют значки в дереве объектов администрирования.",
+              "pt": "O status do dispositivo é exibido na interface de administração com cor e ícone.\nOs backups do adaptador interno podem ser desabilitados (para backups com o BackItUp Adapter).\nSomente os últimos 10 backups são mantidos (atualmente eles se acumulam e precisam ser excluídos manualmente).\nNova função para ícones ausentes na árvore de objetos de administração.",
+              "nl": "Apparaatstatus wordt weergegeven in de beheerdersinterface met kleur en pictogram.\nInterne adapterback-ups kunnen worden uitgeschakeld (voor back-ups met BackItUp Adapter).\nAlleen de laatste 10 back-ups worden bewaard (momenteel worden deze verzameld en moeten ze handmatig worden verwijderd).\nNieuwe functie voor ontbrekende pictogrammen in Admin Object-structuur.",
+              "fr": "L'état de l'appareil est affiché dans l'interface d'administration avec une couleur et une icône.\nLes sauvegardes de l'adaptateur interne peuvent être désactivées (pour les sauvegardes avec l'adaptateur BackItUp).\nSeules les 10 dernières sauvegardes sont conservées (actuellement, elles s'accumulent et doivent être supprimées manuellement).\nNouvelle fonction pour icônes manquantes dans l'arborescence des objets d'administration.",
+              "it": "Lo stato del dispositivo viene visualizzato nell'interfaccia di amministrazione con un colore e un'icona.\nI backup interni dell'adattatore possono essere disabilitati (per i backup con l'adattatore BackItUp).\nSono conservati solo gli ultimi 10 backup (attualmente si accumulano e devono essere eliminati manualmente).\nNuova funzione per icone mancanti nell'albero degli oggetti amministratore.",
+              "es": "El estado del dispositivo se muestra en la interfaz de administración con color e icono.\nLas copias de seguridad del adaptador interno se pueden desactivar (para copias de seguridad con el adaptador BackItUp).\nSolo se conservan las últimas 10 copias de seguridad (actualmente se acumulan y deben eliminarse manualmente).\nNueva función para Faltan iconos en el árbol de objetos de administración.",
+              "pl": "Stan urządzenia jest wyświetlany w interfejsie administratora za pomocą koloru i ikony.\nWewnętrzne kopie adaptera można wyłączyć (dla kopii zapasowych z BackItUp Adapter).\nZachowywanych jest tylko 10 ostatnich kopii (obecnie są one gromadzone i należy je usunąć ręcznie).\nNowa funkcja dla brakujące ikony w drzewie Admin Object.",
+              "zh-cn": "设备状态以颜色和图标显示在管理界面中。\n可以禁用内部适配器备份（对于使用 BackItUp 适配器的备份）。\n仅保留最后 10 个备份（当前它们累积并需要手动删除）。\n新功能管理对象树中缺少图标。"
+            },        
+            "1.6.18": {
+                "de": "fix pairing mode",
+                "en": "fix pairing mode",
+                "ru": "fix pairing mode"
+            },        
+             "1.6.16": {
+                "de": "admin dep fix",
+                "en": "admin dep fix",
+                "ru": "admin dep fix"
+            },        
+             "1.6.15": {
+                "de": "Batterie Status wurde geändert",
+                "en": "Battery status was changed",
+                "ru": "Состояние батареи было изменено"
+            },
+            "1.6.14": {
+                "de": "Gruppen wurden überarbeitet 2",
+                "en": "Groups were newly revised 2",
+                "ru": "Группы были пересмотрены 2"
+            },
+            "1.6.13": {
+                "de": "zh 0.14.xx",
+                "en": "zh 0.14.xx",
+                "ru": "zh 0.14.xx"
+            },
+            "1.6.12": {
+                "de": "Gruppen wurden überarbeitet",
+                "en": "Groups were newly revised",
+                "ru": "Группы были пересмотрены"
+            },
+            "1.6.11": {
+                "en": "Some changes for tuya-devices"
+            },
+            "1.6.10": {
+                "en": "Small herdsman fixes and new devices"
+            },
+            "1.6.6": {
+                "en": "fix admin"
+            },
+           
+            "1.0.0": {
+                "en": "Powered by Zigbee-Herdsman",
+                "de": "Angetrieben von Zigbee-Herdsman",
+                "ru": "При поддержке Zigbee-Herdsman",
+                "pt": "Desenvolvido por Zigbee-Herdsman",
+                "nl": "Aangedreven door Zigbee-Herdsman",
+                "fr": "Propulsé par Zigbee-Herdsman",
+                "it": "Alimentato da Zigbee-Herdsman",
+                "es": "Desarrollado por Zigbee-Herdsman",
+                "pl": "Obsługiwane przez Zigbee-Herdsman",
+                "zh-cn": "由Zigbee-Herdsman提供支持"
+            }
         },
-        "title": {
-          "en": "Important notice!",
-          "de": "Wichtiger Hinweis!",
-          "ru": "Важное замечание!",
-          "pt": "Notícia importante!",
-          "nl": "Belangrijke mededeling!",
-          "fr": "Avis important!",
-          "it": "Avviso IMPORTANTE!",
-          "es": "Noticia importante!",
-          "pl": "Ważna uwaga!",
-          "zh-cn": "重要通知!"
+        "title": "Zigbee",
+        "titleLang": {
+            "en": "Zigbee",
+            "ru": "Zigbee",
+            "de": "ZigBee",
+            "pt": "Zigbee",
+            "nl": "Zigbee",
+            "fr": "Zigbee",
+            "it": "Zigbee",
+            "es": "zigbee",
+            "pl": "Zigbee",
+            "zh-cn": "Zigbee"
         },
-        "text": {
-          "en": "This new version cleans the file backup (under \\opt\\iobroker\\iobroker-data\\zigbee_0\\) of the adapter. Only the last 10 backups are kept.",
-          "de": "Diese neue Version bereinigt das Datei backup (unter \\opt\\iobroker\\iobroker-data\\zigbee_0\\) des Adapter. Es werden nur die letzten 10 Sicherungen behalten.",
-          "ru": "Эта новая версия очищает резервную копию файла (в папке \\opt\\iobroker\\iobroker-data\\zigbee_0\\) адаптера. Сохраняются только последние 10 резервных копий.",
-          "pt": "Esta nova versão limpa o backup do arquivo (em \\opt\\iobroker\\iobroker-data\\zigbee_0\\) do adaptador. Apenas os últimos 10 backups são mantidos.",
-          "nl": "Deze nieuwe versie maakt de bestandsback-up schoon (onder \\opt\\iobroker\\iobroker-data\\zigbee_0\\) van de adapter. Alleen de laatste 10 back-ups worden bewaard.",
-          "fr": "Cette nouvelle version nettoie le fichier de sauvegarde (sous \\opt\\iobroker\\iobroker-data\\zigbee_0\\) de l'adaptateur. Seules les 10 dernières sauvegardes sont conservées.",
-          "it": "Questa nuova versione pulisce il backup del file (in \\opt\\iobroker\\iobroker-data\\zigbee_0\\) dell'adattatore. Vengono mantenuti solo gli ultimi 10 backup.",
-          "es": "Esta nueva versión limpia la copia de seguridad del archivo (en \\opt\\iobroker\\iobroker-data\\zigbee_0\\) del adaptador. Solo se conservan las últimas 10 copias de seguridad.",
-          "pl": "Ta nowa wersja czyści kopię pliku (w \\opt\\iobroker\\iobroker-data\\zigbee_0\\) adaptera. Przechowywanych jest tylko 10 ostatnich kopii.",
-          "zh-cn": "这个新版本清理了适配器的文件备份（在 \\opt\\iobroker\\iobroker-data\\zigbee_0\\ 下）。仅保留最后 10 个备份。"
+        "desc": {
+            "en": "Zigbee adapter for Xiaomi (and other) devices via Chip cc26xx/cc25xx",
+            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через Chip cc26xx/cc25xx",
+            "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über Chip cc26xx/cc25xx",
+            "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via Chip cc26xx/cc25xx",
+            "nl": "Zigbee-adapter voor Xiaomi (en andere) apparaten via Chip cc26xx/cc25xx",
+            "fr": "Adaptateur Zigbee pour périphériques Xiaomi (et autres) Chip cc26xx/cc25xx",
+            "it": "Adattatore Zigbee per dispositivi Xiaomi (e altri) tramite Chip cc26xx/cc25xx",
+            "es": "Adaptador Zigbee para dispositivos Xiaomi (y otros) a través de Chip cc26xx/cc25xx",
+            "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem Chip cc26xx/cc25xx",
+            "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过Chip cc26xx/cc25xx"
         },
-        "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
-        "level": "warn",
-        "linkText": {
-          "en": "Readme",
-          "de": "Liesmich",
-          "ru": "Прочти меня",
-          "pt": "Leia-me",
-          "nl": "Leesmij",
-          "fr": "Lisez-moi",
-          "it": "Leggimi",
-          "es": "Léame",
-          "pl": "Readme",
-          "zh-cn": "自述文件"
+        "authors": [
+            "Kirov Ilya<kirovilya@gmail.com>"
+        ],
+        "license": "MIT",       
+        "platform": "Javascript/Node.js",
+        "mode": "daemon",
+        "icon": "zigbee.png",
+        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
+        "enabled": true,
+        "keywords": [
+            "zigbee",
+            "xiaomi",
+            "cc2531",
+            "cc2530",
+            "cc2538",
+            "cc2652",
+            "deconz",
+            "conbee",
+            "raspbee"
+        ],
+        "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
+        "loglevel": "info",
+        "type": "hardware",
+        "materialize": true,
+        "messagebox": true,
+        "stopBeforeUpdate": true,
+        "dataFolder": "zigbee_%INSTANCE%",
+        "compact": true,
+        "materializeTab": true,
+        "connectionType": "local",
+        "dataSource": "push",
+        "tier": 2,
+        "adminTab": {
+            "name": {
+                "en": "Zigbee",
+                "de": "Zigbee",
+                "ru": "Zigbee",
+                "pt": "Zigbee",
+                "nl": "Zigbee",
+                "fr": "Zigbee",
+                "it": "Zigbee",
+                "es": "Zigbee",
+                "pl": "Zigbee",
+                "zh-cn": "Zigbee"
+            },
+            "fa-icon": "</i><img style='width:24px;margin-bottom:-6px;' src='/adapter/zigbee/zigbee.svg'><i>"
         },
-        "buttons": [
-          "agree",
-          "cancel"
-        ]
-      }
+        "plugins": {
+            "sentry": {
+                "dsn": "https://c829e2ad996d45d1bdb2247805699883@o831057.ingest.sentry.io/5812498"
+            }
+        },
+        "globalDependencies": [
+            {
+                "admin": ">=5.1.25"
+            }
+        ],
+        "dependencies": [
+            {
+                "js-controller": ">=3.3.0"
+            }
+        ],
+        "messages": [
+            {
+              "condition": {
+                "operand": "and",
+                "rules": [
+                  "oldVersion<=1.6.18",
+                  "newVersion>=1.7.0"
+                ]
+              },              
+              "title": {
+                "en": "Important notice!",
+                "de": "Wichtiger Hinweis!",
+                "ru": "Важное замечание!",
+                "pt": "Notícia importante!",
+                "nl": "Belangrijke mededeling!",
+                "fr": "Avis important!",
+                "it": "Avviso IMPORTANTE!",
+                "es": "Noticia importante!",
+                "pl": "Ważna uwaga!",
+                "zh-cn": "重要通知!"
+              },
+              "text": {
+                  "en": "This new version cleans the file backup (under \\opt\\iobroker\\iobroker-data\\zigbee_0\\) of the adapter. Only the last 10 backups are kept.",
+                  "de": "Diese neue Version bereinigt das Datei backup (unter \\opt\\iobroker\\iobroker-data\\zigbee_0\\) des Adapter. Es werden nur die letzten 10 Sicherungen behalten.",
+                  "ru": "Эта новая версия очищает резервную копию файла (в папке \\opt\\iobroker\\iobroker-data\\zigbee_0\\) адаптера. Сохраняются только последние 10 резервных копий.",
+                  "pt": "Esta nova versão limpa o backup do arquivo (em \\opt\\iobroker\\iobroker-data\\zigbee_0\\) do adaptador. Apenas os últimos 10 backups são mantidos.",
+                  "nl": "Deze nieuwe versie maakt de bestandsback-up schoon (onder \\opt\\iobroker\\iobroker-data\\zigbee_0\\) van de adapter. Alleen de laatste 10 back-ups worden bewaard.",
+                  "fr": "Cette nouvelle version nettoie le fichier de sauvegarde (sous \\opt\\iobroker\\iobroker-data\\zigbee_0\\) de l'adaptateur. Seules les 10 dernières sauvegardes sont conservées.",
+                  "it": "Questa nuova versione pulisce il backup del file (in \\opt\\iobroker\\iobroker-data\\zigbee_0\\) dell'adattatore. Vengono mantenuti solo gli ultimi 10 backup.",
+                  "es": "Esta nueva versión limpia la copia de seguridad del archivo (en \\opt\\iobroker\\iobroker-data\\zigbee_0\\) del adaptador. Solo se conservan las últimas 10 copias de seguridad.",
+                  "pl": "Ta nowa wersja czyści kopię pliku (w \\opt\\iobroker\\iobroker-data\\zigbee_0\\) adaptera. Przechowywanych jest tylko 10 ostatnich kopii.",
+                  "zh-cn": "这个新版本清理了适配器的文件备份（在 \\opt\\iobroker\\iobroker-data\\zigbee_0\\ 下）。仅保留最后 10 个备份。"
+              },
+              "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
+              "level": "warn",
+              "linkText": {
+                  "en": "Readme",
+                  "de": "Liesmich",
+                  "ru": "Прочти меня",
+                  "pt": "Leia-me",
+                  "nl": "Leesmij",
+                  "fr": "Lisez-moi",
+                  "it": "Leggimi",
+                  "es": "Léame",
+                  "pl": "Readme",
+                  "zh-cn": "自述文件"
+              },
+              "buttons": [
+                "agree",
+                "cancel"
+              ]
+            }
+        ]                                     
+    },
+    "native": {
+        "port": "",
+        "panID": 6754,
+        "extPanID": "DDDDDDDDDDDDDDDD",
+        "channel": 11,
+        "disableLed": false,
+        "precfgkey": "01030507090B0D0F00020406080A0C0D",
+        "countDown": 60,
+        "adapterType": "zstack",
+        "debugHerdsman": false,
+        "disablePing": false,
+        "disableBackup": false,
+        "external": "",
+        "startWithInconsistent": false
+    },
+    "instanceObjects": [
+        {
+            "_id": "exclude",
+            "type": "channel",
+            "common": {
+                "name": "exclude devs from devices.js"
+            },
+            "native": {}
+        },
+        {
+            "_id": "exclude.all",
+            "type": "state",
+            "common": {
+                "name": "all",
+                "type": "string",
+                "read": true,
+                "write": true,
+                "def": "[]"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info",
+            "type": "channel",
+            "common": {
+                "name": "Information"
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.connection",
+            "type": "state",
+            "common": {
+                "role": "indicator.connected",
+                "name": "If connected to zigbee device",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.pairingMode",
+            "type": "state",
+            "common": {
+                "name": "Pairing mode",
+                "type": "boolean",
+                "read": true,
+                "write": false,
+                "def": false
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.pairingCountdown",
+            "type": "state",
+            "common": {
+                "name": "Pairing countdown",
+                "type": "number",
+                "read": true,
+                "write": false,
+                "def": 0
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.pairingMessage",
+            "type": "state",
+            "common": {
+                "name": "Pairing message",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.groups",
+            "type": "state",
+            "common": {
+                "name": "Groups",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        },
+        {
+            "_id": "info.undefinedDevices",
+            "type": "state",
+            "common": {
+                "name": "Recorded undefined devices",
+                "type": "string",
+                "read": true,
+                "write": false,
+                "def": ""
+            },
+            "native": {}
+        }
     ]
-  },
-  "native": {
-    "port": "",
-    "panID": 6754,
-    "extPanID": "DDDDDDDDDDDDDDDD",
-    "channel": 11,
-    "disableLed": false,
-    "precfgkey": "01030507090B0D0F00020406080A0C0D",
-    "countDown": 60,
-    "adapterType": "zstack",
-    "debugHerdsman": false,
-    "disablePing": false,
-    "disableBackup": false,
-    "external": "",
-    "startWithInconsistent": false
-  },
-  "instanceObjects": [
-    {
-      "_id": "exclude",
-      "type": "channel",
-      "common": {
-        "name": "exclude devs from devices.js"
-      },
-      "native": {}
-    },
-    {
-      "_id": "exclude.all",
-      "type": "state",
-      "common": {
-        "name": "all",
-        "type": "string",
-        "read": true,
-        "write": true,
-        "def": "[]"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info",
-      "type": "channel",
-      "common": {
-        "name": "Information"
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.connection",
-      "type": "state",
-      "common": {
-        "role": "indicator.connected",
-        "name": "If connected to zigbee device",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.pairingMode",
-      "type": "state",
-      "common": {
-        "name": "Pairing mode",
-        "type": "boolean",
-        "read": true,
-        "write": false,
-        "def": false
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.pairingCountdown",
-      "type": "state",
-      "common": {
-        "name": "Pairing countdown",
-        "type": "number",
-        "read": true,
-        "write": false,
-        "def": 0
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.pairingMessage",
-      "type": "state",
-      "common": {
-        "name": "Pairing message",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.groups",
-      "type": "state",
-      "common": {
-        "name": "Groups",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.undefinedDevices",
-      "type": "state",
-      "common": {
-        "name": "Recorded undefined devices",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    }
-  ]
 }
