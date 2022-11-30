@@ -2803,7 +2803,7 @@ function getDashCard(dev, groupImage) {
                     options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${value}</option>`);
                 }
             }
-            val = `<select class="browser-default enum" style="height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
+            val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
         } else {
             val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
