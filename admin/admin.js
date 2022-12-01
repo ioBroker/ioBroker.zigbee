@@ -767,20 +767,27 @@ function getMap() {
 // the function loadSettings has to exist ...
 // eslint-disable-next-line no-unused-vars
 function load(settings, onChange) {
-    settings.panID = settings.panID || 6754;
-    settings.extPanID = settings.extPanID || 'DDDDDDDDDDDDDDDD';
+    if (settings.panID === undefined) {
+        settings.panID = 6754;
+    }
+    if (settings.extPanID === undefined) {
+        settings.extPanID = 'DDDDDDDDDDDDDDDD';
+    }
     // fix for previous wrong value
     if (settings.extPanID === 'DDDDDDDDDDDDDDD') {
         settings.extPanID = 'DDDDDDDDDDDDDDDD';
     }
-    settings.precfgkey = settings.precfgkey || '01030507090B0D0F00020406080A0C0D';
-    if (settings.channel === undefined){
+    
+    if (settings.precfgkey === undefined) {
+        settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
+    }
+    if (settings.channel === undefined) {
         settings.channel = 11;
     }
     if (settings.disablePing === undefined) {
         settings.disablePing = false;
     }
-
+    
     // example: select elements with id=key and class=value and insert value
     for (const key in settings) {
         if (savedSettings.indexOf(key) === -1) {
