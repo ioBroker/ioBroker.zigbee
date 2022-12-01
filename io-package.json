@@ -1,8 +1,25 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.5",
+    "version": "1.8.7",
     "news": {
+      "1.8.7": {
+        "en": "fix exposes",
+        "de": "belichtet fix",
+        "ru": "исправить экспозиции",
+        "pt": "corrigir expões",
+        "nl": "vertaling:",
+        "fr": "fix expose",
+        "it": "fix espone",
+        "es": "arreglar expone",
+        "pl": "naprawić",
+        "uk": "фіксувати висадки",
+        "zh-cn": "fix 暴露"
+      },
+      "1.8.6": {
+        "en": "fix exposes",
+        "de": "fix exposes"
+      },
       "1.8.5": {
         "en": "fix for new code",
         "de": "fix für neuen code",
@@ -48,14 +65,6 @@
         "pl": "Pakiet\nDodane nazwy portów seryjnych w dialogach konfiguracyjnych",
         "uk": "Пакети оновлені\nДодано імена серійних портів у діалоговому вікні конфігурації",
         "zh-cn": "更新的包装\n加 口号港口"
-      },
-      "1.7.7": {
-        "en": "Update dependencies",
-        "de": "Update dependencies"
-      },
-      "1.7.6": {
-        "en": "ikea fix ",
-        "de": "ikea fix "
       }
     },
     "title": "Zigbee",

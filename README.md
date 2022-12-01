@@ -133,6 +133,9 @@ You can thank the authors by these links:
 
 
 ## Changelog
+### 1.8.7 (2022-12-01)
+* (arteck) fix exposes
+
 ### 1.8.5 (2022-11-30)
 * (arteck) fix for new code
 
