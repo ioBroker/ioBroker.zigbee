@@ -1,372 +1,329 @@
 {
-    "common": {
-        "name": "zigbee",
-        "version": "1.6.18",
-        "news": {
-            "1.6.18": {
-                "de": "fix pairing mode",
-                "en": "fix pairing mode",
-                "ru": "fix pairing mode"
-            },        
-             "1.6.16": {
-                "de": "admin dep fix",
-                "en": "admin dep fix",
-                "ru": "admin dep fix"
-            },        
-             "1.6.15": {
-                "de": "Batterie Status wurde geändert",
-                "en": "Battery status was changed",
-                "ru": "Состояние батареи было изменено"
-            },
-            "1.6.14": {
-                "de": "Gruppen wurden überarbeitet 2",
-                "en": "Groups were newly revised 2",
-                "ru": "Группы были пересмотрены 2"
-            },
-            "1.6.13": {
-                "de": "zh 0.14.xx",
-                "en": "zh 0.14.xx",
-                "ru": "zh 0.14.xx"
-            },
-            "1.6.12": {
-                "de": "Gruppen wurden überarbeitet",
-                "en": "Groups were newly revised",
-                "ru": "Группы были пересмотрены"
-            },
-            "1.6.11": {
-                "en": "Some changes for tuya-devices"
-            },
-            "1.6.10": {
-                "en": "Small herdsman fixes and new devices"
-            },
-            "1.6.6": {
-                "en": "fix admin"
-            },
-            "1.6.5": {
-                "en": "Some fixes and updates"
-            },
-            "1.6.3": {
-                "en": "Some fixes and updates"
-            },
-            "1.6.2": {
-                "en": "Some fixes and updates"
-            },
-            "1.6.0": {
-                "en": "Improvements and new devices"
-            },
-            "1.5.6": {
-                "en": "Dashboard"
-            },
-            "1.4.1": {
-                "en": "kelvin is added into color_temp",
-                "de": "Kelvin wird zu color_temp hinzugefügt",
-                "ru": "кельвин добавлен в color_temp",
-                "pt": "Kelvin é adicionado em color_temp",
-                "nl": "kelvin wordt toegevoegd aan color_temp",
-                "fr": "kelvin est ajouté dans color_temp",
-                "it": "kelvin viene aggiunto a color_temp",
-                "es": "kelvin se agrega a color_temp",
-                "pl": "kelvin jest dodawany do color_temp",
-                "zh-cn": "将开尔文添加到color_temp"
-            },
-            "1.2.0": {
-                "en": "serialport 9, drop support Node < 10, new identify by model",
-                "de": "serialport 9, unterstützung für Node 8 und kleiner gelscöht, neuer identifizierung am model",
-                "ru": "serialport 9, drop support Node <10, новая идентификация по модели",
-                "pt": "serialport 9, drop support Node <10, nova identificação por modelo",
-                "nl": "serialport 9, drop support Node <10, nieuwe identificatie per model",
-                "fr": "serialport 9, drop support Node <10, nouvelle identification par modèle",
-                "it": "porta seriale 9, supporto drop Node <10, nuova identificazione per modello",
-                "es": "serialport 9, drop support Node <10, nueva identificación por modelo",
-                "pl": "serialport 9, upuść wsparcie Node <10, nowa identyfikacja według modelu",
-                "zh-cn": "串行端口9，删除支持节点<10，通过型号进行新标识"
-            },
-            "1.1.3": {
-                "en": "refactoring devices.js",
-                "de": "neustrukturierung devices.js",
-                "ru": "рефакторинг devices.js",
-                "pt": "refatoração de devices.js",
-                "nl": "refactoring devices.js",
-                "fr": "refactorisation de devices.js",
-                "it": "refactoring devices.js",
-                "es": "refactorización de devices.js",
-                "pl": "refaktoryzacja devices.js",
-                "zh-cn": "重构devices.js"
-            },
-            "1.1.2": {
-                "en": "Fix variable to converter",
-                "de": "Variable zum Konverter korrigieren",
-                "ru": "Исправить переменную в конвертере",
-                "pt": "Fixar variável para conversor",
-                "nl": "Fix variabele naar converter",
-                "fr": "Fixer la variable au convertisseur",
-                "it": "Correggi la variabile al convertitore",
-                "es": "Corregir variable al convertidor",
-                "pl": "Napraw zmienną do konwertera",
-                "zh-cn": "固定变量到转换器"
-            },
-            "1.1.1": {
-                "en": "Fix for fresh flashed chip",
-                "de": "Fix für frisch geflashten Chip",
-                "ru": "Исправить свежий прошитый чип",
-                "pt": "Correção para chip atualizado",
-                "nl": "Oplossing voor vers geflitste chip",
-                "fr": "Correction de la puce flashée fraîche",
-                "it": "Risolto il problema con il chip lampeggiante fresco",
-                "es": "Arreglo para chip flasheado nuevo",
-                "pl": "Naprawiono świeżo flashowany chip",
-                "zh-cn": "修复新的闪存芯片"
-            },
-            "1.1.0": {
-                "en": "New features and experimental deConz/Conbee support",
-                "de": "Neue Funktionen und experimentelle deConz / Conbee-Unterstützung",
-                "ru": "Новые функции и экспериментальная поддержка deConz / Conbee",
-                "pt": "Novos recursos e suporte experimental deConz / Conbee",
-                "nl": "Nieuwe functies en experimentele ondersteuning voor deConz / Conbee",
-                "fr": "Nouvelles fonctionnalités et prise en charge expérimentale de deConz / Conbee",
-                "it": "Nuove funzionalità e supporto sperimentale deConz / Conbee",
-                "es": "Nuevas funciones y soporte experimental deConz / Conbee",
-                "pl": "Nowe funkcje i eksperymentalna obsługa deConz / Conbee",
-                "zh-cn": "新功能和实验性的deConz / Conbee支持"
-            },
-            "1.0.4": {
-                "en": "New devices and fixes",
-                "de": "Neue Geräte und Korrekturen",
-                "ru": "Новые устройства и исправления",
-                "pt": "Novos dispositivos e correções",
-                "nl": "Nieuwe apparaten en fixes",
-                "fr": "Nouveaux appareils et correctifs",
-                "it": "Nuovi dispositivi e correzioni",
-                "es": "Nuevos dispositivos y arreglos",
-                "pl": "Nowe urządzenia i poprawki",
-                "zh-cn": "新设备和修复"
-            },
-            "1.0.0": {
-                "en": "Powered by Zigbee-Herdsman",
-                "de": "Angetrieben von Zigbee-Herdsman",
-                "ru": "При поддержке Zigbee-Herdsman",
-                "pt": "Desenvolvido por Zigbee-Herdsman",
-                "nl": "Aangedreven door Zigbee-Herdsman",
-                "fr": "Propulsé par Zigbee-Herdsman",
-                "it": "Alimentato da Zigbee-Herdsman",
-                "es": "Desarrollado por Zigbee-Herdsman",
-                "pl": "Obsługiwane przez Zigbee-Herdsman",
-                "zh-cn": "由Zigbee-Herdsman提供支持"
-            }
+  "common": {
+    "name": "zigbee",
+    "version": "1.8.7",
+    "news": {
+      "1.8.7": {
+        "en": "fix exposes",
+        "de": "belichtet fix",
+        "ru": "исправить экспозиции",
+        "pt": "corrigir expões",
+        "nl": "vertaling:",
+        "fr": "fix expose",
+        "it": "fix espone",
+        "es": "arreglar expone",
+        "pl": "naprawić",
+        "uk": "фіксувати висадки",
+        "zh-cn": "fix 暴露"
+      },
+      "1.8.6": {
+        "en": "fix exposes",
+        "de": "fix exposes"
+      },
+      "1.8.5": {
+        "en": "fix for new code",
+        "de": "fix für neuen code",
+        "ru": "исправить для нового кода",
+        "pt": "corrigir para novo código",
+        "nl": "vertaling:",
+        "fr": "correction du nouveau code",
+        "it": "correzione per nuovo codice",
+        "es": "fijar para nuevo código",
+        "pl": "naprawić nowy kod",
+        "uk": "виправити для нового коду",
+        "zh-cn": "f 新的守则的ix"
+      },
+      "1.8.4": {
+        "en": "fix for new code"
+      },
+      "1.8.3": {
+        "en": "back to old source",
+        "de": "zurück zur alten quelle",
+        "ru": "назад к старому источнику",
+        "pt": "voltar para a velha fonte",
+        "nl": "terug naar de oude bron",
+        "fr": "retour à la vieille source",
+        "it": "torna alla vecchia fonte",
+        "es": "volver a la vieja fuente",
+        "pl": "tył",
+        "uk": "назад до старого джерела",
+        "zh-cn": "背 景"
+      },
+      "1.8.2": {
+        "en": "back to old source",
+        "de": "back to old source"
+      },
+      "1.8.1": {
+        "en": "Packages updated\nAdded names of serial ports in configuration dialog",
+        "de": "Pakete aktualisiert\nNamen der seriellen Ports im Konfigurationsdialog hinzugefügt",
+        "ru": "Пакеты обновлены\nДобавлены имена серийных портов в диалоге конфигурации",
+        "pt": "Pacotes atualizados\nNomes adicionados de portas seriais na caixa de diálogo de configuração",
+        "nl": "Verpakking geüpload\nNamen van serie havens in configuration dialog",
+        "fr": "Packages updated\nAjout de noms de ports série dans le dialogue de configuration",
+        "it": "Pacchetti aggiornati\nAggiunto i nomi delle porte seriali nella finestra di dialogo di configurazione",
+        "es": "Paquetes actualizados\nNombres añadidos de los puertos serie en el diálogo de configuración",
+        "pl": "Pakiet\nDodane nazwy portów seryjnych w dialogach konfiguracyjnych",
+        "uk": "Пакети оновлені\nДодано імена серійних портів у діалоговому вікні конфігурації",
+        "zh-cn": "更新的包装\n加 口号港口"
+      }
+    },
+    "title": "Zigbee",
+    "titleLang": {
+      "en": "Zigbee",
+      "ru": "Zigbee",
+      "de": "ZigBee",
+      "pt": "Zigbee",
+      "nl": "Zigbee",
+      "fr": "Zigbee",
+      "it": "Zigbee",
+      "es": "zigbee",
+      "pl": "Zigbee",
+      "zh-cn": "Zigbee"
+    },
+    "desc": {
+      "en": "Zigbee adapter for Xiaomi (and other) devices via Chip cc26xx/cc25xx",
+      "ru": "Zigbee адаптер для Xiaomi (и других) устройств через Chip cc26xx/cc25xx",
+      "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über Chip cc26xx/cc25xx",
+      "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via Chip cc26xx/cc25xx",
+      "nl": "Zigbee-adapter voor Xiaomi (en andere) apparaten via Chip cc26xx/cc25xx",
+      "fr": "Adaptateur Zigbee pour périphériques Xiaomi (et autres) Chip cc26xx/cc25xx",
+      "it": "Adattatore Zigbee per dispositivi Xiaomi (e altri) tramite Chip cc26xx/cc25xx",
+      "es": "Adaptador Zigbee para dispositivos Xiaomi (y otros) a través de Chip cc26xx/cc25xx",
+      "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem Chip cc26xx/cc25xx",
+      "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过Chip cc26xx/cc25xx"
+    },
+    "authors": [
+      "Kirov Ilya<kirovilya@gmail.com>"
+    ],
+    "license": "MIT",
+    "platform": "Javascript/Node.js",
+    "mode": "daemon",
+    "icon": "zigbee.png",
+    "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
+    "enabled": true,
+    "keywords": [
+      "zigbee",
+      "xiaomi",
+      "cc2531",
+      "cc2530",
+      "cc2538",
+      "cc2652",
+      "deconz",
+      "conbee",
+      "raspbee"
+    ],
+    "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
+    "loglevel": "info",
+    "type": "hardware",
+    "materialize": true,
+    "messagebox": true,
+    "stopBeforeUpdate": true,
+    "dataFolder": "zigbee_%INSTANCE%",
+    "compact": true,
+    "materializeTab": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "tier": 2,
+    "adminTab": {
+      "name": {
+        "en": "Zigbee",
+        "de": "Zigbee",
+        "ru": "Zigbee",
+        "pt": "Zigbee",
+        "nl": "Zigbee",
+        "fr": "Zigbee",
+        "it": "Zigbee",
+        "es": "Zigbee",
+        "pl": "Zigbee",
+        "zh-cn": "Zigbee"
+      },
+      "fa-icon": "</i><img style='width:24px;margin-bottom:-6px;' src='/adapter/zigbee/zigbee.svg'><i>"
+    },
+    "plugins": {
+      "sentry": {
+        "dsn": "https://c829e2ad996d45d1bdb2247805699883@o831057.ingest.sentry.io/5812498"
+      }
+    },
+    "globalDependencies": [
+      {
+        "admin": ">=5.1.25"
+      }
+    ],
+    "dependencies": [
+      {
+        "js-controller": ">=3.3.0"
+      }
+    ],
+    "messages": [
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<=1.6.18",
+            "newVersion>=1.7.0"
+          ]
         },
-        "title": "Zigbee",
-        "titleLang": {
-            "en": "Zigbee",
-            "ru": "Zigbee",
-            "de": "ZigBee",
-            "pt": "Zigbee",
-            "nl": "Zigbee",
-            "fr": "Zigbee",
-            "it": "Zigbee",
-            "es": "zigbee",
-            "pl": "Zigbee",
-            "zh-cn": "Zigbee"
+        "title": {
+          "en": "Important notice!",
+          "de": "Wichtiger Hinweis!",
+          "ru": "Важное замечание!",
+          "pt": "Notícia importante!",
+          "nl": "Belangrijke mededeling!",
+          "fr": "Avis important!",
+          "it": "Avviso IMPORTANTE!",
+          "es": "Noticia importante!",
+          "pl": "Ważna uwaga!",
+          "zh-cn": "重要通知!"
         },
-        "desc": {
-            "en": "Zigbee adapter for Xiaomi (and other) devices via TI cc2531/cc2530",
-            "ru": "Zigbee адаптер для Xiaomi (и других) устройств через TI cc2531/cc2530",
-            "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über TI cc2531 / cc2530",
-            "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via TI cc2531 / cc2530",
-            "nl": "Zigbee-adapter voor Xiaomi (en andere) apparaten via TI cc2531 / cc2530",
-            "fr": "Adaptateur Zigbee pour périphériques Xiaomi (et autres) via TI cc2531 / cc2530",
-            "it": "Adattatore Zigbee per dispositivi Xiaomi (e altri) tramite TI cc2531 / cc2530",
-            "es": "Adaptador Zigbee para dispositivos Xiaomi (y otros) a través de TI cc2531 / cc2530",
-            "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem TI cc2531 / cc2530",
-            "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过TI cc2531 / cc2530"
+        "text": {
+          "en": "This new version cleans the file backup (under \\opt\\iobroker\\iobroker-data\\zigbee_0\\) of the adapter. Only the last 10 backups are kept.",
+          "de": "Diese neue Version bereinigt das Datei backup (unter \\opt\\iobroker\\iobroker-data\\zigbee_0\\) des Adapter. Es werden nur die letzten 10 Sicherungen behalten.",
+          "ru": "Эта новая версия очищает резервную копию файла (в папке \\opt\\iobroker\\iobroker-data\\zigbee_0\\) адаптера. Сохраняются только последние 10 резервных копий.",
+          "pt": "Esta nova versão limpa o backup do arquivo (em \\opt\\iobroker\\iobroker-data\\zigbee_0\\) do adaptador. Apenas os últimos 10 backups são mantidos.",
+          "nl": "Deze nieuwe versie maakt de bestandsback-up schoon (onder \\opt\\iobroker\\iobroker-data\\zigbee_0\\) van de adapter. Alleen de laatste 10 back-ups worden bewaard.",
+          "fr": "Cette nouvelle version nettoie le fichier de sauvegarde (sous \\opt\\iobroker\\iobroker-data\\zigbee_0\\) de l'adaptateur. Seules les 10 dernières sauvegardes sont conservées.",
+          "it": "Questa nuova versione pulisce il backup del file (in \\opt\\iobroker\\iobroker-data\\zigbee_0\\) dell'adattatore. Vengono mantenuti solo gli ultimi 10 backup.",
+          "es": "Esta nueva versión limpia la copia de seguridad del archivo (en \\opt\\iobroker\\iobroker-data\\zigbee_0\\) del adaptador. Solo se conservan las últimas 10 copias de seguridad.",
+          "pl": "Ta nowa wersja czyści kopię pliku (w \\opt\\iobroker\\iobroker-data\\zigbee_0\\) adaptera. Przechowywanych jest tylko 10 ostatnich kopii.",
+          "zh-cn": "这个新版本清理了适配器的文件备份（在 \\opt\\iobroker\\iobroker-data\\zigbee_0\\ 下）。仅保留最后 10 个备份。"
         },
-        "authors": [
-            "Kirov Ilya<kirovilya@gmail.com>"
-        ],
-        "license": "MIT",
-        "docs": {
-            "en": "docs/en/readme.md",
-            "ru": "docs/ru/readme.md",
-            "de": "docs/de/readme.md",
-            "es": "docs/es/readme.md",
-            "it": "docs/it/readme.md",
-            "fr": "docs/fr/readme.md",
-            "nl": "docs/nl/readme.md",
-            "pt": "docs/pt/readme.md"
+        "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
+        "level": "warn",
+        "linkText": {
+          "en": "Readme",
+          "de": "Liesmich",
+          "ru": "Прочти меня",
+          "pt": "Leia-me",
+          "nl": "Leesmij",
+          "fr": "Lisez-moi",
+          "it": "Leggimi",
+          "es": "Léame",
+          "pl": "Readme",
+          "zh-cn": "自述文件"
         },
-        "platform": "Javascript/Node.js",
-        "mode": "daemon",
-        "icon": "zigbee.png",
-        "extIcon": "https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/admin/zigbee.png",
-        "enabled": true,
-        "keywords": [
-            "zigbee",
-            "xiaomi",
-            "cc2531",
-            "cc2530",
-            "cc2538",
-            "cc2652",
-            "deconz",
-            "conbee",
-            "raspbee"
-        ],
-        "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
-        "loglevel": "info",
-        "type": "hardware",
-        "materialize": true,
-        "messagebox": true,
-        "stopBeforeUpdate": true,
-        "dataFolder": "zigbee_%INSTANCE%",
-        "compact": true,
-        "materializeTab": true,
-        "connectionType": "local",
-        "dataSource": "push",
-        "tier": 2,
-        "adminTab": {
-            "name": {
-                "en": "Zigbee",
-                "de": "Zigbee",
-                "ru": "Zigbee",
-                "pt": "Zigbee",
-                "nl": "Zigbee",
-                "fr": "Zigbee",
-                "it": "Zigbee",
-                "es": "Zigbee",
-                "pl": "Zigbee",
-                "zh-cn": "Zigbee"
-            },
-            "fa-icon": "</i><img style='width:24px;margin-bottom:-6px;' src='/adapter/zigbee/zigbee.svg'><i>"
-        },
-        "plugins": {
-            "sentry": {
-                "dsn": "https://c829e2ad996d45d1bdb2247805699883@o831057.ingest.sentry.io/5812498"
-            }
-        },
-        "globalDependencies": [
-            {
-                "admin": ">=5.1.25"
-            }
-        ],
-        "dependencies": [
-            {
-                "js-controller": ">=3.3.0"
-            }
+        "buttons": [
+          "agree",
+          "cancel"
         ]
-    },
-    "native": {
-        "port": "",
-        "panID": 6754,
-        "extPanID": "DDDDDDDDDDDDDDDD",
-        "channel": 11,
-        "disableLed": false,
-        "precfgkey": "01030507090B0D0F00020406080A0C0D",
-        "countDown": 60,
-        "adapterType": "zstack",
-        "debugHerdsman": false,
-        "disablePing": false,
-        "external": "",
-        "startWithInconsistent": false
-    },
-    "instanceObjects": [
-        {
-            "_id": "exclude",
-            "type": "channel",
-            "common": {
-                "name": "exclude devs from devices.js"
-            },
-            "native": {}
-        },
-        {
-            "_id": "exclude.all",
-            "type": "state",
-            "common": {
-                "name": "all",
-                "type": "string",
-                "read": true,
-                "write": true,
-                "def": "[]"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "If connected to zigbee device",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.pairingMode",
-            "type": "state",
-            "common": {
-                "name": "Pairing mode",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.pairingCountdown",
-            "type": "state",
-            "common": {
-                "name": "Pairing countdown",
-                "type": "number",
-                "read": true,
-                "write": false,
-                "def": 0
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.pairingMessage",
-            "type": "state",
-            "common": {
-                "name": "Pairing message",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.groups",
-            "type": "state",
-            "common": {
-                "name": "Groups",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.undefinedDevices",
-            "type": "state",
-            "common": {
-                "name": "Recorded undefined devices",
-                "type": "string",
-                "read": true,
-                "write": false,
-                "def": ""
-            },
-            "native": {}
-        }
+      }
     ]
+  },
+  "native": {
+    "port": "",
+    "panID": 6754,
+    "extPanID": "DDDDDDDDDDDDDDDD",
+    "channel": 11,
+    "disableLed": false,
+    "precfgkey": "01030507090B0D0F00020406080A0C0D",
+    "countDown": 60,
+    "adapterType": "zstack",
+    "debugHerdsman": false,
+    "disablePing": false,
+    "disableBackup": false,
+    "external": "",
+    "startWithInconsistent": false
+  },
+  "instanceObjects": [
+    {
+      "_id": "exclude",
+      "type": "channel",
+      "common": {
+        "name": "exclude devs from devices.js"
+      },
+      "native": {}
+    },
+    {
+      "_id": "exclude.all",
+      "type": "state",
+      "common": {
+        "name": "all",
+        "type": "string",
+        "read": true,
+        "write": true,
+        "def": "[]"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "If connected to zigbee device",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.pairingMode",
+      "type": "state",
+      "common": {
+        "name": "Pairing mode",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.pairingCountdown",
+      "type": "state",
+      "common": {
+        "name": "Pairing countdown",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.pairingMessage",
+      "type": "state",
+      "common": {
+        "name": "Pairing message",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.groups",
+      "type": "state",
+      "common": {
+        "name": "Groups",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.undefinedDevices",
+      "type": "state",
+      "common": {
+        "name": "Recorded undefined devices",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    }
+  ]
 }

@@ -1,9 +1,9 @@
 {
-    "Add binding": "Bindung hinzufügen",
+    "Add binding": "Binding hinzufügen",
     "Add group": "Füge Gruppe hinzu",
     "Attribute ID": "Attribut-ID",
-    "Binding": "Bindung",
-    "Binding configuration": "Bindungskonfiguration",
+    "Binding": "Binding",
+    "Binding configuration": "Binding konfiguration",
     "COM port name": "COM-Anschlussname",
     "Cancel": "Abbrechen",
     "Channel": "Kanal",
@@ -16,7 +16,7 @@
     "Command": "Befehl",
     "Command Type": "Befehlstyp",
     "Configure reporting": "Konfigurieren Sie die Berichterstellung",
-    "Countdown": "Timer zwischen 0 und 255 Sek",
+    "Countdown": "Countdown zwischen 0 und 255 Sek während der Kopplung neuer Zigbeekomponenten mit dem Koordinator",
     "Delete confirmation": "Löschen bestätigen",
     "Developer": "Entwickler",
     "Device": "Gerät",
@@ -98,9 +98,11 @@
     "notImplementedText": "Sie können hier eigene Befehle an Ihre Geräte senden, die noch nicht als Objekte implementiert sind. Es kann auch verwendet werden, um undokumentierte Einstellungen Ihrer Geräte zu finden. Oder um die Auswirkungen von Einstellungen zu testen und zu entscheiden, ob es sich lohnt, sie als Objekt zu implementieren. Und so weiter...",
     "to make it available for other user too": "um es auch für andere Benutzer verfügbar zu machen",
     "Excludes": "ausschließen",
-    "ExcludeTextTranslation": "Sie können hier einige Geräte hinzufügen, die von unserer Verarbeitungausgeschlossen werden sollten. Sie verwenden dann nur exposes vom ZigBee-Herdsman-Converter. Nach dem Hinzufügen starten Sie bitte den Adapter neu.",
+    "ExcludeTextTranslation": "Sie können hier einige Geräte hinzufügen, die von unserer Verarbeitung ausgeschlossen werden sollten. Sie verwenden dann nur exposes vom ZigBee-Herdsman-Converter. Nach dem Hinzufügen starten Sie bitte den Adapter neu.",
     "Please contribute your discoveries": "Bitte geben Sie uns Ihre Vorschläge",
     "zigbee-shepherd": "Sie können die zu sendenden Rohdaten hier bearbeiten. Verwenden Sie diese nicht, wenn Sie sich nicht sicher sind, was Sie tun! Verwenden Sie das JSON-Format (Attributnamen in doppelten Anführungszeichen!). Es können auch zusätzliche Eigenschaften hinzugefügt werden. Siehe Beispiele oben. (Format wie von zigbee-shepherd verwendet)",
-    "SettingsExclude": "Erzwingen Sie den Start des Adapters mit inkonsistenter Konfiguration (nicht empfohlen). Bitte aktualisieren Sie den Adapter auf kompatible Firmware und erstellen Sie Ihr Netzwerk so schnell wie möglich neu."
-    
+    "SettingsExclude": "Den Start des Adapters mit inkonsistenter Konfiguration erzwingen(nicht empfohlen). Bitte aktualisieren Sie den Adapter auf kompatible Firmware und erstellen Sie Ihr Netzwerk so schnell wie möglich neu.",
+    "disable internal Backup": "Deaktiviere die interne Sicherung",
+    "Disable active availability check": "Aktive Verfügbarkeitsprüfung deaktivieren",
+    "Others": "andere Einstellungen"
 }

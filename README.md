@@ -50,12 +50,14 @@ While Conbee/RaspBee Support is no longer considered experimental in the zigbee-
 - device map metrics may be incorrect
 - NVRam Backup is not supported.
 
-### Silicon Labs EZPS v8 / Zigate USB-TTL
+### Silicon Labs SoC
 
-Support for these chipsets is experimental. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) with regards to the state of the integration into the zigbee-herdsman and zigbee-herdsman-converters libraries.
+Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based adapters is experimental. The initial support for EZSP v8 is still not yet considered stable and the project is in need of more developers volenteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/319) with regards to the state of Silabs EmberZNet Serial Protocol (EZSP) adapter implementation integration into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
+### ZiGate SoC
 
+Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable and the project is in need of more developers volenteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regards to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
 ## Work with adapter
@@ -126,16 +128,51 @@ You can thank the authors by these links:
     npm run release patch -- --all 0.9.8 -> 0.9.9
     npm run release prerelease beta -- --all v0.2.1 -> v0.2.2-beta.0
     Placeholder for the next version (at the beginning of the line):
-
+    ### **WORK IN PROGRESS**
 -->
 
 
 ## Changelog
+### 1.8.7 (2022-12-01)
+* (arteck) fix exposes
+
+### 1.8.5 (2022-11-30)
+* (arteck) fix for new code
+
+### 1.8.3 (2022-11-30)
+* (arteck) back to old source
+
+### 1.8.1 (2022-11-28)
+* (bluefox) Packages updated
+* (bluefox) Added names of serial ports in configuration dialog
+
+### 1.7.7 (2022-11-24)
+* dep update
+
+### 1.7.6 (2022-07-23)
+* (kirovilya) fix selecting nodes in admin
+* (arteck) ikea fix
+
+### 1.7.5 (2022-06-01)
+* (arteck) error message for undefined devices or icons
+
+### 1.7.4 (2022-05-30) 
+* (arteck) missing icons with multiple description
+
+### 1.7.2 (2022-05-28)
+* (arteck) download missing icons corr
+
+### 1.7.1 (2022-05-28)
+* (arteck) available status in admin is colored
+* (arteck) disable Backups checkbox in settings
+* (arteck) we keep last 10 backup files 
+* (arteck) download missing icons automatically (manual upload needed)
+
 ### 1.6.18 (2022-04-21)
 * (arteck) fix pairing modus
 
 ### 1.6.17 (2022-04)
- rollback 
+ rollback
 
 ### 1.6.16 (2022-02-16)
 * (arteck) admin dep fix
@@ -143,7 +180,6 @@ You can thank the authors by these links:
 
 ### 1.6.15 (2022-02-08)
 * (arteck) Battery status % calculation was changed for xiaomi devices
-
 
 ### 1.6.14 (2022-01)
 * (asgothian) OTA limitation
@@ -409,7 +445,7 @@ new Zigbee-herdsman features:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018-2021 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2022 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

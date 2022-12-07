@@ -9,3 +9,5 @@ admin/i18n/*/flat.txt
 .vscode/launch.json
 debugidentify.js
 .devcontainer
+docs
+package-lock.json

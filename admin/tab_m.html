@@ -16,12 +16,54 @@
 <script type="text/javascript" src="../../lib/js/materialize.js"></script>
 <script type="text/javascript" >var noConfigDialog = true;</script><!-- Deactivate buttons -->
 <script type="text/javascript" src="adapter-settings.js"></script>
+    
+<script>
+    // overload showMessage
+    function showMessage(message, title, icon) {
+        var $dialogMessage;
+        // noinspection JSJQueryEfficiency
+        $dialogMessage = $('#dialog-message');
+        if (!$dialogMessage.length) {
+            $('body').append(
+                '<div class="m"><div id="dialog-message" class="modal modal-fixed-footer">' +
+                '    <div class="modal-content">' +
+                '        <h6 class="dialog-title title"></h6>' +
+                '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+                '    </div>' +
+                '    <div class="modal-footer">' +
+                '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
+                '    </div>' +
+                '</div></div>');
+            $dialogMessage = $('#dialog-message');
+        }
+        if (icon) {
+            $dialogMessage.find('.dialog-icon')
+                .show()
+                .html(icon);
+        } else {
+            $dialogMessage.find('.dialog-icon').hide();
+        }
+        if (title) {
+            $dialogMessage.find('.dialog-title').html(title).show();
+        } else {
+            $dialogMessage.find('.dialog-title').hide();
+        }
+        $dialogMessage.find('.dialog-text').html(message);
+        $dialogMessage.modal().modal('open');
+    }
+</script>
 <script type="text/javascript" src="words.js"></script>
 
 <script type="text/javascript" src="admin.js"></script>
 <script type="text/javascript" src="shuffle.min.js"></script>
 <script type="text/javascript" src="moment.min.js"></script>
 <style>
+    .m.react-dark .tabs {
+        background-color: #272727 !important;
+    }
+    .row.navbar-fixed {
+        height: 0 !important;
+    }
     .m .col .select-wrapper+label, .m .col input+label:not(.active) {
         top: -26px;
     }
@@ -50,8 +92,8 @@
     .input-field.suffix a {
       position: absolute;
       font-size: 2rem;
-      top: 0px;
-      right: 0px;
+      top: 0;
+      right: 0;
     }
 
     .input-field.suffix a.active {
