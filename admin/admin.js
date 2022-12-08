@@ -777,7 +777,7 @@ function load(settings, onChange) {
     if (settings.extPanID === 'DDDDDDDDDDDDDDD') {
         settings.extPanID = 'DDDDDDDDDDDDDDDD';
     }
-    
+
     if (settings.precfgkey === undefined) {
         settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
     }
@@ -787,7 +787,7 @@ function load(settings, onChange) {
     if (settings.disablePing === undefined) {
         settings.disablePing = false;
     }
-    
+
     // example: select elements with id=key and class=value and insert value
     for (const key in settings) {
         if (savedSettings.indexOf(key) === -1) {
@@ -1920,9 +1920,8 @@ function updateDev(id, newName, newGroups) {
                 showMessage(msg.error, _('Error'));
             } else {
                 // save dev-groups on success
-                dev.groups = newGroups;
+                getDevices();
             }
-            showDevices();
         });
         showWaitingDialog('Updating group memberships', 10);
 
