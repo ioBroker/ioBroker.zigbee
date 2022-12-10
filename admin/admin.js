@@ -683,6 +683,18 @@ function checkFwUpdate() {
     }
 }
 
+function letsPairingWithCode(code) {
+    messages = [];
+    sendTo(namespace, 'letsPairing', {code: code}, function (msg) {
+        if (msg && msg.error) {
+            showMessage(msg.error, _('Error'));
+        }
+        else {
+          showPairingProcess();
+        }
+    });
+}
+
 function letsPairing() {
     messages = [];
     sendTo(namespace, 'letsPairing', {}, function (msg) {
@@ -857,14 +869,23 @@ function load(settings, onChange) {
     });
 
     $('#add_group').click(function () {
-//        showGroupList(true);
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
         editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
     });
+
     $('#add_grp_btn').click(function () {
-//        showGroupList(true);
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
         editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
+    });
+
+    $('#code_pairing').click(function () {
+      if (!$('#pairing').hasClass('pulse')) {
+        $('#codeentry a.btn[name=\'pair\']').click(() => {
+            const code = $('#codeentry').find('input[id=\'qr_code\']').val();
+            letsPairingWithCode(code)
+        });
+        $('#codeentry').modal('open');
+      }
     });
 
     $(document).ready(function () {

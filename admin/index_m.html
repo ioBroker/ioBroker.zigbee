@@ -479,6 +479,12 @@
                             <i class="material-icons large">wifi_tethering</i></a>
                     </li>
                     <li>
+                        <a id="code_pairing"
+                        class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
+                        title="Pairing with QR Code">
+                         <i class="material-icons large">select_all</i></a>
+                    </li>
+                    <li>
                         <a id="pairing"
                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
                            title="Let's pairing!">
@@ -1075,6 +1081,25 @@
         <div class="modal-footer">
             <a name="save" href="#!"
                class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+        </div>
+    </div>
+
+    <div id="codeentry" class="modal">
+        <div class="modal-content">
+            <div class="addgroup">
+                <h3 class="translate">Enter Pairing Code</h3>
+            </div>
+            <div class="row">
+                <div class="input-field">
+                    <input id="qr_code" type="text" class="value validate">
+                    <label for="qr_code" class="translate">QR Code</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a name="pair" href="#!"
+               class="modal-action modal-close waves-effect waves-green btn green translate">Start Pairing</a>
             <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
