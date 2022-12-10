@@ -133,6 +133,9 @@ You can thank the authors by these links:
 
 
 ## Changelog
+### 1.8.9 (2022-12-10)
+* (arteck) fix lidl plug
+
 ### 1.8.7 (2022-12-01)
 * (arteck) fix exposes
 
