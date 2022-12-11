@@ -1,8 +1,25 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.7",
+    "version": "1.8.9",
     "news": {
+      "1.8.9": {
+        "en": "fix lidl plug",
+        "de": "deckelstecker",
+        "ru": "исправить lidl plug",
+        "pt": "fixar tampa",
+        "nl": "los deksel",
+        "fr": "fixer le couvercle",
+        "it": "correzione della spina del coperchio",
+        "es": "enchufe de tapa fija",
+        "pl": "naprawiony plug",
+        "uk": "фіксувати роз'єм",
+        "zh-cn": "fix 滑坡"
+      },
+      "1.8.8": {
+        "en": "fix lidl plug",
+        "de": "fix lidl plug"
+      },
       "1.8.7": {
         "en": "fix exposes",
         "de": "belichtet fix",
@@ -48,23 +65,6 @@
         "pl": "tył",
         "uk": "назад до старого джерела",
         "zh-cn": "背 景"
-      },
-      "1.8.2": {
-        "en": "back to old source",
-        "de": "back to old source"
-      },
-      "1.8.1": {
-        "en": "Packages updated\nAdded names of serial ports in configuration dialog",
-        "de": "Pakete aktualisiert\nNamen der seriellen Ports im Konfigurationsdialog hinzugefügt",
-        "ru": "Пакеты обновлены\nДобавлены имена серийных портов в диалоге конфигурации",
-        "pt": "Pacotes atualizados\nNomes adicionados de portas seriais na caixa de diálogo de configuração",
-        "nl": "Verpakking geüpload\nNamen van serie havens in configuration dialog",
-        "fr": "Packages updated\nAjout de noms de ports série dans le dialogue de configuration",
-        "it": "Pacchetti aggiornati\nAggiunto i nomi delle porte seriali nella finestra di dialogo di configurazione",
-        "es": "Paquetes actualizados\nNombres añadidos de los puertos serie en el diálogo de configuración",
-        "pl": "Pakiet\nDodane nazwy portów seryjnych w dialogach konfiguracyjnych",
-        "uk": "Пакети оновлені\nДодано імена серійних портів у діалоговому вікні конфігурації",
-        "zh-cn": "更新的包装\n加 口号港口"
       }
     },
     "title": "Zigbee",
