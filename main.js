@@ -216,16 +216,13 @@ class Zigbee extends utils.Adapter {
         }
         const extfiles = this.config.external.split(';');
         for (const moduleName of extfiles) {
-            if (!moduleName) {
-                continue;
-            }
-            this.log.info(`Apply converter from module: ${moduleName}`);
+            if (!moduleName) continue;
             const sandbox = {
                 require,
                 module: {},
             };
             const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('.', '_'));
-            if (!fs.existSync(mN)) {
+            if (!fs.existsSync(mN)) {
               this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`)
 
             }
@@ -241,18 +238,19 @@ class Zigbee extends utils.Adapter {
                     // remove the require statements and attempt to place them in the sandbox
                     const requiredLibraries = converterCode.matchAll(/(\w+) += +require\(['"](\S+)['"]\);/gm);
                     for (const line of requiredLibraries) {
+                        const movedLine = line[2].replace('..', '../zigbee-herdsman-converters')
                         try {
-                            sandbox[line[1]] = require(line[2]);
+                            sandbox[line[1]] = require(movedLine);
                         }
                         catch (e) {
-                            this.log.warn(`error adding ${line[1]} to the sandbox: ${e}`);
+                            this.log.warn(`error adding ${line[1]} (${movedLine}) to the sandbox: ${e}`);
                             converterLoaded = false;
                         }
                     }
                 }
                 if (converterLoaded) {
                     this.log.info(`Apply converter from module: ${mN}`);
-                    this.log.warn(converterCode.replace(/const (\w+) += +require\(['"](\S+)['"]\);/gm, ''));
+                    //this.log.warn(converterCode.replace(/const (\w+) += +require\(['"](\S+)['"]\);/gm, ''));
                     try {
                         vm.runInNewContext(converterCode.replace(/const (\w+) += +require\(['"](\S+)['"]\);/gm, ''), sandbox);
                         const converter = sandbox.module.exports;
@@ -269,14 +267,46 @@ class Zigbee extends utils.Adapter {
 
             }
         }
-    }
+
+    /*    if (this.config.external === undefined) {
+            return;
+        }
+        const extfiles = this.config.external.split(';');
+        for (const moduleName of extfiles) {
+            if (!moduleName) continue;
+            this.log.info(`Apply converter from module: ${moduleName}`);
+            const sandbox = {
+                require,
+                module: {},
+            };
+            const converterCode = fs.readFileSync(moduleName, {encoding: 'utf8'});
+            vm.runInNewContext(converterCode, sandbox);
+            const converter = sandbox.module.exports;
+            if (Array.isArray(converter)) {
+                for (const item of converter) {
+                    yield item;
+                }
+            } else {
+                yield converter;
+            }
+        }
+    */
+   }
 
     applyExternalConverters() {
+      try {
         for (const definition of this.getExternalDefinition()) {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
-            zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+            try {
+              zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+            }
+            catch { this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`) }
         }
+      }
+      catch(error) {
+         this.log.error('error applying external converters');
+      }
     }
 
     async doConnect() {
