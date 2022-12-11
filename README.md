@@ -135,7 +135,19 @@ You can thank the authors by these links:
 ## Changelog
 ### 1.8.9 (2022-12-10)
 * (arteck) fix lidl plug
-
+* (asgothian) fix group access
+* (asgothian) add option for pairing code:
+   A new icon allows to open the networ after first entering a pairing code
+   listed on the device
+* (asgothian) easier use of external converters
+   - external converters can now be placed in the zigbee adapter data folder
+   - no absolite path is required to access them
+   - external converters posted on the github for zigbee-herdsman-converters
+     should work as they are - folders for libraries are rewritten to match
+     the expected location when 'required' from within the zigbee adapter
+   - Log entries will identify which files are entered as converters. Errors
+     in these files should not cause the adapter to crash - instead, use of
+     external converters may be unavailable.
 ### 1.8.7 (2022-12-01)
 * (arteck) fix exposes
 
@@ -159,7 +171,7 @@ You can thank the authors by these links:
 ### 1.7.5 (2022-06-01)
 * (arteck) error message for undefined devices or icons
 
-### 1.7.4 (2022-05-30) 
+### 1.7.4 (2022-05-30)
 * (arteck) missing icons with multiple description
 
 ### 1.7.2 (2022-05-28)
@@ -168,7 +180,7 @@ You can thank the authors by these links:
 ### 1.7.1 (2022-05-28)
 * (arteck) available status in admin is colored
 * (arteck) disable Backups checkbox in settings
-* (arteck) we keep last 10 backup files 
+* (arteck) we keep last 10 backup files
 * (arteck) download missing icons automatically (manual upload needed)
 
 ### 1.6.18 (2022-04-21)
