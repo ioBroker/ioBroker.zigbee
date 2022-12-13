@@ -133,8 +133,7 @@ You can thank the authors by these links:
 
 
 ## Changelog
-### 1.8.9 (2022-12-10)
-* (arteck) fix lidl plug
+### 1.8.10 (2022-12-12)
 * (asgothian) fix group access
 * (asgothian) add option for pairing code:
    A new icon allows to open the networ after first entering a pairing code
@@ -148,6 +147,10 @@ You can thank the authors by these links:
    - Log entries will identify which files are entered as converters. Errors
      in these files should not cause the adapter to crash - instead, use of
      external converters may be unavailable.
+
+### 1.8.9 (2022-12-10)
+* (arteck) fix lidl plug
+
 ### 1.8.7 (2022-12-01)
 * (arteck) fix exposes
 
