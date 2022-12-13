@@ -216,9 +216,64 @@ class Zigbee extends utils.Adapter {
         }
         const extfiles = this.config.external.split(';');
         for (const moduleName of extfiles) {
-            if (!moduleName) {
-                continue;
+            if (!moduleName) continue;
+            const sandbox = {
+                require,
+                module: {},
+            };
+            const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('.', '_'));
+            if (!fs.existsSync(mN)) {
+              this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`)
+
             }
+            else {
+                const converterCode = fs.readFileSync(mN, {encoding: 'utf8'}).toString();
+                let converterLoaded = true;
+                if (converterCode.match(/..\/lib\/legacy/gm)) {
+                    this.log.warn(`External converter ${mN} contains an unsupported reference to '/lib/legacy' - external converter not loaded.`)
+                    converterLoaded = false;
+                }
+                else
+                {
+                    // remove the require statements and attempt to place them in the sandbox
+                    const requiredLibraries = converterCode.matchAll(/(\w+) += +require\(['"](\S+)['"]\);/gm);
+                    for (const line of requiredLibraries) {
+                        const movedLine = line[2].replace('..', '../zigbee-herdsman-converters')
+                        try {
+                            sandbox[line[1]] = require(movedLine);
+                        }
+                        catch (e) {
+                            this.log.warn(`error adding ${line[1]} (${movedLine}) to the sandbox: ${e}`);
+                            converterLoaded = false;
+                        }
+                    }
+                }
+                if (converterLoaded) {
+                    this.log.info(`Apply converter from module: ${mN}`);
+                    //this.log.warn(converterCode.replace(/const (\w+) += +require\(['"](\S+)['"]\);/gm, ''));
+                    try {
+                        vm.runInNewContext(converterCode.replace(/const (\w+) += +require\(['"](\S+)['"]\);/gm, ''), sandbox);
+                        const converter = sandbox.module.exports;
+
+                        if (Array.isArray(converter)) for (const item of converter) yield item;
+                        else yield converter;
+                    }
+                    catch (e) {
+                        this.log.error(`Unable to apply converter from module: ${mN} - the code does not run: ${e}`)
+                    }
+                }
+                else
+                    this.log.info(`Ignoring converter from module: ${mN} - see warn messages for reason`);
+
+            }
+        }
+
+    /*    if (this.config.external === undefined) {
+            return;
+        }
+        const extfiles = this.config.external.split(';');
+        for (const moduleName of extfiles) {
+            if (!moduleName) continue;
             this.log.info(`Apply converter from module: ${moduleName}`);
             const sandbox = {
                 require,
@@ -235,14 +290,23 @@ class Zigbee extends utils.Adapter {
                 yield converter;
             }
         }
-    }
+    */
+   }
 
     applyExternalConverters() {
+      try {
         for (const definition of this.getExternalDefinition()) {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
-            zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+            try {
+              zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+            }
+            catch { this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`) }
         }
+      }
+      catch(error) {
+         this.log.error('error applying external converters');
+      }
     }
 
     async doConnect() {
@@ -851,6 +915,7 @@ class Zigbee extends utils.Adapter {
 
     onPairing(message, data) {
         if (Number.isInteger(data)) {
+            _pairingMode = true;
             this.setState('info.pairingCountdown', data, true);
             _pairingMode = true;
         }
