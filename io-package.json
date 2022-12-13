@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.9",
+    "version": "1.8.10",
     "news": {
+       "1.8.10": {
+        "en": "fix group access and any new functions",
+        "de": "fix group access and any new functions" 
+      },
       "1.8.9": {
         "en": "fix lidl plug",
         "de": "deckelstecker",
