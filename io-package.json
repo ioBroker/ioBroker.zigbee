@@ -3,9 +3,9 @@
     "name": "zigbee",
     "version": "1.8.10",
     "news": {
-       "1.8.10": {
+      "1.8.10": {
         "en": "fix group access and any new functions",
-        "de": "fix group access and any new functions" 
+        "de": "fix group access and any new functions"
       },
       "1.8.9": {
         "en": "fix lidl plug",
@@ -56,19 +56,6 @@
       },
       "1.8.4": {
         "en": "fix for new code"
-      },
-      "1.8.3": {
-        "en": "back to old source",
-        "de": "zurück zur alten quelle",
-        "ru": "назад к старому источнику",
-        "pt": "voltar para a velha fonte",
-        "nl": "terug naar de oude bron",
-        "fr": "retour à la vieille source",
-        "it": "torna alla vecchia fonte",
-        "es": "volver a la vieja fuente",
-        "pl": "tył",
-        "uk": "назад до старого джерела",
-        "zh-cn": "背 景"
       }
     },
     "title": "Zigbee",
