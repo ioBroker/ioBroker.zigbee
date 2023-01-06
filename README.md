@@ -136,7 +136,7 @@ You can thank the authors by these links:
 ### 1.8.10 (2022-12-12)
 * (asgothian) fix group access
 * (asgothian) add option for pairing code:
-   A new icon allows to open the networ after first entering a pairing code
+   A new icon allows to open the network after first entering a pairing code
    listed on the device
 * (asgothian) easier use of external converters
    - external converters can now be placed in the zigbee adapter data folder
