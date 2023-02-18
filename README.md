@@ -148,6 +148,11 @@ You can thank the authors by these links:
      in these files should not cause the adapter to crash - instead, use of
      external converters may be unavailable.
 
+
+
+### 1.8.11 (2022-12-10)
+* (arteck) fix compsite exposes with list
+
 ### 1.8.9 (2022-12-10)
 * (arteck) fix lidl plug
 
