@@ -133,6 +133,12 @@ You can thank the authors by these links:
 
 
 ## Changelog
+
+
+### 1.8.11 (2022-12-10)
+* (arteck) fix compsite exposes with list
+
+
 ### 1.8.10 (2022-12-12)
 * (asgothian) fix group access
 * (asgothian) add option for pairing code:
@@ -147,11 +153,6 @@ You can thank the authors by these links:
    - Log entries will identify which files are entered as converters. Errors
      in these files should not cause the adapter to crash - instead, use of
      external converters may be unavailable.
-
-
-
-### 1.8.11 (2022-12-10)
-* (arteck) fix compsite exposes with list
 
 ### 1.8.9 (2022-12-10)
 * (arteck) fix lidl plug
