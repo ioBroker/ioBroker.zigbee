@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.10",
+    "version": "1.8.11",
     "news": {
+      "1.8.11": {
+        "en": "fix exposes with composite list",
+        "de": "fix exposes with composite list"
+      },
       "1.8.10": {
         "en": "fix group access and any new functions",
         "de": "fix group access and any new functions"
