@@ -41,7 +41,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "gulp": "^4.0.2",
     "gulp-jsdoc3": "^3.0.0",
-    "gulp-replace": "^1.1.3",
+    "gulp-replace": "^1.1.4",
     "mixin-deep": "^2.0.1",
     "mocha": "^10.2.0"
   },
