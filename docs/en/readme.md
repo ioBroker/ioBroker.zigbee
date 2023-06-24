@@ -18,7 +18,7 @@ Some of these devices require the installation of a suitable firmware for operat
 The required flasher/programmer and the process of preparation are described [here](https://github.com/Koenkk/zigbee2mqtt/wiki/Getting-started) or [here (Russioan)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0). 
 
 The "Sonoff ZIGBEE 3.0 USB STICK CC2652P" is becoming increasingly popular:
-![](img/sonoff.png)
+![](../de/img/sonoff.png)
 
    - Flashing of a suitable firmware is not absolutely necessary (hardware is already delivered with suitable firmware) 
    - Supports the newer ZigBee 3.0 standard
@@ -30,7 +30,7 @@ The devices connected to the ZigBee network transmit their status to the coordin
 
 The software is divided into "converter" and "adapter".
 
-![](img/software1.jpg)
+![](../de/img/software1.jpg)
 
    - Converter
     The converter is divided into two parts: <br>
@@ -47,7 +47,7 @@ The software is divided into "converter" and "adapter".
 sudo rm /opt/iobroker/iobroker-data/zigbee_0/nvbackup.json<br>
 4.	Pfad des Koordinators ermitteln:
 `ls -la /dev/serial/by-id/`
-![](img/Bild2.png)
+![](../de/img/Bild2.png)
 5.	ioBroker -> ZigBee-Adapter installieren, hier als Beispiel die Version 1.8.10 <br> ![](img/Bild3.png)  <br> Hiermit werden alle erforderlichen Softwareteile (Konverter und Adapter) installiert.
 6.	Adapter öffnen -> ![](img/Bild4.png) -> Zuvor ermittelten Pfad des Koordinators mit dem Zusatz /dev/serial/by-id/ eintragen:![](img/Bild5.jpg) <br> es ist zu achten dass am Ende kein leer Zeichen mitgenommen wird
 7.	Netzwerk-ID und Pan ID vergeben zur Unterscheidung von anderen ZigBee-Netzwerken in Funkreichweite, z.B. <br>
