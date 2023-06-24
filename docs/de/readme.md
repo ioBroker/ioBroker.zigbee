@@ -107,5 +107,20 @@ Bei manchen ZigBee-Geräten ist es erforderlich alle Softwareschnittstellen ("ex
 ![](img/Bild23.png) -> ![](img/Bild24.png) -> ![](img/Bild25.png) -> ZigBee-Gerät (z.B. HOMA1001) auswählen  -> ![](img/Bild26.png)    <br>
 Nach einem Neustart des ZigBee-Adapters sollte das neue ZigBee-Gerät nun uneingeschränkt funktionieren.
 
-
+## Symbole im ZigBee-Adapter
     
+| icon  | Beschreibung |
+| ------------- | ------------- |
+| ![](img/Bild30.png)  | **State Cleanup** Löschen von ungültigen ioBroker-Objekten, welche durch den Vorgang "Ausschliessen" entstehen können. |
+| ![](img/Bild31.png)  | **Auf Firmware Updates überprüfen** Firmware der ZigBee-Geräte (z.B. Philips Hue Lampen) aktualisieren  |
+| ![](img/Bild32.png)  | **Add Group** Über diese Funktion können mehrere ZigBee-Geräte zu einer logischen Gruppe zusammengefasst werden und dann über ein ioBroker-Objekt gemeinsam angesteuert werden, z.B. brightness=20 dann wird bei allen ZigBee-Geräten der Gruppe brightness auf 20 gesetzt. |
+| ![](img/Bild33.png)  | **Touchlink zurücksetzen und koppeln** Touchlink ist eine Funktion von ZigBee, die es physisch nahe beieinander liegenden Geräten ermöglicht, miteinander zu kommunizieren, ohne sich im selben Netzwerk zu befinden. Diese Funktion wird nicht von allen Geräten unterstützt. Um ein ZigBee-Gerät über Touchlink auf Werkseinstellungen zurückzusetzen, bringe das Gerät in die Nähe (< 10 cm) des ZigBee-Koordinators und drücke dann das grüne Symbol. |
+| ![](img/Bild34.png)  | **Pairing mit QR Code** Bei manchen ZigBee-Geräten erfolgt das Pairing mittels QR-Code. |
+| ![](img/Bild35.png)  | **Pairing**  Anlernvorgang neuer ZigBee-Geräte (Pairing) starten. |
+| ![](img/Bild36.png)  | Zeit seit mit diesem ZigBee-Gerät zuletzt ein Datenaustausch stattgefunden hat.  |
+| ![](img/Bild37.png)  | Stärke des ZigBee-Funksignals an diesem ZigBee-Gerät (<10 schlecht, <50 mittel, >50 gut).ZigBee ist ein Funk-Mesh-Netzwerk (mesh = vermascht). Die meisten netzbetriebenen ZigBee-Geräte (z.B. Philips Hue Lampe) können als ZigBee-Router wirken, also als Funkknotenpunkt. ZigBee-Geräte müssen somit nicht zwingend eine direkte Funkverbindung zum Koordinator aufbauen, sondern können stattdessen jeden Router im Netzwerk zur Funkverbindung nutzen.Mit jedem ZigBee-Router wird somit die Funkreichweite des Netzwerkes erweitert. Alle ZigBee-Geräte prüfen regelmäßig, ob es eine bessere Funkroute gibt und stellen sich automatisch um. Dieser Vorgang kann jedoch etliche Minuten dauern.|
+
+## Zusätzliche Informationen
+Es gibt noch ein [Freundschaftsprojekt](https://www.zigbee2mqtt.io/) mit gleichen Funktionen und gleicher Technologie, welcher mit denselben Geräten über ein MQTT Protokoll kommuniziert. Wenn irgendwelche Verbesserungen oder neu unterstütze Geräte im Projekt ZigBee2MQTTeingefügt werden, können jene auch in dieses Projekt hinzugefügt werden. Solltet Ihr Unterschiede merken, schreibt bitte ein Issue und wir kümmern uns darum.
+Weitere Themen zu diesem Adapter sind auch im zugehörigen Wiki dokumentiert.
+
