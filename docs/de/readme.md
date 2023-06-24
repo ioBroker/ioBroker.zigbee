@@ -4,8 +4,8 @@ Mit Hilfe eines Koordinators für ZigBee-Netze, basierend auf dem Chip "Texas In
 ## Die Hardware
 Für den Koordinator (siehe oben) ist eine zusätzliche Hardware erforderlich, welche die Umsetzung zwischen USB und ZigBee-Funksignalen ermöglicht. Es gibt 2 Gruppen:
 
-•	Aufsteckmodul für den RaspberryPi (wird nicht mehr verwendet da veraltet und keine zigbee 3.0 unterstützung)<br>
-•	USB-Stick ähnliche Hardware
+   - Aufsteckmodul für den RaspberryPi (wird nicht mehr verwendet da veraltet und keine zigbee 3.0 unterstützung)<br>
+   - USB-Stick ähnliche Hardware
 
 ![](img/CC2531.png)
 ![](img/sku_429478_2.png)
@@ -20,8 +20,8 @@ Der benötigte Flasher/Programmer und der Prozess der Vorbereitung werden [hier 
 Zunehmend beliebt kommt der "Sonoff ZIGBEE 3.0 USB-STICK CC2652P" zum Einsatz:
 ![](img/sonoff.png)
 
-•	Flashen einer passenden Firmware nicht zwingend erforderlich (Ware wird bereits mit geeigneter Firmware ausgeliefert) <br>
-•	Unterstützt den neueren ZigBee 3.0 Standard
+   - Flashen einer passenden Firmware nicht zwingend erforderlich (Ware wird bereits mit geeigneter Firmware ausgeliefert) <br>
+   - Unterstützt den neueren ZigBee 3.0 Standard
 
 Die mit dem ZigBee-Netz verbundenen Geräte übermitteln dem Koordinator ihren Zustand und benachrichtigen über Ereignisse (Knopfdruck, Bewegungserkennung, Temperaturänderung, …). Diese Infos werden im Adapter unter den jeweiligen ioBroker-Objekten angezeigt und können so in ioBroker weiterverarbeitet werden. Außerdem ist es möglich Kommandos an das ZigBee-Gerät zu senden (Zustandsänderung Steckdosen und Lampen, Farb- und Helligkeitseinstellungen, …).
 
@@ -32,12 +32,12 @@ Die Software wird unterteilt in "Konverter" und "Adapter".
 
 ![](img/software1.jpg)
 
-•	Konverter
+   - Konverter
     Der Konverter gliedert sich auf in zwei Teile: <br>
     a) Allgemeine Bereitstellung der Daten aus den ZigBee-Funksignalen. Dieser [Softwareteil](https://github.com/Koenkk/zigbee-herdsman) wird für alle ZigBee-Geräte verwendet.  <br>
     b) Gerätespezifische [Aufbereitung](https://github.com/Koenkk/zigbee-herdsman-converters) der Daten auf eine definierte Schnittstelle zum Adapter. <br>
     
-•	Adapter
+   - Adapter
     Dieser Softwareteil ist die Anbindung des Konverters an ioBroker. Der [Adapter](https://github.com/ioBroker/ioBroker.zigbee) beinhaltet die grafische Darstellung zur Verwaltung der ZigBee-Geräte, sowie die Erzeugung der ioBroker-Objekte zur Steuerung der ZigBee-Geräte.
     
 ## Installation
