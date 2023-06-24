@@ -46,3 +46,30 @@ Die Software wird unterteilt in "Konverter" und "Adapter".
 3.	Eventuell vorhandene ZigBee-Backupdatei löschen. Andernfalls wird der ZigBee-Adapter in ioBroker nicht grün und im ioBroker Log steht, dass der Adapter falsch konfiguriert ist.<br>
 sudo rm /opt/iobroker/iobroker-data/zigbee_0/nvbackup.json<br>
 4.	Pfad des Koordinators ermitteln:
+`ls -la /dev/serial/by-id/`
+![](img/Bild2.png)
+5.	ioBroker -> ZigBee-Adapter installieren, hier als Beispiel die Version 1.8.10 <br> ![](img/Bild3.png)  <br> Hiermit werden alle erforderlichen Softwareteile (Konverter und Adapter) installiert.
+6.	Adapter öffnen -> ![](img/Bild4.png) -> Zuvor ermittelten Pfad des Koordinators mit dem Zusatz /dev/serial/by-id/ eintragen:![](img/Bild5.jpg) <br> es ist zu achten dass am Ende kein leer Zeichen mitgenommen wird
+7.	Netzwerk-ID und Pan ID vergeben zur Unterscheidung von anderen ZigBee-Netzwerken in Funkreichweite, z.B. <br>
+   ![](img/Bild6.png) ![](img/Bild7.png) <br> ![](img/Bild8.png) ![](img/Bild9.png)
+8.	Prüfen ob der Adapter in ioBroker grün wird. Sollzustand: <br> ![](img/Bild10.png) <br> Andernfalls ioBroker Log lesen und Fehlerursache suchen, im Forum stehen viele Lösungsansätze.
+
+## Pairing
+Jedes ZigBee-Gerät (Schalter, Lampe, Sensor, …) muss mit dem Koordinator gekoppelt werden (Pairing):  <br>
+
+   - ZigBee-Gerät:
+    Jedes **ZigBee-Gerät** kann nur mit genau 1 ZigBee-Netzwerk verbunden sein. Hat das ZigBee-Gerät noch Pairing-Informationen zu einem fremden Koordinator (z.B. Philips Hue Bridge) gespeichert, dann muss es von diesem ZigBee-Netzwerk zuerst entkoppelt werden. Dieses Entkoppeln vom alten ZigBee-Netzwerk erfolgt vorzugsweise über die Bedienoberfläche des alten ZigBee-Netzwerkes (z.B. Philips Hue App). Alternativ kann man das ZigBee-Gerät auf Werkseinstellungen zurücksetzen.  <br>
+    Um ein ZigBee-Gerät nun in den Pairing-Mode zu versetzen, gibt es typischer Weise folgende Möglichkeiten:  <br>
+        1.	ZigBee-Gerät von einem ZigBee-Netzwerk entkoppeln  
+        2.	Pairing-Button am ZigBee-Gerät drücken  
+        3.	Versorgungsspannung des ZigBee-Gerätes aus- und dann wieder einschalten  
+      
+Danach ist das ZigBee-Gerät für typischer Weise 60 Sekunden im Pairing-Mode. <br>
+Ähnlich wie die Vorgehensweise zum Rücksetzen auf Werkseinstellungen ist auch das Aktivieren des Pairing-Mode abhängig vom jeweiligen Gerätetyp (ggf. Bedienungsanleitung des ZigBee-Gerätes lesen).  <br>
+
+   - Koordinator:
+
+    Grünen Knopf drücken, um den Koordinator für 60 Sekunden (oder singestellte Zeit im Adapter Einstellungen) in den Pairing-Mode zu versetzen. <br>
+
+      ![](img/Bild6.png)
+  
