@@ -68,8 +68,44 @@ Danach ist das ZigBee-Gerät für typischer Weise 60 Sekunden im Pairing-Mode. <
 Ähnlich wie die Vorgehensweise zum Rücksetzen auf Werkseinstellungen ist auch das Aktivieren des Pairing-Mode abhängig vom jeweiligen Gerätetyp (ggf. Bedienungsanleitung des ZigBee-Gerätes lesen).  <br>
 
    - Koordinator:
+Grünen Knopf drücken, um den Koordinator für 60 Sekunden (oder singestellte Zeit im Adapter Einstellungen) in den Pairing-Mode zu versetzen. <br>
+![](img/Bild12.png)
 
-    Grünen Knopf drücken, um den Koordinator für 60 Sekunden (oder singestellte Zeit im Adapter Einstellungen) in den Pairing-Mode zu versetzen. <br>
+   - Warten bis im Dialog "New device joined" erscheint: 
+![](img/Bild13.png)
 
-      ![](img/Bild6.png)
-  
+   - Pairing überprüfen:
+Das zu koppelnde Gerät muss vom ioBroker ZigBee-Adapter unterstützt werden. Im Gutfall wird im ZigBee-Adapter ein neues Gerät angezeigt (z.B. Philips Light Stripe) und entsprechende ioBroker-Objekte angelegt:
+![](img/Bild14.png) ![](img/Bild15.png)
+
+   - Im Schlechtfall wird das ZigBee-Gerät aktuell noch nicht unterstützt. Im nächsten Abschnitt ist beschrieben, was zu tun ist, um dieses ZigBee-Gerät dennoch nutzen zu können.
+
+## Pairing von bisher unbekannten ZigBee-Geräten
+
+Bei bisher unbekannten ZigBee-Geräten erscheint beim Pairing der ZigBee-Name des ZigBee-Gerätes (z.B. HOMA1001) mit dem Zusatz "not described in statesMapping" <br>
+![](img/Bild28.png) <br>
+![](img/Bild16.png) <br>
+
+Durch Drehen dieser Kachel erhält man Detailinformationen zu dem ZigBee-Gerät: <br>
+![](img/Bild17.png) ![](img/Bild18.png) <br>
+
+Nach einer Registrierung bei [github.com](https://github.com/ioBroker/ioBroker.zigbee/issues) kann über einen "Issue" das fehlende ZigBee-Gerät gemeldet werden:
+
+![](img/Bild19.png) <br>
+
+•	Detailinformationen der Kachel (siehe oben) in den Issue einfügen, erstelle eine kurze Dokumentation (vorzugweise auf Englisch) und absenden. Ein Entwickler wird sich daraufhin über den Issue melden.
+
+Nach Anpassung der relevanten Dateien muss der ZigBee-Adapter neugestartet und dann das ZigBee-Gerät vom Koordinator entkoppelt werden (unpair):
+![](img/Bild20.png) <br>
+Danach kann das Pairing wiederholt werden. Sollzustand nach dem Pairing: <br>
+![](img/Bild21.png) <br>
+
+Bei manchen ZigBee-Geräten ist es erforderlich alle Softwareschnittstellen ("exposes") des neuen ZigBee-Gerätes in den ioBroker-Objekten anzuzeigen, um alle Funktionen des ZigBee-Gerätes nutzen zu können. In solchen Fällen muss das neue ZigBee-Gerät in die "Ausschliessen"-Gruppe aufgenommen werden. 
+
+![](img/Bild22.png) <br>
+
+![](img/Bild23.png) -> ![](img/Bild24.png) -> ![](img/Bild25.png) -> ZigBee-Gerät (z.B. HOMA1001) auswählen  -> ![](img/Bild26.png)    <br>
+Nach einem Neustart des ZigBee-Adapters sollte das neue ZigBee-Gerät nun uneingeschränkt funktionieren.
+
+
+    
