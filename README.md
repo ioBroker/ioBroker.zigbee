@@ -114,6 +114,12 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
+
+## More Informations
+https://github.com/ioBroker/ioBroker.zigbee/wiki
+
+
+
 ## Donate
 
 You can thank the authors by these links:
