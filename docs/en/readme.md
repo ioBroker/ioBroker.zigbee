@@ -15,7 +15,7 @@ Additional hardware is required for the coordinator (see above), which enables c
 
 
 Some of these devices require the installation of a suitable firmware for operation:
-The required flasher/programmer and the process of preparation are described [here](https://github.com/Koenkk/zigbee2mqtt/wiki/Getting-started) or [here (Russioan)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0). 
+The required flasher/programmer and the process of preparation are described [here](https://github.com/Koenkk/zigbee2mqtt/wiki/Getting-started) or [here (Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0). 
 
 The "Sonoff ZIGBEE 3.0 USB STICK CC2652P" is becoming increasingly popular:
 ![](../de/img/sonoff.png)
@@ -30,7 +30,7 @@ The devices connected to the ZigBee network transmit their status to the coordin
 
 The software is divided into "converter" and "adapter".
 
-![](../de/img/software1.jpg)
+![](img/software1.jpg)
 
    - Converter
     The converter is divided into two parts: <br>
@@ -41,86 +41,88 @@ The software is divided into "converter" and "adapter".
 
     
 ## Installation
-1.	Koordinator Hardware am RaspberryPi anstecken.<br>
-2.	Über z.B. PuTTY mit RaspberryPi verbinden.<br>
-3.	Eventuell vorhandene ZigBee-Backupdatei löschen. Andernfalls wird der ZigBee-Adapter in ioBroker nicht grün und im ioBroker Log steht, dass der Adapter falsch konfiguriert ist.<br>
-sudo rm /opt/iobroker/iobroker-data/zigbee_0/nvbackup.json<br>
-4.	Pfad des Koordinators ermitteln:
+1.	Connect the coordinator hardware to the RaspberryPi.<br>
+2.	Connect to RaspberryPi e.g. via PuTTY.<br>
+3.	Delete any existing ZigBee backup file. Otherwise the ZigBee adapter will not turn green in ioBroker and the ioBroker log will state that the adapter is misconfigured <br>
+4.	Find out the path of the coordinator :
 `ls -la /dev/serial/by-id/`
 ![](../de/img/Bild2.png)
-5.	ioBroker -> ZigBee-Adapter installieren, hier als Beispiel die Version 1.8.10 <br> ![](img/Bild3.png)  <br> Hiermit werden alle erforderlichen Softwareteile (Konverter und Adapter) installiert.
-6.	Adapter öffnen -> ![](img/Bild4.png) -> Zuvor ermittelten Pfad des Koordinators mit dem Zusatz /dev/serial/by-id/ eintragen:![](img/Bild5.jpg) <br> es ist zu achten dass am Ende kein leer Zeichen mitgenommen wird
-7.	Netzwerk-ID und Pan ID vergeben zur Unterscheidung von anderen ZigBee-Netzwerken in Funkreichweite, z.B. <br>
-   ![](img/Bild6.png) ![](img/Bild7.png) <br> ![](img/Bild8.png) ![](img/Bild9.png)
-8.	Prüfen ob der Adapter in ioBroker grün wird. Sollzustand: <br> ![](img/Bild10.png) <br> Andernfalls ioBroker Log lesen und Fehlerursache suchen, im Forum stehen viele Lösungsansätze.
+5.	ioBroker -> install ZigBee adapter, here Version 1.8.10 <br> ![](../de/img/Bild3.png)  <br> This will install all the necessary software parts (converter and adapter).
+6.	Open adapter -> ![](img/Bild4.png) -> Enter the previously determined path of the coordinator with the addition /dev/serial/by-id/:![](../de/img/Bild5.jpg) <br> There must be NO spaces at the end of the path.
+7.	Configure network ID and Pan ID to differentiate from other ZigBee networks within radio range, e.g. <br>
+   ![](../de/img/Bild6.png) ![](../de/img/Bild7.png) <br> ![](../de/img/Bild8.png) ![](img/Bild9.png)
+8.	Check if the adapter turns green in ioBroker. Target state: <br> ![](../de/img/Bild10.png) <br> Otherwise read the ioBroker log and look for the cause of the error, check also our Forum.
 
 ## Pairing
-Jedes ZigBee-Gerät (Schalter, Lampe, Sensor, …) muss mit dem Koordinator gekoppelt werden (Pairing):  <br>
+Each ZigBee device (switch, bulb, sensor, ...) must be paired with the coordinator (pairing):  <br>
 
-   - ZigBee-Gerät:
-    Jedes **ZigBee-Gerät** kann nur mit genau 1 ZigBee-Netzwerk verbunden sein. Hat das ZigBee-Gerät noch Pairing-Informationen zu einem fremden Koordinator (z.B. Philips Hue Bridge) gespeichert, dann muss es von diesem ZigBee-Netzwerk zuerst entkoppelt werden. Dieses Entkoppeln vom alten ZigBee-Netzwerk erfolgt vorzugsweise über die Bedienoberfläche des alten ZigBee-Netzwerkes (z.B. Philips Hue App). Alternativ kann man das ZigBee-Gerät auf Werkseinstellungen zurücksetzen.  <br>
-    Um ein ZigBee-Gerät nun in den Pairing-Mode zu versetzen, gibt es typischer Weise folgende Möglichkeiten:  <br>
-        1.	ZigBee-Gerät von einem ZigBee-Netzwerk entkoppeln  
-        2.	Pairing-Button am ZigBee-Gerät drücken  
-        3.	Versorgungsspannung des ZigBee-Gerätes aus- und dann wieder einschalten  
+   - ZigBee device:
+    Each ZigBee device can only be connected to exactly 1 ZigBee network. If the ZigBee device still has pairing information saved for a different coordinator (e.g. Philips Hue Bridge), then it must first be decoupled from this ZigBee network. This decoupling from the old ZigBee network preferably is done via the user interface of the old ZigBee network (z.B. Philips Hue App). Alternatively, you can reset the ZigBee device to factory settings.  <br>
+There are typically the following options for putting a ZigBee device into pairing mode <br>    
+        1.	Unpair a ZigBee device from a ZigBee network
+        2.	Press the pairing button on the ZigBee device  
+        3.	Switch the supply voltage of the ZigBee device off and then on again
+
       
-Danach ist das ZigBee-Gerät für typischer Weise 60 Sekunden im Pairing-Mode. <br>
-Ähnlich wie die Vorgehensweise zum Rücksetzen auf Werkseinstellungen ist auch das Aktivieren des Pairing-Mode abhängig vom jeweiligen Gerätetyp (ggf. Bedienungsanleitung des ZigBee-Gerätes lesen).  <br>
+The ZigBee device is then in pairing mode for typically 60 seconds. Similar to the procedure for resetting to factory settings, activating the pairing mode also depends on the respective device type (if necessary, read the operating instructions of the ZigBee device).
 
-   - Koordinator:
-Grünen Knopf drücken, um den Koordinator für 60 Sekunden (oder singestellte Zeit im Adapter Einstellungen) in den Pairing-Mode zu versetzen. <br>
-![](img/Bild12.png)
+   - Coordinator:
+Press the green button to put the coordinator into pairing mode for 60 seconds. <br>
+![](../de/img/Bild12.png)
 
-   - Warten bis im Dialog "New device joined" erscheint: 
+   - Wait until "New device joined" appears in the dialog:  <br>
 ![](img/Bild13.png)
 
-   - Pairing überprüfen:
-Das zu koppelnde Gerät muss vom ioBroker ZigBee-Adapter unterstützt werden. Im Gutfall wird im ZigBee-Adapter ein neues Gerät angezeigt (z.B. Philips Light Stripe) und entsprechende ioBroker-Objekte angelegt:
-![](img/Bild14.png) ![](img/Bild15.png)
+   - Check Pairing:
+The device to be paired must be supported by the ioBroker ZigBee adapter. In the best case, a new device is displayed in the ZigBee adapter (e.g. Philips Light Stripe) and corresponding ioBroker objects are created:
+![](../de/img/Bild14.png) ![](../de/img/Bild15.png)
 
-   - Im Schlechtfall wird das ZigBee-Gerät aktuell noch nicht unterstützt. Im nächsten Abschnitt ist beschrieben, was zu tun ist, um dieses ZigBee-Gerät dennoch nutzen zu können.
+   - In the worst case, the ZigBee device is not currently supported. The next section describes what needs to be done to use this ZigBee device anyhow.
 
-## Pairing von bisher unbekannten ZigBee-Geräten
+## Pairing of unknown ZigBee devices so far
 
-Bei bisher unbekannten ZigBee-Geräten erscheint beim Pairing der ZigBee-Name des ZigBee-Gerätes (z.B. HOMA1001) mit dem Zusatz "not described in statesMapping" <br>
-![](img/Bild28.png) <br>
-![](img/Bild16.png) <br>
+With unknown ZigBee devices so far, the ZigBee name of the ZigBee device (e.g. HOMA1001) appears during pairing with the addition "not described in statesMapping" <br>
+![](../de/img/Bild28.png) <br>
+![](../de/img/Bild16.png) <br>
 
-Durch Drehen dieser Kachel erhält man Detailinformationen zu dem ZigBee-Gerät: <br>
-![](img/Bild17.png) ![](img/Bild18.png) <br>
+Turning this tile gives you detailed information about the ZigBee device: <br>
+![](../de/img/Bild17.png) ![](img/Bild18.png) <br>
 
-Nach einer Registrierung bei [github.com](https://github.com/ioBroker/ioBroker.zigbee/issues) kann über einen "Issue" das fehlende ZigBee-Gerät gemeldet werden:
+After registering at [github.com](https://github.com/ioBroker/ioBroker.zigbee/issues) the missing ZigBee device must be reported via an "Issue":
 
-![](img/Bild19.png) <br>
+![](../de/img/Bild19.png) <br>
 
-•	Detailinformationen der Kachel (siehe oben) in den Issue einfügen, erstelle eine kurze Dokumentation (vorzugweise auf Englisch) und absenden. Ein Entwickler wird sich daraufhin über den Issue melden.
+   - Insert detailed information of the tile (see above) into the issue, create a short documentation (preferably in English) and send it. A developer will then respond via the issue.
 
-Nach Anpassung der relevanten Dateien muss der ZigBee-Adapter neugestartet und dann das ZigBee-Gerät vom Koordinator entkoppelt werden (unpair):
-![](img/Bild20.png) <br>
-Danach kann das Pairing wiederholt werden. Sollzustand nach dem Pairing: <br>
-![](img/Bild21.png) <br>
+After modifying the relevant files, the ZigBee adapter must be restarted and the ZigBee device must be unpaired from the coordinator:
+![](../de/img/Bild20.png) <br>
+After that, the pairing can be repeated. Target state after pairing: <br>
+![](../de/img/Bild21.png) <br>
 
-Bei manchen ZigBee-Geräten ist es erforderlich alle Softwareschnittstellen ("exposes") des neuen ZigBee-Gerätes in den ioBroker-Objekten anzuzeigen, um alle Funktionen des ZigBee-Gerätes nutzen zu können. In solchen Fällen muss das neue ZigBee-Gerät in die "Ausschliessen"-Gruppe aufgenommen werden. 
+With some ZigBee devices it is necessary to display all software interfaces ("exposes") of the new ZigBee device in the ioBroker objects in order to be able to use all the functions of this ZigBee device. In such cases, the new ZigBee device must be included in the "Exclude" group. 
 
-![](img/Bild22.png) <br>
+![](../de/img/Bild22.png) <br>
 
-![](img/Bild23.png) -> ![](img/Bild24.png) -> ![](img/Bild25.png) -> ZigBee-Gerät (z.B. HOMA1001) auswählen  -> ![](img/Bild26.png)    <br>
-Nach einem Neustart des ZigBee-Adapters sollte das neue ZigBee-Gerät nun uneingeschränkt funktionieren.
+![](img/Bild23.png) -> ![](../de/img/Bild24.png) -> ![](img/Bild25.png) -> select ZigBee device (e.g. HOMA1001)  -> ![](img/Bild26.png)    <br>
+After restarting the ZigBee adapter, the new ZigBee device should now work without restrictions.
 
-## Symbole im ZigBee-Adapter
+
+
+## Symbols within the ZigBee adapter
     
 | icon  | Beschreibung |
 | ------------- | ------------- |
-| ![](img/Bild30.png)  | **State Cleanup** Löschen von ungültigen ioBroker-Objekten, welche durch den Vorgang "Ausschliessen" entstehen können. |
-| ![](img/Bild31.png)  | **Auf Firmware Updates überprüfen** Firmware der ZigBee-Geräte (z.B. Philips Hue Lampen) aktualisieren  |
-| ![](img/Bild32.png)  | **Add Group** Über diese Funktion können mehrere ZigBee-Geräte zu einer logischen Gruppe zusammengefasst werden und dann über ein ioBroker-Objekt gemeinsam angesteuert werden, z.B. brightness=20 dann wird bei allen ZigBee-Geräten der Gruppe brightness auf 20 gesetzt. |
-| ![](img/Bild33.png)  | **Touchlink zurücksetzen und koppeln** Touchlink ist eine Funktion von ZigBee, die es physisch nahe beieinander liegenden Geräten ermöglicht, miteinander zu kommunizieren, ohne sich im selben Netzwerk zu befinden. Diese Funktion wird nicht von allen Geräten unterstützt. Um ein ZigBee-Gerät über Touchlink auf Werkseinstellungen zurückzusetzen, bringe das Gerät in die Nähe (< 10 cm) des ZigBee-Koordinators und drücke dann das grüne Symbol. |
-| ![](img/Bild34.png)  | **Pairing mit QR Code** Bei manchen ZigBee-Geräten erfolgt das Pairing mittels QR-Code. |
-| ![](img/Bild35.png)  | **Pairing**  Anlernvorgang neuer ZigBee-Geräte (Pairing) starten. |
-| ![](img/Bild36.png)  | Zeit seit mit diesem ZigBee-Gerät zuletzt ein Datenaustausch stattgefunden hat.  |
-| ![](img/Bild37.png)  | Stärke des ZigBee-Funksignals an diesem ZigBee-Gerät (<10 schlecht, <50 mittel, >50 gut).ZigBee ist ein Funk-Mesh-Netzwerk (mesh = vermascht). Die meisten netzbetriebenen ZigBee-Geräte (z.B. Philips Hue Lampe) können als ZigBee-Router wirken, also als Funkknotenpunkt. ZigBee-Geräte müssen somit nicht zwingend eine direkte Funkverbindung zum Koordinator aufbauen, sondern können stattdessen jeden Router im Netzwerk zur Funkverbindung nutzen.Mit jedem ZigBee-Router wird somit die Funkreichweite des Netzwerkes erweitert. Alle ZigBee-Geräte prüfen regelmäßig, ob es eine bessere Funkroute gibt und stellen sich automatisch um. Dieser Vorgang kann jedoch etliche Minuten dauern.|
+| ![](../de/img/Bild30.png)  | **State Cleanup** Deletion of invalid ioBroker objects, which can result from the "Exclude" process. |
+| ![](../de/img/Bild31.png)  | **Check firmware updates** Update the firmware of the ZigBee devices (e.g. Philips Hue bulbs).  |
+| ![](../de/img/Bild32.png)  | **Add Group** Using this function, ZigBee devices can be combined into a logical group and then be controlled together via one ioBroker object, e.g. brightness=20 sets the brightness of all ZigBee devices in the group to 20. |
+| ![](../de/img/Bild33.png)  | **Touchlink reset and pairing** Touchlink is a ZigBee function that allows devices that are physically close to each other to communicate with each other without being in the same network. Not all devices support this feature.To factory reset a ZigBee device via Touchlink, bring the device close (< 10 cm) to the ZigBee coordinator and then press this green icon. |
+| ![](../de/img/Bild34.png)  | **Pairing with QR code** Bei With some ZigBee devices, pairing is done using a QR code. |
+| ![](../de/img/Bild35.png)  | **Let's start Pairing**  Start the pairing process for new ZigBee devices. |
+| ![](../de/img/Bild36.png)  | Time since data was last exchanged with this ZigBee device.  |
+| ![](../de/img/Bild37.png)  | Strength of the ZigBee radio signal at this ZigBee device (<10 poor, <50 medium, >50 good).ZigBee is a wireless mesh network. Most mains-operated ZigBee devices (e.g. Philips Hue bulbs) can act as a ZigBee router, this means as a radio node. ZigBee devices therefore do not necessarily have to establish a direct wireless connection to the coordinator, but can instead use any router in the network for the wireless connection. The radio range of the network is thus extended with each ZigBee router. All ZigBee devices regularly check whether there is a better radio route and switch over automatically. However, this process can take several minutes.|
 
-## Zusätzliche Informationen
-Es gibt noch ein [Freundschaftsprojekt](https://www.zigbee2mqtt.io/) mit gleichen Funktionen und gleicher Technologie, welcher mit denselben Geräten über ein MQTT Protokoll kommuniziert. Wenn irgendwelche Verbesserungen oder neu unterstütze Geräte im Projekt ZigBee2MQTTeingefügt werden, können jene auch in dieses Projekt hinzugefügt werden. Solltet Ihr Unterschiede merken, schreibt bitte ein Issue und wir kümmern uns darum.
-Weitere Themen zu diesem Adapter sind auch im zugehörigen Wiki dokumentiert.
+## Additional information
+There is [another](https://www.zigbee2mqtt.io/) with the same functions and the same technology, which communicates with the same devices via an MQTT protocol. If any improvements or new supported devices are included in the ZigBee2MQTT project, those can also be added to this project. If you notice any differences, please write an issue and we will take care of it.
+Other topics related to this adapter are also documented in the associated wiki.
+
 
