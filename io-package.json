@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.11",
+    "version": "1.8.12",
     "news": {
+      "1.8.12": {
+        "en": "new Documentation",
+        "de": "neue Dokumentation"
+      },
       "1.8.11": {
         "en": "fix exposes with composite list",
         "de": "fix exposes with composite list"
@@ -44,22 +48,6 @@
       "1.8.6": {
         "en": "fix exposes",
         "de": "fix exposes"
-      },
-      "1.8.5": {
-        "en": "fix for new code",
-        "de": "fix für neuen code",
-        "ru": "исправить для нового кода",
-        "pt": "corrigir para novo código",
-        "nl": "vertaling:",
-        "fr": "correction du nouveau code",
-        "it": "correzione per nuovo codice",
-        "es": "fijar para nuevo código",
-        "pl": "naprawić nowy kod",
-        "uk": "виправити для нового коду",
-        "zh-cn": "f 新的守则的ix"
-      },
-      "1.8.4": {
-        "en": "fix for new code"
       }
     },
     "title": "Zigbee",
