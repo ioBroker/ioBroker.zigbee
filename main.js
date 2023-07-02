@@ -562,6 +562,8 @@ class Zigbee extends utils.Adapter {
 
     async publishFromState(deviceId, model, stateModel, stateList, options) {
         let isGroup = false;
+
+        this.log.debug(`publishFromState : ${deviceId} ${model}`);
         if (model === 'group') {
             isGroup = true;
             deviceId = parseInt(deviceId);
