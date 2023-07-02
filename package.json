@@ -23,7 +23,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^2.6.8",
     "tar": "^6.1.15",
-    "typescript": "^5.0.4",
+    "typescript": "^5.1.6",
     "zigbee-herdsman": "0.16.0",
     "zigbee-herdsman-converters": "15.33.0"
   },
