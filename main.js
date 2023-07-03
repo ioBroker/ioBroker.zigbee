@@ -568,9 +568,17 @@ class Zigbee extends utils.Adapter {
             isGroup = true;
             deviceId = parseInt(deviceId);
         }
+        
         const entity = await this.zbController.resolveEntity(deviceId);
+        if (!entity) {
+            this.log.error(`No entity for ${deviceId}`);
+            return;
+        }
+            
         this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
+        
         const mappedModel = entity.mapped;
+        
         if (!mappedModel) {
             this.log.debug(`No mapped model for ${model}`);
             return;
