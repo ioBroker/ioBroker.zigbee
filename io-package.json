@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.12",
+    "version": "1.8.13",
     "news": {
+      "1.8.13": {
+        "en": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
+        "de": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md"
+      },
       "1.8.12": {
         "en": "new Documentation",
         "de": "neue Dokumentation"
@@ -189,7 +193,8 @@
           "cancel"
         ]
       }
-    ]
+    ],
+    "installedFrom": "ioBroker/ioBroker.zigbee#10cfa85268e140cceb57187ddd648726ae867bdc"
   },
   "native": {
     "port": "",
@@ -219,6 +224,7 @@
       "_id": "exclude.all",
       "type": "state",
       "common": {
+        "role": "state",
         "name": "all",
         "type": "string",
         "read": true,
@@ -252,6 +258,7 @@
       "_id": "info.pairingMode",
       "type": "state",
       "common": {
+        "role": "indicator",
         "name": "Pairing mode",
         "type": "boolean",
         "read": true,
@@ -264,6 +271,7 @@
       "_id": "info.pairingCountdown",
       "type": "state",
       "common": {
+        "role": "indicator",
         "name": "Pairing countdown",
         "type": "number",
         "read": true,
@@ -276,6 +284,7 @@
       "_id": "info.pairingMessage",
       "type": "state",
       "common": {
+        "role": "indicator",
         "name": "Pairing message",
         "type": "string",
         "read": true,
@@ -288,6 +297,7 @@
       "_id": "info.groups",
       "type": "state",
       "common": {
+        "role": "state",
         "name": "Groups",
         "type": "string",
         "read": true,
@@ -300,10 +310,24 @@
       "_id": "info.undefinedDevices",
       "type": "state",
       "common": {
+        "role": "state",
         "name": "Recorded undefined devices",
         "type": "string",
         "read": true,
         "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.debugmessages",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Log changes as warnings for",
+        "type": "string",
+        "read": true,
+        "write": true,
         "def": ""
       },
       "native": {}

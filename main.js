@@ -579,7 +579,6 @@ class Zigbee extends utils.Adapter {
                 this.log.debug(`No mapped model for ${model}`);
                 return;
             }
-            this.log.debug(`Mapped Model: ${JSON.stringify(mappedModel)}`);
     
             stateList.forEach(async changedState => {
                 const stateDesc = changedState.stateDesc;
@@ -929,7 +928,6 @@ class Zigbee extends utils.Adapter {
         if (Number.isInteger(data)) {
             _pairingMode = true;
             this.setState('info.pairingCountdown', data, true);
-            _pairingMode = true;
         }
         if (data === 0) {
             // set pairing mode off
