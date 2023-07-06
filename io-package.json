@@ -194,7 +194,6 @@
         ]
       }
     ],
-    "installedFrom": "ioBroker/ioBroker.zigbee#10cfa85268e140cceb57187ddd648726ae867bdc"
   },
   "native": {
     "port": "",
