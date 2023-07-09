@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.13",
+    "version": "1.8.15",
     "news": {
       "1.8.13": {
         "en": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
