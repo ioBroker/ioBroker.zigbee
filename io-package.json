@@ -48,10 +48,6 @@
         "pl": "naprawić",
         "uk": "фіксувати висадки",
         "zh-cn": "fix 暴露"
-      },
-      "1.8.6": {
-        "en": "fix exposes",
-        "de": "fix exposes"
       }
     },
     "title": "Zigbee",
