@@ -4,15 +4,20 @@ name: Test and Release
 # as well as tags with a semantic version
 on:
   push:
-    branches:
-      - "*"
+     branches:
+      - "master"
     tags:
       # normal versions
       - "v[0-9]+.[0-9]+.[0-9]+"
       # pre-releases
       - "v[0-9]+.[0-9]+.[0-9]+-**"
   pull_request: {}
-
+  
+# Cancel previous PR/branch runs when a new commit is pushed
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+  
 jobs:
   # Performs quick checks before the expensive test runs
   check-and-lint:
@@ -22,23 +27,17 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x]
 
+   
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: ioBroker/testing-action-check@v1
         with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install Dependencies
-        run: npm i
-
-      - name: Test package files
-        run: npm run test:package
-
+          node-version: "16.x"
+          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+          # install-command: 'npm install'
+          lint: true
+          
   # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
@@ -48,46 +47,37 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
-        os: [ubuntu-latest, macos-latest]
+        node-version: [16.x, 18.x]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: ioBroker/testing-action-adapter@v1
         with:
           node-version: ${{ matrix.node-version }}
+          os: ${{ matrix.os }}
+          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+          # install-command: 'npm install'
 
-      - name: Install Dependencies
-        run: npm i
-
-      - name: Run unit tests
-        run: npm run test:unit
-
-      - name: Run integration tests (unix only)
-        if: startsWith(runner.OS, 'windows') == false
-        run: DEBUG=testing:* npm run test:integration
-
-      - name: Run integration tests (windows only)
-        if: startsWith(runner.OS, 'windows')
-        run: set DEBUG=testing:* & npm run test:integration
+  # TODO: To enable automatic npm releases, create a token on npmjs.org
+  # Enter this token as a GitHub secret (with name NPM_TOKEN) in the repository options
+  # Then uncomment the following block:
 
   # Deploys the final package to NPM
+  # Deploys the final package to NPM and Github Actions
   deploy:
-    needs: [adapter-tests]
-
-    # Trigger this step only when a commit on any branch is tagged with a version number
+    # Trigger this step only when a commit on master is tagged with a version number
     if: |
       contains(github.event.head_commit.message, '[skip ci]') == false &&
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/v')
 
+    # Define which jobst must succeed before the release
+    needs: [adapter-tests]
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [16.x]
 
     steps:
       - name: Checkout code
@@ -119,31 +109,27 @@ jobs:
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
           npm publish
+ # b) For monorepos managed with lerna (requires lerna to be installed globally)
+      #- name: Publish packages to npm
+      #  run: |
+      #    npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+      #    npm whoami
+      #    lerna publish from-package --yes
+      # c) For monorepos managed with yarn v3.1+ (no lerna)
+      #- name: Publish packages to npm
+      #  run: |
+      #    yarn config set npmAuthToken "${{ secrets.NPM_TOKEN }}"
+      #    yarn npm whoami
+      #    yarn workspaces foreach -vti --no-private npm publish --tolerate-republish
 
-#      - name: Create Github Release
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.Github_Token}}
-#        with:
-#          tag_name: ${{ github.ref }}
-#          release_name: Release v${{ steps.extract_release.outputs.VERSION }}
-#          draft: false
-#          # Prerelease versions create prereleases on Github
-#          prerelease: ${{ contains(steps.extract_release.outputs.VERSION, '-') }}
-#          body: ${{ steps.extract_release.outputs.BODY }}
-#
-#      - name: Notify Sentry.io about the release
-#        run: |
-#          npm i -g @sentry/cli
-#          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-#          export SENTRY_URL=https://sentry.iobroker.net
-#          export SENTRY_ORG=iobroker
-#          export SENTRY_PROJECT=iobroker-zigbee
-#          export SENTRY_VERSION=iobroker.zigbee@${{ steps.extract_release.outputs.VERSION }}
-#          sentry-cli releases new $SENTRY_VERSION
-#          sentry-cli releases finalize $SENTRY_VERSION
-#        # Add the following line BEFORE finalize if repositories are connected in Sentry
-#        # sentry-cli releases set-commits $SENTRY_VERSION --auto
-#
-#        # Add the following line BEFORE finalize if sourcemap uploads are needed
-#        # sentry-cli releases files $SENTRY_VERSION upload-sourcemaps build/
+      - name: Create Github Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release v${{ steps.extract_release.outputs.VERSION }}
+          draft: false
+          # Prerelease versions create prereleases on Github
+          prerelease: ${{ contains(steps.extract_release.outputs.VERSION, '-') }}
+          body: ${{ steps.extract_release.outputs.BODY }}

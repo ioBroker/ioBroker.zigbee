@@ -26,9 +26,8 @@ Only CC26xx/cc1352/cc2538 Devices support extraction of the NVRam backup which s
 Current firmware files for these devices can be found [on GitHub](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
-<span><img src="http://img.dxcdn.com/productimages/sku_429478_2.jpg" width="100"></span>
-<span><img src="http://img.dxcdn.com/productimages/sku_429601_2.jpg" width="100"></span>
 <span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
+<span><img src="docs/de/img/sonoff.png" width="100"></span>
 <span><img src="docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
 <span><img src="docs/de/img/cc26x2r.PNG" width="100"></span>
 
@@ -114,6 +113,12 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
 
+
+## More Informations
+https://github.com/ioBroker/ioBroker.zigbee/wiki
+
+
+
 ## Donate
 
 You can thank the authors by these links:
@@ -134,10 +139,16 @@ You can thank the authors by these links:
 
 ## Changelog
 
+### 1.8.13 
+* (arteck) ota corr
+* (arteck) devices are wrong with enum exposes
+* (arteck) select field for groups is larger 
+
+### 1.8.12 (2023-06-30)
+* (arteck) new Documentation (thx Stefan)
 
 ### 1.8.11 (2022-12-10)
 * (arteck) fix compsite exposes with list
-
 
 ### 1.8.10 (2022-12-12)
 * (asgothian) fix group access

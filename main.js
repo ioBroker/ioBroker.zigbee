@@ -516,7 +516,7 @@ class Zigbee extends utils.Adapter {
         if (!converters.length) {
             if (type !== 'readResponse') {
                 this.log.debug(
-                    `No converter available for '${mappedModel.model}' with cluster '${cluster}' and type '${type}'`
+                    `No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`
                 );
             }
             return;
@@ -562,144 +562,155 @@ class Zigbee extends utils.Adapter {
 
     async publishFromState(deviceId, model, stateModel, stateList, options) {
         let isGroup = false;
+
+        this.log.debug(`publishFromState : ${deviceId} ${model}`);
         if (model === 'group') {
             isGroup = true;
             deviceId = parseInt(deviceId);
         }
-        const entity = await this.zbController.resolveEntity(deviceId);
-        this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
-        const mappedModel = entity.mapped;
-        if (!mappedModel) {
-            this.log.debug(`No mapped model for ${model}`);
-            return;
-        }
-        this.log.debug(`Mapped Model: ${JSON.stringify(mappedModel)}`);
-
-        stateList.forEach(async changedState => {
-            const stateDesc = changedState.stateDesc;
-            const value = changedState.value;
-
-            if (stateDesc.id === 'send_payload') {
-                try {
-                    const json_value = JSON.parse(value);
-                    const payload = {device: deviceId.replace('0x', ''), payload: json_value};
-                    const result = await this.sendPayload(payload);
-                    if (result.hasOwnProperty('success') && result.success) {
-                        this.acknowledgeState(deviceId, model, stateDesc, value);
-                    }
-                } catch (error) {
-                    this.log.warn(`send_payload: ${value} does not parse as JSON Object : ${error.message}`);
-                    return;
-                }
+        try {
+            const entity = await this.zbController.resolveEntity(deviceId);
+            
+            this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
+            
+            const mappedModel = entity.mapped;       
+                  
+            if (!mappedModel) {
+                this.log.debug(`No mapped model for ${model}`);
                 return;
             }
-
-            if (stateDesc.isOption) {
-                // acknowledge state with given value
-                this.acknowledgeState(deviceId, model, stateDesc, value);
-                // process sync state list
-                //this.processSyncStatesList(deviceId, modelId, syncStateList);
-                // if this is the device query state => trigger the device query
-
-                // on activation of the 'device_query' state trigger hardware query where possible
-                if (stateDesc.id === 'device_query') {
-                    if (this.query_device_block.indexOf(deviceId) > -1) {
-                        this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
+    
+            stateList.forEach(async changedState => {
+                const stateDesc = changedState.stateDesc;
+                const value = changedState.value;
+    
+                if (stateDesc.id === 'send_payload') {
+                    try {
+                        const json_value = JSON.parse(value);
+                        const payload = {device: deviceId.replace('0x', ''), payload: json_value};
+                        const result = await this.sendPayload(payload);
+                        if (result.hasOwnProperty('success') && result.success) {
+                            this.acknowledgeState(deviceId, model, stateDesc, value);
+                        }
+                    } catch (error) {
+                        this.log.warn(`send_payload: ${value} does not parse as JSON Object : ${error.message}`);
                         return;
                     }
-                    if (mappedModel) {
-                        this.query_device_block.push(deviceId);
-                        this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
-                        for (const converter of mappedModel.toZigbee) {
-                            if (converter.hasOwnProperty('convertGet')) {
-                                for (const ckey of converter.key) {
-                                    try {
-                                        await converter.convertGet(entity.device.endpoints[0], ckey, {});
-                                    } catch (error) {
-                                        this.log.warn(`Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after query with '${JSON.stringify(error)}'`);
-
+                    return;
+                }
+    
+                if (stateDesc.isOption) {
+                    // acknowledge state with given value
+                    this.acknowledgeState(deviceId, model, stateDesc, value);
+                    // process sync state list
+                    //this.processSyncStatesList(deviceId, modelId, syncStateList);
+                    // if this is the device query state => trigger the device query
+    
+                    // on activation of the 'device_query' state trigger hardware query where possible
+                    if (stateDesc.id === 'device_query') {
+                        if (this.query_device_block.indexOf(deviceId) > -1) {
+                            this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
+                            return;
+                        }
+                        if (mappedModel) {
+                            this.query_device_block.push(deviceId);
+                            this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
+                            for (const converter of mappedModel.toZigbee) {
+                                if (converter.hasOwnProperty('convertGet')) {
+                                    for (const ckey of converter.key) {
+                                        try {
+                                            await converter.convertGet(entity.device.endpoints[0], ckey, {});
+                                        } catch (error) {
+                                            this.log.warn(`Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after query with '${JSON.stringify(error)}'`);
+    
+                                        }
                                     }
                                 }
                             }
+                            this.log.debug(`Device query for '${entity.device.ieeeAddr}' done`);
+                            const idToRemove = deviceId;
+                            setTimeout(() => {
+                                const idx = this.query_device_block.indexOf(idToRemove);
+                                if (idx > -1) {
+                                    this.query_device_block.splice(idx);
+                                }
+                            }, 10000);
                         }
-                        this.log.debug(`Device query for '${entity.device.ieeeAddr}' done`);
-                        const idToRemove = deviceId;
-                        setTimeout(() => {
-                            const idx = this.query_device_block.indexOf(idToRemove);
-                            if (idx > -1) {
-                                this.query_device_block.splice(idx);
-                            }
-                        }, 10000);
+                        return;
                     }
                     return;
                 }
-                return;
-            }
-            const converter = mappedModel.toZigbee.find(c => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
-            if (!converter) {
-                this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                return;
-            }
-
-            const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
-            const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
-            let syncStateList = [];
-            if (stateModel && stateModel.syncStates) {
-                stateModel.syncStates.forEach(syncFunct => {
-                    const res = syncFunct(stateDesc, value, options);
-                    if (res) {
-                        syncStateList = syncStateList.concat(res);
-                    }
-                });
-            }
-
-            const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
-            const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
-            this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
-
-            let target;
-            if (model === 'group') {
-                target = entity.mapped;
-            } else {
-                target = await this.zbController.resolveEntity(deviceId, epName);
-                target = target.endpoint;
-            }
-
-            this.log.debug(`target: ${safeJsonStringify(target)}`);
-
-            const meta = {
-                endpoint_name: epName,
-                options: preparedOptions,
-                device: entity.device,
-                mapped: model === 'group' ? [] : mappedModel,
-                message: {[key]: preparedValue},
-                logger: this.log,
-                state: {},
-            };
-            if (preparedOptions.hasOwnProperty('state')) {
-                meta.state = preparedOptions.state;
-            }
-            try {
-                const result = await converter.convertSet(target, key, preparedValue, meta);
-                this.log.debug(`convert result ${safeJsonStringify(result)}`);
-                if (result !== undefined) {
-                    if (stateModel && !isGroup) {
-                        this.acknowledgeState(deviceId, model, stateDesc, value);
-                    }
-                    // process sync state list
-                    this.processSyncStatesList(deviceId, model, syncStateList);
-
-                    if (isGroup) {
-                        await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
-                        this.acknowledgeState(deviceId, model, stateDesc, value);
-                    }
+                const converter = mappedModel.toZigbee.find(c => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
+                if (!converter) {
+                    this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                    this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                    return;
                 }
-            } catch (error) {
-                this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
-                    ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
-            }
-        });
+    
+                const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
+                const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
+                let syncStateList = [];
+                if (stateModel && stateModel.syncStates) {
+                    stateModel.syncStates.forEach(syncFunct => {
+                        const res = syncFunct(stateDesc, value, options);
+                        if (res) {
+                            syncStateList = syncStateList.concat(res);
+                        }
+                    });
+                }
+    
+                const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
+                const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
+                this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
+    
+                let target;
+                if (model === 'group') {
+                    target = entity.mapped;
+                } else {
+                    target = await this.zbController.resolveEntity(deviceId, epName);
+                    target = target.endpoint;
+                }
+    
+                this.log.debug(`target: ${safeJsonStringify(target)}`);
+    
+                const meta = {
+                    endpoint_name: epName,
+                    options: preparedOptions,
+                    device: entity.device,
+                    mapped: model === 'group' ? [] : mappedModel,
+                    message: {[key]: preparedValue},
+                    logger: this.log,
+                    state: {},
+                };
+                
+                if (preparedOptions.hasOwnProperty('state')) {
+                    meta.state = preparedOptions.state;
+                }
+                
+                try {
+                    const result = await converter.convertSet(target, key, preparedValue, meta);
+                    this.log.debug(`convert result ${safeJsonStringify(result)}`);
+                    if (result !== undefined) {
+                        if (stateModel && !isGroup) {
+                            this.acknowledgeState(deviceId, model, stateDesc, value);
+                        }
+                        // process sync state list
+                        this.processSyncStatesList(deviceId, model, syncStateList);
+    
+                        if (isGroup) {
+                            await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
+                            this.acknowledgeState(deviceId, model, stateDesc, value);
+                        }
+                    }
+                    
+                } catch (error) {
+                    this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
+                        ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
+                }
+            });
+        } catch (err) {
+            this.log.error(`No entity for ${deviceId}`);    
+        }
     }
 
     // This function is introduced to explicitly allow user level scripts to send Commands
@@ -917,7 +928,6 @@ class Zigbee extends utils.Adapter {
         if (Number.isInteger(data)) {
             _pairingMode = true;
             this.setState('info.pairingCountdown', data, true);
-            _pairingMode = true;
         }
         if (data === 0) {
             // set pairing mode off
