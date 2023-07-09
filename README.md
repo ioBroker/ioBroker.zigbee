@@ -138,6 +138,9 @@ You can thank the authors by these links:
 
 
 ## Changelog
+### 1.8.14 (2023-07-09)
+* (arteck)
+
 ### 1.8.13 (2023-07-09)
 * (arteck) ota corr
 * (arteck) devices are wrong with enum exposes

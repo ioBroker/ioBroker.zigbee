@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.13",
+    "version": "1.8.14",
     "news": {
+      "1.8.14": {
+        "en": "",
+        "de": "",
+        "ru": "",
+        "pt": "",
+        "nl": "",
+        "fr": "",
+        "it": "",
+        "es": "",
+        "pl": "",
+        "uk": "",
+        "zh-cn": ""
+      },
       "1.8.13": {
         "en": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "de": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md"
@@ -35,19 +48,6 @@
       "1.8.8": {
         "en": "fix lidl plug",
         "de": "fix lidl plug"
-      },
-      "1.8.7": {
-        "en": "fix exposes",
-        "de": "belichtet fix",
-        "ru": "исправить экспозиции",
-        "pt": "corrigir expões",
-        "nl": "vertaling:",
-        "fr": "fix expose",
-        "it": "fix espone",
-        "es": "arreglar expone",
-        "pl": "naprawić",
-        "uk": "фіксувати висадки",
-        "zh-cn": "fix 暴露"
       }
     },
     "title": "Zigbee",
