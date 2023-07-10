@@ -522,22 +522,19 @@ class Zigbee extends utils.Adapter {
             return;
         }
 
-        converters.forEach((converter) => {
-            const publish = (payload) => {
-                this.log.debug(`Publish ${safeJsonStringify(payload)} to ${safeJsonStringify(devId)}`);
-                if (payload) {
-                    this.publishToState(devId, model, payload);
-                }
-            };
+       const publish = (payload) => {
+            this.log.info(`Publish ${safeJsonStringify(payload)} `);
+            if (payload) {
+                this.publishToState(devId, model, payload);
+            }
+        };
 
-            this.stController.collectOptions(devId, model, (options) => {
-                const payload = converter.convert(mappedModel, message, publish, options, meta);
-                if (payload) {
-                    // Add device linkquality.
-                    publish(payload);
-                }
-            });
-        });
+        for (const converter of converters) {
+            let payload = await converter.convert(mappedModel, message, publish, mappedModel.options, meta);
+            if (payload) {
+                publish(payload);
+            }
+        }
     }
 
     publishToState(devId, model, payload) {
