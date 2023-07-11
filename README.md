@@ -138,13 +138,13 @@ You can thank the authors by these links:
 
 
 ## Changelog
-### 1.8.15
+### 1.8.16 (2023-07-11)
 * (arteck) battery corr
- 
+
 ### 1.8.13 
 * (arteck) ota corr
 * (arteck) devices are wrong with enum exposes
-* (arteck) select field for groups is larger 
+* (arteck) select field for groups is larger
 
 ### 1.8.12 (2023-06-30)
 * (arteck) new Documentation (thx Stefan)
