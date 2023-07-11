@@ -138,7 +138,9 @@ You can thank the authors by these links:
 
 
 ## Changelog
-
+### 1.8.15
+* (arteck) battery corr
+ 
 ### 1.8.13 
 * (arteck) ota corr
 * (arteck) devices are wrong with enum exposes
