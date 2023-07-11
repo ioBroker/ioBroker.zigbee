@@ -523,7 +523,7 @@ class Zigbee extends utils.Adapter {
         }
 
        const publish = (payload) => {
-            this.log.info(`Publish ${safeJsonStringify(payload)} `);
+            this.log.debug(`Publish ${safeJsonStringify(payload)} `);
             if (payload) {
                 this.publishToState(devId, model, payload);
             }
