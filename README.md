@@ -138,8 +138,8 @@ You can thank the authors by these links:
 
 
 ## Changelog
-### 1.8.14 (2023-07-09)
-* (arteck)
+### 1.8.15 (2023-07-11)
+* (arteck) corr battery status
 
 ### 1.8.13 (2023-07-09)
 * (arteck) ota corr

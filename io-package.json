@@ -1,20 +1,24 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.14",
+    "version": "1.8.15",
     "news": {
+      "1.8.15": {
+        "en": "corr battery status",
+        "de": "corr batteriestatus",
+        "ru": "корр состояние батареи",
+        "pt": "status da bateria de corrimento",
+        "nl": "corr batterij status",
+        "fr": "état de la batterie",
+        "it": "stato della batteria",
+        "es": "estado de la batería",
+        "pl": "kor battery status",
+        "uk": "статус на сервери",
+        "zh-cn": "2. 电池身份"
+      },
       "1.8.14": {
         "en": "",
-        "de": "",
-        "ru": "",
-        "pt": "",
-        "nl": "",
-        "fr": "",
-        "it": "",
-        "es": "",
-        "pl": "",
-        "uk": "",
-        "zh-cn": ""
+        "de": ""
       },
       "1.8.13": {
         "en": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
@@ -44,10 +48,6 @@
         "pl": "naprawiony plug",
         "uk": "фіксувати роз'єм",
         "zh-cn": "fix 滑坡"
-      },
-      "1.8.8": {
-        "en": "fix lidl plug",
-        "de": "fix lidl plug"
       }
     },
     "title": "Zigbee",
