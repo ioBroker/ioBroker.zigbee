@@ -24,36 +24,23 @@ jobs:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
 
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-
-   
+    
     steps:
       - uses: ioBroker/testing-action-check@v1
         with:
           node-version: "16.x"
-          type-checking: true
+          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+          # install-command: 'npm install'
           lint: true
-          
-  # Runs adapter tests on all supported node versions and OSes
+           
   adapter-tests:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
-
-    needs: [check-and-lint]
 
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [16.x, 18.x, 20.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
-
-    steps:
-      - uses: ioBroker/testing-action-adapter@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-          os: ${{ matrix.os }}
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
           # install-command: 'npm install'
 
@@ -64,7 +51,7 @@ jobs:
   # Deploys the final package to NPM
   # Deploys the final package to NPM and Github Actions
   deploy:
-    needs: [check-and-lint, adapter-tests]
+    
     # Trigger this step only when a commit on master is tagged with a version number
     if: |
       contains(github.event.head_commit.message, '[skip ci]') == false &&
@@ -72,7 +59,7 @@ jobs:
       startsWith(github.ref, 'refs/tags/v')
 
     # Define which jobst must succeed before the release
-    #needs: [adapter-tests]
+    needs: [adapter-tests]
 
     runs-on: ubuntu-latest
     
