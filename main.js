@@ -135,7 +135,7 @@ class Zigbee extends utils.Adapter {
     }
 
     filterError(errormessage, message, error) {
-        if (error.code == undefined) {
+        if (error != null && error.code == undefined) {
             let em = error.stack.match(/failed \((.+?)\) at/);
             em = em || error.stack.match(/failed \((.+?)\)/);
             this.log.error(`${message} no error code (${(em ? em[1] : 'undefined')})`);
