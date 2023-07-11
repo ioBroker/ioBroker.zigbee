@@ -4,8 +4,8 @@ name: Test and Release
 # as well as tags with a semantic version
 on:
   push:
-     branches:
-      - "master"
+    branches:
+      - master
     tags:
       # normal versions
       - "v[0-9]+.[0-9]+.[0-9]+"
