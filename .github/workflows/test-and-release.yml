@@ -34,8 +34,7 @@ jobs:
       - uses: ioBroker/testing-action-check@v1
         with:
           node-version: "16.x"
-          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-          # install-command: 'npm install'
+          type-checking: true
           lint: true
           
   # Runs adapter tests on all supported node versions and OSes
@@ -65,6 +64,7 @@ jobs:
   # Deploys the final package to NPM
   # Deploys the final package to NPM and Github Actions
   deploy:
+    needs: [check-and-lint, adapter-tests]
     # Trigger this step only when a commit on master is tagged with a version number
     if: |
       contains(github.event.head_commit.message, '[skip ci]') == false &&
@@ -75,6 +75,7 @@ jobs:
     needs: [adapter-tests]
 
     runs-on: ubuntu-latest
+    
     strategy:
       matrix:
         node-version: [16.x]
