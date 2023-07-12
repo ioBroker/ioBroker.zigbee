@@ -134,7 +134,7 @@ class Zigbee extends utils.Adapter {
                 }
             }
         } catch (err) {
-            this.log.error(`SentryError : ${message} ${error} `);        
+            this.log.error(`SentryError : ${message} ${error} ${err} `);        
         }
     }
 
