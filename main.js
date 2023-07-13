@@ -788,8 +788,8 @@ class Zigbee extends utils.Adapter {
                     await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, payload.options);
                     return {success: true};
                 } catch (error) {
-                    this.filterError(`Error ${error.code} on send command to ${payload.device}.` +
-                        ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
+                    this.log.error(`Error ${error.code} on send command to ${payload.device}.` + ` Error: ${error.stack} ` + `Send command to ${payload.device} failed with ` + error;
+                    this.filterError(`Error ${error.code} on send command to ${payload.device}.` + ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
                     return {success: false, error};
                 }
             } catch (e) {
