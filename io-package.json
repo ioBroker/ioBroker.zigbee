@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.16",
+    "version": "1.8.17",
     "news": {
+      "1.8.17": {
+        "en": "sentry corr",
+        "de": "versand",
+        "ru": "сендри корр",
+        "pt": "corante de sentinela",
+        "nl": "vertaling:",
+        "fr": "corr",
+        "it": "cor",
+        "es": "centry corr",
+        "pl": "kor",
+        "uk": "кофрів",
+        "zh-cn": "发信"
+      },
       "1.8.16": {
         "en": "battery corr",
         "de": "batterie korrektor",
@@ -44,10 +57,6 @@
         "pl": "naprawiony plug",
         "uk": "фіксувати роз'єм",
         "zh-cn": "fix 滑坡"
-      },
-      "1.8.8": {
-        "en": "fix lidl plug",
-        "de": "fix lidl plug"
       }
     },
     "title": "Zigbee",

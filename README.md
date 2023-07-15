@@ -138,6 +138,9 @@ You can thank the authors by these links:
 
 
 ## Changelog
+### 1.8.17 (2023-07-15)
+* (arteck) sentry corr
+
 ### 1.8.16 (2023-07-11)
 * (arteck) battery corr
 
