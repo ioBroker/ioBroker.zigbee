@@ -120,7 +120,7 @@ class Zigbee extends utils.Adapter {
                                 scope.addBreadcrumb({
                                     type: 'error', // predefined types
                                     category: 'error message',
-                                    level: Sentry.Severity.Error,
+                                    level: 'error',
                                     message
                                 }));
                         }
