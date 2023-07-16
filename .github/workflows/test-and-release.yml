@@ -44,6 +44,14 @@ jobs:
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
           # install-command: 'npm install'
 
+    steps:
+      - uses: ioBroker/testing-action-adapter@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          os: ${{ matrix.os }}
+          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+          # install-command: 'npm install'
+
   # TODO: To enable automatic npm releases, create a token on npmjs.org
   # Enter this token as a GitHub secret (with name NPM_TOKEN) in the repository options
   # Then uncomment the following block:
