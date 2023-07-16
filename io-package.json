@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.17",
+    "version": "1.8.18",
     "news": {
+      "1.8.18": {
+        "en": "little fix sentry and error log\n",
+        "de": "kleines fix-sende- und fehlerprotokoll\n",
+        "ru": "мало исправлена отправка и ошибка журнала\n",
+        "pt": "pequena correção sentinela e log de erro\n",
+        "nl": "kleine herstellende sentimentele logboek\n",
+        "fr": "petit journal de réparation et d'erreur\n",
+        "it": "piccolo fix registro di errore\n",
+        "es": "pequeño solucion centry y error log\n",
+        "pl": "wadliwość i błąd\n",
+        "uk": "маленька фіксація відправлень і журнал помилок\n",
+        "zh-cn": "很少发送过材料和错误逻辑\n"
+      },
       "1.8.17": {
         "en": "sentry corr",
         "de": "versand",
@@ -44,19 +57,6 @@
       "1.8.10": {
         "en": "fix group access and any new functions",
         "de": "fix group access and any new functions"
-      },
-      "1.8.9": {
-        "en": "fix lidl plug",
-        "de": "deckelstecker",
-        "ru": "исправить lidl plug",
-        "pt": "fixar tampa",
-        "nl": "los deksel",
-        "fr": "fixer le couvercle",
-        "it": "correzione della spina del coperchio",
-        "es": "enchufe de tapa fija",
-        "pl": "naprawiony plug",
-        "uk": "фіксувати роз'єм",
-        "zh-cn": "fix 滑坡"
       }
     },
     "title": "Zigbee",
