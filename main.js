@@ -525,19 +525,32 @@ class Zigbee extends utils.Adapter {
             return;
         }
 
-       const publish = (payload) => {
-            this.log.debug(`Publish '${safeJsonStringify(payload)}' devId '${devId}'`);
-            if (payload) {
-                this.publishToState(devId, model, payload);
-            }
-        };
+       converters.forEach((converter) => {
+            const publish = (payload) => {
+                this.log.debug(`Publish '${safeJsonStringify(payload)}' devId '${devId}'`);
+                if (payload) {
+                    this.publishToState(devId, model, payload);
+                }
+            };
 
-        for (const converter of converters) {
-            let payload = await converter.convert(mappedModel, message, publish, mappedModel.options, meta);
-            if (payload) {
-                publish(payload);
-            }
-        }
+            this.stController.collectOptions(devId, model, (options) => {
+                let payload = converter.convert(mappedModel, message, publish, options, meta);
+                let isEmpty = Object.entries(options).length === 0;
+
+                if (isEmpty) {
+                    for (const converter of converters) {
+                        payload = converter.convert(mappedModel, message, publish, mappedModel.options, meta);
+
+                        isEmpty = Object.entries(payload).length === 0;
+                        if (!isEmpty) {
+                            publish(payload);
+                        }
+                    }
+                } else {
+                    publish(payload);
+                }
+            });
+        });
     }
 
     publishToState(devId, model, payload) {
