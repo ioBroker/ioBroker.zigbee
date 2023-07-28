@@ -525,7 +525,9 @@ class Zigbee extends utils.Adapter {
             return;
         }
 
-       converters.forEach((converter) => {
+       let payload = {};
+        
+        for (const converter of converters) {
             const publish = (payload) => {
                 this.log.debug(`Publish '${safeJsonStringify(payload)}' devId '${devId}'`);
                 if (payload) {
@@ -533,24 +535,15 @@ class Zigbee extends utils.Adapter {
                 }
             };
 
-            this.stController.collectOptions(devId, model, (options) => {
-                let payload = converter.convert(mappedModel, message, publish, options, meta);
-                let isEmpty = Object.entries(options).length === 0;
+            const converted = converter.convert(mappedModel, message, publish, mappedModel.options, meta);
+            if (converted) {
+                payload = {...payload, ...converted};
+            }
 
-                if (isEmpty) {
-                    for (const converter of converters) {
-                        payload = converter.convert(mappedModel, message, publish, mappedModel.options, meta);
-
-                        isEmpty = Object.entries(payload).length === 0;
-                        if (!isEmpty) {
-                            publish(payload);
-                        }
-                    }
-                } else {
-                    publish(payload);
-                }
-            });
-        });
+            if (Object.keys(payload).length) {
+                publish(payload);
+            }
+        }
     }
 
     publishToState(devId, model, payload) {
