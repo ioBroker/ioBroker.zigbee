@@ -534,15 +534,17 @@ class Zigbee extends utils.Adapter {
                     this.publishToState(devId, model, payload);
                 }
             };
+            
+            this.stController.collectOptions(devId, model, (options) => {
+                const converted = converter.convert(mappedModel, message, publish, options, meta);
+                if (converted) {
+                    payload = {...payload, ...converted};
+                }
 
-            const converted = converter.convert(mappedModel, message, publish, mappedModel.options, meta);
-            if (converted) {
-                payload = {...payload, ...converted};
-            }
-
-            if (Object.keys(payload).length) {
-                publish(payload);
-            }
+                if (Object.keys(payload).length) {
+                    publish(payload);
+                }
+            });
         }
     }
 
