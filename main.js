@@ -13,6 +13,8 @@ try {
 }
 const originalLogMethod = debug.log;
 
+const zigbeeHerdsmanConvertersUtils = require('zigbee-herdsman-converters/lib/utils');
+
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
 const path = require('path');
@@ -271,30 +273,6 @@ class Zigbee extends utils.Adapter {
 
             }
         }
-
-    /*    if (this.config.external === undefined) {
-            return;
-        }
-        const extfiles = this.config.external.split(';');
-        for (const moduleName of extfiles) {
-            if (!moduleName) continue;
-            this.log.info(`Apply converter from module: ${moduleName}`);
-            const sandbox = {
-                require,
-                module: {},
-            };
-            const converterCode = fs.readFileSync(moduleName, {encoding: 'utf8'});
-            vm.runInNewContext(converterCode, sandbox);
-            const converter = sandbox.module.exports;
-            if (Array.isArray(converter)) {
-                for (const item of converter) {
-                    yield item;
-                }
-            } else {
-                yield converter;
-            }
-        }
-    */
    }
 
     applyExternalConverters() {
@@ -483,6 +461,7 @@ class Zigbee extends utils.Adapter {
 
     async onZigbeeEvent(type, entity, message) {
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
+
         const device = entity.device;
         const mappedModel = entity.mapped;
         const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
@@ -495,22 +474,55 @@ class Zigbee extends utils.Adapter {
 
         await this.checkIfModelUpdate(entity);
         // always publish link_quality
-        if (message.linkquality) {
-            this.publishToState(devId, model, {linkquality: message.linkquality});
+
+        let voltage = 0;
+        let battKey = false;
+
+        const isVoltage = entity.mapped.meta.battery.hasOwnProperty('voltageToPercentage');
+
+        if (isVoltage) {
+            const keys = Object.keys(message.data);
+
+            for (const key of keys) {
+                const value = message.data[key];
+                if (key == 65282) {
+                    voltage = value[1][1].elmVal;
+                    battKey = true;
+                    break;
+                }
+                if (key == 65281) {
+                    voltage = value[1];
+                    battKey = true;
+                    break;
+                }
+            };
         }
+
+        if (message.linkquality) { // send battery with
+            this.publishToState(devId, model, {linkquality: message.linkquality});
+            if (battKey) {
+                this.publishToState(devId, model, {voltage: voltage});
+                const  battProz = zigbeeHerdsmanConvertersUtils.batteryVoltageToPercentage(voltage,entity.mapped.meta.battery.voltageToPercentage);
+                this.publishToState(devId, model, {battery: battProz});
+            }
+        }
+
         // publish raw event to "from_zigbee"
         // some cleanup
         const msgForState = Object.assign({}, message);
         delete msgForState['device'];
         delete msgForState['endpoint'];
+
         msgForState['endpoint_id'] = message.endpoint.ID;
         this.publishToState(devId, model, {msg_from_zigbee: safeJsonStringify(msgForState)});
 
         if (!entity.mapped) {
             return;
         }
+
         let converters = mappedModel.fromZigbee.filter(c => c && c.cluster === cluster && (
             (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
+
 
         if (!converters.length && type === 'readResponse') {
             converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
@@ -526,18 +538,21 @@ class Zigbee extends utils.Adapter {
         }
 
         let payload = {};
-        for (const converter of converters) {
-            const publish = (payload) => {
-                this.log.info(`Publish '${safeJsonStringify(payload)}' devId '${devId}'`);
-                if (payload) {
-                    this.publishToState(devId, model, payload);
-                }
-            };
 
+        const publish = (_payload) => {
+            if (_payload) {
+                this.publishToState(devId, model, _payload);
+            }
+        };
+
+        for (const converter of converters) {
             this.stController.collectOptions(devId, model, (options) => {
                 payload = converter.convert(mappedModel, message, publish, options, meta);
-                if (Object.keys(payload).length) {
-                    publish(payload);
+
+                if (payload) {
+                    if (Object.keys(payload).length) {
+                        publish(payload);
+                    }
                 }
             });
         }
