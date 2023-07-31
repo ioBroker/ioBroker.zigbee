@@ -485,17 +485,19 @@ class Zigbee extends utils.Adapter {
     
                 for (const key of keys) {
                     const value = message.data[key];
-                    if (key == 65282) {
-                        voltage = value[1][1].elmVal;
-                        battKey = true;
-                        break;
+                    if (value != undefined) {
+                        if (key == 65282) {
+                            voltage = value[1][1].elmVal;
+                            battKey = true;
+                            break;
+                        }
+                        if (key == 65281 &&  value[1] != undefined) {) {
+                            voltage = value[1];
+                            battKey = true;
+                            break;
+                        }      
                     }
-                    if (key == 65281) {
-                        voltage = value[1];
-                        battKey = true;
-                        break;
-                    }
-                };
+                }
             }
         }
         
