@@ -538,8 +538,7 @@ class Zigbee extends utils.Adapter {
 
         if (!converters.length) {
             if (type !== 'readResponse') {
-                this.log.debug(`No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`;
-                );
+                this.log.debug(`No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
             }
             return;
         }
