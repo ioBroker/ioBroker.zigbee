@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.18",
+    "version": "1.8.19",
     "news": {
+      "1.8.19": {
+        "en": "fix occupancy_timeout\nfix battery percentage and voltage",
+        "de": "fix occupation_timeout\nbatterieanteil und spannung fixieren",
+        "ru": "исправить occupancy_timeout\nисправить процент батареи и напряжение",
+        "pt": "corrigir ocupação_timeout\ncorrigir a porcentagem da bateria e a tensão",
+        "nl": "vertaling:\nvertaling:",
+        "fr": "fix occupancy_timeout\nfixer le pourcentage de la batterie et la tension",
+        "it": "fix occupazione_timeout\ncorreggere la percentuale della batteria e la tensione",
+        "es": "arreglar ocupación_timeout\nfijar porcentaje de batería y tensión",
+        "pl": "naprawa occupancy_time\nodsetek baterii i napięcia",
+        "uk": "фіксувати occupancy_timeout\nфіксувати відсоток акумулятора і напруга",
+        "zh-cn": "fix 占用:时间假\nfix 电池百分比和火山"
+      },
       "1.8.18": {
         "en": "little fix sentry and error log\n",
         "de": "kleines fix-sende- und fehlerprotokoll\n",
@@ -53,10 +66,6 @@
       "1.8.11": {
         "en": "fix exposes with composite list",
         "de": "fix exposes with composite list"
-      },
-      "1.8.10": {
-        "en": "fix group access and any new functions",
-        "de": "fix group access and any new functions"
       }
     },
     "title": "Zigbee",

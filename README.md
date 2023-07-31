@@ -138,7 +138,9 @@ You can thank the authors by these links:
 
 
 ## Changelog
+### 1.8.19 (2023-07-31)
 * (arteck) fix occupancy_timeout
+* (arteck) fix battery percentage and voltage
 
 ### 1.8.18 (2023-07-16)
 * (arteck) little fix sentry and error log
