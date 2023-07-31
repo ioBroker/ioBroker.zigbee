@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.19",
+    "version": "1.8.20",
     "news": {
+      "1.8.20": {
+        "en": "add log",
+        "de": "log",
+        "ru": "добавить лог",
+        "pt": "adicionar log",
+        "nl": "voeg logboek toe",
+        "fr": "ajouter log",
+        "it": "aggiungi log",
+        "es": "añadir registro",
+        "pl": "dodać",
+        "uk": "увійти",
+        "zh-cn": "增 编"
+      },
       "1.8.19": {
         "en": "fix occupancy_timeout\nfix battery percentage and voltage",
         "de": "fix occupation_timeout\nbatterieanteil und spannung fixieren",
@@ -62,10 +75,6 @@
       "1.8.12": {
         "en": "new Documentation",
         "de": "neue Dokumentation"
-      },
-      "1.8.11": {
-        "en": "fix exposes with composite list",
-        "de": "fix exposes with composite list"
       }
     },
     "title": "Zigbee",
