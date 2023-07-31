@@ -485,6 +485,9 @@ class Zigbee extends utils.Adapter {
     
                 for (const key of keys) {
                     const value = message.data[key];
+                    
+                    this.log.debug(`Type ${value} from battery search`);
+                    
                     if (value != undefined) {
                         if (key == 65282) {
                             voltage = value[1][1].elmVal;
