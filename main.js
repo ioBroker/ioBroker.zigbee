@@ -551,9 +551,9 @@ class Zigbee extends utils.Adapter {
             }
         };
 
-        try {
-            for (const converter of converters) {
-                this.stController.collectOptions(devId, model, (options) => {
+        for (const converter of converters) {
+            this.stController.collectOptions(devId, model, (options) => {
+                try {
                     payload = converter.convert(mappedModel, message, publish, options, meta);
     
                     if (payload) {
@@ -561,10 +561,10 @@ class Zigbee extends utils.Adapter {
                             publish(payload);
                         }
                     }
-                });
-            }
-        } catch (err) {
-            this.log.error(`convert problem with '${model}' '${devId}' `);
+                } catch (err) {
+                    this.log.error(`convert problem with '${model}' '${devId}' `);
+                }
+            });
         }
     }
 
