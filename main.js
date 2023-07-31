@@ -565,7 +565,7 @@ class Zigbee extends utils.Adapter {
                 });
             }
         } catch (err) {
-            this.log.error(`convert problem with '${model}' '${devId}' `;
+            this.log.error(`convert problem with '${model}' '${devId}' `);
         }
     }
 
