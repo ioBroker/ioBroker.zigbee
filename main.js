@@ -486,7 +486,7 @@ class Zigbee extends utils.Adapter {
                 for (const key of keys) {
                     const value = message.data[key];
                     
-                    this.log.debug(`Type ${value} from battery search`);
+                    this.log.debug(`Type ${safeJsonStringify(value) from battery search`);
                     
                     if (value != undefined && value[1] != undefined) {
                         if (key == 65282 && value[1][1] != undefined) {
