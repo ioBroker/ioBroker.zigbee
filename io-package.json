@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.20",
+    "version": "1.8.21",
     "news": {
+      "1.8.21": {
+        "en": "no converter found",
+        "de": "kein konverter gefunden",
+        "ru": "не найдено конвертер",
+        "pt": "não encontrado",
+        "nl": "geen converter gevonden",
+        "fr": "aucun convertisseur trouvé",
+        "it": "nessun convertitore trovato",
+        "es": "no convertidor encontrado",
+        "pl": "nie znaleziono konwerterów",
+        "uk": "не знайдено",
+        "zh-cn": "未找到转换器"
+      },
       "1.8.20": {
         "en": "add log",
         "de": "log",
@@ -71,10 +84,6 @@
       "1.8.13": {
         "en": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "de": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md"
-      },
-      "1.8.12": {
-        "en": "new Documentation",
-        "de": "neue Dokumentation"
       }
     },
     "title": "Zigbee",
