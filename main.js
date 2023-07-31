@@ -488,8 +488,8 @@ class Zigbee extends utils.Adapter {
                     
                     this.log.debug(`Type ${value} from battery search`);
                     
-                    if (value != undefined) {
-                        if (key == 65282) {
+                    if (value != undefined && value[1] != undefined) {
+                        if (key == 65282 && value[1][1] != undefined) {
                             voltage = value[1][1].elmVal;
                             battKey = true;
                             break;
