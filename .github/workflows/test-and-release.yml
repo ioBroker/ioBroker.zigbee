@@ -31,7 +31,7 @@ jobs:
           node-version: "16.x"
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
           # install-command: 'npm install'
-          lint: false
+          lint: true
            
   adapter-tests:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
