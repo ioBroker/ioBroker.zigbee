@@ -478,24 +478,26 @@ class Zigbee extends utils.Adapter {
         let voltage = 0;
         let battKey = false;
 
-        const isVoltage = entity.mapped.meta.battery.hasOwnProperty('voltageToPercentage');
-
-        if (isVoltage) {
-            const keys = Object.keys(message.data);
-
-            for (const key of keys) {
-                const value = message.data[key];
-                if (key == 65282) {
-                    voltage = value[1][1].elmVal;
-                    battKey = true;
-                    break;
-                }
-                if (key == 65281) {
-                    voltage = value[1];
-                    battKey = true;
-                    break;
-                }
-            };
+        if (entity.mapped.meta.battery != undefined) {
+            const isVoltage = entity.mapped.meta.battery.hasOwnProperty('voltageToPercentage');
+    
+            if (isVoltage) {
+                const keys = Object.keys(message.data);
+    
+                for (const key of keys) {
+                    const value = message.data[key];
+                    if (key == 65282) {
+                        voltage = value[1][1].elmVal;
+                        battKey = true;
+                        break;
+                    }
+                    if (key == 65281) {
+                        voltage = value[1];
+                        battKey = true;
+                        break;
+                    }
+                };
+            }
         }
 
         if (message.linkquality) { // send battery with
