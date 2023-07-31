@@ -494,7 +494,7 @@ class Zigbee extends utils.Adapter {
                             battKey = true;
                             break;
                         }
-                        if (key == 65281 &&  value[1] != undefined) {) {
+                        if (key == 65281 && value[1] != undefined) {
                             voltage = value[1];
                             battKey = true;
                             break;
