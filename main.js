@@ -538,7 +538,7 @@ class Zigbee extends utils.Adapter {
 
         if (!converters.length) {
             if (type !== 'readResponse') {
-                this.log.debug(`No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`
+                this.log.debug(`No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`;
                 );
             }
             return;
@@ -552,16 +552,20 @@ class Zigbee extends utils.Adapter {
             }
         };
 
-        for (const converter of converters) {
-            this.stController.collectOptions(devId, model, (options) => {
-                payload = converter.convert(mappedModel, message, publish, options, meta);
-
-                if (payload) {
-                    if (Object.keys(payload).length) {
-                        publish(payload);
+        try {
+            for (const converter of converters) {
+                this.stController.collectOptions(devId, model, (options) => {
+                    payload = converter.convert(mappedModel, message, publish, options, meta);
+    
+                    if (payload) {
+                        if (Object.keys(payload).length) {
+                            publish(payload);
+                        }
                     }
-                }
-            });
+                });
+            }
+        } catch (err) {
+            this.log.error(`convert problem with '${model}' '${devId}' `;
         }
     }
 
