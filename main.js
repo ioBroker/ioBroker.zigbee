@@ -472,8 +472,7 @@ class Zigbee extends utils.Adapter {
         // this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
         meta.logger = this.log;
 
-        await this.checkIfModelUpdate(entity);
-        // always publish link_quality
+        await this.checkIfModelUpdate(entity);        
 
         let voltage = 0;
         let battKey = false;
@@ -499,7 +498,8 @@ class Zigbee extends utils.Adapter {
                 };
             }
         }
-
+        
+        // always publish link_quality and battery
         if (message.linkquality) { // send battery with
             this.publishToState(devId, model, {linkquality: message.linkquality});
             if (battKey) {
