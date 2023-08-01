@@ -18,7 +18,7 @@
     "node": ">=10"
   },
   "optionalDependencies": {
-    "serialport": "^11.0.0"
+    "serialport": "^11.0.1"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.0.3",
