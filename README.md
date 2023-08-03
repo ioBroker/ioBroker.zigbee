@@ -115,9 +115,12 @@ Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wi
 
 
 ## More Informations
-https://github.com/ioBroker/ioBroker.zigbee/wiki
+[wiki]https://github.com/ioBroker/ioBroker.zigbee/wiki
 
+or 
 
+[Deutsch]https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/readme.md
+[English]https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/en/readme.md
 
 ## Donate
 
@@ -125,17 +128,7 @@ You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
 * to Arthur Rupp https://paypal.me/ArthurRupp
 
-<!--
-    Placeholder for the next version (at the beginning of the line):
-
-    https://github.com/AlCalzone/release-script#usage
-    npm run release major -- -p iobroker license --all 0.9.8 -> 1.0.0
-    npm run release minor -- -p iobroker license --all 0.9.8 -> 0.10.0
-    npm run release patch -- -p iobroker license --all 0.9.8 -> 0.9.9
-    npm run release prerelease beta -- -p iobroker license --all v0.2.1 -> v0.2.2-beta.0
-    ### **WORK IN PROGRESS**
--->
-
+-----------------------------------------------------------------------------------------------------
 
 ## Changelog
 ### 1.8.21 (2023-07-31)
