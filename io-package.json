@@ -89,6 +89,7 @@
     
     "titleLang": {
       "en": "Zigbee",
+      "uk": "Zigbee",
       "ru": "Zigbee",
       "de": "ZigBee",
       "pt": "Zigbee",
@@ -101,6 +102,7 @@
     },
     "desc": {
       "en": "Zigbee adapter for Xiaomi (and other) devices via Chip cc26xx/cc25xx",
+      "uk": "Zigbee adapter for Xiaomi (and other) devices via Chip cc26xx/cc25xx",
       "ru": "Zigbee адаптер для Xiaomi (и других) устройств через Chip cc26xx/cc25xx",
       "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über Chip cc26xx/cc25xx",
       "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via Chip cc26xx/cc25xx",
