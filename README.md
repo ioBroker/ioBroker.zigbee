@@ -25,15 +25,15 @@ Recommended devices are based on either the CC2652 or CC1352 chip. Devices based
 Only CC26xx/cc1352/cc2538 Devices support extraction of the NVRam backup which should allow to swap coordinator hardware without having to reconnect all zigbee devices to the network.
 Current firmware files for these devices can be found [on GitHub](https://github.com/Koenkk/Z-Stack-firmware)
 
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/CC2531.png" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/CC2591.png" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/sonoff.png" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/cc26x2r.PNG" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2531.png" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2591.png" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/sonoff.png" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/cc26x2r.PNG" width="100"></span>
 
-
+tutorial/zigbee.png
 ### Dresden Elektronik SoC
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/en/img/deconz.png" width="180"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/en/img/deconz.png" width="180"></span>
 
 recommended:
 - ConBee II
