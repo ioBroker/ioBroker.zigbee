@@ -18,15 +18,15 @@
         "no-var": "error",
         "prefer-const": "error",
         "quotes": [
-            "error",
-            "single",
-            {
-                "avoidEscape": true,
-                "allowTemplateLiterals": true
+            2, 
+            "single", 
+            { 
+                "avoidEscape": true, 
+                "allowTemplateLiterals": true 
             }
         ],
         "semi": [
-            "error",
+            "warn",
             "always"
         ],
         "no-prototype-builtins": "off"
