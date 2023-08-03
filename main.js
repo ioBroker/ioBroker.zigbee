@@ -227,7 +227,7 @@ class Zigbee extends utils.Adapter {
             };
             const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('.', '_'));
             if (!fs.existsSync(mN)) {
-              this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
+                this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
             }
             else {
                 const converterCode = fs.readFileSync(mN, {encoding: 'utf8'}).toString();
@@ -270,14 +270,14 @@ class Zigbee extends utils.Adapter {
 
             }
         }
-   }
+    }
 
     applyExternalConverters() {
         for (const definition of this.getExternalDefinition()) {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
             try {
-              zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+                zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
             } catch { 
                 this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`);
             }
