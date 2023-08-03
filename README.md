@@ -34,7 +34,7 @@ Current firmware files for these devices can be found [on GitHub](https://github
 
 ### Dresden Elektronik SoC
 
-<span><img src="docs/en/img/deconz.png" width="100"></span>
+<span><img src="docs/en/img/deconz.png" width="180"></span>
 
 recommended:
 - ConBee II
