@@ -86,7 +86,7 @@
         "de": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md"
       }
     },
-    "title": "Zigbee",
+    
     "titleLang": {
       "en": "Zigbee",
       "ru": "Zigbee",
