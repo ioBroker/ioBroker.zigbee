@@ -47,8 +47,6 @@ const E_DEBUG = 2;
 const E_WARN  = 3;
 const E_ERROR = 4;
 
-let _pairingMode = false;
-
 const errorCodes = {
     9999: {severity: E_INFO, message: 'No response'},
     233: {severity: E_DEBUG, message: 'MAC NO ACK'},
@@ -229,14 +227,13 @@ class Zigbee extends utils.Adapter {
             };
             const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('.', '_'));
             if (!fs.existsSync(mN)) {
-              this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`)
-
+              this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
             }
             else {
                 const converterCode = fs.readFileSync(mN, {encoding: 'utf8'}).toString();
                 let converterLoaded = true;
                 if (converterCode.match(/..\/lib\/legacy/gm)) {
-                    this.log.warn(`External converter ${mN} contains an unsupported reference to '/lib/legacy' - external converter not loaded.`)
+                    this.log.warn(`External converter ${mN} contains an unsupported reference to '/lib/legacy' - external converter not loaded.`);
                     converterLoaded = false;
                 }
                 else
@@ -244,7 +241,7 @@ class Zigbee extends utils.Adapter {
                     // remove the require statements and attempt to place them in the sandbox
                     const requiredLibraries = converterCode.matchAll(/(\w+) += +require\(['"](\S+)['"]\);/gm);
                     for (const line of requiredLibraries) {
-                        const movedLine = line[2].replace('..', '../zigbee-herdsman-converters')
+                        const movedLine = line[2].replace('..', '../zigbee-herdsman-converters');
                         try {
                             sandbox[line[1]] = require(movedLine);
                         }
@@ -265,7 +262,7 @@ class Zigbee extends utils.Adapter {
                         else yield converter;
                     }
                     catch (e) {
-                        this.log.error(`Unable to apply converter from module: ${mN} - the code does not run: ${e}`)
+                        this.log.error(`Unable to apply converter from module: ${mN} - the code does not run: ${e}`);
                     }
                 }
                 else
@@ -276,19 +273,15 @@ class Zigbee extends utils.Adapter {
    }
 
     applyExternalConverters() {
-      try {
         for (const definition of this.getExternalDefinition()) {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
             try {
               zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+            } catch { 
+                this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`);
             }
-            catch { this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`) }
         }
-      }
-      catch(error) {
-         this.log.error('error applying external converters');
-      }
     }
 
     async doConnect() {
@@ -953,14 +946,12 @@ class Zigbee extends utils.Adapter {
     }
 
     onPairing(message, data) {
-        if (Number.isInteger(data)) {
-            _pairingMode = true;
+        if (Number.isInteger(data)) {           
             this.setState('info.pairingCountdown', data, true);
         }
         if (data === 0) {
             // set pairing mode off
             this.setState('info.pairingMode', false, true);
-            _pairingMode = false;
         }
         if (data) {
             this.logToPairing(`${message}: ${data.toString()}`);
