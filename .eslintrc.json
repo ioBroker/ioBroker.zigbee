@@ -1,42 +1,37 @@
 {
-	"root": true,
-	"env": {
-		"es6": true,
-		"node": true,
-		"mocha": true
-	},
-	"extends": ["eslint:recommended"],
-	"plugins": [],
-	"rules": {
-		"indent": [
-			"error",
-			4,
-			{
-				"SwitchCase": 1
-			}
-		],
-		"no-console": "off",
-		"no-unused-vars": [
-			"error",
-			{
-				"ignoreRestSiblings": true,
-				"argsIgnorePattern": "^_"
-			}
-		],
-		"no-var": "error",
-		"no-trailing-spaces": "error",
-		"prefer-const": "error",
-		"quotes": [
-			"error",
-			"single",
-			{
-				"avoidEscape": true,
-				"allowTemplateLiterals": true
-			}
-		],
-		"semi": ["error", "always"]
-	},
-	"parserOptions": {
-		"ecmaVersion": 2018
-	}
+    "env": {
+        "es6": true,
+        "node": true,
+        "mocha": true
+    },
+    "extends": "eslint:recommended",
+    "rules": {
+        "indent": [
+            "error",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "linebreak-style": 0,
+        "no-console": "off",
+        "no-var": "error",
+        "prefer-const": "error",
+        "quotes": [
+            "error",
+            "single",
+            {
+                "avoidEscape": true,
+                "allowTemplateLiterals": true
+            }
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-prototype-builtins": "off"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2019
+    }
 }
