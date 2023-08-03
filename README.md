@@ -26,14 +26,14 @@ Only CC26xx/cc1352/cc2538 Devices support extraction of the NVRam backup which s
 Current firmware files for these devices can be found [on GitHub](https://github.com/Koenkk/Z-Stack-firmware)
 
 <span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/CC2531.png" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/masterdocs/de/img/CC2591.png" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/masterdocs/de/img/sonoff.png" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/masterdocs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/masterdocs/de/img/cc26x2r.PNG" width="100"></span>
+<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/CC2591.png" width="100"></span>
+<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/sonoff.png" width="100"></span>
+<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
+<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/img/cc26x2r.PNG" width="100"></span>
 
 
 ### Dresden Elektronik SoC
-<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/masterdocs/en/img/deconz.png" width="180"></span>
+<span><img src="https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/en/img/deconz.png" width="180"></span>
 
 recommended:
 - ConBee II
