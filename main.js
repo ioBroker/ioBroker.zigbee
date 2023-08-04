@@ -469,29 +469,33 @@ class Zigbee extends utils.Adapter {
 
         let voltage = 0;
         let battKey = false;
-
-        if (mappedModel.meta !== undefined && mappedModel.meta !== null && mappedModel.meta.battery !== undefined) {
-            const isVoltage = entity.mapped.meta.battery.hasOwnProperty('voltageToPercentage');
-    
-            if (isVoltage) {
-                const keys = Object.keys(message.data);
-    
-                for (const key of keys) {
-                    const value = message.data[key];
-                    
-                    this.log.debug(`--> BatteryValue ${safeJsonStringify(value)} from battery search`);
-                    
-                    if (value != undefined && value[1] != undefined) {
-                        if (key == 65282 && value[1][1] != undefined) {
-                            voltage = value[1][1].elmVal;
-                            battKey = true;
-                            break;
+        
+        if (mappedModel != null && mappedModel != undefined) {
+            if (mappedModel.meta !== undefined && mappedModel.meta !== null) {
+                if (mappedModel.meta.battery !== undefined) {
+                    const isVoltage = entity.mapped.meta.battery.hasOwnProperty('voltageToPercentage');
+            
+                    if (isVoltage) {
+                        const keys = Object.keys(message.data);
+            
+                        for (const key of keys) {
+                            const value = message.data[key];
+                            
+                            this.log.debug(`--> BatteryValue ${safeJsonStringify(value)} from battery search`);
+                            
+                            if (value != undefined && value[1] != undefined) {
+                                if (key == 65282 && value[1][1] != undefined) {
+                                    voltage = value[1][1].elmVal;
+                                    battKey = true;
+                                    break;
+                                }
+                                if (key == 65281) {
+                                    voltage = value[1];
+                                    battKey = true;
+                                    break;
+                                }      
+                            }
                         }
-                        if (key == 65281) {
-                            voltage = value[1];
-                            battKey = true;
-                            break;
-                        }      
                     }
                 }
             }
