@@ -470,7 +470,7 @@ class Zigbee extends utils.Adapter {
         let voltage = 0;
         let battKey = false;
         
-        if (mappedModel != null && mappedModel != undefined) {
+        if (mappedModel !== null && mappedModel !== undefined) {
             if (mappedModel.meta !== undefined && mappedModel.meta !== null) {
                 if (mappedModel.meta.battery !== undefined) {
                     const isVoltage = entity.mapped.meta.battery.hasOwnProperty('voltageToPercentage');
