@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.21",
+    "version": "1.8.22",
     "news": {
+      "1.8.22": {
+        "en": "crash when meta is empty",
+        "de": "crash, wenn meta leer ist",
+        "ru": "сбой, когда мета пуста",
+        "pt": "acidente quando meta está vazio",
+        "nl": "als meta leeg is",
+        "fr": "crash quand meta est vide",
+        "it": "crash quando il meta è vuoto",
+        "es": "estrellarse cuando meta está vacía",
+        "pl": "w przypadku, gdy meta jest pusta",
+        "uk": "аварійний випадок, коли мета",
+        "zh-cn": "c 当元空时发生事故"
+      },
       "1.8.21": {
         "en": "no converter found",
         "de": "kein konverter gefunden",
@@ -80,13 +93,8 @@
         "pl": "baterie",
         "uk": "акумулятор",
         "zh-cn": "电池组"
-      },
-      "1.8.13": {
-        "en": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
-        "de": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md"
       }
     },
-    
     "titleLang": {
       "en": "Zigbee",
       "uk": "Zigbee",
