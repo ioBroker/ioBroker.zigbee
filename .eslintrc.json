@@ -17,8 +17,9 @@
         ],
         "no-console": "off",
         "no-var": "error",
+        "no-unused-vars": "warn",
         "no-trailing-spaces": "error",
-        "prefer-const": "error",
+        "prefer-const": "warn",        
         "quotes": [
             "warn",
             "single", 
