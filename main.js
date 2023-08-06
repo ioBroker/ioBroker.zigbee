@@ -124,7 +124,7 @@ class Zigbee extends utils.Adapter {
                                     message
                                 }));
                         }
-    
+
                         if (typeof error == 'string') {
                             Sentry.captureException(new Error(error));
                         } else {
@@ -134,7 +134,7 @@ class Zigbee extends utils.Adapter {
                 }
             }
         } catch (err) {
-            this.log.error(`SentryError : ${message} ${error} ${err} `);        
+            this.log.error(`SentryError : ${message} ${error} ${err} `);
         }
     }
 
@@ -278,7 +278,7 @@ class Zigbee extends utils.Adapter {
             delete toAdd['homeassistant'];
             try {
                 zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
-            } catch { 
+            } catch {
                 this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`);
             }
         }
@@ -465,24 +465,24 @@ class Zigbee extends utils.Adapter {
         // this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
         meta.logger = this.log;
 
-        await this.checkIfModelUpdate(entity);        
+        await this.checkIfModelUpdate(entity);
 
         let voltage = 0;
         let battKey = false;
-        
+
         if (mappedModel !== null && mappedModel !== undefined) {
             if (mappedModel.meta !== undefined && mappedModel.meta !== null) {
                 if (mappedModel.meta.battery !== undefined) {
                     const isVoltage = entity.mapped.meta.battery.hasOwnProperty('voltageToPercentage');
-            
+
                     if (isVoltage) {
                         const keys = Object.keys(message.data);
-            
+
                         for (const key of keys) {
                             const value = message.data[key];
-                            
+
                             this.log.debug(`--> BatteryValue ${safeJsonStringify(value)} from battery search`);
-                            
+
                             if (value != undefined && value[1] != undefined) {
                                 if (key == 65282 && value[1][1] != undefined) {
                                     voltage = value[1][1].elmVal;
@@ -493,14 +493,14 @@ class Zigbee extends utils.Adapter {
                                     voltage = value[1];
                                     battKey = true;
                                     break;
-                                }      
+                                }
                             }
                         }
                     }
                 }
             }
         }
-        
+
         // always publish link_quality and battery
         if (message.linkquality) { // send battery with
             this.publishToState(devId, model, {linkquality: message.linkquality});
@@ -552,7 +552,7 @@ class Zigbee extends utils.Adapter {
             this.stController.collectOptions(devId, model, (options) => {
                 try {
                     payload = converter.convert(mappedModel, message, publish, options, meta);
-    
+
                     if (payload) {
                         if (Object.keys(payload).length) {
                             publish(payload);
@@ -595,20 +595,20 @@ class Zigbee extends utils.Adapter {
         }
         try {
             const entity = await this.zbController.resolveEntity(deviceId);
-            
+
             this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
-            
-            const mappedModel = entity.mapped;       
-                  
+
+            const mappedModel = entity.mapped;
+
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
                 return;
             }
-    
+
             stateList.forEach(async changedState => {
                 const stateDesc = changedState.stateDesc;
                 const value = changedState.value;
-    
+
                 if (stateDesc.id === 'send_payload') {
                     try {
                         const json_value = JSON.parse(value);
@@ -623,14 +623,14 @@ class Zigbee extends utils.Adapter {
                     }
                     return;
                 }
-    
+
                 if (stateDesc.isOption) {
                     // acknowledge state with given value
                     this.acknowledgeState(deviceId, model, stateDesc, value);
                     // process sync state list
                     //this.processSyncStatesList(deviceId, modelId, syncStateList);
                     // if this is the device query state => trigger the device query
-    
+
                     // on activation of the 'device_query' state trigger hardware query where possible
                     if (stateDesc.id === 'device_query') {
                         if (this.query_device_block.indexOf(deviceId) > -1) {
@@ -647,7 +647,7 @@ class Zigbee extends utils.Adapter {
                                             await converter.convertGet(entity.device.endpoints[0], ckey, {});
                                         } catch (error) {
                                             this.log.warn(`Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after query with '${JSON.stringify(error)}'`);
-    
+
                                         }
                                     }
                                 }
@@ -671,7 +671,7 @@ class Zigbee extends utils.Adapter {
                     this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
                     return;
                 }
-    
+
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
                 const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
                 let syncStateList = [];
@@ -683,11 +683,11 @@ class Zigbee extends utils.Adapter {
                         }
                     });
                 }
-    
+
                 const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
                 const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
                 this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
-    
+
                 let target;
                 if (model === 'group') {
                     target = entity.mapped;
@@ -695,9 +695,9 @@ class Zigbee extends utils.Adapter {
                     target = await this.zbController.resolveEntity(deviceId, epName);
                     target = target.endpoint;
                 }
-    
+
                 this.log.debug(`target: ${safeJsonStringify(target)}`);
-    
+
                 const meta = {
                     endpoint_name: epName,
                     options: preparedOptions,
@@ -707,11 +707,11 @@ class Zigbee extends utils.Adapter {
                     logger: this.log,
                     state: {},
                 };
-                
+
                 if (preparedOptions.hasOwnProperty('state')) {
                     meta.state = preparedOptions.state;
                 }
-                
+
                 try {
                     const result = await converter.convertSet(target, key, preparedValue, meta);
                     this.log.debug(`convert result ${safeJsonStringify(result)}`);
@@ -721,20 +721,20 @@ class Zigbee extends utils.Adapter {
                         }
                         // process sync state list
                         this.processSyncStatesList(deviceId, model, syncStateList);
-    
+
                         if (isGroup) {
                             await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
                             this.acknowledgeState(deviceId, model, stateDesc, value);
                         }
                     }
-                    
+
                 } catch (error) {
                     this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
                         ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
                 }
             });
         } catch (err) {
-            this.log.error(`No entity for ${deviceId}`);    
+            this.log.error(`No entity for ${deviceId}`);
         }
     }
 
@@ -950,7 +950,7 @@ class Zigbee extends utils.Adapter {
     }
 
     onPairing(message, data) {
-        if (Number.isInteger(data)) {           
+        if (Number.isInteger(data)) {
             this.setState('info.pairingCountdown', data, true);
         }
         if (data === 0) {
