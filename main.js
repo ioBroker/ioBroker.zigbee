@@ -493,7 +493,9 @@ class Zigbee extends utils.Adapter {
                             _voltage = value[1];
                             isBattKey = true;
                             _temperature = value[100];
+                            _temperature = _temperature /100;
                             _humidity = value[101];
+                            _humidity = _humidity / 100;
                             isMessure = true;
                             break;
                         }
@@ -511,8 +513,8 @@ class Zigbee extends utils.Adapter {
                 this.publishToState(devId, model, {battery: battProz});
             }
             if (isMessure) {
-                this.publishToState(devId, model, {temperature: _temperature/100});
-                this.publishToState(devId, model, {humidity: _humidity/100});
+                this.publishToState(devId, model, {temperature: _temperature});
+                this.publishToState(devId, model, {humidity: _humidity});
             }
         }
 
