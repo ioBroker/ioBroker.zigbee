@@ -494,7 +494,7 @@ class Zigbee extends utils.Adapter {
                             isBattKey = true;
                             _temperature = value[100];
                             _humidity = value[101];
-                            isMmessure = true
+                            isMessure = true;
                             break;
                         }
                     }
