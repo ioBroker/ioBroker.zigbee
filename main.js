@@ -507,7 +507,7 @@ class Zigbee extends utils.Adapter {
             this.publishToState(devId, model, {linkquality: message.linkquality});
             if (isBattKey) {
                 this.publishToState(devId, model, {voltage: _voltage});
-                const  battProz = zigbeeHerdsmanConvertersUtils.batteryVoltageToPercentage(voltage,entity.mapped.meta.battery.voltageToPercentage);
+                const  battProz = zigbeeHerdsmanConvertersUtils.batteryVoltageToPercentage(_voltage,entity.mapped.meta.battery.voltageToPercentage);
                 this.publishToState(devId, model, {battery: battProz});
             }
             if (isMessure) {
