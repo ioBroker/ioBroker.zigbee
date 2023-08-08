@@ -467,34 +467,35 @@ class Zigbee extends utils.Adapter {
 
         await this.checkIfModelUpdate(entity);
 
-        let voltage = 0;
-        let battKey = false;
+        let _voltage = 0;
+        let _temperature = 0;
+        let _humidity = 0;
 
-        if (mappedModel !== null && mappedModel !== undefined) {
-            if (mappedModel.meta !== undefined && mappedModel.meta !== null) {
-                if (mappedModel.meta.battery !== undefined) {
-                    const isVoltage = entity.mapped.meta.battery.hasOwnProperty('voltageToPercentage');
+        let isMessure = false;
+        let isBattKey = false;
 
-                    if (isVoltage) {
-                        const keys = Object.keys(message.data);
+        if (mappedModel && mappedModel.meta && mappedModel.meta.battery) {
+            const isVoltage = mappedModel.meta.battery.hasOwnProperty('voltageToPercentage');
 
-                        for (const key of keys) {
-                            const value = message.data[key];
+            if (isVoltage) {
+                const keys = Object.keys(message.data);
 
-                            this.log.debug(`--> BatteryValue ${safeJsonStringify(value)} from battery search`);
+                for (const key of keys) {
+                    const value = message.data[key];
 
-                            if (value != undefined && value[1] != undefined) {
-                                if (key == 65282 && value[1][1] != undefined) {
-                                    voltage = value[1][1].elmVal;
-                                    battKey = true;
-                                    break;
-                                }
-                                if (key == 65281) {
-                                    voltage = value[1];
-                                    battKey = true;
-                                    break;
-                                }
-                            }
+                    if (value && value[1]) {
+                        if (key == 65282 && value[1][1]) {
+                            _voltage = value[1][1].elmVal;
+                            isBattKey = true;
+                            break;
+                        }
+                        if (key == 65281) {
+                            _voltage = value[1];
+                            isBattKey = true;
+                            _temperature = value[100];
+                            _humidity = value[101];
+                            isMmessure = true
+                            break;
                         }
                     }
                 }
@@ -504,10 +505,14 @@ class Zigbee extends utils.Adapter {
         // always publish link_quality and battery
         if (message.linkquality) { // send battery with
             this.publishToState(devId, model, {linkquality: message.linkquality});
-            if (battKey) {
-                this.publishToState(devId, model, {voltage: voltage});
+            if (isBattKey) {
+                this.publishToState(devId, model, {voltage: _voltage});
                 const  battProz = zigbeeHerdsmanConvertersUtils.batteryVoltageToPercentage(voltage,entity.mapped.meta.battery.voltageToPercentage);
                 this.publishToState(devId, model, {battery: battProz});
+            }
+            if (isMessure) {
+                this.publishToState(devId, model, {temperature: _temperature});
+                this.publishToState(devId, model, {humidity: _humidity});
             }
         }
 
@@ -540,30 +545,44 @@ class Zigbee extends utils.Adapter {
             return;
         }
 
-        let payload = {};
+        this.processConverters(converters, devId, model, mappedModel, message, meta)
+        //            .then(() => {
+        //
+        //    })
+            .catch((error) => {
+                this.log.error(`Error while processing converters: '${error}'`);
+            });
+    }
 
-        const publish = (_payload) => {
-            if (_payload) {
-                this.publishToState(devId, model, _payload);
-            }
-        };
-
+    async processConverters(converters, devId, model, mappedModel, message, meta) {
         for (const converter of converters) {
-            this.stController.collectOptions(devId, model, (options) => {
-                try {
-                    payload = converter.convert(mappedModel, message, publish, options, meta);
+            const publish = (payload) => {
+                this.log.debug(`Publish ${safeJsonStringify(payload)} to ${safeJsonStringify(devId)}`);
+                if (payload) {
+                    this.publishToState(devId, model, payload);
+                }
+            };
 
-                    if (payload) {
-                        if (Object.keys(payload).length) {
-                            publish(payload);
-                        }
-                    }
-                } catch (err) {
-                    this.log.warn(`convert problem with '${model}' '${devId}' `);
+            const options = await new Promise((resolve, reject) => {
+                this.stController.collectOptions(devId, model, (options) => {
+                    resolve(options);
+                });
+            });
+
+            const payload = await new Promise((resolve, reject) => {
+                const payload = converter.convert(mappedModel, message, publish, options, meta);
+                if (payload) {
+                    resolve(payload);
+                } else {
+                    reject(new Error('Payload is empty'));
                 }
             });
+
+            publish(payload);
         }
     }
+
+
 
     publishToState(devId, model, payload) {
         this.stController.publishToState(devId, model, payload);
