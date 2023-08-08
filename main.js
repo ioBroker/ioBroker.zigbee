@@ -573,8 +573,6 @@ class Zigbee extends utils.Adapter {
                 const payload = converter.convert(mappedModel, message, publish, options, meta);
                 if (payload) {
                     resolve(payload);
-                } else {
-                    reject(new Error('Payload is empty'));
                 }
             });
 
