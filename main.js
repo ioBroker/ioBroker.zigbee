@@ -511,8 +511,8 @@ class Zigbee extends utils.Adapter {
                 this.publishToState(devId, model, {battery: battProz});
             }
             if (isMessure) {
-                this.publishToState(devId, model, {temperature: _temperature});
-                this.publishToState(devId, model, {humidity: _humidity});
+                this.publishToState(devId, model, {temperature: _temperature/100});
+                this.publishToState(devId, model, {humidity: _humidity/100});
             }
         }
 
