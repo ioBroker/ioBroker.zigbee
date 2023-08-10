@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.22",
+    "version": "1.8.23",
     "news": {
+      "1.8.23": {
+        "en": "query from xiaomi is now better",
+        "de": "anfrage von xiaomi ist jetzt besser",
+        "ru": "запрос от xiaomi теперь лучше",
+        "pt": "consulta de xiaomi é agora melhor",
+        "nl": "quee van xiaomi is nu beter",
+        "fr": "la question de xiaomi est maintenant mieux",
+        "it": "query da xiaomi è ora meglio",
+        "es": "la consulta de xiaomi ahora es mejor",
+        "pl": "wykorzystywanie z xiaomi jest obecnie lepsze",
+        "uk": "запиту від xiaomi тепер краще",
+        "zh-cn": "来自米亚米的询问现在更好。"
+      },
       "1.8.22": {
         "en": "crash when meta is empty",
         "de": "crash, wenn meta leer ist",
@@ -80,19 +93,6 @@
         "pl": "kor",
         "uk": "кофрів",
         "zh-cn": "发信"
-      },
-      "1.8.16": {
-        "en": "battery corr",
-        "de": "batterie korrektor",
-        "ru": "аккумулятор корр",
-        "pt": "corante da bateria",
-        "nl": "batterij corr",
-        "fr": "batterie",
-        "it": "batteria corpo",
-        "es": "batería corrido",
-        "pl": "baterie",
-        "uk": "акумулятор",
-        "zh-cn": "电池组"
       }
     },
     "titleLang": {

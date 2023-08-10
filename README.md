@@ -134,6 +134,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.8.23 (2023-08-10)
+* (arteck) query from xiaomi is now better
+
 ### 1.8.22 (2023-08-05)
 * (arteck) crash when meta is empty
 
