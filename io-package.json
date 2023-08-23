@@ -250,7 +250,8 @@
     "disablePing": false,
     "disableBackup": false,
     "external": "",
-    "startWithInconsistent": false
+    "startWithInconsistent": false,
+    "warnOnDeviceAnnouncement": true
   },
   "instanceObjects": [
     {

@@ -31,7 +31,7 @@ const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent',
+    'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent', 'warnOnDeviceAnnouncement'
 ];
 
 function getDeviceByID(ID) {
@@ -798,6 +798,9 @@ function load(settings, onChange) {
     }
     if (settings.disablePing === undefined) {
         settings.disablePing = false;
+    }
+    if (settings.warnOnDeviceAnnouncement === undefined) {
+        settings.warnOnDeviceAnnouncement = true;
     }
 
     // example: select elements with id=key and class=value and insert value
