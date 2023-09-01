@@ -24,8 +24,8 @@
     "@iobroker/adapter-core": "^3.0.3",
     "tar": "^6.1.15",
     "typescript": "^5.1.6",
-    "zigbee-herdsman": "0.18.2",
-    "zigbee-herdsman-converters": "15.60.0"
+    "zigbee-herdsman": "0.18.5",
+    "zigbee-herdsman-converters": "15.67.1"
   },
   "description": "Zigbee devices",
   "devDependencies": {
