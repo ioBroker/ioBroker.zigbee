@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.23",
+    "version": "1.8.24",
     "news": {
+      "1.8.24": {
+        "en": "switch to exposes tab for some Aqara Devices",
+        "de": "schalter, um die Registerkarte für einige Aqara-Geräte freizusetzen",
+        "ru": "перейти на вкладку exposes для некоторых устройств Aqara",
+        "pt": "mudar para expor guia para alguns dispositivos Aqara",
+        "nl": "vertaling:",
+        "fr": "commutation pour exposer l'onglet pour certains appareils Aqara",
+        "it": "interruttore per esporre la scheda per alcuni dispositivi Aqara",
+        "es": "interruptor para exponer ficha para algunos dispositivos Aqara",
+        "pl": "zamienił tablicę dla niektórych Aqara Devices",
+        "uk": "перемикач для установки для деяких пристроїв Aqara",
+        "zh-cn": "对某些Aqara Devic的表格的转换"
+      },
       "1.8.23": {
         "en": "query from xiaomi is now better",
         "de": "anfrage von xiaomi ist jetzt besser",
@@ -80,19 +93,6 @@
         "pl": "wadliwość i błąd\n",
         "uk": "маленька фіксація відправлень і журнал помилок\n",
         "zh-cn": "很少发送过材料和错误逻辑\n"
-      },
-      "1.8.17": {
-        "en": "sentry corr",
-        "de": "versand",
-        "ru": "сендри корр",
-        "pt": "corante de sentinela",
-        "nl": "vertaling:",
-        "fr": "corr",
-        "it": "cor",
-        "es": "centry corr",
-        "pl": "kor",
-        "uk": "кофрів",
-        "zh-cn": "发信"
       }
     },
     "titleLang": {
@@ -188,8 +188,8 @@
         "condition": {
           "operand": "and",
           "rules": [
-            "oldVersion<=1.6.18",
-            "newVersion>=1.7.0"
+            "oldVersion<=1.8.22",
+            "newVersion>=1.8.24"
           ]
         },
         "title": {
@@ -205,16 +205,16 @@
           "zh-cn": "重要通知!"
         },
         "text": {
-          "en": "This new version cleans the file backup (under \\opt\\iobroker\\iobroker-data\\zigbee_0\\) of the adapter. Only the last 10 backups are kept.",
-          "de": "Diese neue Version bereinigt das Datei backup (unter \\opt\\iobroker\\iobroker-data\\zigbee_0\\) des Adapter. Es werden nur die letzten 10 Sicherungen behalten.",
-          "ru": "Эта новая версия очищает резервную копию файла (в папке \\opt\\iobroker\\iobroker-data\\zigbee_0\\) адаптера. Сохраняются только последние 10 резервных копий.",
-          "pt": "Esta nova versão limpa o backup do arquivo (em \\opt\\iobroker\\iobroker-data\\zigbee_0\\) do adaptador. Apenas os últimos 10 backups são mantidos.",
-          "nl": "Deze nieuwe versie maakt de bestandsback-up schoon (onder \\opt\\iobroker\\iobroker-data\\zigbee_0\\) van de adapter. Alleen de laatste 10 back-ups worden bewaard.",
-          "fr": "Cette nouvelle version nettoie le fichier de sauvegarde (sous \\opt\\iobroker\\iobroker-data\\zigbee_0\\) de l'adaptateur. Seules les 10 dernières sauvegardes sont conservées.",
-          "it": "Questa nuova versione pulisce il backup del file (in \\opt\\iobroker\\iobroker-data\\zigbee_0\\) dell'adattatore. Vengono mantenuti solo gli ultimi 10 backup.",
-          "es": "Esta nueva versión limpia la copia de seguridad del archivo (en \\opt\\iobroker\\iobroker-data\\zigbee_0\\) del adaptador. Solo se conservan las últimas 10 copias de seguridad.",
-          "pl": "Ta nowa wersja czyści kopię pliku (w \\opt\\iobroker\\iobroker-data\\zigbee_0\\) adaptera. Przechowywanych jest tylko 10 ostatnich kopii.",
-          "zh-cn": "这个新版本清理了适配器的文件备份（在 \\opt\\iobroker\\iobroker-data\\zigbee_0\\ 下）。仅保留最后 10 个备份。"
+          "en": "This new version use exposes for Aqara Button WXKG01LM. Plz select this device into exposes/Auschliessen tab",
+          "ru": "Эта новая версия использует экспозиции для Aqara Button WXKG01LM. Пожалуйста, выберите это устройство в exposes/Auschliessen tab",
+          "pt": "Esta nova versão usa expões para Aqara Button WXKG01LM. Por favor, selecione este dispositivo no separador exposes/Auschliessen",
+          "nl": "Deze nieuwe versie gebruikt blootstellingen voor Aqara Button WXK01LM. Kies alsjeblieft dit apparaat uit in de openbare aanklagers",
+          "fr": "Cette nouvelle version utilise pour Aqara Button WXKG01LM. Veuillez sélectionner cet appareil dans l'onglet Affichage/Auschliessen",
+          "it": "Questa nuova versione utilizza per Aqara Button WXKG01LM. Si prega di selezionare questo dispositivo per exposes/Auschliessen scheda",
+          "es": "Este nuevo uso expone para Aqara Button WXKG01LM. Por favor, seleccione este dispositivo en la pestaña exposes/Auschliessen",
+          "pl": "Nowa wersja została udostępniona dla zmian Aqary Button WXKG01LM. Prosze dodać to do exposes/Auschliessen tabsena",
+          "uk": "Ця нова версія використовується для кнопки Aqara Button WXKG01LM. Будь ласка, оберіть цей пристрій у вкладці ",
+          "zh-cn": "这一新版本用于Aqara Button WXKG01LM。 请选择这一装置暴露/Auschliessen tab"
         },
         "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "level": "warn",
