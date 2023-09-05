@@ -135,7 +135,7 @@ You can thank the authors by these links:
 
 ## Changelog
 ### 1.8.24 (2023-09-05)
-* (arteck) switch to exposes tab for some Aqara Devices
+* (arteck) switch to exposes tab for some Aqara Devices [more infos](https://github.com/ioBroker/ioBroker.zigbee/wiki/Exposes-for-device-integration)
 
 ### 1.8.23 (2023-08-10)
 * (arteck) query from xiaomi is now better
