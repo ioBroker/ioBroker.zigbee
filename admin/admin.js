@@ -655,9 +655,9 @@ function checkFwUpdate() {
     const callback = function (msg) {
         if (msg) {
             const deviceCard = getDeviceCard(msg.device);
-            const devId = getDevId(deviceCard.attr('id'));
             const fwInfoNode = getFwInfoNode(deviceCard);
             if (msg.status == 'available') {
+                const devId = getDevId(deviceCard.attr('id'));
                 fwInfoNode.html(createBtn('system_update', 'Click to start firmware update', false));
                 $(fwInfoNode).find('button[name=\'fw_update\']').click(() => {
                     fwInfoNode.html(createBtn('check_circle', 'Firmware update started, check progress in logs.', true, 'icon-blue'));
@@ -677,7 +677,11 @@ function checkFwUpdate() {
     };
     for (let i = 0; i < deviceCards.length; i++) {
         const deviceCard = $(deviceCards[i]);
-        const devId = getDevId(deviceCard.attr('id'));
+        const devIdAttr = deviceCard.attr('id');
+        if(!devIdAttr) {
+            continue;
+        }
+        const devId = getDevId(devIdAttr);
         getFwInfoNode(deviceCard).html('<span class="left" style="padding-top:8px">checking...</span>');
         sendTo(namespace, 'checkOtaAvail', {devId: devId}, callback);
     }
