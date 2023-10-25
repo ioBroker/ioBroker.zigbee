@@ -678,7 +678,7 @@ function checkFwUpdate() {
     for (let i = 0; i < deviceCards.length; i++) {
         const deviceCard = $(deviceCards[i]);
         const devIdAttr = deviceCard.attr('id');
-        if(!devIdAttr) {
+        if (!devIdAttr) {
             continue;
         }
         const devId = getDevId(devIdAttr);
