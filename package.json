@@ -21,7 +21,7 @@
     "serialport": "^11.0.1"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.0.3",
+    "@iobroker/adapter-core": "^3.0.4",
     "tar": "^6.2.0",
     "typescript": "^5.2.2",
     "zigbee-herdsman": "0.21.0",
