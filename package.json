@@ -21,11 +21,11 @@
     "serialport": "^12.0.0"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.0.3",
-    "tar": "^6.1.15",
+    "@iobroker/adapter-core": "^3.0.4",
+    "tar": "^6.2.0",
     "typescript": "^5.2.2",
-    "zigbee-herdsman": "0.19.0",
-    "zigbee-herdsman-converters": "15.84.0"
+    "zigbee-herdsman": "0.23.0",
+    "zigbee-herdsman-converters": "15.125.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -34,10 +34,10 @@
     "@alcalzone/release-script-plugin-license": "^3.5.9",
     "@alcalzone/release-script-plugin-manual-review": "^3.5.9",
     "@iobroker/testing": "^4.1.0",
-    "axios": "^1.5.0",
+    "axios": "^1.6.0",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.46.0",
+    "eslint": "^8.52.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "gulp": "^4.0.2",
