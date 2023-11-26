@@ -2595,6 +2595,9 @@ function prepareExcludeDialog(excludeObj) {
                 }
                 return device.common.type;
             } else {
+                if (device.common.type == 'group') {
+                    return null;
+                }
                 return device.common.type;
             }
         },

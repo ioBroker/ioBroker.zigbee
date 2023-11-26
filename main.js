@@ -965,6 +965,7 @@ class Zigbee extends utils.Adapter {
             disableBackup: this.config.disableBackup,
             extPanIdFix: extPanIdFix,
             startWithInconsistent: this.config.startWithInconsistent || false,
+            legacy: false,
         };
     }
 

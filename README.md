@@ -135,6 +135,7 @@ You can thank the authors by these links:
 
 ## Changelog
 ### next
+* (arteck) corr group from exclude dialog
 * (arteck) legacy mode off
 
 ### 1.8.24 (2023-09-05)
