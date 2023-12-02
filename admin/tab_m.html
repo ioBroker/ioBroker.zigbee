@@ -605,6 +605,10 @@
                         <input id="disablePing" type="checkbox" class="value" />
                         <label class="translate" for="disablePing">Disable active availability check</label>
                     </div>
+                    <div class="input-field col s12 m6 l4 col-warnOnDeviceAnnouncement">
+                        <input id="warnOnDeviceAnnouncement" type="checkbox" class="value" />
+                        <label class="translate" for="warnOnDeviceAnnouncement">Log warning on Zigbee device announcement</label>
+                    </div>
                     <div class="input-field col s12 m6 l8 col-transmitPower">
                         <select id="transmitPower" class="value" >
                             <option value="" disabled selected class="translate">transmitPower</option>
@@ -668,67 +672,75 @@
     <div class="materialize-dialogs m">
       <div id="modaledit" class="modal">
           <div class="modal-content">
-            <h3 class="translate">Config device</h3>
-            <div class="row">
-              <div class="col">
-                <div class="input-field">
-                    <input id="d_name" type="text" class="value validate">
-                    <label for="d_name" class="translate">Name</label>
-                </div>
+              <h3 class="translate">Config device</h3>
+              <div class="row">
+                  <div class="col1">
+                      <div class="input-field">
+                          <input id="d_name" type="text" class="value validate">
+                          <label for="d_name" class="translate">Name</label>
+                      </div>
+                  </div>
               </div>
-            </div>
-            <div class="row epid0">
-              <div class="col">
-                <div class=endpointid>
-                  <p class="translate device_with_endpoint">Main Endpoint</p>
-                </div>
+              <div class="row epid0">
+                  <div class="col">
+                      <div class=endpointid>
+                          <p class="translate device_with_endpoint">Main Endpoint</p>
+                      </div>
+                  </div>
+                  <div class="col1">
+                      <div class="input-field groups">
+                          <select id="d_groups_ep0" class="materialSelect" multiple>
+                              <option value="1">select</option>
+                          </select>
+                          <label for="d_groups_ep0" class="translate">Groups</label>
+                      </div>
+                  </div>
               </div>
-              <div class="col1">
-                <div class="input-field groups">
-                    <select id="d_groups_ep0" class="materialSelect" multiple><option value="1">value</option></select>
-                    <label for="d_groups_ep0" class="translate">Groups</label>
-                </div>
+              <div class="row epid1">
+                  <div class="col epid">
+                      <div class=endpointid>
+                          <p class="translate device_with_endpoint">Sub Endpoint 1</p>
+                      </div>
+                  </div>
+                  <div class="col">
+                      <div class="input-field groups">
+                          <select id="d_groups_ep1" class="materialSelect" multiple>
+                              <option value="1">select</option>
+                          </select>
+                          <label for="d_groups_ep1" class="translate">Groups</label>
+                      </div>
+                  </div>
               </div>
-            </div>
-            <div class="row epid1">
-              <div class="col epid">
-                <div class=endpointid>
-                  <p class="translate device_with_endpoint">Sub Endpoint 1</p>
-                </div>
+              <div class="row epid2">
+                  <div class="col epid">
+                      <div class=endpointid>
+                          <p class="translate device_with_endpoint">Sub Endpoint 2</p>
+                      </div>
+                  </div>
+                  <div class="col">
+                      <div class="input-field groups">
+                          <select id="d_groups_ep2" class="materialSelect" multiple>
+                              <option value="1">select</option>
+                          </select>
+                          <label for="d_groups_ep2" class="translate">Groups</label>
+                      </div>
+                  </div>
               </div>
-              <div class="col">
-                <div class="input-field groups">
-                    <select id="d_groups_ep1" class="materialSelect" multiple><option value="1">value</option></select>
-                    <label for="d_groups_ep1" class="translate">Groups</label>
-                </div>
+              <div class="row epid3">
+                  <div class="col epid">
+                      <div class=endpointid>
+                          <p class="translate device_with_endpoint">Sub Endpoint 3</p>
+                      </div>
+                  </div>
+                  <div class="col">
+                      <div class="input-field groups">
+                          <select id="d_groups_ep3" class="materialSelect" multiple>
+                              <option value="1">select</option>
+                          </select>
+                          <label for="d_groups_ep3" class="translate">Groups</label>
+                      </div>
+                  </div>
               </div>
-            </div>
-            <div class="row epid2">
-              <div class="col epid">
-                <div class=endpointid>
-                  <p class="translate device_with_endpoint">Sub Endpoint 2</p>
-                </div>
-              </div>
-              <div class="col">
-                <div class="input-field groups">
-                    <select id="d_groups_ep2" class="materialSelect" multiple><option value="1">value</option></select>
-                    <label for="d_groups_ep2" class="translate">Groups</label>
-                </div>
-              </div>
-            </div>
-            <div class="row epid3">
-              <div class="col epid">
-                <div class=endpointid>
-                  <p class="translate device_with_endpoint">Sub Endpoint 3</p>
-                </div>
-              </div>
-              <div class="col">
-                <div class="input-field groups">
-                    <select id="d_groups_ep3" class="materialSelect" multiple><option value="1">value</option></select>
-                    <label for="d_groups_ep3" class="translate">Groups</label>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="modal-footer">
               <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>

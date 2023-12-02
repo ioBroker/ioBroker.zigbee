@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "1.8.15",
+  "version": "1.8.24",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -15,30 +15,32 @@
     }
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=16"
   },
   "optionalDependencies": {
-    "serialport": "^10.5.0"
+    "serialport": "^12.0.0"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.6.8",
-    "tar": "^6.1.15",
-    "typescript": "^5.1.6",
-    "zigbee-herdsman": "0.16.0",
-    "zigbee-herdsman-converters": "15.38.0"
+    "@iobroker/adapter-core": "^3.0.4",
+    "@jey-cee/dm-utils": "^0.0.5",
+    "tar": "^6.2.0",
+    "typescript": "^5.2.2",
+    "zigbee-herdsman": "0.23.0",
+    "zigbee-herdsman-converters": "15.125.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
-    "@alcalzone/release-script": "^3.5.9",
-    "@alcalzone/release-script-plugin-iobroker": "^3.5.9",
+    "@alcalzone/release-script": "^3.6.0",
+    "@alcalzone/release-script-plugin-iobroker": "^3.6.0",
     "@alcalzone/release-script-plugin-license": "^3.5.9",
+    "@alcalzone/release-script-plugin-manual-review": "^3.5.9",
     "@iobroker/testing": "^4.1.0",
-    "axios": "^1.3.4",
-    "chai": "^4.3.7",
+    "axios": "^1.6.0",
+    "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^8.44.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^4.2.1",
+    "eslint": "^8.52.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "gulp": "^4.0.2",
     "gulp-jsdoc3": "^3.0.0",
     "gulp-replace": "^1.1.4",
@@ -83,6 +85,7 @@
     "test:integration": "mocha test/integration --exit",
     "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235",
     "test:js": "mocha --opts test/mocha.custom.opts",
+    "lint": "eslint .",
     "release": "release-script",
     "release-patch": "release-script patch --yes --no-update-lockfile",
     "release-minor": "release-script minor --yes --no-update-lockfile",

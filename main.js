@@ -13,6 +13,8 @@ try {
 }
 const originalLogMethod = debug.log;
 
+const zigbeeHerdsmanConvertersUtils = require('zigbee-herdsman-converters/lib/utils');
+
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
 const path = require('path');
@@ -31,6 +33,7 @@ const ExcludePlugin = require('./lib/exclude');
 const zigbeeHerdsmanConverters = require('zigbee-herdsman-converters');
 const vm = require('vm');
 const util = require('util');
+const dmZigbee  = require('./lib/devicemgmt.js');
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -45,8 +48,6 @@ const E_DEBUG = 2;
 const E_WARN  = 3;
 const E_ERROR = 4;
 
-let _pairingMode = false;
-
 const errorCodes = {
     9999: {severity: E_INFO, message: 'No response'},
     233: {severity: E_DEBUG, message: 'MAC NO ACK'},
@@ -59,11 +60,13 @@ class Zigbee extends utils.Adapter {
      * @param {Partial<ioBroker.AdapterOptions>} [options={}]
      */
     constructor(options) {
-        super(Object.assign(options || {}, {
-            dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
-            name: 'zigbee',
-            systemConfig: true,
-        }));
+        super(Object.assign(
+            options || {}, {
+                dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
+                name: 'zigbee',
+                systemConfig: true,
+            }));
+
         this.on('ready', () => this.onReady());
         this.on('unload', callback => this.onUnload(callback));
         this.on('message', obj => this.onMessage(obj));
@@ -73,6 +76,9 @@ class Zigbee extends utils.Adapter {
         this.stController = new StatesController(this);
         this.stController.on('log', this.onLog.bind(this));
         this.stController.on('changed', this.publishFromState.bind(this));
+
+        this.deviceManagement = new dmZigbee(this);
+
         this.plugins = [
             new SerialListPlugin(this),
             new CommandsPlugin(this),
@@ -84,9 +90,14 @@ class Zigbee extends utils.Adapter {
             new OtaPlugin(this),
             new BackupPlugin(this),
         ];
+
+
     }
 
     async onMessage(obj) {
+        // If the message starts with dm: it is a device management message so ignore it
+        if (obj.command.startsWith('dm:')) return;
+
         if (typeof obj === 'object' && obj.command) {
             switch (obj.command) {
                 case 'SendToDevice': {
@@ -109,33 +120,37 @@ class Zigbee extends utils.Adapter {
     }
 
     sendError(error, message) {
-        if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
-            const sentryInstance = this.getPluginInstance('sentry');
-            if (sentryInstance) {
-                const Sentry = sentryInstance.getSentryObject();
-                if (Sentry) {
-                    if (message) {
-                        Sentry.configureScope(scope =>
-                            scope.addBreadcrumb({
-                                type: 'error', // predefined types
-                                category: 'error message',
-                                level: Sentry.Severity.Error,
-                                message
-                            }));
-                    }
+        try {
+            if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
+                const sentryInstance = this.getPluginInstance('sentry');
+                if (sentryInstance) {
+                    const Sentry = sentryInstance.getSentryObject();
+                    if (Sentry) {
+                        if (message) {
+                            Sentry.configureScope(scope =>
+                                scope.addBreadcrumb({
+                                    type: 'error', // predefined types
+                                    category: 'error message',
+                                    level: 'error',
+                                    message
+                                }));
+                        }
 
-                    if (typeof error == 'string') {
-                        Sentry.captureException(new Error(error));
-                    } else {
-                        Sentry.captureException(error);
+                        if (typeof error == 'string') {
+                            Sentry.captureException(new Error(error));
+                        } else {
+                            Sentry.captureException(error);
+                        }
                     }
                 }
             }
+        } catch (err) {
+            this.log.error(`SentryError : ${message} ${error} ${err} `);
         }
     }
 
     filterError(errormessage, message, error) {
-        if (error.code === undefined) {
+        if (error != null && error.code == undefined) {
             let em = error.stack.match(/failed \((.+?)\) at/);
             em = em || error.stack.match(/failed \((.+?)\)/);
             this.log.error(`${message} no error code (${(em ? em[1] : 'undefined')})`);
@@ -223,14 +238,13 @@ class Zigbee extends utils.Adapter {
             };
             const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('.', '_'));
             if (!fs.existsSync(mN)) {
-              this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`)
-
+                this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
             }
             else {
                 const converterCode = fs.readFileSync(mN, {encoding: 'utf8'}).toString();
                 let converterLoaded = true;
                 if (converterCode.match(/..\/lib\/legacy/gm)) {
-                    this.log.warn(`External converter ${mN} contains an unsupported reference to '/lib/legacy' - external converter not loaded.`)
+                    this.log.warn(`External converter ${mN} contains an unsupported reference to '/lib/legacy' - external converter not loaded.`);
                     converterLoaded = false;
                 }
                 else
@@ -238,7 +252,7 @@ class Zigbee extends utils.Adapter {
                     // remove the require statements and attempt to place them in the sandbox
                     const requiredLibraries = converterCode.matchAll(/(\w+) += +require\(['"](\S+)['"]\);/gm);
                     for (const line of requiredLibraries) {
-                        const movedLine = line[2].replace('..', '../zigbee-herdsman-converters')
+                        const movedLine = line[2].replace('..', '../zigbee-herdsman-converters');
                         try {
                             sandbox[line[1]] = require(movedLine);
                         }
@@ -259,7 +273,7 @@ class Zigbee extends utils.Adapter {
                         else yield converter;
                     }
                     catch (e) {
-                        this.log.error(`Unable to apply converter from module: ${mN} - the code does not run: ${e}`)
+                        this.log.error(`Unable to apply converter from module: ${mN} - the code does not run: ${e}`);
                     }
                 }
                 else
@@ -267,46 +281,18 @@ class Zigbee extends utils.Adapter {
 
             }
         }
-
-    /*    if (this.config.external === undefined) {
-            return;
-        }
-        const extfiles = this.config.external.split(';');
-        for (const moduleName of extfiles) {
-            if (!moduleName) continue;
-            this.log.info(`Apply converter from module: ${moduleName}`);
-            const sandbox = {
-                require,
-                module: {},
-            };
-            const converterCode = fs.readFileSync(moduleName, {encoding: 'utf8'});
-            vm.runInNewContext(converterCode, sandbox);
-            const converter = sandbox.module.exports;
-            if (Array.isArray(converter)) {
-                for (const item of converter) {
-                    yield item;
-                }
-            } else {
-                yield converter;
-            }
-        }
-    */
-   }
+    }
 
     applyExternalConverters() {
-      try {
         for (const definition of this.getExternalDefinition()) {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
             try {
-              zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+                zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
+            } catch {
+                this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`);
             }
-            catch { this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`) }
         }
-      }
-      catch(error) {
-         this.log.error('error applying external converters');
-      }
     }
 
     async doConnect() {
@@ -479,6 +465,7 @@ class Zigbee extends utils.Adapter {
 
     async onZigbeeEvent(type, entity, message) {
         this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
+
         const device = entity.device;
         const mappedModel = entity.mapped;
         const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
@@ -490,23 +477,74 @@ class Zigbee extends utils.Adapter {
         meta.logger = this.log;
 
         await this.checkIfModelUpdate(entity);
-        // always publish link_quality
-        if (message.linkquality) {
-            this.publishToState(devId, model, {linkquality: message.linkquality});
+
+        let _voltage = 0;
+        let _temperature = 0;
+        let _humidity = 0;
+
+        let isMessure = false;
+        let isBattKey = false;
+
+        if (mappedModel && mappedModel.meta && mappedModel.meta.battery) {
+            const isVoltage = mappedModel.meta.battery.hasOwnProperty('voltageToPercentage');
+
+            if (isVoltage) {
+                const keys = Object.keys(message.data);
+
+                for (const key of keys) {
+                    const value = message.data[key];
+
+                    if (value && value[1]) {
+                        if (key == 65282 && value[1][1]) {
+                            _voltage = value[1][1].elmVal;
+                            isBattKey = true;
+                            break;
+                        }
+                        if (key == 65281) {
+                            _voltage = value[1];
+                            isBattKey = true;
+                            _temperature = value[100];
+                            _temperature = _temperature /100;
+                            _humidity = value[101];
+                            _humidity = _humidity / 100;
+                            isMessure = true;
+                            break;
+                        }
+                    }
+                }
+            }
         }
+
+        // always publish link_quality and battery
+        if (message.linkquality) { // send battery with
+            this.publishToState(devId, model, {linkquality: message.linkquality});
+            if (isBattKey) {
+                this.publishToState(devId, model, {voltage: _voltage});
+                const  battProz = zigbeeHerdsmanConvertersUtils.batteryVoltageToPercentage(_voltage,entity.mapped.meta.battery.voltageToPercentage);
+                this.publishToState(devId, model, {battery: battProz});
+            }
+            if (isMessure) {
+                this.publishToState(devId, model, {temperature: _temperature});
+                this.publishToState(devId, model, {humidity: _humidity});
+            }
+        }
+
         // publish raw event to "from_zigbee"
         // some cleanup
         const msgForState = Object.assign({}, message);
         delete msgForState['device'];
         delete msgForState['endpoint'];
+
         msgForState['endpoint_id'] = message.endpoint.ID;
         this.publishToState(devId, model, {msg_from_zigbee: safeJsonStringify(msgForState)});
 
         if (!entity.mapped) {
             return;
         }
+
         let converters = mappedModel.fromZigbee.filter(c => c && c.cluster === cluster && (
             (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
+
 
         if (!converters.length && type === 'readResponse') {
             converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
@@ -515,14 +553,22 @@ class Zigbee extends utils.Adapter {
 
         if (!converters.length) {
             if (type !== 'readResponse') {
-                this.log.debug(
-                    `No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`
-                );
+                this.log.debug(`No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
             }
             return;
         }
 
-        converters.forEach((converter) => {
+        this.processConverters(converters, devId, model, mappedModel, message, meta)
+        //            .then(() => {
+        //
+        //    })
+            .catch((error) => {
+                this.log.error(`Error while processing converters: '${error}'`);
+            });
+    }
+
+    async processConverters(converters, devId, model, mappedModel, message, meta) {
+        for (const converter of converters) {
             const publish = (payload) => {
                 this.log.debug(`Publish ${safeJsonStringify(payload)} to ${safeJsonStringify(devId)}`);
                 if (payload) {
@@ -530,15 +576,24 @@ class Zigbee extends utils.Adapter {
                 }
             };
 
-            this.stController.collectOptions(devId, model, (options) => {
+            const options = await new Promise((resolve, reject) => {
+                this.stController.collectOptions(devId, model, (options) => {
+                    resolve(options);
+                });
+            });
+
+            const payload = await new Promise((resolve, reject) => {
                 const payload = converter.convert(mappedModel, message, publish, options, meta);
                 if (payload) {
-                    // Add device linkquality.
-                    publish(payload);
+                    resolve(payload);
                 }
             });
-        });
+
+            publish(payload);
+        }
     }
+
+
 
     publishToState(devId, model, payload) {
         this.stController.publishToState(devId, model, payload);
@@ -570,20 +625,20 @@ class Zigbee extends utils.Adapter {
         }
         try {
             const entity = await this.zbController.resolveEntity(deviceId);
-            
+
             this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
-            
-            const mappedModel = entity.mapped;       
-                  
+
+            const mappedModel = entity.mapped;
+
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
                 return;
             }
-    
+
             stateList.forEach(async changedState => {
                 const stateDesc = changedState.stateDesc;
                 const value = changedState.value;
-    
+
                 if (stateDesc.id === 'send_payload') {
                     try {
                         const json_value = JSON.parse(value);
@@ -598,14 +653,14 @@ class Zigbee extends utils.Adapter {
                     }
                     return;
                 }
-    
+
                 if (stateDesc.isOption) {
                     // acknowledge state with given value
                     this.acknowledgeState(deviceId, model, stateDesc, value);
                     // process sync state list
                     //this.processSyncStatesList(deviceId, modelId, syncStateList);
                     // if this is the device query state => trigger the device query
-    
+
                     // on activation of the 'device_query' state trigger hardware query where possible
                     if (stateDesc.id === 'device_query') {
                         if (this.query_device_block.indexOf(deviceId) > -1) {
@@ -622,7 +677,7 @@ class Zigbee extends utils.Adapter {
                                             await converter.convertGet(entity.device.endpoints[0], ckey, {});
                                         } catch (error) {
                                             this.log.warn(`Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after query with '${JSON.stringify(error)}'`);
-    
+
                                         }
                                     }
                                 }
@@ -646,7 +701,7 @@ class Zigbee extends utils.Adapter {
                     this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
                     return;
                 }
-    
+
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
                 const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
                 let syncStateList = [];
@@ -658,11 +713,11 @@ class Zigbee extends utils.Adapter {
                         }
                     });
                 }
-    
+
                 const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
                 const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
                 this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
-    
+
                 let target;
                 if (model === 'group') {
                     target = entity.mapped;
@@ -670,9 +725,9 @@ class Zigbee extends utils.Adapter {
                     target = await this.zbController.resolveEntity(deviceId, epName);
                     target = target.endpoint;
                 }
-    
+
                 this.log.debug(`target: ${safeJsonStringify(target)}`);
-    
+
                 const meta = {
                     endpoint_name: epName,
                     options: preparedOptions,
@@ -682,11 +737,11 @@ class Zigbee extends utils.Adapter {
                     logger: this.log,
                     state: {},
                 };
-                
+
                 if (preparedOptions.hasOwnProperty('state')) {
                     meta.state = preparedOptions.state;
                 }
-                
+
                 try {
                     const result = await converter.convertSet(target, key, preparedValue, meta);
                     this.log.debug(`convert result ${safeJsonStringify(result)}`);
@@ -696,20 +751,20 @@ class Zigbee extends utils.Adapter {
                         }
                         // process sync state list
                         this.processSyncStatesList(deviceId, model, syncStateList);
-    
+
                         if (isGroup) {
                             await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
                             this.acknowledgeState(deviceId, model, stateDesc, value);
                         }
                     }
-                    
+
                 } catch (error) {
                     this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
                         ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
                 }
             });
         } catch (err) {
-            this.log.error(`No entity for ${deviceId}`);    
+            this.log.error(`No entity for ${deviceId}`);
         }
     }
 
@@ -788,8 +843,8 @@ class Zigbee extends utils.Adapter {
                     await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, payload.options);
                     return {success: true};
                 } catch (error) {
-                    this.filterError(`Error ${error.code} on send command to ${payload.device}.` +
-                        ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
+                    this.log.error(`Error ${error.code} on send command to ${payload.device}.` + ` Error: ${error.stack} ` + `Send command to ${payload.device} failed with ` + error);
+                    this.filterError(`Error ${error.code} on send command to ${payload.device}.` + ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
                     return {success: false, error};
                 }
             } catch (e) {
@@ -921,18 +976,17 @@ class Zigbee extends utils.Adapter {
             disableBackup: this.config.disableBackup,
             extPanIdFix: extPanIdFix,
             startWithInconsistent: this.config.startWithInconsistent || false,
+            legacy: false,
         };
     }
 
     onPairing(message, data) {
         if (Number.isInteger(data)) {
-            _pairingMode = true;
             this.setState('info.pairingCountdown', data, true);
         }
         if (data === 0) {
             // set pairing mode off
             this.setState('info.pairingMode', false, true);
-            _pairingMode = false;
         }
         if (data) {
             this.logToPairing(`${message}: ${data.toString()}`);

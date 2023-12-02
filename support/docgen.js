@@ -1,6 +1,6 @@
 /**
  * This script generates the supported devices page.
- * 
+ *
  */
 
 let devices = [...require('zigbee-herdsman-converters').devices];
@@ -86,7 +86,7 @@ vendors.sort();
 text += '|  Model | Description | Picture |\n';
 text += '| ------------- | ------------- | -------------------------- |\n';
 vendors.forEach((vendor) => {
-    text += `|  | **${vendor}**  |   |\n`;   
+    text += `|  | **${vendor}**  |   |\n`;
     text += logDevices([...iobDevices.keys()].map((m) => devices.get(m)).filter((d) => d && d.vendor === vendor).map((d) => d.model));
 });
 

@@ -1,58 +1,103 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.15",
+    "version": "1.8.24",
     "news": {
-      "1.8.15": {
-        "en": "corr battery status",
-        "de": "corr batteriestatus",
-        "ru": "корр состояние батареи",
-        "pt": "status da bateria de corrimento",
-        "nl": "corr batterij status",
-        "fr": "état de la batterie",
-        "it": "stato della batteria",
-        "es": "estado de la batería",
-        "pl": "kor battery status",
-        "uk": "статус на сервери",
-        "zh-cn": "2. 电池身份"
+      "1.8.24": {
+        "en": "switch to exposes tab for some Aqara Devices",
+        "de": "schalter, um die Registerkarte für einige Aqara-Geräte freizusetzen",
+        "ru": "перейти на вкладку exposes для некоторых устройств Aqara",
+        "pt": "mudar para expor guia para alguns dispositivos Aqara",
+        "nl": "vertaling:",
+        "fr": "commutation pour exposer l'onglet pour certains appareils Aqara",
+        "it": "interruttore per esporre la scheda per alcuni dispositivi Aqara",
+        "es": "interruptor para exponer ficha para algunos dispositivos Aqara",
+        "pl": "zamienił tablicę dla niektórych Aqara Devices",
+        "uk": "перемикач для установки для деяких пристроїв Aqara",
+        "zh-cn": "对某些Aqara Devic的表格的转换"
       },
-      "1.8.14": {
-        "en": "",
-        "de": ""
+      "1.8.23": {
+        "en": "query from xiaomi is now better",
+        "de": "anfrage von xiaomi ist jetzt besser",
+        "ru": "запрос от xiaomi теперь лучше",
+        "pt": "consulta de xiaomi é agora melhor",
+        "nl": "quee van xiaomi is nu beter",
+        "fr": "la question de xiaomi est maintenant mieux",
+        "it": "query da xiaomi è ora meglio",
+        "es": "la consulta de xiaomi ahora es mejor",
+        "pl": "wykorzystywanie z xiaomi jest obecnie lepsze",
+        "uk": "запиту від xiaomi тепер краще",
+        "zh-cn": "来自米亚米的询问现在更好。"
       },
-      "1.8.13": {
-        "en": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
-        "de": "see Readme https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md"
+      "1.8.22": {
+        "en": "crash when meta is empty",
+        "de": "crash, wenn meta leer ist",
+        "ru": "сбой, когда мета пуста",
+        "pt": "acidente quando meta está vazio",
+        "nl": "als meta leeg is",
+        "fr": "crash quand meta est vide",
+        "it": "crash quando il meta è vuoto",
+        "es": "estrellarse cuando meta está vacía",
+        "pl": "w przypadku, gdy meta jest pusta",
+        "uk": "аварійний випадок, коли мета",
+        "zh-cn": "c 当元空时发生事故"
       },
-      "1.8.12": {
-        "en": "new Documentation",
-        "de": "neue Dokumentation"
+      "1.8.21": {
+        "en": "no converter found",
+        "de": "kein konverter gefunden",
+        "ru": "не найдено конвертер",
+        "pt": "não encontrado",
+        "nl": "geen converter gevonden",
+        "fr": "aucun convertisseur trouvé",
+        "it": "nessun convertitore trovato",
+        "es": "no convertidor encontrado",
+        "pl": "nie znaleziono konwerterów",
+        "uk": "не знайдено",
+        "zh-cn": "未找到转换器"
       },
-      "1.8.11": {
-        "en": "fix exposes with composite list",
-        "de": "fix exposes with composite list"
+      "1.8.20": {
+        "en": "add log",
+        "de": "log",
+        "ru": "добавить лог",
+        "pt": "adicionar log",
+        "nl": "voeg logboek toe",
+        "fr": "ajouter log",
+        "it": "aggiungi log",
+        "es": "añadir registro",
+        "pl": "dodać",
+        "uk": "увійти",
+        "zh-cn": "增 编"
       },
-      "1.8.10": {
-        "en": "fix group access and any new functions",
-        "de": "fix group access and any new functions"
+      "1.8.19": {
+        "en": "fix occupancy_timeout\nfix battery percentage and voltage",
+        "de": "fix occupation_timeout\nbatterieanteil und spannung fixieren",
+        "ru": "исправить occupancy_timeout\nисправить процент батареи и напряжение",
+        "pt": "corrigir ocupação_timeout\ncorrigir a porcentagem da bateria e a tensão",
+        "nl": "vertaling:\nvertaling:",
+        "fr": "fix occupancy_timeout\nfixer le pourcentage de la batterie et la tension",
+        "it": "fix occupazione_timeout\ncorreggere la percentuale della batteria e la tensione",
+        "es": "arreglar ocupación_timeout\nfijar porcentaje de batería y tensión",
+        "pl": "naprawa occupancy_time\nodsetek baterii i napięcia",
+        "uk": "фіксувати occupancy_timeout\nфіксувати відсоток акумулятора і напруга",
+        "zh-cn": "fix 占用:时间假\nfix 电池百分比和火山"
       },
-      "1.8.9": {
-        "en": "fix lidl plug",
-        "de": "deckelstecker",
-        "ru": "исправить lidl plug",
-        "pt": "fixar tampa",
-        "nl": "los deksel",
-        "fr": "fixer le couvercle",
-        "it": "correzione della spina del coperchio",
-        "es": "enchufe de tapa fija",
-        "pl": "naprawiony plug",
-        "uk": "фіксувати роз'єм",
-        "zh-cn": "fix 滑坡"
+      "1.8.18": {
+        "en": "little fix sentry and error log\n",
+        "de": "kleines fix-sende- und fehlerprotokoll\n",
+        "ru": "мало исправлена отправка и ошибка журнала\n",
+        "pt": "pequena correção sentinela e log de erro\n",
+        "nl": "kleine herstellende sentimentele logboek\n",
+        "fr": "petit journal de réparation et d'erreur\n",
+        "it": "piccolo fix registro di errore\n",
+        "es": "pequeño solucion centry y error log\n",
+        "pl": "wadliwość i błąd\n",
+        "uk": "маленька фіксація відправлень і журнал помилок\n",
+        "zh-cn": "很少发送过材料和错误逻辑\n"
       }
     },
-    "title": "Zigbee",
     "titleLang": {
       "en": "Zigbee",
+      "uk": "Zigbee",
       "ru": "Zigbee",
       "de": "ZigBee",
       "pt": "Zigbee",
@@ -65,6 +110,7 @@
     },
     "desc": {
       "en": "Zigbee adapter for Xiaomi (and other) devices via Chip cc26xx/cc25xx",
+      "uk": "Zigbee adapter for Xiaomi (and other) devices via Chip cc26xx/cc25xx",
       "ru": "Zigbee адаптер для Xiaomi (и других) устройств через Chip cc26xx/cc25xx",
       "de": "ZigBee-Adapter für Xiaomi (und andere) Geräte über Chip cc26xx/cc25xx",
       "pt": "Adaptador Zigbee para dispositivos Xiaomi (e outros) via Chip cc26xx/cc25xx",
@@ -99,6 +145,9 @@
     "loglevel": "info",
     "type": "hardware",
     "materialize": true,
+    "supportedMessages": {
+      "deviceManager": true
+    },
     "messagebox": true,
     "stopBeforeUpdate": true,
     "dataFolder": "zigbee_%INSTANCE%",
@@ -142,8 +191,8 @@
         "condition": {
           "operand": "and",
           "rules": [
-            "oldVersion<=1.6.18",
-            "newVersion>=1.7.0"
+            "oldVersion<=1.8.22",
+            "newVersion>=1.8.24"
           ]
         },
         "title": {
@@ -159,16 +208,16 @@
           "zh-cn": "重要通知!"
         },
         "text": {
-          "en": "This new version cleans the file backup (under \\opt\\iobroker\\iobroker-data\\zigbee_0\\) of the adapter. Only the last 10 backups are kept.",
-          "de": "Diese neue Version bereinigt das Datei backup (unter \\opt\\iobroker\\iobroker-data\\zigbee_0\\) des Adapter. Es werden nur die letzten 10 Sicherungen behalten.",
-          "ru": "Эта новая версия очищает резервную копию файла (в папке \\opt\\iobroker\\iobroker-data\\zigbee_0\\) адаптера. Сохраняются только последние 10 резервных копий.",
-          "pt": "Esta nova versão limpa o backup do arquivo (em \\opt\\iobroker\\iobroker-data\\zigbee_0\\) do adaptador. Apenas os últimos 10 backups são mantidos.",
-          "nl": "Deze nieuwe versie maakt de bestandsback-up schoon (onder \\opt\\iobroker\\iobroker-data\\zigbee_0\\) van de adapter. Alleen de laatste 10 back-ups worden bewaard.",
-          "fr": "Cette nouvelle version nettoie le fichier de sauvegarde (sous \\opt\\iobroker\\iobroker-data\\zigbee_0\\) de l'adaptateur. Seules les 10 dernières sauvegardes sont conservées.",
-          "it": "Questa nuova versione pulisce il backup del file (in \\opt\\iobroker\\iobroker-data\\zigbee_0\\) dell'adattatore. Vengono mantenuti solo gli ultimi 10 backup.",
-          "es": "Esta nueva versión limpia la copia de seguridad del archivo (en \\opt\\iobroker\\iobroker-data\\zigbee_0\\) del adaptador. Solo se conservan las últimas 10 copias de seguridad.",
-          "pl": "Ta nowa wersja czyści kopię pliku (w \\opt\\iobroker\\iobroker-data\\zigbee_0\\) adaptera. Przechowywanych jest tylko 10 ostatnich kopii.",
-          "zh-cn": "这个新版本清理了适配器的文件备份（在 \\opt\\iobroker\\iobroker-data\\zigbee_0\\ 下）。仅保留最后 10 个备份。"
+          "en": "This new version use exposes for Aqara Button WXKG01LM. Plz select this device into exposes/Auschliessen tab",
+          "ru": "Эта новая версия использует экспозиции для Aqara Button WXKG01LM. Пожалуйста, выберите это устройство в exposes/Auschliessen tab",
+          "pt": "Esta nova versão usa expões para Aqara Button WXKG01LM. Por favor, selecione este dispositivo no separador exposes/Auschliessen",
+          "nl": "Deze nieuwe versie gebruikt blootstellingen voor Aqara Button WXK01LM. Kies alsjeblieft dit apparaat uit in de openbare aanklagers",
+          "fr": "Cette nouvelle version utilise pour Aqara Button WXKG01LM. Veuillez sélectionner cet appareil dans l'onglet Affichage/Auschliessen",
+          "it": "Questa nuova versione utilizza per Aqara Button WXKG01LM. Si prega di selezionare questo dispositivo per exposes/Auschliessen scheda",
+          "es": "Este nuevo uso expone para Aqara Button WXKG01LM. Por favor, seleccione este dispositivo en la pestaña exposes/Auschliessen",
+          "pl": "Nowa wersja została udostępniona dla zmian Aqary Button WXKG01LM. Prosze dodać to do exposes/Auschliessen tabsena",
+          "uk": "Ця нова версія використовується для кнопки Aqara Button WXKG01LM. Будь ласка, оберіть цей пристрій у вкладці ",
+          "zh-cn": "这一新版本用于Aqara Button WXKG01LM。 请选择这一装置暴露/Auschliessen tab"
         },
         "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "level": "warn",
@@ -189,7 +238,8 @@
           "cancel"
         ]
       }
-    ]
+    ],
+    "installedFrom": "ioBroker/ioBroker.zigbee#dmg"
   },
   "native": {
     "port": "",
@@ -204,7 +254,8 @@
     "disablePing": false,
     "disableBackup": false,
     "external": "",
-    "startWithInconsistent": false
+    "startWithInconsistent": false,
+    "warnOnDeviceAnnouncement": true
   },
   "instanceObjects": [
     {

@@ -16,7 +16,7 @@ With the Zigbee-coordinator based on Texas Instruments SoC, deCONZ ConBee/RaspBe
 ## Hardware
 
 
-One coordinator device is required for each zigbee Adapter instance. The device must be flashed with the respective coordinator firmware. A list of supported coordinators, the necessary equipment for the firmware and the device preparation process for different coordinator devices are described [here (in English)](https://www.zigbee2mqtt.io/guide/adapters/) or [here (in Russian)](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
+One coordinator device is required for each zigbee Adapter instance. The device must be flashed with the respective coordinator firmware. A list of supported coordinators, the necessary equipment for the firmware and the device preparation process for different coordinator devices are described [here in English](https://www.zigbee2mqtt.io/guide/adapters/) or [smarthomescene.com ](https://smarthomescene.com/blog/best-zigbee-dongles-for-home-assistant-2023/) or [here in Russian](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
 
 
 ### Texas Instruments SoC
@@ -25,16 +25,15 @@ Recommended devices are based on either the CC2652 or CC1352 chip. Devices based
 Only CC26xx/cc1352/cc2538 Devices support extraction of the NVRam backup which should allow to swap coordinator hardware without having to reconnect all zigbee devices to the network.
 Current firmware files for these devices can be found [on GitHub](https://github.com/Koenkk/Z-Stack-firmware)
 
-<span><img src="https://ae01.alicdn.com/kf/HTB1Httue3vD8KJjSsplq6yIEFXaJ/Wireless-Zigbee-CC2531-Sniffer-Bare-Board-Packet-Protocol-Analyzer-Module-USB-Interface-Dongle-Capture-Packet.jpg_640x640.jpg" width="100"></span>
-<span><img src="https://ae01.alicdn.com/kf/HTB1zAA5QVXXXXahapXXq6xXFXXXu/RF-TO-USB-CC2530-CC2591-RF-switch-USB-transparent-serial-data-transmission-equipment.jpg_640x640.jpg" width="100"></span>
-<span><img src="docs/de/img/sonoff.png" width="100"></span>
-<span><img src="docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
-<span><img src="docs/de/img/cc26x2r.PNG" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2531.png" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2591.png" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/sonoff.png" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/cc26x2r.PNG" width="100"></span>
 
-
+tutorial/zigbee.png
 ### Dresden Elektronik SoC
-
-<span><img src="docs/en/img/deconz.png"></span>
+<span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/en/img/deconz.png" width="180"></span>
 
 recommended:
 - ConBee II
@@ -51,12 +50,12 @@ While Conbee/RaspBee Support is no longer considered experimental in the zigbee-
 
 ### Silicon Labs SoC
 
-Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based adapters is experimental. The initial support for EZSP v8 is still not yet considered stable and the project is in need of more developers volenteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/319) with regards to the state of Silabs EmberZNet Serial Protocol (EZSP) adapter implementation integration into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
+Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based adapters is experimental. The initial support for EZSP v8 is still not yet considered stable and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/319) with regards to the state of Silabs EmberZNet Serial Protocol (EZSP) adapter implementation integration into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
 ### ZiGate SoC
 
-Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable and the project is in need of more developers volenteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regards to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
+Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regards to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
 ## Work with adapter
@@ -111,11 +110,18 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 ## Supported devices
 
-Works with devices from this list https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices
+[Works with devices from this list](https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices)
 
 
 ## More Informations
-https://github.com/ioBroker/ioBroker.zigbee/wiki
+
+[in Deutsch](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/readme.md)
+
+[in English](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/en/readme.md)
+
+or 
+
+[wiki](https://github.com/ioBroker/ioBroker.zigbee/wiki)
 
 
 
@@ -125,27 +131,45 @@ You can thank the authors by these links:
 * to Kirov Ilya https://www.paypal.me/goofyk
 * to Arthur Rupp https://paypal.me/ArthurRupp
 
-<!--
-    Placeholder for the next version (at the beginning of the line):
-
-    https://github.com/AlCalzone/release-script#usage
-    npm run release minor -- --all 0.9.8 -> 0.10.0
-    npm run release patch -- --all 0.9.8 -> 0.9.9
-    npm run release prerelease beta -- --all v0.2.1 -> v0.2.2-beta.0
-    Placeholder for the next version (at the beginning of the line):
-    ### **WORK IN PROGRESS**
--->
-
+-----------------------------------------------------------------------------------------------------
 
 ## Changelog
-### 1.8.15 (2023-07-11)
-* (arteck) corr battery status
+### next
+* (arteck) corr group from exclude dialog
+* (arteck) legacy mode off
 
-### 1.8.13 (2023-07-09)
+### 1.8.24 (2023-09-05)
+* (arteck) switch to exposes tab for some Aqara Devices [more infos](https://github.com/ioBroker/ioBroker.zigbee/wiki/Exposes-for-device-integration)
+
+### 1.8.23 (2023-08-10)
+* (arteck) query from xiaomi is now better
+
+### 1.8.22 (2023-08-05)
+* (arteck) crash when meta is empty
+
+### 1.8.21 (2023-07-31)
+* (arteck) no converter found
+
+### 1.8.20 (2023-07-31)
+* (arteck) add log
+
+### 1.8.19 (2023-07-31)
+* (arteck) fix occupancy_timeout
+* (arteck) fix battery percentage and voltage
+
+### 1.8.18 (2023-07-16)
+* (arteck) little fix sentry and error log
+
+### 1.8.17 (2023-07-15)
+* (arteck) sentry corr
+
+### 1.8.16 (2023-07-11)
+* (arteck) battery corr
+
+### 1.8.13 
 * (arteck) ota corr
 * (arteck) devices are wrong with enum exposes
-* (arteck) select field for groups is larger 
-* (kirovilya) tuya.whitelabel corr
+* (arteck) select field for groups is larger
 
 ### 1.8.12 (2023-06-30)
 * (arteck) new Documentation (thx Stefan)
@@ -285,7 +309,7 @@ You can thank the authors by these links:
 * (arteck) Setting to use exposes instead of internal device description
 
 ### 1.4.1 (2020-12)
-* (o0shojo0o) added a kelvin posibility into colortemp
+* (o0shojo0o) added a kelvin possibility into colortemp
 * (asgothian) Hue_calibration for exposed devices (Use requires PR on zigbee-herdsman-converters, PR is being worked on)
 * (asgothian) fix Tuya Thermostat: restore lost property "preset"
 * (asgothian) Change for Device Availability: Stagger initial ping by 200 ms to prevent network congestion due to a large number of ping requests
