@@ -62,10 +62,10 @@ class Zigbee extends utils.Adapter {
     constructor(options) {
         super(Object.assign(
             options || {}, {
-                dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
-                name: 'zigbee',
-                systemConfig: true,
-            }));
+            dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
+            name: 'zigbee',
+            systemConfig: true,
+        }));
 
         this.on('ready', () => this.onReady());
         this.on('unload', callback => this.onUnload(callback));

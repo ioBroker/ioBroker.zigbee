@@ -153,7 +153,7 @@ function getGroupCard(dev) {
         }
         memberCount = (dev.memberinfo.length < 8 ? dev.memberinfo.length : 7);
     }
-    
+    ;
     info = info.concat(`                    </ul>
                 </div>`);
     const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
@@ -369,7 +369,7 @@ function editName(id, name) {
     console.log('editName called with ' + name);
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find('input[id=\'d_name\']').val(name);
-    //    if (dev.info && dev.info.device._type == 'Router') {
+//    if (dev.info && dev.info.device._type == 'Router') {
     const groupables = [];
     if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
@@ -379,7 +379,7 @@ function editName(id, name) {
         }
     }
     const numEP = groupables.length;
-    //      console.log('groupables: '+JSON.stringify(groupables));
+//      console.log('groupables: '+JSON.stringify(groupables));
     $('#modaledit').find('.row.epid0').addClass('hide');
     $('#modaledit').find('.row.epid1').addClass('hide');
     $('#modaledit').find('.row.epid2').addClass('hide');
@@ -414,16 +414,16 @@ function editName(id, name) {
             list2select('#d_groups_ep' + i, groups, groupables[i].memberOf || []);
         }
     }
-    //    } else {
-    //        $('#modaledit').find('.input-field.endpoints').addClass('hide');
-    //        $('#modaledit').find('.input-field.groups').addClass('hide');
-    //    }
+//    } else {
+//        $('#modaledit').find('.input-field.endpoints').addClass('hide');
+//        $('#modaledit').find('.input-field.groups').addClass('hide');
+//    }
     $('#modaledit a.btn[name=\'save\']').unbind('click');
     $('#modaledit a.btn[name=\'save\']').click(() => {
         const newName = $('#modaledit').find('input[id=\'d_name\']').val();
         const groupsbyid = {};
         if (groupables.length > 0) {
-            for (let i = 0; i < groupables.length; i++) {
+            for (var i = 0; i < groupables.length; i++) {
                 const ng = $('#d_groups_ep' + i).val();
                 if (ng.toString() != groupables[i].memberOf.toString())
                     groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
@@ -437,7 +437,7 @@ function editName(id, name) {
 }
 
 function GenerateGroupChange(oldmembers, newmembers) {
-    const grpchng = [];
+    let grpchng = [];
     for (const oldg of oldmembers)
         if (!newmembers.includes(oldg)) grpchng.push('-' + oldg);
     for (const newg of newmembers)
@@ -526,14 +526,14 @@ function showDevices() {
                 continue;
             }
         }
-        
+        ;
         if (d.info && d.info.device._type == 'Coordinator') {
             const card = getCoordinatorCard(d);
             html += card;
         } else {
             //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
-                //                devGroups[d._id] = d.groups;
+//                devGroups[d._id] = d.groups;
                 if (typeof d.groups.map == 'function') {
                     d.groupNames = d.groups.map(item => {
                         return groups[item] || '';
@@ -694,7 +694,7 @@ function letsPairingWithCode(code) {
             showMessage(msg.error, _('Error'));
         }
         else {
-            showPairingProcess();
+          showPairingProcess();
         }
     });
 }
@@ -886,13 +886,13 @@ function load(settings, onChange) {
     });
 
     $('#code_pairing').click(function () {
-        if (!$('#pairing').hasClass('pulse')) {
-            $('#codeentry a.btn[name=\'pair\']').click(() => {
-                const code = $('#codeentry').find('input[id=\'qr_code\']').val();
-                letsPairingWithCode(code);
-            });
-            $('#codeentry').modal('open');
-        }
+      if (!$('#pairing').hasClass('pulse')) {
+        $('#codeentry a.btn[name=\'pair\']').click(() => {
+            const code = $('#codeentry').find('input[id=\'qr_code\']').val();
+            letsPairingWithCode(code)
+        });
+        $('#codeentry').modal('open');
+      }
     });
 
     $(document).ready(function () {

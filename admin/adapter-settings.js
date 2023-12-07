@@ -4,8 +4,8 @@ const parts = path.split('/');
 parts.splice(-3);
 
 const socket = io.connect('/', { path: parts.join('/') + '/socket.io' });
-const query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
-const args = {};
+var query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
+var args = {};
 let theme = null;
 
 // parse parameters
@@ -14,7 +14,7 @@ query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(functi
     if (!i && parts.length === 1 && !isNaN(parseInt(b, 10))) {
         args.instance = parseInt(b, 10);
     }
-    const name = parts[0];
+    var name = parts[0];
     args[name] = parts.length === 2 ? parts[1] : true;
 
     if (name === 'instance') {
@@ -28,7 +28,7 @@ query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(functi
     }
 });
 
-const instance = args.instance;
+var instance = args.instance;
 
 let common   = null; // common information of adapter
 const host     = null; // host object on which the adapter runs
@@ -96,15 +96,15 @@ function loadSettings(callback) {
             if (typeof load === 'undefined') {
                 alert('Please implement save function in your admin/index.html');
             } else {
-                // detect, that we are now in react container (themeNames = ['dark', 'blue', 'colored', 'light'])
+		// detect, that we are now in react container (themeNames = ['dark', 'blue', 'colored', 'light'])
 		
-                const _query = query.split('&');
+		const _query = query.split('&');
 		
-                for (let q = 0; q < _query.length; q++) {
-                    if (_query[q].indexOf('react=') !== -1) {
-                        $('.adapter-container').addClass('react-' + _query[q].substring(6));
-                        theme = 'react-' + _query[q].substring(6);
-                    }
+		for (var q = 0; q < _query.length; q++) {
+			if (_query[q].indexOf('react=') !== -1) {
+				$('.adapter-container').addClass('react-' + _query[q].substring(6));
+				theme = 'react-' + _query[q].substring(6);
+			}
                 }
 
                 load(res.native, onChange);
@@ -211,7 +211,7 @@ function onChange(isChanged) {
 }
 
 function showMessage(message, title, icon) {
-    let $dialogMessage;
+    var $dialogMessage;
     // noinspection JSJQueryEfficiency
     $dialogMessage = $('#dialog-message');
     if (!$dialogMessage.length) {
