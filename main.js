@@ -607,7 +607,7 @@ class Zigbee extends utils.Adapter {
     async publishFromState(deviceId, model, stateModel, stateList, options) {
         let isGroup = false;
 
-        this.log.debug(`publishFromState : ${deviceId} ${model}`);
+        this.log.debug(`publishFromState : ${deviceId} ${model} ${safeJsonStringify(stateList)}`);
         if (model === 'group') {
             isGroup = true;
             deviceId = parseInt(deviceId);
@@ -704,7 +704,7 @@ class Zigbee extends utils.Adapter {
                 }
 
                 const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
-                const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
+                const key = stateDesc.prop || stateDesc.id || stateDesc.setattr;
                 this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
 
                 let target;
@@ -965,7 +965,6 @@ class Zigbee extends utils.Adapter {
             disableBackup: this.config.disableBackup,
             extPanIdFix: extPanIdFix,
             startWithInconsistent: this.config.startWithInconsistent || false,
-            legacy: false,
         };
     }
 
