@@ -134,9 +134,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
-### next
+### 1.8.25 (2023-12-17)
+* zhc 16.x 
 * (arteck) corr group from exclude dialog
-* (arteck) legacy mode off
 
 ### 1.8.24 (2023-09-05)
 * (arteck) switch to exposes tab for some Aqara Devices [more infos](https://github.com/ioBroker/ioBroker.zigbee/wiki/Exposes-for-device-integration)

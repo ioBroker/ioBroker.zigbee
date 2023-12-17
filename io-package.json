@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.24",
+    "version": "1.8.25",
     "news": {
+      "1.8.25": {
+        "en": "zhc 16.x \ncorr group from exclude dialog",
+        "de": "zhc 16.x\nkorr gruppe aus ausschluss dialog",
+        "ru": "жк 16.x\nгруппа корр от исключает диалог",
+        "pt": "zhc 16.x\ncorr grupo de excluir diálogo",
+        "nl": "zhc 16\ncorr groep uitgesloten dialog",
+        "fr": "zhc 16.x\ngroupe corr de l'exclusion du dialogue",
+        "it": "zhc 16.x\ngruppo corr da escludere finestra di dialogo",
+        "es": "zhc 16.x\ngrupo de corr de excluir diálogo",
+        "pl": "żc 16.x\ngrupa kor z wyłączeniem dialogu",
+        "uk": "жк 16.x\nгрупа з виключення діалогу",
+        "zh-cn": "页: 1\n集团排除了口号"
+      },
       "1.8.24": {
         "en": "switch to exposes tab for some Aqara Devices",
         "de": "schalter, um die Registerkarte für einige Aqara-Geräte freizusetzen",
@@ -80,19 +93,6 @@
         "pl": "naprawa occupancy_time\nodsetek baterii i napięcia",
         "uk": "фіксувати occupancy_timeout\nфіксувати відсоток акумулятора і напруга",
         "zh-cn": "fix 占用:时间假\nfix 电池百分比和火山"
-      },
-      "1.8.18": {
-        "en": "little fix sentry and error log\n",
-        "de": "kleines fix-sende- und fehlerprotokoll\n",
-        "ru": "мало исправлена отправка и ошибка журнала\n",
-        "pt": "pequena correção sentinela e log de erro\n",
-        "nl": "kleine herstellende sentimentele logboek\n",
-        "fr": "petit journal de réparation et d'erreur\n",
-        "it": "piccolo fix registro di errore\n",
-        "es": "pequeño solucion centry y error log\n",
-        "pl": "wadliwość i błąd\n",
-        "uk": "маленька фіксація відправлень і журнал помилок\n",
-        "zh-cn": "很少发送过材料和错误逻辑\n"
       }
     },
     "titleLang": {
