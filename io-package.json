@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.25",
+    "version": "1.8.26",
     "news": {
+      "1.8.26": {
+        "en": "corr toZigbee message\nadd deviceManager",
+        "de": "corr toZigbee Nachricht\nadd-Gerät Manager",
+        "ru": "corr toZigbee сообщение\nдобавить устройство менеджер",
+        "pt": "mensagem de corrija\nadicionar dispositivo Gerente",
+        "nl": "vertaling:\nvoeg Manager",
+        "fr": "corr toZigbee message\najouter le dispositif Manager",
+        "it": "corr aZigbee messaggio\naggiungere dispositivo Manager",
+        "es": "corr toZigbee message\nañadir dispositivo Manager",
+        "pl": "kor toZigbee message\ndodać manager",
+        "uk": "corr toZigbee повідомлення\nдодати пристрій Менеджер",
+        "zh-cn": "信\n增加装置 管理人员"
+      },
       "1.8.25": {
         "en": "zhc 16.x \ncorr group from exclude dialog",
         "de": "zhc 16.x\nkorr gruppe aus ausschluss dialog",
@@ -80,19 +93,6 @@
         "pl": "dodać",
         "uk": "увійти",
         "zh-cn": "增 编"
-      },
-      "1.8.19": {
-        "en": "fix occupancy_timeout\nfix battery percentage and voltage",
-        "de": "fix occupation_timeout\nbatterieanteil und spannung fixieren",
-        "ru": "исправить occupancy_timeout\nисправить процент батареи и напряжение",
-        "pt": "corrigir ocupação_timeout\ncorrigir a porcentagem da bateria e a tensão",
-        "nl": "vertaling:\nvertaling:",
-        "fr": "fix occupancy_timeout\nfixer le pourcentage de la batterie et la tension",
-        "it": "fix occupazione_timeout\ncorreggere la percentuale della batteria e la tensione",
-        "es": "arreglar ocupación_timeout\nfijar porcentaje de batería y tensión",
-        "pl": "naprawa occupancy_time\nodsetek baterii i napięcia",
-        "uk": "фіксувати occupancy_timeout\nфіксувати відсоток акумулятора і напруга",
-        "zh-cn": "fix 占用:时间假\nfix 电池百分比和火山"
       }
     },
     "titleLang": {
@@ -145,6 +145,9 @@
     "loglevel": "info",
     "type": "hardware",
     "materialize": true,
+    "supportedMessages": {
+      "deviceManager": true
+    },
     "messagebox": true,
     "stopBeforeUpdate": true,
     "dataFolder": "zigbee_%INSTANCE%",
