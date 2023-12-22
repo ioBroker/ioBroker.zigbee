@@ -134,6 +134,10 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.9.0 (2023-12-22)
+* (arteck) up to new zhc
+* (arteck) update dependency
+
 ### 1.8.27 (2023-12-22)
 * (arteck) update dependency
 

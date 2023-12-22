@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.27",
+    "version": "1.9.0",
     "news": {
+      "1.9.0": {
+        "en": "up to new zhc\nupdate dependency",
+        "de": "bis zum neuen zhc\naktualisierung abhängigkeit",
+        "ru": "до нового жк\nобновление зависимости",
+        "pt": "até novo zhc\ndependência de atualização",
+        "nl": "♪\nvertaling:",
+        "fr": "jusqu'au nouveau zhc\nmettre à jour la dépendance",
+        "it": "fino a nuovo zhc\ndipendenza da aggiornamento",
+        "es": "hasta nuevo zhc\nactualización de la dependencia",
+        "pl": "do nowego żc\nzależności",
+        "uk": "до нового жк\nоновлення залежності",
+        "zh-cn": "新的忠诚\n更新"
+      },
       "1.8.27": {
         "en": "update dependency",
         "de": "aktualisierung abhängigkeit",
@@ -80,19 +93,6 @@
         "pl": "w przypadku, gdy meta jest pusta",
         "uk": "аварійний випадок, коли мета",
         "zh-cn": "c 当元空时发生事故"
-      },
-      "1.8.21": {
-        "en": "no converter found",
-        "de": "kein konverter gefunden",
-        "ru": "не найдено конвертер",
-        "pt": "não encontrado",
-        "nl": "geen converter gevonden",
-        "fr": "aucun convertisseur trouvé",
-        "it": "nessun convertitore trovato",
-        "es": "no convertidor encontrado",
-        "pl": "nie znaleziono konwerterów",
-        "uk": "не знайдено",
-        "zh-cn": "未找到转换器"
       }
     },
     "titleLang": {
