@@ -60,13 +60,11 @@ class Zigbee extends utils.Adapter {
      * @param {Partial<ioBroker.AdapterOptions>} [options={}]
      */
     constructor(options) {
-        super(Object.assign(
-            options || {}, {
+        super(Object.assign(options || {}, {
             dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
             name: 'zigbee',
             systemConfig: true,
         }));
-
         this.on('ready', () => this.onReady());
         this.on('unload', callback => this.onUnload(callback));
         this.on('message', obj => this.onMessage(obj));
@@ -76,9 +74,9 @@ class Zigbee extends utils.Adapter {
         this.stController = new StatesController(this);
         this.stController.on('log', this.onLog.bind(this));
         this.stController.on('changed', this.publishFromState.bind(this));
-
+        
         this.deviceManagement = new dmZigbee(this);
-
+        
         this.plugins = [
             new SerialListPlugin(this),
             new CommandsPlugin(this),
@@ -90,14 +88,9 @@ class Zigbee extends utils.Adapter {
             new OtaPlugin(this),
             new BackupPlugin(this),
         ];
-
-
     }
 
     async onMessage(obj) {
-        // If the message starts with dm: it is a device management message so ignore it
-        if (obj.command.startsWith('dm:')) return;
-
         if (typeof obj === 'object' && obj.command) {
             switch (obj.command) {
                 case 'SendToDevice': {
@@ -618,7 +611,7 @@ class Zigbee extends utils.Adapter {
     async publishFromState(deviceId, model, stateModel, stateList, options) {
         let isGroup = false;
 
-        this.log.debug(`publishFromState : ${deviceId} ${model}`);
+        this.log.debug(`publishFromState : ${deviceId} ${model} ${safeJsonStringify(stateList)}`);
         if (model === 'group') {
             isGroup = true;
             deviceId = parseInt(deviceId);
@@ -715,7 +708,7 @@ class Zigbee extends utils.Adapter {
                 }
 
                 const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
-                const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
+                const key = stateDesc.prop || stateDesc.id || stateDesc.setattr;
                 this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
 
                 let target;
@@ -976,7 +969,6 @@ class Zigbee extends utils.Adapter {
             disableBackup: this.config.disableBackup,
             extPanIdFix: extPanIdFix,
             startWithInconsistent: this.config.startWithInconsistent || false,
-            legacy: false,
         };
     }
 

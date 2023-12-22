@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "1.8.24",
+  "version": "1.8.25",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -22,18 +22,17 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.0.4",
-    "@jey-cee/dm-utils": "^0.0.5",
     "tar": "^6.2.0",
-    "typescript": "^5.2.2",
-    "zigbee-herdsman": "0.23.0",
-    "zigbee-herdsman-converters": "15.125.0"
+    "typescript": "^5.3.2",
+    "zigbee-herdsman": "0.27.1",
+    "zigbee-herdsman-converters": "16.16.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
     "@alcalzone/release-script": "^3.6.0",
     "@alcalzone/release-script-plugin-iobroker": "^3.6.0",
-    "@alcalzone/release-script-plugin-license": "^3.5.9",
-    "@alcalzone/release-script-plugin-manual-review": "^3.5.9",
+    "@alcalzone/release-script-plugin-license": "^3.7.0",
+    "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/testing": "^4.1.0",
     "axios": "^1.6.0",
     "chai": "^4.3.10",

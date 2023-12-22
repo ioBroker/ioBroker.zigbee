@@ -134,12 +134,13 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
-### next
+### 1.8.25 (2023-12-17)
+* zhc 16.x 
 * (arteck) corr group from exclude dialog
-* (arteck) legacy mode off
 
 ### 1.8.24 (2023-09-05)
 * (arteck) switch to exposes tab for some Aqara Devices [more infos](https://github.com/ioBroker/ioBroker.zigbee/wiki/Exposes-for-device-integration)
+
 
 ### 1.8.23 (2023-08-10)
 * (arteck) query from xiaomi is now better
@@ -166,10 +167,15 @@ You can thank the authors by these links:
 ### 1.8.16 (2023-07-11)
 * (arteck) battery corr
 
-### 1.8.13 
+## Changelog
+### 1.8.15 (2023-07-11)
+* (arteck) corr battery status
+
+### 1.8.13 (2023-07-09)
 * (arteck) ota corr
 * (arteck) devices are wrong with enum exposes
-* (arteck) select field for groups is larger
+* (arteck) select field for groups is larger 
+* (kirovilya) tuya.whitelabel corr
 
 ### 1.8.12 (2023-06-30)
 * (arteck) new Documentation (thx Stefan)
