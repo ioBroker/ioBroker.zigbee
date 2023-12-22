@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.8.26",
+    "version": "1.8.27",
     "news": {
+      "1.8.27": {
+        "en": "update dependency",
+        "de": "aktualisierung abhängigkeit",
+        "ru": "обновление зависимости",
+        "pt": "dependência de atualização",
+        "nl": "vertaling:",
+        "fr": "mettre à jour la dépendance",
+        "it": "dipendenza da aggiornamento",
+        "es": "actualización de la dependencia",
+        "pl": "zależności",
+        "uk": "оновлення залежності",
+        "zh-cn": "更新"
+      },
       "1.8.26": {
         "en": "corr toZigbee message\nadd deviceManager",
         "de": "corr toZigbee Nachricht\nadd-Gerät Manager",
@@ -80,19 +93,6 @@
         "pl": "nie znaleziono konwerterów",
         "uk": "не знайдено",
         "zh-cn": "未找到转换器"
-      },
-      "1.8.20": {
-        "en": "add log",
-        "de": "log",
-        "ru": "добавить лог",
-        "pt": "adicionar log",
-        "nl": "voeg logboek toe",
-        "fr": "ajouter log",
-        "it": "aggiungi log",
-        "es": "añadir registro",
-        "pl": "dodać",
-        "uk": "увійти",
-        "zh-cn": "增 编"
       }
     },
     "titleLang": {

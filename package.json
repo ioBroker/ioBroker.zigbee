@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "1.8.26",
+  "version": "1.8.27",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.0.4",
+    "@jey-cee/dm-utils": "^0.0.5",
     "tar": "^6.2.0",
     "typescript": "^5.3.2",
     "zigbee-herdsman": "0.27.1",
