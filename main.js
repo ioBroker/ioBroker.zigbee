@@ -506,7 +506,7 @@ class Zigbee extends utils.Adapter {
                     }
                 }
             }
-        }
+        } 
 
         // always publish link_quality and battery
         if (message.linkquality) { // send battery with

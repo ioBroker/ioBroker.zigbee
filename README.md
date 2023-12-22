@@ -124,7 +124,6 @@ or
 [wiki](https://github.com/ioBroker/ioBroker.zigbee/wiki)
 
 
-
 ## Donate
 
 You can thank the authors by these links:
