@@ -134,6 +134,10 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+
+### next
+* (arteck) corr sendToZigbee
+
 ### 1.8.25 (2023-12-17)
 * zhc 16.x 
 * (arteck) corr group from exclude dialog

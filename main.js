@@ -697,6 +697,7 @@ class Zigbee extends utils.Adapter {
 
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
                 const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
+
                 let syncStateList = [];
                 if (stateModel && stateModel.syncStates) {
                     stateModel.syncStates.forEach(syncFunct => {
@@ -730,6 +731,8 @@ class Zigbee extends utils.Adapter {
                     logger: this.log,
                     state: {},
                 };
+
+                meta.message.state = preparedValue;
 
                 if (preparedOptions.hasOwnProperty('state')) {
                     meta.state = preparedOptions.state;
