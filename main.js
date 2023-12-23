@@ -551,9 +551,9 @@ class Zigbee extends utils.Adapter {
             return;
         }
 
-        meta.state = { state: "" };   // for tuya 
-        
-        this.processConverters(converters, devId, model, mappedModel, message, meta)       
+        meta.state = { state: '' };   // for tuya
+
+        this.processConverters(converters, devId, model, mappedModel, message, meta)
             .catch((error) => {
                 this.log.error(`Error while processing converters DEVICE_ID: '${devId}' `);
             });

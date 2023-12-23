@@ -134,6 +134,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.9.1 (2023-12-23)
+* (arteck) corr TypeError: Cannot read properties of undefined (reading 'state')
+
 ### 1.9.0 (2023-12-22)
 * (arteck) up to new zhc
 * (arteck) update dependency
