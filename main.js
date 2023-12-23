@@ -551,7 +551,7 @@ class Zigbee extends utils.Adapter {
             return;
         }
 
-        message.state = '';
+        meta.state = { state: "" };   // for tuya 
         
         this.processConverters(converters, devId, model, mappedModel, message, meta)       
             .catch((error) => {
