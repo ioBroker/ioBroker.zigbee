@@ -742,7 +742,9 @@ class Zigbee extends utils.Adapter {
                 }
 
                 if (preparedOptions.hasOwnProperty('state')) {
-                    meta.state = preparedOptions.state;
+                    if (preparedOptions !== undefined) {
+                        meta.state = preparedOptions.state;
+                    }
                 }
 
                 try {
