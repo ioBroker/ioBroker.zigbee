@@ -733,10 +733,12 @@ class Zigbee extends utils.Adapter {
                 };
 
                 // new toZigbee
-                if (typeof preparedValue === 'number') {
-                    meta.message.state = preparedValue > 0 ? 'ON' : 'OFF';
-                } else {
-                    meta.message.state = preparedValue;
+                if (preparedValue !== undefined) {
+                    if (typeof preparedValue === 'number') {
+                        meta.message.state = preparedValue > 0 ? 'ON' : 'OFF';
+                    } else {
+                        meta.message.state = preparedValue;
+                    }
                 }
 
                 if (preparedOptions.hasOwnProperty('state')) {
