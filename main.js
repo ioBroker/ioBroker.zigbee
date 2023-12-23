@@ -551,11 +551,11 @@ class Zigbee extends utils.Adapter {
             return;
         }
 
-        meta.message.state = meta.options.state;
+     //   meta.message.state = meta.options.state;
         
         this.processConverters(converters, devId, model, mappedModel, message, meta)       
             .catch((error) => {
-                this.log.error(`Error while processing converters: '${devId}' `);
+                this.log.error(`Error while processing converters DEVICE_ID: '${devId}' `);
             });
     }
 
