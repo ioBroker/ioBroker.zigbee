@@ -551,7 +551,7 @@ class Zigbee extends utils.Adapter {
             return;
         }
 
-     //   meta.message.state = meta.options.state;
+        message.state = '';
         
         this.processConverters(converters, devId, model, mappedModel, message, meta)       
             .catch((error) => {
