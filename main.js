@@ -563,7 +563,7 @@ class Zigbee extends utils.Adapter {
         for (const converter of converters) {
             const publish = (payload) => {
                 this.log.debug(`Publish ${safeJsonStringify(payload)} to ${safeJsonStringify(devId)}`);
-                if (payload) {
+                if (typeof payload === 'object') {
                     this.publishToState(devId, model, payload);
                 }
             };
@@ -576,7 +576,7 @@ class Zigbee extends utils.Adapter {
 
             const payload = await new Promise((resolve, reject) => {
                 const payload = converter.convert(mappedModel, message, publish, options, meta);
-                if (payload) {
+                if (typeof payload === 'object') {
                     resolve(payload);
                 }
             });
