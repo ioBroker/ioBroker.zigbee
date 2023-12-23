@@ -575,9 +575,9 @@ class Zigbee extends utils.Adapter {
             });
 
             const payload = await new Promise((resolve, reject) => {
-                const payload = converter.convert(mappedModel, message, publish, options, meta);
-                if (typeof payload === 'object') {
-                    resolve(payload);
+                const payloadConv = converter.convert(mappedModel, message, publish, options, meta);
+                if (typeof payloadConv === 'object') {
+                    resolve(payloadConv);
                 }
             });
 
