@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.0.4",
-    "@jey-cee/dm-utils": "^0.0.5",
+    "@iobroker/dm-utils": "^0.1.8",
     "humanize-duration": "^3.31.0",
     "tar": "^6.2.0",
     "typescript": "^5.3.3",
