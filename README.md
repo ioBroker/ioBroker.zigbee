@@ -134,6 +134,10 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.9.2 (2023-12-25)
+* (arteck) gen states from exposes as function
+* (arteck) rebuild dev_names.json with state cleanup button
+
 ### 1.9.1 (2023-12-23)
 * (arteck) corr TypeError: Cannot read properties of undefined (reading 'state')
 
