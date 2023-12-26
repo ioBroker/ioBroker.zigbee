@@ -134,6 +134,10 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.9.3 (2023-12-26)
+* (arteck) last zhc Version 16.x
+* (arteck) corr reboot in statecontroller
+
 ### 1.9.2 (2023-12-25)
 * (arteck) gen states from exposes as function
 * (arteck) rebuild dev_names.json with state cleanup button
