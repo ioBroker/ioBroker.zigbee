@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.9.3",
+    "version": "1.9.4",
     "news": {
+      "1.9.4": {
+        "en": "type",
+        "de": "typ",
+        "ru": "тип",
+        "pt": "tipo",
+        "nl": "type type type type type type type type type type type type type type type type type type type type type type type type type type type type type typety type type type type type type type type type type type type type type type typety type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type typety type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type",
+        "fr": "type",
+        "it": "tipo",
+        "es": "tipo",
+        "pl": "typ",
+        "uk": "тип",
+        "zh-cn": "类型"
+      },
       "1.9.3": {
         "en": "last zhc Version 16.x\ncorr reboot in statecontroller",
         "de": "letzte Version 16.x\nkorr reboot in statecontroller",
@@ -80,19 +93,6 @@
         "pl": "kor toZigbee message\ndodać manager",
         "uk": "corr toZigbee повідомлення\nдодати пристрій Менеджер",
         "zh-cn": "信\n增加装置 管理人员"
-      },
-      "1.8.25": {
-        "en": "zhc 16.x \ncorr group from exclude dialog",
-        "de": "zhc 16.x\nkorr gruppe aus ausschluss dialog",
-        "ru": "жк 16.x\nгруппа корр от исключает диалог",
-        "pt": "zhc 16.x\ncorr grupo de excluir diálogo",
-        "nl": "zhc 16\ncorr groep uitgesloten dialog",
-        "fr": "zhc 16.x\ngroupe corr de l'exclusion du dialogue",
-        "it": "zhc 16.x\ngruppo corr da escludere finestra di dialogo",
-        "es": "zhc 16.x\ngrupo de corr de excluir diálogo",
-        "pl": "żc 16.x\ngrupa kor z wyłączeniem dialogu",
-        "uk": "жк 16.x\nгрупа з виключення діалогу",
-        "zh-cn": "页: 1\n集团排除了口号"
       }
     },
     "titleLang": {

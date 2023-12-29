@@ -134,6 +134,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.9.4 (2023-12-29)
+* (arteck) type
+
 ### 1.9.3 (2023-12-26)
 * (arteck) last zhc Version 16.x
 * (arteck) corr reboot in statecontroller
