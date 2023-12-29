@@ -4,11 +4,11 @@
     "version": "1.9.4",
     "news": {
       "1.9.4": {
-        "en": "type",
-        "de": "typ",
+        "en": "typo",
+        "de": "typo",
         "ru": "тип",
         "pt": "tipo",
-        "nl": "type type type type type type type type type type type type type type type type type type type type type type type type type type type type type typety type type type type type type type type type type type type type type type typety type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type typety type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type type",
+        "nl": "type",
         "fr": "type",
         "it": "tipo",
         "es": "tipo",
