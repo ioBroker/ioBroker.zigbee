@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.9.4",
+    "version": "1.9.5",
     "news": {
+      "1.9.5": {
+        "en": "update dependency\nmin node 18.x.",
+        "de": "aktualisierung abhängigkeit\nmin node 18.x.",
+        "ru": "обновление зависимости\nмин. нода 18.x.",
+        "pt": "dependência de atualização\nmin node 18.x.",
+        "nl": "vertaling:\n_.",
+        "fr": "mettre à jour la dépendance\nmin node 18.x.",
+        "it": "dipendenza da aggiornamento\nmin nodo 18.x.",
+        "es": "actualización de la dependencia\nmin node 18.x.",
+        "pl": "zależności\nwęzeł 18.x.",
+        "uk": "оновлення залежності\nхв вузол 18.x.",
+        "zh-cn": "更新\n第18.x条."
+      },
       "1.9.4": {
         "en": "typo",
         "de": "typo",
@@ -80,19 +93,6 @@
         "pl": "zależności",
         "uk": "оновлення залежності",
         "zh-cn": "更新"
-      },
-      "1.8.26": {
-        "en": "corr toZigbee message\nadd deviceManager",
-        "de": "corr toZigbee Nachricht\nadd-Gerät Manager",
-        "ru": "corr toZigbee сообщение\nдобавить устройство менеджер",
-        "pt": "mensagem de corrija\nadicionar dispositivo Gerente",
-        "nl": "vertaling:\nvoeg Manager",
-        "fr": "corr toZigbee message\najouter le dispositif Manager",
-        "it": "corr aZigbee messaggio\naggiungere dispositivo Manager",
-        "es": "corr toZigbee message\nañadir dispositivo Manager",
-        "pl": "kor toZigbee message\ndodać manager",
-        "uk": "corr toZigbee повідомлення\nдодати пристрій Менеджер",
-        "zh-cn": "信\n增加装置 管理人员"
       }
     },
     "titleLang": {

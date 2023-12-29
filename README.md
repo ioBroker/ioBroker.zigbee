@@ -134,8 +134,12 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.9.5 (2023-12-29)
+* (arteck) update dependency
+* (arteck) min node 18.x.
+
 ### 1.9.4 (2023-12-29)
-* (arteck) type
+* (arteck) typo
 
 ### 1.9.3 (2023-12-26)
 * (arteck) last zhc Version 16.x
