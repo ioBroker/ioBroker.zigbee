@@ -283,7 +283,7 @@ class Zigbee extends utils.Adapter {
             try {
                 zigbeeHerdsmanConverters.addDeviceDefinition(toAdd);
             } catch {
-                this.log.error(`unable to apply external converter ${JSON.stringfy(toAdd)}`);
+                this.log.error(`unable to apply external converter ${JSON.stringify(toAdd)}`);
             }
         }
     }
