@@ -732,7 +732,7 @@ class Zigbee extends utils.Adapter {
                 };
 
                 // new toZigbee
-                if (preparedValue !== undefined) {
+                if (preparedValue !== undefined && Object.keys(meta.message).filter(p => p.startsWith('state')).length > 0) {
                     if (typeof preparedValue === 'number') {
                         meta.message.state = preparedValue > 0 ? 'ON' : 'OFF';
                     } else {
