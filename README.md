@@ -134,6 +134,10 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.9.6 (2024-01-01)
+* (arteck) corr ikea bug 
+* (crckmc) trv child lock works
+
 ### 1.9.5 (2023-12-29)
 * (arteck) update dependency
 * (arteck) min node 18.x.
@@ -540,7 +544,7 @@ new Zigbee-herdsman features:
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018-2023 Kirov Ilya <kirovilya@gmail.com>
+Copyright (c) 2018-2024 Kirov Ilya <kirovilya@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

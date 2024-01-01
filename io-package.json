@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.9.5",
+    "version": "1.9.6",
     "news": {
+      "1.9.6": {
+        "en": "corr ikea bug \ntrv child lock works",
+        "de": "corr ikea bug\nkinderschlösser funktioniert",
+        "ru": "корр ikea баг\ntrv детские замки работает",
+        "pt": "corr ikea bug\ntrabalhos de bloqueio de crianças",
+        "nl": "_\nhet kinderslot werkt",
+        "fr": "corr ikea bug\nverrouillage enfant trv fonctionne",
+        "it": "corr ikea bug\ntrv bambino serratura lavori",
+        "es": "corr ikea bug\ntrv niño cerradura funciona",
+        "pl": "kor ikea bug\npracuje w trv childlock",
+        "uk": "ikea помилка\ntrv дитячих замків",
+        "zh-cn": "绑架\n童 工"
+      },
       "1.9.5": {
         "en": "update dependency\nmin node 18.x.",
         "de": "aktualisierung abhängigkeit\nmin node 18.x.",
@@ -80,19 +93,6 @@
         "pl": "do nowego żc\nzależności",
         "uk": "до нового жк\nоновлення залежності",
         "zh-cn": "新的忠诚\n更新"
-      },
-      "1.8.27": {
-        "en": "update dependency",
-        "de": "aktualisierung abhängigkeit",
-        "ru": "обновление зависимости",
-        "pt": "dependência de atualização",
-        "nl": "vertaling:",
-        "fr": "mettre à jour la dépendance",
-        "it": "dipendenza da aggiornamento",
-        "es": "actualización de la dependencia",
-        "pl": "zależności",
-        "uk": "оновлення залежності",
-        "zh-cn": "更新"
       }
     },
     "titleLang": {
