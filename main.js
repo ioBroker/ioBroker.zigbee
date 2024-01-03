@@ -555,11 +555,8 @@ class Zigbee extends utils.Adapter {
 
         this.processConverters(converters, devId, model, mappedModel, message, meta)
             .catch((error) => {
-                if (error.stack.includes('UNSUPPORTED_ATTRIBUTE')) {
-                 // do nothing
-                } else {
-                    this.log.error(`Error while processing converters DEVICE_ID: '${devId}' cluster '${cluster}' type '${type}'`);
-                }    
+                this.log.error(`arteck :  '${error}'`);
+                this.log.error(`Error while processing converters DEVICE_ID: '${devId}' cluster '${cluster}' type '${type}'`);
             });
     }
 
