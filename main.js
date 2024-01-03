@@ -555,7 +555,7 @@ class Zigbee extends utils.Adapter {
 
         this.processConverters(converters, devId, model, mappedModel, message, meta)
             .catch((error) => {
-                this.log.error(`Error while processing converters DEVICE_ID: '${devId}' `);
+                this.log.error(`Error while processing converters DEVICE_ID: '${devId}' cluster '${cluster}' type '${type}'`);
             });
     }
 
