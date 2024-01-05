@@ -555,8 +555,8 @@ class Zigbee extends utils.Adapter {
 
         this.processConverters(converters, devId, model, mappedModel, message, meta)
             .catch((error) => {
-              //   'Error: Expected one of: 0, 1, got: 'undefined'' 
-                if (cluster !== '64529') {          
+                //   'Error: Expected one of: 0, 1, got: 'undefined''
+                if (cluster !== '64529') {
                     this.log.error(`Error while processing converters DEVICE_ID: '${devId}' cluster '${cluster}' type '${type}'`);
                 }
             });

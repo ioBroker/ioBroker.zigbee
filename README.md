@@ -134,6 +134,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.9.7 (2024-01-05)
+* (arteck) corr configure for some devices
+
 ### 1.9.6 (2024-01-01)
 * (arteck) corr ikea bug 
 * (crckmc) trv child lock works

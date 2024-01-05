@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -37,7 +37,7 @@
     "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/testing": "^4.1.0",
     "axios": "^1.6.3",
-    "chai": "^5.0.0",
+    "chai": "^4.3.5",
     "chai-as-promised": "^7.1.1",
     "eslint": "^8.52.0",
     "eslint-config-prettier": "^9.1.0",

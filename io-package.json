@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.9.6",
+    "version": "1.9.7",
     "news": {
+      "1.9.7": {
+        "en": "corr configure for some devices",
+        "de": "corr konfigurieren für einige geräte",
+        "ru": "для некоторых устройств",
+        "pt": "corr configurar para alguns dispositivos",
+        "nl": "corr instellen voor sommige apparaten",
+        "fr": "corr configure pour certains appareils",
+        "it": "corr configurare per alcuni dispositivi",
+        "es": "configuración de corr para algunos dispositivos",
+        "pl": "configure corr dla niektórych urządzeń",
+        "uk": "налаштовувати корр для деяких пристроїв",
+        "zh-cn": "一些设备的corr配置"
+      },
       "1.9.6": {
         "en": "corr ikea bug \ntrv child lock works",
         "de": "corr ikea bug\nkinderschlösser funktioniert",
@@ -80,19 +93,6 @@
         "pl": "kor Type Error: Cannot przeczytał właściwości nieokreślone (czytać stan)",
         "uk": "тип кореня Помилка: Не можна прочитати властивості невизнаного (прочитаного стану)",
         "zh-cn": "类型 Error: Cannot宣读了未界定的(国名)财产"
-      },
-      "1.9.0": {
-        "en": "up to new zhc\nupdate dependency",
-        "de": "bis zum neuen zhc\naktualisierung abhängigkeit",
-        "ru": "до нового жк\nобновление зависимости",
-        "pt": "até novo zhc\ndependência de atualização",
-        "nl": "♪\nvertaling:",
-        "fr": "jusqu'au nouveau zhc\nmettre à jour la dépendance",
-        "it": "fino a nuovo zhc\ndipendenza da aggiornamento",
-        "es": "hasta nuevo zhc\nactualización de la dependencia",
-        "pl": "do nowego żc\nzależności",
-        "uk": "до нового жк\nоновлення залежності",
-        "zh-cn": "新的忠诚\n更新"
       }
     },
     "titleLang": {
