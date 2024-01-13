@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.9.7",
+    "version": "1.10.0",
     "news": {
+      "1.10.0": {
+        "en": "new zigbee-herdsman-converters 18.x\nconfigure message is now a warning",
+        "de": "neue zickbee-herdsman-konverter 18.x\nkonfigurieren von meldungen",
+        "ru": "новые зигби-гердсман-конвертеры 18.x\nнастройка сообщения - это предупреждение",
+        "pt": "novos conversores de zigbee-herdsman 18.x\nconfigurar a mensagem é agora um aviso",
+        "nl": "nieuwe zigbee-herdsman-converters 18.x\nconfigureren bericht is nu een waarschuwing",
+        "fr": "nouveaux convertisseurs zigbee-herdsman 18.x\nconfigure message est maintenant un avertissement",
+        "it": "nuovo zigbee-herdsman-converter 18.x\nconfigurare il messaggio è ora un avviso",
+        "es": "nuevos zigbee-herdsman-converters 18.x\nmensaje de configuración es ahora una advertencia",
+        "pl": "nowe konwertery zigbee- herdsman- 18 x\nkonfiguracja wiadomości jest teraz ostrzeżeniem",
+        "uk": "новий zigbee-herdsman-converters 18.х\nналаштування повідомлення тепер попередження",
+        "zh-cn": "新的 zigbee- herdsman- 转换器 18.x 电话\n配置信件现在是警告"
+      },
       "1.9.7": {
         "en": "corr configure for some devices",
         "de": "corr konfigurieren für einige geräte",
@@ -80,19 +93,6 @@
         "pl": "państwa genowe zjawiają się jako funkcje\nodbudowa nazw. json z przyciskiem czystego przycisku",
         "uk": "генні стани від вибухів як функції\nrebuild dev_names. json з державною кнопкою очищення",
         "zh-cn": "根塔里斯·奥古尔(签名)\n页:1 j. 有国家清洁,但顿"
-      },
-      "1.9.1": {
-        "en": "corr TypeError: Cannot read properties of undefined (reading 'state')",
-        "de": "korpustyp Fehler: Kann Eigenschaften von undefinierten (Lesezustand) nicht lesen",
-        "ru": "тип корр Ошибка: Не смогите прочитать свойства неопределенного (читая состояние)",
-        "pt": "tipo de corante Erro: Não pode ler propriedades de indefinido (estado de leitura)",
-        "nl": "_ Kan geen eigendommen lezen van onbepaalde staat",
-        "fr": "type Erreur: Impossible de lire les propriétés indéfinies (état de lecture)",
-        "it": "tipo Errore: non può leggere le proprietà di non definito (stato di lettura)",
-        "es": "tipo de corrido Error: No se pueden leer propiedades de estado indefinido (estado de lectura)",
-        "pl": "kor Type Error: Cannot przeczytał właściwości nieokreślone (czytać stan)",
-        "uk": "тип кореня Помилка: Не можна прочитати властивості невизнаного (прочитаного стану)",
-        "zh-cn": "类型 Error: Cannot宣读了未界定的(国名)财产"
       }
     },
     "titleLang": {

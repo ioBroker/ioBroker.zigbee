@@ -134,6 +134,10 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.10.0 (2024-01-13)
+* (arteck) new zigbee-herdsman-converters 18.x
+* (arteck) configure message is now a warning
+
 ### 1.9.7 (2024-01-05)
 * (arteck) corr configure for some devices
 

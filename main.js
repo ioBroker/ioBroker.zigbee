@@ -424,9 +424,9 @@ class Zigbee extends utils.Adapter {
     }
 
     async checkIfModelUpdate(entity) {
-        const model = entity.mapped ? entity.mapped.model : entity.device.modelID,
-            device = entity.device,
-            devId = device.ieeeAddr.substr(2);
+        const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
+        const device = entity.device;
+        const devId = device.ieeeAddr.substr(2);
 
         return new Promise((resolve) => {
             this.getObject(devId, (err, obj) => {
