@@ -961,6 +961,8 @@ class Zigbee extends utils.Adapter {
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
 
+        const baudRate = this.config.baudRate ? this.config.baudRate : 115200;
+
         return {
             net: {
                 panId: panID,
@@ -970,7 +972,7 @@ class Zigbee extends utils.Adapter {
             },
             sp: {
                 port: port,
-                baudRate: 115200,
+                baudRate: baudRate,
                 rtscts: false,
                 adapter: adapterType,
             },

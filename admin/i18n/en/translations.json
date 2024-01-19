@@ -16,7 +16,7 @@
     "Command": "Command",
     "Command Type": "Command type",
     "Configure reporting": "Configure reporting",
-    "Countdown": "Countdown between 0 and 255 sec during the pairing of new Zigbee components with the coordinator.",
+    "Countdown": "Countdown between 10 and 240 sec during the pairing",
     "Delete confirmation": "Delete confirmation",
     "Developer": "Developer",
     "Device": "Device",

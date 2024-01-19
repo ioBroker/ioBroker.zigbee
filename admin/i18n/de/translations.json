@@ -16,7 +16,7 @@
     "Command": "Befehl",
     "Command Type": "Befehlstyp",
     "Configure reporting": "Konfigurieren Sie die Berichterstellung",
-    "Countdown": "Countdown zwischen 0 und 255 Sek während der Kopplung neuer Zigbeekomponenten mit dem Koordinator",
+    "Countdown": "Countdown zwischen 10 und 240 Sek während der Kopplung",
     "Delete confirmation": "Löschen bestätigen",
     "Developer": "Entwickler",
     "Device": "Gerät",

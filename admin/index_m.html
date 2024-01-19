@@ -590,7 +590,7 @@
                             </ul>
                         </span>
                 </div>
-                <div class="input-field col s12 m6 l4">
+                <div class="input-field col s12 m6 l2">
                     <select id="adapterType" class="value">
                         <option value="" disabled selected class="translate">Choose type</option>
                         <option value="zstack">TI Z-Stack/CCxxxx</option>
@@ -600,8 +600,12 @@
                     </select>
                     <label class="translate">Type</label>
                 </div>
-                <div class="input-field col s6 m3 l3">
-                    <input id="countDown" type="number" min="0" max="180" class="value"/>
+                <div class="input-field col s6 m3 l2">
+                    <input id="baudRate" type="number" min="38400" max="115200" class="value"/>
+                    <label class="translate" for="baudRate">Baudrate</label>
+                </div>
+                <div class="input-field col s6 m3 l2">
+                    <input id="countDown" type="number" min="10" max="240" class="value"/>
                     <label class="translate" for="countDown">Countdown</label>
                 </div>
             </div>

@@ -26,8 +26,8 @@
     "humanize-duration": "^3.31.0",
     "tar": "^6.2.0",
     "typescript": "^5.3.3",
-    "zigbee-herdsman": "0.32.3",
-    "zigbee-herdsman-converters": "18.11.0"
+    "zigbee-herdsman": "0.32.6",
+    "zigbee-herdsman-converters": "18.15.1"
   },
   "description": "Zigbee devices",
   "devDependencies": {
