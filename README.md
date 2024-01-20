@@ -137,6 +137,7 @@ You can thank the authors by these links:
 
 ### next
 * (arteck) baudRate is now configurable. conBee supports only 38400
+* (arteck) add nvbackup.json delete button
 
 ### 1.10.0 (2024-01-13)
 * (arteck) new zigbee-herdsman-converters 18.x

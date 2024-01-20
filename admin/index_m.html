@@ -494,8 +494,7 @@
             </div>
             <div class="nav-content">
                 <ul class="tabs tabs-transparent">
-                    <li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>
-                    <!--                        <li class="tab col s2"><a href="#tab-groups"              class="translate tooltipped">Groups</a></li>-->
+                    <li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>                   
                     <li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a>
                     </li>
                     <li class="tab col s2"><a href="#tab-binding" class="translate tooltipped">Binding</a></li>
@@ -663,11 +662,6 @@
                     <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value"/>
                     <label class="translate" for="precfgkey">Transport Key</label>
                 </div>
-                <div class="input-field col s12 m6 l8">
-                    <p class="translate">Tranport Key Text</p>
-                </div>
-            </div>
-            <div class="row">
                 <div class="input-field col s12 m6 l4 col-transmitPower">
                     <select id="transmitPower" class="value">
                         <option value="" disabled selected class="translate">transmitPower</option>
@@ -679,6 +673,7 @@
                     <label class="translate" for="transmitPower">transmitPower</label>
                 </div>
             </div>
+
             <div class="row">
                 <h6 class="translate">Others</h6>
                 <div class="input-field col s12 m6 l4 col-disableLed">
@@ -1179,6 +1174,7 @@
             <p class="translate">Reset Info</p>
             <a id="soft" data-mode="soft" class="modal-action modal-close waves-effect waves-red btn translate">Soft-Reset</a>
             <a id="hard" data-mode="hard" class="modal-action modal-close waves-effect waves-red btn translate">Hard-Reset</a>
+            <a id="delNvbackup" data-mode="delNvbackup" class="modal-action modal-close waves-effect waves-red btn translate">delete NVBackup.json</a>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat translate">Cancel</a>
