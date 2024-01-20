@@ -961,7 +961,7 @@ class Zigbee extends utils.Adapter {
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
 
-        const baudRate = this.config.baudRate ? parseFloat(this.config.baudRate) : 115200;
+        const baudRate = parseInt(this.config.baudRate ? this.config.baudRate : 115200);
 
         return {
             net: {
