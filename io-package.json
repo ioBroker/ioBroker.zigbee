@@ -238,8 +238,7 @@
           "cancel"
         ]
       }
-    ],
-    "installedFrom": "ioBroker/ioBroker.zigbee#ed32d2bb7a65c9c5c47f6633a4cb97aeb2b3e002"
+    ]  
   },
   "native": {
     "port": "",
