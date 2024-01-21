@@ -134,9 +134,8 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
-
-### next
-* (arteck) baudRate is now configurable. conBee supports only 38400
+### 1.10.1 (2024-01-21)
+* (arteck) Baudrate is now configurable. works ONLY with Deconz/Conbee( 38400 )
 * (arteck) add nvbackup.json delete button
 
 ### 1.10.0 (2024-01-13)

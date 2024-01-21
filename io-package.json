@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.0",
+    "version": "1.10.1",
     "news": {
+      "1.10.1": {
+        "en": "Baudrate is now configurable. works ONLY with Deconz/Conbee( 38400 )\nadd nvbackup.json delete button",
+        "de": "Baudrate ist jetzt konfigurierbar. funktioniert nur mit Deconz/Conbee( 38400 )\nnvbackup hinzufügen. json löschen taste",
+        "ru": "Baudrate теперь настраиваемый. работает только с Deconz/Conbee (38400)\nдобавьте nvbackup. кнопка",
+        "pt": "O Baudrate agora é configurável. funciona somente com Deconz/Conbee( 38400 )\nadicionar nvbackup. botão de exclusão json",
+        "nl": "Baudrate is nu configureerbaar. ALLEEN werkt met Deconz/Conbee( 38400 )\nnvbackup toevoegen. json delete knop",
+        "fr": "Baudrate est maintenant configurable. fonctionne uniquement avec Decanz/Conbee( 38400 )\najouter nvbackup. bouton de suppression de json",
+        "it": "Baudrate è ora configurabile. funziona SOLO con Deconz/Conbee( 38400 )\naggiungere nvbackup. pulsante di cancellazione json",
+        "es": "Baudrate es ahora configurable. sólo funciona con Deconz/Conbee( 38400 )\nañadir nvbackup. json delete botón",
+        "pl": "Baudrate jest teraz konfigurowalny. działa tylko z Deconz / Conbee (38400)\ndodaj nvbackup. json usuń przycisk",
+        "uk": "Baudrate тепер конфігурується. працює ONLY з Deconz/Conbee( 38400 )\nдодати nvbackup. json видалити кнопка",
+        "zh-cn": "鲍德拉特现在可塑. 仅与Deconz/Conbee(38400)合作\n添加 nv 备份。 json 删除按钮"
+      },
       "1.10.0": {
         "en": "new zigbee-herdsman-converters 18.x\nconfigure message is now a warning",
         "de": "neue zickbee-herdsman-konverter 18.x\nkonfigurieren von meldungen",
@@ -80,19 +93,6 @@
         "pl": "ostatnia wersja 16.x\nkor reboot w systemie kontroli państwa",
         "uk": "остання версія jc 16.x\nперезавантаження коренів в держконтролері",
         "zh-cn": "上一次zhc Version 16x\n州控制容忍的报复"
-      },
-      "1.9.2": {
-        "en": "gen states from exposes as function\nrebuild dev_names.json with state cleanup button",
-        "de": "gen-staaten von exponiert als funktion\ndev_names neu aufbauen. json with state cleanup taste",
-        "ru": "гены из экспозиций как функция\nперестроить dev_names. json с государственной кнопкой очистки",
-        "pt": "gen estados de exposições como função\nreconstruir dev_names. json com botão de limpeza do estado",
-        "nl": "gen staten van blootstelling als functioneren\nherbouwde dev namen. json met staatsopruimknop",
-        "fr": "gen states from exposes as function\nreconstruire dev_names. json avec bouton de nettoyage de l'état",
-        "it": "gen stati da espone come funzione\nricostruire dev_names. json con il pulsante di pulizia dello stato",
-        "es": "gen estados de expone como función\nreconstruir dev_names. json con botón de limpieza del estado",
-        "pl": "państwa genowe zjawiają się jako funkcje\nodbudowa nazw. json z przyciskiem czystego przycisku",
-        "uk": "генні стани від вибухів як функції\nrebuild dev_names. json з державною кнопкою очищення",
-        "zh-cn": "根塔里斯·奥古尔(签名)\n页:1 j. 有国家清洁,但顿"
       }
     },
     "titleLang": {
@@ -256,7 +256,7 @@
     "external": "",
     "startWithInconsistent": false,
     "warnOnDeviceAnnouncement": true,
-    "baudRate" : 115200
+    "baudRate": 115200
   },
   "instanceObjects": [
     {
