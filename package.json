@@ -27,7 +27,7 @@
     "tar": "^6.2.0",
     "typescript": "^5.3.3",
     "zigbee-herdsman": "0.32.7",
-    "zigbee-herdsman-converters": "18.17.0"
+    "zigbee-herdsman-converters": "18.18.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
