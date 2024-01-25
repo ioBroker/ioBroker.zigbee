@@ -537,12 +537,12 @@ class Zigbee extends utils.Adapter {
         }
 
         let converters = mappedModel.fromZigbee.filter(c => c && c.cluster === cluster && (
-            (c.type instanceof Array) ? c.type.includes(type) : c.type === type));
+            Array.isArray(c.type) ? c.type.includes(type) : c.type === type));
 
 
         if (!converters.length && type === 'readResponse') {
             converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
-                (c.type instanceof Array) ? c.type.includes('attributeReport') : c.type === 'attributeReport'));
+                Array.isArray(c.type) ? c.type.includes('attributeReport') : c.type === 'attributeReport'));
         }
 
         if (!converters.length) {
