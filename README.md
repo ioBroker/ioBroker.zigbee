@@ -134,6 +134,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.10.2 (2024-01-25)
+* (arteck) dependency update
+
 ### 1.10.1 (2024-01-21)
 * (arteck) Baudrate is now configurable. works ONLY with Deconz/Conbee( 38400 )
 * (arteck) add nvbackup.json delete button

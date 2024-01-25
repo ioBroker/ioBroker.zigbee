@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.1",
+    "version": "1.10.2",
     "news": {
+      "1.10.2": {
+        "en": "dependency update",
+        "de": "aktualisierung der abhängigkeit",
+        "ru": "обновление",
+        "pt": "atualização de dependência",
+        "nl": "afhankelijkheidsupdate",
+        "fr": "mise à jour de la dépendance",
+        "it": "aggiornamento della dipendenza",
+        "es": "actualización de la dependencia",
+        "pl": "aktualizacja zależności",
+        "uk": "оновлення залежності",
+        "zh-cn": "依赖性更新"
+      },
       "1.10.1": {
         "en": "Baudrate is now configurable. works ONLY with Deconz/Conbee( 38400 )\nadd nvbackup.json delete button",
         "de": "Baudrate ist jetzt konfigurierbar. funktioniert nur mit Deconz/Conbee( 38400 )\nnvbackup hinzufügen. json löschen taste",
@@ -80,19 +93,6 @@
         "pl": "typ",
         "uk": "тип",
         "zh-cn": "类型"
-      },
-      "1.9.3": {
-        "en": "last zhc Version 16.x\ncorr reboot in statecontroller",
-        "de": "letzte Version 16.x\nkorr reboot in statecontroller",
-        "ru": "последняя версия zhc 16.x\nкорр перезагрузка в государственный контролер",
-        "pt": "última versão zhc 16.x\nreboot de corr no controlador de estado",
-        "nl": "laatste Zhc Version 16\ncorr reboot in staatscontroller",
-        "fr": "dernière version zhc 16.x\ncorr reboot in statecontroller",
-        "it": "ultima versione zhc 16.x\nreboot corr in statocontroller",
-        "es": "última versión 16.x\nreboot de corr en statecontroller",
-        "pl": "ostatnia wersja 16.x\nkor reboot w systemie kontroli państwa",
-        "uk": "остання версія jc 16.x\nперезавантаження коренів в держконтролері",
-        "zh-cn": "上一次zhc Version 16x\n州控制容忍的报复"
       }
     },
     "titleLang": {
@@ -238,7 +238,7 @@
           "cancel"
         ]
       }
-    ]  
+    ]
   },
   "native": {
     "port": "",
