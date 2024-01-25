@@ -128,7 +128,6 @@ or
 ## Donate
 
 You can thank the authors by these links:
-* to Kirov Ilya https://www.paypal.me/goofyk
 * to Arthur Rupp https://paypal.me/ArthurRupp
 
 -----------------------------------------------------------------------------------------------------
