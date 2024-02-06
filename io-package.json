@@ -143,16 +143,18 @@
     ],
     "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
     "loglevel": "info",
-    "type": "hardware",
-    "materialize": true,
+    "type": "hardware",    
     "supportedMessages": {
       "deviceManager": true
+    },
+    "adminUI": {
+      "config": "materialize",
+      "tab": "materialize"
     },
     "messagebox": true,
     "stopBeforeUpdate": true,
     "dataFolder": "zigbee_%INSTANCE%",
     "compact": true,
-    "materializeTab": true,
     "connectionType": "local",
     "dataSource": "push",
     "tier": 2,
