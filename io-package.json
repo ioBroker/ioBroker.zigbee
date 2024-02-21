@@ -121,6 +121,10 @@
       "pl": "Adapter Zigbee do urządzeń Xiaomi (i innych) za pośrednictwem Chip cc26xx/cc25xx",
       "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过Chip cc26xx/cc25xx"
     },
+    "docs": {
+      "en" : "docs/en/readme.md",
+      "de" : "docs/en/readme.md"
+    },
     "authors": [
       "Kirov Ilya<kirovilya@gmail.com>"
     ],
