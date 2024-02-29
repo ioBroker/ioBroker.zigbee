@@ -11,10 +11,10 @@
 
 ## ioBroker adapter for Zigbee devices via TI cc2531/cc2530/cc26x2r/cc2538 and deCONZ ConBee/RaspBee.
 
-With the Zigbee-coordinator based on Texas Instruments SoC, deCONZ ConBee/RaspBee modules, Silicon Labs EZSP v8 or ZIGate USB-TTL it creates its own zigbee-network, into which zigbee-devices are connected. By work directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
+With the Zigbee-coordinator based on Texas Instruments SoC, deCONZ ConBee/RaspBee modules, Silicon Labs EZSP v8 or ZIGate USB-TTL it creates its own zigbee-network, into which zigbee-devices are connected.
+By working directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
-
 
 One coordinator device is required for each zigbee Adapter instance. The device must be flashed with the respective coordinator firmware. A list of supported coordinators, the necessary equipment for the firmware and the device preparation process for different coordinator devices are described [here in English](https://www.zigbee2mqtt.io/guide/adapters/) or [smarthomescene.com ](https://smarthomescene.com/blog/best-zigbee-dongles-for-home-assistant-2023/) or [here in Russian](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
 
@@ -50,32 +50,32 @@ While Conbee/RaspBee Support is no longer considered experimental in the zigbee-
 
 ### Silicon Labs SoC
 
-Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based adapters is experimental. The initial support for EZSP v8 is still not yet considered stable and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/319) with regards to the state of Silabs EmberZNet Serial Protocol (EZSP) adapter implementation integration into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
+Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based adapters is experimental. The initial support for EZSP v8 is still not yet considered stable, and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/319) with regards to the state of Silabs EmberZNet Serial Protocol (EZSP) adapter implementation integration into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
 ### ZiGate SoC
 
-Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regards to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
+Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable, and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regards to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
 ## Work with adapter
 
 ![](docs/tutorial/zigbee.png)
 
-To start the driver, you must specify the name of the port on which the Zigbee-module (stick) is connected. Usually this is the port `/dev/ttyACM0` or `/dev/ttyUSB0` for the UART-connection. Or you can find with `ls -l /dev/serial/by-id` the device direct.
+To start the driver, you must specify the name of the port on which the Zigbee module (stick) is connected. Usually this is the port `/dev/ttyACM0` or `/dev/ttyUSB0` for the UART-connection. Or you can find with `ls -l /dev/serial/by-id` the device direct.
 
 open the settings and change port
 ![](docs/tutorial/settings.png)
 
 
-For Windows this will be the COM port number.
+For Windows, this will be the COM port number.
 
-Starting from version 1.0.0 you can also use *tcp connection* for cases using esp8266 (or other microcontrollers) as serial-bridge. For example `tcp://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
+Starting from version 1.0.0, you can also use *tcp connection* for cases using esp8266 (or other microcontrollers) as serial-bridge. For example `tcp://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
 
-To connect devices, you need to switch the Zigbee-coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
+To connect devices, you need to switch the Zigbee coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
 To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html)
 
-After successful pairing, the device appears in the configuration panel. If the device appears in the configuration panel but has the type "undefined", then this is an unknown device and can not be work with it. If the device is in the list of available devices, but added as "undefined", then try to remove the device and add it again.
+After successful pairing, the device appears in the configuration panel. If the device appears in the configuration panel but has the type "undefined", then this is an unknown device and cannot be worked with it. If the device is in the list of available devices, but added as "undefined", then try to remove the device and add it again.
 
 The devices connected to the Zigbee-network and inform the coordinator of their status and events (button presses, motion detection, temperature change). This information is reflected in the ioBroker object-states. Some ioBroker states have feedback and send commands to the zigbee-device when the value changes (switching the state of the outlet or lamp, changing the scene or the brightness of the lamp).
 
@@ -97,7 +97,7 @@ https://www.zigbee2mqtt.io/information/binding
 
 ### Developer Tab
 
-This is a tool for advanced users to test currently unsupported devices or enhance this adapters functionality. More instructions can be found on tab.
+This is a tool for advanced users to test currently unsupported devices or enhance this adapter's functionality. More instructions can be found on the tab.
 ![](docs/tutorial/tab-dev-1.png)
 
 ## Additional info
@@ -113,7 +113,7 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 [Works with devices from this list](https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices)
 
 
-## More Informations
+## More Information
 
 [in Deutsch](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/readme.md)
 
@@ -137,7 +137,7 @@ You can thank the authors by these links:
 * (arteck) dependency update
 
 ### 1.10.1 (2024-01-21)
-* (arteck) Baudrate is now configurable. works ONLY with Deconz/Conbee( 38400 )
+* (arteck) Baudrate is now configurable. works ONLY with Deconz/Conbee(38400)
 * (arteck) add nvbackup.json delete button
 
 ### 1.10.0 (2024-01-13)
@@ -225,17 +225,17 @@ You can thank the authors by these links:
 * (arteck) new Documentation (thx Stefan)
 
 ### 1.8.11 (2022-12-10)
-* (arteck) fix compsite exposes with list
+* (arteck) fix compsite exposes with a list
 
 ### 1.8.10 (2022-12-12)
 * (asgothian) fix group access
 * (asgothian) add option for pairing code:
-   A new icon allows to open the network after first entering a pairing code
+   A new icon allows opening the network after first entering a pairing code
    listed on the device
 * (asgothian) easier use of external converters
    - external converters can now be placed in the zigbee adapter data folder
    - no absolite path is required to access them
-   - external converters posted on the github for zigbee-herdsman-converters
+   - external converters posted on the GitHub for zigbee-herdsman-converters
      should work as they are - folders for libraries are rewritten to match
      the expected location when 'required' from within the zigbee adapter
    - Log entries will identify which files are entered as converters. Errors
@@ -405,7 +405,7 @@ in this case, the *states* attribute will be formed based on the *exposes* descr
 
 ### 1.2.1 (2020-08-16)
 * Fixes after changing device identify method
-* (Garfonso) Allow to unbind from coordinator
+* (Garfonso) Allow unbinding from coordinator
 
 ### 1.2.0 (2020-08-09)
 * Serialport 9.0.0. (zigbee-herdsman)
@@ -421,8 +421,8 @@ Improvements and fixes:
 * (allofmex) Improved DeveloperTab logs
 * (allofmex) Add humidity and temperature calibration state to Tuya RH3052
 * (kirovilya) Fixed a typo due to which extPanID was not set
-* (allofmex) Retry reconnect gateway all the time for tcp connected gateway
-* (kirovilya) Allow to collect zigbee-herdsman logs to iobroker logs
+* (allofmex) Retry reconnect gateway all the time for TCP-connected gateway
+* (kirovilya) Allow collecting zigbee-herdsman logs to iobroker logs
 * (kirovilya) Additional states for QBKG12LM
 
 New devices:
@@ -480,7 +480,7 @@ new Zigbee-herdsman features:
 * (kirovilya) Moes Zigbee Thermostatic Radiator
 * (kirovilya) LifeControl power plug MCLH-03, bulb MCLH-02, water leak MCLH-07, door sensor MCLH-04
 * (kirovilya) Philips LCT002, LCT011, LTW015, LWG004
-* (kirovilya) Gledopto GL-C-007 with with channel
+* (kirovilya) Gledopto GL-C-007 with a channel
 * (MultivitaminJuice) Iluminize 511.040
 * (Sacred-Shadow) Bitron 902010/24
 * (kirovilya) Color indication of LQI and Battery icon
