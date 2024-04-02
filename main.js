@@ -744,8 +744,8 @@ class Zigbee extends utils.Adapter {
                     }
                 }
 
-                if (preparedOptions.hasOwnProperty('state')) {
-                    if (preparedOptions !== undefined) {
+                if (preparedOptions !== undefined) {
+                    if (preparedOptions.hasOwnProperty('state')) {
                         meta.state = preparedOptions.state;
                     }
                 }
