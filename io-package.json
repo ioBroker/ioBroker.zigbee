@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.2",
+    "version": "1.10.3",
     "news": {
+      "1.10.3": {
+        "en": "dependency update\n",
+        "de": "aktualisierung der abhängigkeit\n",
+        "ru": "обновление\n",
+        "pt": "atualização de dependência\n",
+        "nl": "afhankelijkheidsupdate\n",
+        "fr": "mise à jour de la dépendance\n",
+        "it": "aggiornamento della dipendenza\n",
+        "es": "actualización de la dependencia\n",
+        "pl": "aktualizacja zależności\n",
+        "uk": "оновлення залежності\n",
+        "zh-cn": "依赖性更新\n"
+      },
       "1.10.2": {
         "en": "dependency update",
         "de": "aktualisierung der abhängigkeit",
@@ -80,19 +93,6 @@
         "pl": "zależności\nwęzeł 18.x.",
         "uk": "оновлення залежності\nхв вузол 18.x.",
         "zh-cn": "更新\n第18.x条."
-      },
-      "1.9.4": {
-        "en": "typo",
-        "de": "typo",
-        "ru": "тип",
-        "pt": "tipo",
-        "nl": "type",
-        "fr": "type",
-        "it": "tipo",
-        "es": "tipo",
-        "pl": "typ",
-        "uk": "тип",
-        "zh-cn": "类型"
       }
     },
     "titleLang": {
@@ -122,8 +122,8 @@
       "zh-cn": "适用于小米（和其他）设备的Zigbee适配器，通过Chip cc26xx/cc25xx"
     },
     "docs": {
-      "en" : "docs/en/readme.md",
-      "de" : "docs/en/readme.md"
+      "en": "docs/en/readme.md",
+      "de": "docs/en/readme.md"
     },
     "authors": [
       "Kirov Ilya<kirovilya@gmail.com>"
@@ -147,7 +147,7 @@
     ],
     "readme": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
     "loglevel": "info",
-    "type": "hardware",    
+    "type": "hardware",
     "supportedMessages": {
       "deviceManager": true
     },
