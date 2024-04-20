@@ -26,6 +26,7 @@
     "humanize-duration": "^3.31.0",
     "tar": "^6.2.0",
     "typescript": "^5.3.3",
+    "uri-js": "^4.4.1",
     "zigbee-herdsman": "0.42.3",
     "zigbee-herdsman-converters": "19.24.0"
   },
@@ -46,8 +47,7 @@
     "gulp-jsdoc3": "^3.0.0",
     "gulp-replace": "^1.1.4",
     "mixin-deep": "^2.0.1",
-    "mocha": "^10.4.0",
-    "uri-js": "^4.4.1"
+    "mocha": "^10.4.0"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
