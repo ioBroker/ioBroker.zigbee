@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.3",
+    "version": "1.10.4",
     "news": {
+      "1.10.4": {
+        "en": "core update\ndependency update",
+        "de": "kern-update\naktualisierung der abhängigkeit",
+        "ru": "обновление\nобновление",
+        "pt": "atualização do núcleo\natualização de dependência",
+        "nl": "kernupdate\nafhankelijkheidsupdate",
+        "fr": "mise à jour de base\nmise à jour de la dépendance",
+        "it": "aggiornamento del core\naggiornamento della dipendenza",
+        "es": "actualización básica\nactualización de la dependencia",
+        "pl": "podstawowa aktualizacja\naktualizacja zależności",
+        "uk": "оновлення ядра\nоновлення залежності",
+        "zh-cn": "核心更新\n依赖性更新"
+      },
       "1.10.3": {
         "en": "dependency update\n",
         "de": "aktualisierung der abhängigkeit\n",
@@ -80,19 +93,6 @@
         "pl": "kor ikea bug\npracuje w trv childlock",
         "uk": "ikea помилка\ntrv дитячих замків",
         "zh-cn": "绑架\n童 工"
-      },
-      "1.9.5": {
-        "en": "update dependency\nmin node 18.x.",
-        "de": "aktualisierung abhängigkeit\nmin node 18.x.",
-        "ru": "обновление зависимости\nмин. нода 18.x.",
-        "pt": "dependência de atualização\nmin node 18.x.",
-        "nl": "vertaling:\n_.",
-        "fr": "mettre à jour la dépendance\nmin node 18.x.",
-        "it": "dipendenza da aggiornamento\nmin nodo 18.x.",
-        "es": "actualización de la dependencia\nmin node 18.x.",
-        "pl": "zależności\nwęzeł 18.x.",
-        "uk": "оновлення залежності\nхв вузол 18.x.",
-        "zh-cn": "更新\n第18.x条."
       }
     },
     "titleLang": {

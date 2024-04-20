@@ -133,9 +133,12 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+### 1.10.4 (2024-04-20)
+* (arteck) core update
+* (arteck) dependency update
+
 ### 1.10.3 (2024-04-06)
 * (arteck) dependency update
-*
 
 ### 1.10.2 (2024-01-25)
 * (arteck) dependency update
