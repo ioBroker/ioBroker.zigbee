@@ -133,6 +133,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 
 ## Changelog
+
+* (arteck) icon fix
+
 ### 1.10.4 (2024-04-20)
 * (arteck) core update
 * (arteck) dependency update
