@@ -384,6 +384,9 @@ function editName(id, name) {
     $('#modaledit').find('.row.epid1').addClass('hide');
     $('#modaledit').find('.row.epid2').addClass('hide');
     $('#modaledit').find('.row.epid3').addClass('hide');
+    $('#modaledit').find('.row.epid4').addClass('hide');
+    $('#modaledit').find('.row.epid5').addClass('hide');
+    $('#modaledit').find('.row.epid6').addClass('hide');
     if (numEP > 0) {
         // go through all the groups. Find the ones to list for each groupable
         if (numEP == 1) {
