@@ -131,9 +131,8 @@ You can thank the authors by these links:
 * to Arthur Rupp https://paypal.me/ArthurRupp
 
 -----------------------------------------------------------------------------------------------------
-
-## Changelog
-
+### 1.10.5 (2024-06-21)
+* (arteck) icon ota device update
 * (arteck) icon fix
 
 ### 1.10.4 (2024-04-20)

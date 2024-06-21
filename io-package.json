@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.4",
+    "version": "1.10.5",
     "news": {
+      "1.10.5": {
+        "en": "icon ota device update\nicon fix",
+        "de": "icon ota device update\nsymbol fix",
+        "ru": "обновление значок ota\nзначок",
+        "pt": "atualização do dispositivo do ícone ota\ncorreção do ícone",
+        "nl": "pictogram ota apparaat update\npictogramfix",
+        "fr": "icône ota mise à jour du périphérique\ncorrection de l'icône",
+        "it": "icona ota aggiornamento del dispositivo\nicona fix",
+        "es": "icono ota actualización del dispositivo\nicono de fijación",
+        "pl": "icon ota aktualizacji urządzenia\nikona fix",
+        "uk": "ota пристрій оновлення\nфіксатор ікони",
+        "zh-cn": "图标 ota 设备更新\n图标修复"
+      },
       "1.10.4": {
         "en": "core update\ndependency update",
         "de": "kern-update\naktualisierung der abhängigkeit",
@@ -80,19 +93,6 @@
         "pl": "configure corr dla niektórych urządzeń",
         "uk": "налаштовувати корр для деяких пристроїв",
         "zh-cn": "一些设备的corr配置"
-      },
-      "1.9.6": {
-        "en": "corr ikea bug \ntrv child lock works",
-        "de": "corr ikea bug\nkinderschlösser funktioniert",
-        "ru": "корр ikea баг\ntrv детские замки работает",
-        "pt": "corr ikea bug\ntrabalhos de bloqueio de crianças",
-        "nl": "_\nhet kinderslot werkt",
-        "fr": "corr ikea bug\nverrouillage enfant trv fonctionne",
-        "it": "corr ikea bug\ntrv bambino serratura lavori",
-        "es": "corr ikea bug\ntrv niño cerradura funciona",
-        "pl": "kor ikea bug\npracuje w trv childlock",
-        "uk": "ikea помилка\ntrv дитячих замків",
-        "zh-cn": "绑架\n童 工"
       }
     },
     "titleLang": {
