@@ -963,7 +963,12 @@ class Zigbee extends utils.Adapter {
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
 
         const baudRate = parseInt(this.config.baudRate ? this.config.baudRate : 115200);
-
+        
+        let setRtscts = false;
+        if (adapterType == 'ember' || adapterType == 'ezsp' ||) {        // Firmware 7.4.1.0
+            setRtscts = true;
+        }
+        
         return {
             net: {
                 panId: panID,
@@ -974,7 +979,7 @@ class Zigbee extends utils.Adapter {
             sp: {
                 port: port,
                 baudRate: baudRate,
-                rtscts: false,
+                rtscts: setRtscts,
                 adapter: adapterType,
             },
             dbDir: dbDir,
