@@ -29,7 +29,7 @@
     "uri-js": "^4.4.1",
     "typescript": "^5.3.3",
     "zigbee-herdsman": "0.50.0",
-    "zigbee-herdsman-converters": "19.59.2"
+    "zigbee-herdsman-converters": "19.62.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
