@@ -27,7 +27,7 @@
     "tar": "^6.2.0",
     "ajv": "^8.16.0",
     "uri-js": "^4.4.1",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "zigbee-herdsman": "0.53.1",
     "zigbee-herdsman-converters": "19.62.0"
   },
