@@ -276,7 +276,6 @@ function getCard(dev) {
                 </div>`;
     return card;
 }
-
 /*
 function openReval(e, id, name){
     const $card = $(e.target).closest('.card');
@@ -916,6 +915,10 @@ function load(settings, onChange) {
         $('#device-order a').click(function () {
             $('#device-order-btn').text($(this).text());
             doSort();
+        });
+        $('#device-filter a').click(function () {
+            $('#device-filter-btn').text($(this).text());
+            doFilter();
         });
     });
 
@@ -2749,7 +2752,8 @@ function doFilter(inputText) {
         const lang = systemLang || 'en';
         const searchText = inputText || $('#device-search').val();
         const roomFilter = $('#room-filter-btn').text().toLowerCase();
-        if (searchText || roomFilter !== 'all') {
+        const deviceFilter = $('#device-filter-btn').text().toLowerCase();
+        if (searchText || roomFilter !== 'all' || deviceFilter != 'all') {
             shuffleInstance.filter(function (element, shuffle) {
                 const devId = element.getAttribute('id');
                 const dev = getDeviceByID(devId);
@@ -2773,6 +2777,29 @@ function doFilter(inputText) {
                         valid = false;
                     }
                 }
+                if (valid && dev && deviceFilter !== 'all') {
+                    switch (deviceFilter) {
+                        case 'connected':
+                            valid = (dev.link_quality > 0) && !dev.common.deactivated;
+                            break;
+                        case 'disconnected':
+                            valid = (dev.link_quality <= 0) && !dev.common.deactivated;
+                            break;
+                        case 'deactivated':
+                            valid = dev.common.deactivated;
+                            break;
+                        case 'router':
+                            valid = dev.battery == null;
+                            break;
+                        case 'enddevice':
+                            valid = dev.battery && dev.battery>0;
+                            break;
+                        case 'group':
+                            valid =  (dev.common.type == 'group');
+                            break;
+                        default: valid = true;
+                    }
+                } 
                 return valid;
             });
         } else {
