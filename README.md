@@ -132,8 +132,11 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 
-## Changelog
+### **WORK IN PROGRESS**
+* (arteck) add new ezsp coordinator Firmware (7.4.1.0)
 
+### 1.10.5 (2024-06-21)
+* (arteck) icon ota device update
 * (arteck) icon fix
 
 ### 1.10.4 (2024-04-20)

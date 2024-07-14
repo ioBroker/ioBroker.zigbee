@@ -562,7 +562,9 @@ function showDevices() {
     const roomSelector = $('#room-filter');
     roomSelector.empty();
     roomSelector.append(`<li class="device-order-item" data-type="All" tabindex="0"><a class="translate" data-lang="All">All</a></li>`);
-    allRooms.forEach((item) => {
+    Array.from(allRooms)
+      .sort()
+      .forEach((item) => {
         roomSelector.append(`<li class="device-order-item" data-type="${item}" tabindex="0"><a class="translate" data-lang="${item}">${item}</a></li>`);
     });
     $('#room-filter a').click(function () {
