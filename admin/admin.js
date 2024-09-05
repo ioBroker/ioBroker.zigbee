@@ -422,7 +422,7 @@ function editName(id, name) {
             for (let i = 0; i < groupables.length; i++) {
                 const ng = $('#d_groups_ep' + i).val();
                 if (ng.toString() != groupables[i].memberOf.toString())
-                  groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
+                    groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
             }
         }
         console.log('grpid ' + JSON.stringify(groupsbyid));
@@ -529,7 +529,7 @@ function showDevices() {
         } else {
             //if (d.groups && d.info && d.info.device._type == "Router") {
             if (d.groups) {
-//                devGroups[d._id] = d.groups;
+                //devGroups[d._id] = d.groups;
                 if (typeof d.groups.map == 'function') {
                     d.groupNames = d.groups.map(item => {
                         return groups[item] || '';
@@ -557,10 +557,10 @@ function showDevices() {
     roomSelector.empty();
     roomSelector.append(`<li class="device-order-item" data-type="All" tabindex="0"><a class="translate" data-lang="All">All</a></li>`);
     Array.from(allRooms)
-      .sort()
-      .forEach((item) => {
-        roomSelector.append(`<li class="device-order-item" data-type="${item}" tabindex="0"><a class="translate" data-lang="${item}">${item}</a></li>`);
-    });
+        .sort()
+        .forEach((item) => {
+            roomSelector.append(`<li class="device-order-item" data-type="${item}" tabindex="0"><a class="translate" data-lang="${item}">${item}</a></li>`);
+        });
     $('#room-filter a').click(function () {
         $('#room-filter-btn').text($(this).text());
         doFilter();
@@ -692,7 +692,7 @@ function letsPairingWithCode(code) {
             showMessage(msg.error, _('Error'));
         }
         else {
-          showPairingProcess();
+            showPairingProcess();
         }
     });
 }
@@ -887,13 +887,13 @@ function load(settings, onChange) {
     });
 
     $('#code_pairing').click(function () {
-      if (!$('#pairing').hasClass('pulse')) {
-        $('#codeentry a.btn[name=\'pair\']').click(() => {
-            const code = $('#codeentry').find('input[id=\'qr_code\']').val();
-            letsPairingWithCode(code)
-        });
-        $('#codeentry').modal('open');
-      }
+        if (!$('#pairing').hasClass('pulse')) {
+            $('#codeentry a.btn[name=\'pair\']').click(() => {
+                const code = $('#codeentry').find('input[id=\'qr_code\']').val();
+                letsPairingWithCode(code)
+            });
+            $('#codeentry').modal('open');
+        }
     });
 
     $(document).ready(function () {
