@@ -152,7 +152,7 @@ function prepareTooltips() {
                     link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + id;
                 }
             }
-            if (!link.match('^https?:\/\/')) {
+            if (!link.match('^https?:\/\/')) { //eslint-disable-line no-useless-escape
                 if (common.readme) {
                     link = common.readme + '#' + link;
                 } else {

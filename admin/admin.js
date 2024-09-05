@@ -396,7 +396,7 @@ function editName(id, name) {
                 if (d.hasOwnProperty('memberinfo')) {
                     for (const member of d.memberinfo) {
                         const epid = EndPointIDfromEndPoint(member.ep);
-                        for (var i = 0; i < groupables.length; i++) {
+                        for (let i = 0; i < groupables.length; i++) {
                             if (groupables[i].epid == epid) {
                                 groupables[i].memberOf.push(d.native.id.replace('group_', ''));
                             }
@@ -406,7 +406,7 @@ function editName(id, name) {
             }
         }
         console.log('groupables: ' + JSON.stringify(groupables));
-        for (var i = 0; i < groupables.length; i++) {
+        for (let i = 0; i < groupables.length; i++) {
             if (i > 1) {
                 $('#modaledit').find('translate.device_with_endpoint').innerHtml = name + ' ' + groupables[i].epid;
             }
@@ -419,7 +419,7 @@ function editName(id, name) {
         const newName = $('#modaledit').find('input[id=\'d_name\']').val();
         const groupsbyid = {};
         if (groupables.length > 0) {
-            for (var i = 0; i < groupables.length; i++) {
+            for (let i = 0; i < groupables.length; i++) {
                 const ng = $('#d_groups_ep' + i).val();
                 if (ng.toString() != groupables[i].memberOf.toString())
                   groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
@@ -2794,7 +2794,7 @@ function doFilter(inputText) {
                             break;
                         default: valid = true;
                     }
-                } 
+                }
                 return valid;
             });
         } else {
