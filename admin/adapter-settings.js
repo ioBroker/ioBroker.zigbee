@@ -4,8 +4,8 @@ const parts = path.split('/');
 parts.splice(-3);
 
 const socket = io.connect('/', { path: parts.join('/') + '/socket.io' });
-var query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
-var args = {};
+const query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
+const args = {};
 let theme = null;
 
 // parse parameters
@@ -14,7 +14,7 @@ query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(functi
     if (!i && parts.length === 1 && !isNaN(parseInt(b, 10))) {
         args.instance = parseInt(b, 10);
     }
-    var name = parts[0];
+    const name = parts[0];
     args[name] = parts.length === 2 ? parts[1] : true;
 
     if (name === 'instance') {
@@ -28,7 +28,7 @@ query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(functi
     }
 });
 
-var instance = args.instance;
+const instance = args.instance;
 
 let common   = null; // common information of adapter
 const host     = null; // host object on which the adapter runs
@@ -97,7 +97,7 @@ function loadSettings(callback) {
                 alert('Please implement save function in your admin/index.html');
             } else {
                 const _query = query.split('&');
-                for (var q = 0; q < _query.length; q++) {
+                for (let q = 0; q < _query.length; q++) {
                     if (_query[q].indexOf('react=') !== -1) {
                         $('.adapter-container').addClass('react-' + _query[q].substring(6));
                         theme = 'react-' + _query[q].substring(6);
@@ -207,9 +207,8 @@ function onChange(isChanged) {
 }
 
 function showMessage(message, title, icon) {
-    var $dialogMessage;
     // noinspection JSJQueryEfficiency
-    $dialogMessage = $('#dialog-message');
+    let $dialogMessage = $('#dialog-message');
     if (!$dialogMessage.length) {
         $('body').append(
             '<div class="m"><div id="dialog-message" class="modal modal-fixed-footer">' +

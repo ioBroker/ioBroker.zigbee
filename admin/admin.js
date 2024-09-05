@@ -15,7 +15,7 @@ let devices = [],
     networkEvents,
     responseCodes = false,
     groups = {},
-    devGroups = {},
+    devGroups = {}, // eslint-disable-line prefer-const
     binding = [],
     excludes = [],
     coordinatorinfo = {
@@ -433,7 +433,7 @@ function editName(id, name) {
 }
 
 function GenerateGroupChange(oldmembers, newmembers) {
-    let grpchng = [];
+    const grpchng = [];
     for (const oldg of oldmembers)
         if (!newmembers.includes(oldg)) grpchng.push('-' + oldg);
     for (const newg of newmembers)
