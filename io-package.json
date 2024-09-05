@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.8",
+    "version": "1.10.9",
     "news": {
+      "1.10.9": {
+        "en": "typo admin settings\neslint config",
+        "de": "typo admin einstellungen\neslint config",
+        "ru": "настройки admin\neslint config",
+        "pt": "configurações de administração do tipo\neslint config",
+        "nl": "typo admin instellingen\neslint config",
+        "fr": "paramètres d'administration typo\nconfig eslint",
+        "it": "impostazioni dell'amministratore\neslint config",
+        "es": "configuración de administración de tipo\neslint config",
+        "pl": "ustawienia admin typo\neslint config",
+        "uk": "параметри адміністратора\neslint config",
+        "zh-cn": "类型管理员设置\n埃斯林特配置"
+      },
       "1.10.8": {
         "en": "corr admin settings\nadd new eslint version\n",
         "de": "korr admin einstellungen\nneue eslint-version hinzufügen\n",
@@ -80,19 +93,6 @@
         "pl": "aktualizacja zależności\n",
         "uk": "оновлення залежності\n",
         "zh-cn": "依赖性更新\n"
-      },
-      "1.10.2": {
-        "en": "dependency update",
-        "de": "aktualisierung der abhängigkeit",
-        "ru": "обновление",
-        "pt": "atualização de dependência",
-        "nl": "afhankelijkheidsupdate",
-        "fr": "mise à jour de la dépendance",
-        "it": "aggiornamento della dipendenza",
-        "es": "actualización de la dependencia",
-        "pl": "aktualizacja zależności",
-        "uk": "оновлення залежності",
-        "zh-cn": "依赖性更新"
       }
     },
     "titleLang": {

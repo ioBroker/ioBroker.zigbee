@@ -368,7 +368,6 @@ function editName(id, name) {
     console.log('editName called with ' + name);
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find('input[id=\'d_name\']').val(name);
-//    if (dev.info && dev.info.device._type == 'Router') {
     const groupables = [];
     if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
@@ -378,7 +377,6 @@ function editName(id, name) {
         }
     }
     const numEP = groupables.length;
-//      console.log('groupables: '+JSON.stringify(groupables));
     $('#modaledit').find('.row.epid0').addClass('hide');
     $('#modaledit').find('.row.epid1').addClass('hide');
     $('#modaledit').find('.row.epid2').addClass('hide');
@@ -416,10 +414,6 @@ function editName(id, name) {
             list2select('#d_groups_ep' + i, groups, groupables[i].memberOf || []);
         }
     }
-//    } else {
-//        $('#modaledit').find('.input-field.endpoints').addClass('hide');
-//        $('#modaledit').find('.input-field.groups').addClass('hide');
-//    }
     $('#modaledit a.btn[name=\'save\']').unbind('click');
     $('#modaledit a.btn[name=\'save\']').click(() => {
         const newName = $('#modaledit').find('input[id=\'d_name\']').val();
@@ -428,7 +422,7 @@ function editName(id, name) {
             for (var i = 0; i < groupables.length; i++) {
                 const ng = $('#d_groups_ep' + i).val();
                 if (ng.toString() != groupables[i].memberOf.toString())
-                    groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
+                  groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
             }
         }
         console.log('grpid ' + JSON.stringify(groupsbyid));
@@ -976,7 +970,6 @@ function showPairingProcess() {
 // you have to make sure the callback is called with the settings object as first param!
 // eslint-disable-next-line no-unused-vars
 function save(callback) {
-    // example: select elements with class=value and build settings object
     const obj = {};
     $('.value').each(function () {
         const $this = $(this);

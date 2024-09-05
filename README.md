@@ -131,10 +131,13 @@ You can thank the authors by these links:
 * to Arthur Rupp https://paypal.me/ArthurRupp
 
 -----------------------------------------------------------------------------------------------------
+### 1.10.9 (2024-09-05)
+* (arteck) typo admin settings
+* (arteck) eslint config
+
 ### 1.10.8 (2024-09-05)
 * (arteck) corr admin settings
 * (arteck) add new eslint version
-*
 
 ### 1.10.7 (2024-09-05)
 * (arteck) add flow control option 

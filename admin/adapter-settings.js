@@ -96,27 +96,23 @@ function loadSettings(callback) {
             if (typeof load === 'undefined') {
                 alert('Please implement save function in your admin/index.html');
             } else {
-		// detect, that we are now in react container (themeNames = ['dark', 'blue', 'colored', 'light'])
-		
-		const _query = query.split('&');
-		
-		for (var q = 0; q < _query.length; q++) {
-			if (_query[q].indexOf('react=') !== -1) {
-				$('.adapter-container').addClass('react-' + _query[q].substring(6));
-				theme = 'react-' + _query[q].substring(6);
-			}
+              const _query = query.split('&');
+              for (var q = 0; q < _query.length; q++) {
+                if (_query[q].indexOf('react=') !== -1) {
+                  $('.adapter-container').addClass('react-' + _query[q].substring(6));
+                  theme = 'react-' + _query[q].substring(6);
                 }
-
-                load(res.native, onChange);
+              }
+              load(res.native, onChange);
             }
             if (typeof callback === 'function') {
                 callback();
             }
         } else {
-            if (typeof callback === 'function') {
-                callback();
-            }
-            alert('error loading settings for ' + _adapterInstance + '\n\n' + err);
+          if (typeof callback === 'function') {
+              callback();
+          }
+          alert('error loading settings for ' + _adapterInstance + '\n\n' + err);
         }
     });
 }
