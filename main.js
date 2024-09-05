@@ -961,13 +961,9 @@ class Zigbee extends utils.Adapter {
         const adapterType = this.config.adapterType || 'zstack';
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
-
         const baudRate = parseInt(this.config.baudRate ? this.config.baudRate : 115200);
 
-        let setRtscts = false;
-        if (adapterType == 'ember' || adapterType == 'ezsp') {        // Firmware 7.4.1.0
-            setRtscts = true;
-        }
+        const setRtscts = this.config.baudRate ? this.config.baudRate : false;             
 
         return {
             net: {

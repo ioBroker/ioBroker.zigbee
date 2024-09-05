@@ -131,8 +131,9 @@ You can thank the authors by these links:
 * to Arthur Rupp https://paypal.me/ArthurRupp
 
 -----------------------------------------------------------------------------------------------------
-
-### **WORK IN PROGRESS**
+### 1.10.7 (2024-09-05)
+* (arteck) add flow control option 
+* (asgothian) add new NewHerdsman
 * (arteck) add new ezsp coordinator Firmware (7.4.1.0)
 
 ### 1.10.5 (2024-06-21)
