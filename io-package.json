@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.7",
+    "version": "1.10.8",
     "news": {
+      "1.10.8": {
+        "en": "corr admin settings\nadd new eslint version\n",
+        "de": "korr admin einstellungen\nneue eslint-version hinzufügen\n",
+        "ru": "настройки администрирования\nдобавить новую версию eslint\n",
+        "pt": "configurações de administração de corrimento\nadicionar nova versão eslint\n",
+        "nl": "corr admin instellingen\nnieuwe eslint versie toevoegen\n",
+        "fr": "paramètres d'administration corr\najouter une nouvelle version eslint\n",
+        "it": "impostazioni dell'amministratore\naggiungere nuova versione eslint\n",
+        "es": "configuración de administración de corr\nañadir nueva versión eslint\n",
+        "pl": "ustawienia admin corr\ndodaj nową wersję eslint\n",
+        "uk": "корр налаштування адміністратора\nдодати нову версію eslint\n",
+        "zh-cn": "corr 管理员设置\n添加新的 eslint 版本\n"
+      },
       "1.10.7": {
         "en": "add flow control option \nadd new NewHerdsman\nadd new ezsp coordinator Firmware (7.4.1.0)",
         "de": "möglichkeit der durchflussregelung\nneues hinzufügen NewHerdsman\nezsp Koordinator Firmware hinzufügen (7.4.1.0)",
@@ -80,19 +93,6 @@
         "pl": "aktualizacja zależności",
         "uk": "оновлення залежності",
         "zh-cn": "依赖性更新"
-      },
-      "1.10.1": {
-        "en": "Baudrate is now configurable. works ONLY with Deconz/Conbee( 38400 )\nadd nvbackup.json delete button",
-        "de": "Baudrate ist jetzt konfigurierbar. funktioniert nur mit Deconz/Conbee( 38400 )\nnvbackup hinzufügen. json löschen taste",
-        "ru": "Baudrate теперь настраиваемый. работает только с Deconz/Conbee (38400)\nдобавьте nvbackup. кнопка",
-        "pt": "O Baudrate agora é configurável. funciona somente com Deconz/Conbee( 38400 )\nadicionar nvbackup. botão de exclusão json",
-        "nl": "Baudrate is nu configureerbaar. ALLEEN werkt met Deconz/Conbee( 38400 )\nnvbackup toevoegen. json delete knop",
-        "fr": "Baudrate est maintenant configurable. fonctionne uniquement avec Decanz/Conbee( 38400 )\najouter nvbackup. bouton de suppression de json",
-        "it": "Baudrate è ora configurabile. funziona SOLO con Deconz/Conbee( 38400 )\naggiungere nvbackup. pulsante di cancellazione json",
-        "es": "Baudrate es ahora configurable. sólo funciona con Deconz/Conbee( 38400 )\nañadir nvbackup. json delete botón",
-        "pl": "Baudrate jest teraz konfigurowalny. działa tylko z Deconz / Conbee (38400)\ndodaj nvbackup. json usuń przycisk",
-        "uk": "Baudrate тепер конфігурується. працює ONLY з Deconz/Conbee( 38400 )\nдодати nvbackup. json видалити кнопка",
-        "zh-cn": "鲍德拉特现在可塑. 仅与Deconz/Conbee(38400)合作\n添加 nv 备份。 json 删除按钮"
       }
     },
     "titleLang": {
