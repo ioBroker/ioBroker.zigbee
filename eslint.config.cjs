@@ -38,6 +38,7 @@ module.exports = [
             'no-fallthrough': 'off',
             'no-console': 'off',
             'no-prototype-builtins': 'off',
+            'no-useless-escape': 'off',
             'no-undef': 'warn',
             'no-empty': 'warn',
             'no-var': 'warn',
