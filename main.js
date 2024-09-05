@@ -963,7 +963,7 @@ class Zigbee extends utils.Adapter {
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
         const baudRate = parseInt(this.config.baudRate ? this.config.baudRate : 115200);
 
-        const setRtscts = this.config.baudRate ? this.config.baudRate : false;             
+        const setRtscts = this.config.baudRate ? this.config.baudRate : false;
 
         return {
             net: {
