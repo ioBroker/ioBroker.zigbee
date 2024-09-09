@@ -131,6 +131,11 @@ You can thank the authors by these links:
 * to Arthur Rupp https://paypal.me/ArthurRupp
 
 -----------------------------------------------------------------------------------------------------
+## Changelog
+
+### UNRELEASED
+* (lebrinkma) fix linter errors
+
 ### 1.10.9 (2024-09-05)
 * (arteck) typo admin settings
 * (arteck) eslint config
