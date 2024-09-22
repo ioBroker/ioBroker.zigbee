@@ -1105,7 +1105,7 @@ function showNetworkMap(devices, map) {
     }
 
     const createNode = function (dev, mapEntry) {
-        if (dev.common && dev.common.type == 'group') return undefined;
+        if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) return undefined;
         const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const node = {
             id: dev._id,
