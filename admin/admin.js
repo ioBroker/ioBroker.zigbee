@@ -40,7 +40,7 @@ const networkOptions = {
         improvedLayout: true,
     },
     physics: {
-        nabled: true,
+        enabled: true,
     }
 };
 
