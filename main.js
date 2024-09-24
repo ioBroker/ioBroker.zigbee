@@ -625,11 +625,17 @@ class Zigbee extends utils.Adapter {
             this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
 
             const mappedModel = entity.mapped;
-
+    
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
                 return;
             }
+
+            if (!mappedModel.toZigbee)
+                {
+                    this.log.error(`No toZigbee in mapped model for ${model}`);
+                    return;
+                }
 
             stateList.forEach(async changedState => {
                 const stateDesc = changedState.stateDesc;
@@ -691,18 +697,11 @@ class Zigbee extends utils.Adapter {
                     }
                     return;
                 }
-                if (mappedModel.toZigbee) {
-                    const converter = mappedModel.toZigbee.find(c => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
-                        if (!converter) {
-                            this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                            this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                            return;
-                        }
-                    }
-                    else {
-                        this.log.error(`toZigbee is not defined for '${model}' ('${JSON.stringify(mappedModel.toZigbee)}') `);
-                        this.sendError(`toZigbee is not defined for '${model}' ('${JSON.stringify(mappedModel.toZigbee)}') `);
-    
+                const converter = mappedModel.toZigbee.find(c => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
+                    if (!converter) {
+                        this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                        this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                        return;
                     }
     
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
