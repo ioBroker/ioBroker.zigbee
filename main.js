@@ -636,6 +636,8 @@ class Zigbee extends utils.Adapter {
                     this.log.error(`No toZigbee in mapped model for ${model}`);
                     return;
                 }
+            
+            this.log.warn('Mapped Model.toZigbee is ' + JSON.stringify(mappedModel.toZigbee));
 
             stateList.forEach(async changedState => {
                 const stateDesc = changedState.stateDesc;
