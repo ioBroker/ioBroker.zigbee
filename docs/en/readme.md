@@ -4,7 +4,7 @@ With the help of a coordinator, based on the chip "Texas Instruments CC253x" (an
 ## Hardware
 Additional hardware is required for the coordinator (see above), which enables conversion between USB and ZigBee radio signals. There are 2 groups:
 
-•	Attachment module for the RaspberryPi (its old and not supported Zigbee V3)<br>
+• Attachment module for the RaspberryPi (It's old and not supported Zigbee V3)<br>
 •	USB stick like hardware
 
 ![](../de/img/CC2531.png)
@@ -14,13 +14,13 @@ Additional hardware is required for the coordinator (see above), which enables c
 ![](../de/img/sonoff.png)
 
 
-Some of these devices require the installation of a suitable firmware for operation:
+Some of these devices require the installation of suitable firmware for operation:
 The required flasher/programmer and the process of preparation are described [here](https://github.com/Koenkk/zigbee2mqtt/wiki/Getting-started) or [here (Russian)](https://github.com/kirovilya/ioBroker.zigbee/wiki/%D0%9F%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0). 
 
 The "Sonoff ZIGBEE 3.0 USB STICK CC2652P" is becoming increasingly popular:
 ![](../de/img/sonoff.png)
 
-   - Flashing of a suitable firmware is not absolutely necessary (hardware is already delivered with suitable firmware) 
+   - Flashing of suitable firmware is not absolutely necessary (hardware is already delivered with suitable firmware)
    - Supports the newer ZigBee 3.0 standard
 
 The devices connected to the ZigBee network transmit their status to the coordinator and notify it of events (button press, motion detection, temperature change, ...). This information is displayed in the adapter under the respective ioBroker objects and can thus be further processed in ioBroker. It is also possible to send commands to the ZigBee device (change of status of sockets and lamps, color and brightness settings, ...).
@@ -42,8 +42,8 @@ The software is divided into "converter" and "adapter".
     
 ## Installation
 1.	Connect the coordinator hardware to the RaspberryPi.<br>
-2.	Connect to RaspberryPi e.g. via PuTTY.<br>
-3.	Delete any existing ZigBee backup file. Otherwise the ZigBee adapter will not turn green in ioBroker and the ioBroker log will state that the adapter is misconfigured <br>
+2.	Connect to RaspberryPi, e.g., via PuTTY.<br>
+3.	Delete any existing ZigBee backup file. Otherwise, the ZigBee adapter will not turn green in ioBroker and the ioBroker log will state that the adapter is misconfigured <br>
 4.	Find out the path of the coordinator :
 `ls -la /dev/serial/by-id/`
 ![](../de/img/Bild2.png)
@@ -81,7 +81,7 @@ The device to be paired must be supported by the ioBroker ZigBee adapter. In the
 
 ## Pairing of unknown ZigBee devices so far
 
-With unknown ZigBee devices so far, the ZigBee name of the ZigBee device (e.g. HOMA1001) appears during pairing with the addition "not described in statesMapping" <br>
+With unknown ZigBee devices so far, the ZigBee name of the ZigBee device (e.g., HOMA1001) appears during pairing with the addition "not described in statesMapping" <br>
 ![](../de/img/Bild28.png) <br>
 ![](../de/img/Bild16.png) <br>
 
@@ -92,14 +92,14 @@ After registering at [github.com](https://github.com/ioBroker/ioBroker.zigbee/is
 
 ![](../de/img/Bild19.png) <br>
 
-   - Insert detailed information of the tile (see above) into the issue, create a short documentation (preferably in English) and send it. A developer will then respond via the issue.
+   - Insert detailed information of the tile (see above) into the issue, create short documentation (preferably in English) and send it. A developer will then respond via the issue.
 
-After modifying the relevant files, the ZigBee adapter must be restarted and the ZigBee device must be unpaired from the coordinator:
+After modifying the relevant files, the ZigBee adapter must be restarted, and the ZigBee device must be unpaired from the coordinator:
 ![](../de/img/Bild20.png) <br>
 After that, the pairing can be repeated. Target state after pairing: <br>
 ![](../de/img/Bild21.png) <br>
 
-With some ZigBee devices it is necessary to display all software interfaces ("exposes") of the new ZigBee device in the ioBroker objects in order to be able to use all the functions of this ZigBee device. In such cases, the new ZigBee device must be included in the "Exclude" group. 
+With some ZigBee devices, it is necessary to display all software interfaces ("exposes") of the new ZigBee device in the ioBroker objects in order to be able to use all the functions of this ZigBee device. In such cases, the new ZigBee device must be included in the "Exclude" group.
 
 ![](../de/img/Bild22.png) <br>
 
@@ -110,16 +110,16 @@ After restarting the ZigBee adapter, the new ZigBee device should now work witho
 
 ## Symbols within the ZigBee adapter
     
-| icon  | Beschreibung |
-| ------------- | ------------- |
-| ![](../de/img/Bild30.png)  | **State Cleanup** Deletion of invalid ioBroker objects, which can result from the "Exclude" process. |
-| ![](../de/img/Bild31.png)  | **Check firmware updates** Update the firmware of the ZigBee devices (e.g. Philips Hue bulbs).  |
-| ![](../de/img/Bild32.png)  | **Add Group** Using this function, ZigBee devices can be combined into a logical group and then be controlled together via one ioBroker object, e.g. brightness=20 sets the brightness of all ZigBee devices in the group to 20. |
-| ![](../de/img/Bild33.png)  | **Touchlink reset and pairing** Touchlink is a ZigBee function that allows devices that are physically close to each other to communicate with each other without being in the same network. Not all devices support this feature.To factory reset a ZigBee device via Touchlink, bring the device close (< 10 cm) to the ZigBee coordinator and then press this green icon. |
-| ![](../de/img/Bild34.png)  | **Pairing with QR code** Bei With some ZigBee devices, pairing is done using a QR code. |
-| ![](../de/img/Bild35.png)  | **Let's start Pairing**  Start the pairing process for new ZigBee devices. |
-| ![](../de/img/Bild36.png)  | Time since data was last exchanged with this ZigBee device.  |
-| ![](../de/img/Bild37.png)  | Strength of the ZigBee radio signal at this ZigBee device (<10 poor, <50 medium, >50 good).ZigBee is a wireless mesh network. Most mains-operated ZigBee devices (e.g. Philips Hue bulbs) can act as a ZigBee router, this means as a radio node. ZigBee devices therefore do not necessarily have to establish a direct wireless connection to the coordinator, but can instead use any router in the network for the wireless connection. The radio range of the network is thus extended with each ZigBee router. All ZigBee devices regularly check whether there is a better radio route and switch over automatically. However, this process can take several minutes.|
+| Icon                       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ![](../de/img/Bild30.png)  | **State Cleanup** Deletion of invalid ioBroker objects, which can result from the "Exclude" process.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ![](../de/img/Bild31.png)  | **Check firmware updates** Update the firmware of the ZigBee devices (e.g. Philips Hue bulbs).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ![](../de/img/Bild32.png)  | **Add Group** Using this function, ZigBee devices can be combined into a logical group and then be controlled together via one ioBroker object, e.g. brightness=20 sets the brightness of all ZigBee devices in the group to 20.                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| ![](../de/img/Bild33.png)  | **Touchlink reset and pairing** Touchlink is a ZigBee function that allows devices that are physically close to each other to communicate with each other without being in the same network. Not all devices support this feature.To factory reset a ZigBee device via Touchlink, bring the device close (< 10 cm) to the ZigBee coordinator and then press this green icon.                                                                                                                                                                                                                                                                                                 |
+| ![](../de/img/Bild34.png)  | **Pairing with QR code** Bei With some ZigBee devices, pairing is done using a QR code.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ![](../de/img/Bild35.png)  | **Let's start Pairing**  Start the pairing process for new ZigBee devices.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| ![](../de/img/Bild36.png)  | Time since data was last exchanged with this ZigBee device.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ![](../de/img/Bild37.png)  | Strength of the ZigBee radio signal at this ZigBee device (<10 poor, <50 medium, >50 good).ZigBee is a wireless mesh network. Most mains-operated ZigBee devices (e.g. Philips Hue bulbs) can act as a ZigBee router, this means as a radio node. ZigBee devices therefore do not necessarily have to establish a direct wireless connection to the coordinator, but can instead use any router in the network for the wireless connection. The radio range of the network is thus extended with each ZigBee router. All ZigBee devices regularly check whether there is a better radio route and switch over automatically. However, this process can take several minutes. |
 
 ## Additional information
 There is [another](https://www.zigbee2mqtt.io/) with the same functions and the same technology, which communicates with the same devices via an MQTT protocol. If any improvements or new supported devices are included in the ZigBee2MQTT project, those can also be added to this project. If you notice any differences, please write an issue and we will take care of it.
