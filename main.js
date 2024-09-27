@@ -637,8 +637,6 @@ class Zigbee extends utils.Adapter {
                     return;
                 }
             
-//            this.log.error('Mapped Model.toZigbee is ' + JSON.stringify(mappedModel.toZigbee));
-
             stateList.forEach(async changedState => {
                 const stateDesc = changedState.stateDesc;
                 const value = changedState.value;
@@ -708,12 +706,12 @@ class Zigbee extends utils.Adapter {
                     if (!c.hasOwnProperty('key') && c.hasOwnProperty('convertSet') && converter === undefined)
                     {
                         converter = c;
-                        this.log.error('setting converter to keyless converter')
+                        this.log.debug('setting converter to keyless converter')
                         continue;
                     }
                     if (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id))
                     {
-                        this.log.error(`${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
+                        this.log.debug(`${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
                         converter = c;
                     }
 

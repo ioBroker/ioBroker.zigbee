@@ -133,8 +133,15 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 
-### UNRELEASED
+### ### 1.10.10 (2024-09-27)
 * (lebrinkma) fix linter errors
+* (asgothian) disable map display for deactivated devices
+* (asgothian) new option on map: disable physics interaction
+* (asgothian) new zigbee-herdsman-converters 20.18.0
+* (asgothian) new zigbee-herdsman 2.1.1
+* (asgothian) Allow use of keyless converters (used for TuYa and compatible devices in zigbee-herdsman-converters
+* (asgothian) add button to read network config from nvbackup.json (if present)
+* (arteck) swap from request to axios
 
 ### 1.10.9 (2024-09-05)
 * (arteck) typo admin settings
