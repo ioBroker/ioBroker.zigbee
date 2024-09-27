@@ -702,7 +702,7 @@ class Zigbee extends utils.Adapter {
                 for (const c of mappedModel.toZigbee) {
                     
                     if (!c.hasOwnProperty('convertSet')) continue;
-                    this.log.error(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
+                    this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
                     if (!c.hasOwnProperty('key') && c.hasOwnProperty('convertSet') && converter === undefined)
                     {
                         converter = c;
