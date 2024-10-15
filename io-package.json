@@ -3,7 +3,7 @@
     "name": "zigbee",
     "version": "1.10.10",
     "news": {
-      "1.10.9": {
+      "1.10.10": {
         "en": "core update\ndependency update",
         "de": "kern-update\naktualisierung der abhängigkeit",
         "ru": "обновление\nобновление",
