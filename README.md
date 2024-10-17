@@ -137,7 +137,7 @@ You can thank the authors by these links:
 * (lebrinkma) fix linter errors
 * (asgothian) disable map display for deactivated devices
 * (asgothian) new option on map: disable physics interaction
-* (asgothian) new zigbee-herdsman-converters 20.18.0
+* (asgothian) new zigbee-herdsman-converters 20.28.0
 * (asgothian) new zigbee-herdsman 2.1.1
 * (asgothian) Allow use of keyless converters (used for TuYa and compatible devices in zigbee-herdsman-converters
 * (arteck) swap from request to axios
