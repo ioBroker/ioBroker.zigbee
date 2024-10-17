@@ -140,7 +140,6 @@ You can thank the authors by these links:
 * (asgothian) new zigbee-herdsman-converters 20.18.0
 * (asgothian) new zigbee-herdsman 2.1.1
 * (asgothian) Allow use of keyless converters (used for TuYa and compatible devices in zigbee-herdsman-converters
-* (asgothian) add button to read network config from nvbackup.json (if present)
 * (arteck) swap from request to axios
 
 ### 1.10.9 (2024-09-05)
