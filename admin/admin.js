@@ -29,6 +29,22 @@ let devices = [],
     shuffleInstance;
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 
+const networkOptions = {
+    autoResize: true,
+    height: '100%',
+    width: '100%',
+    nodes: {
+        shape: 'box'
+    },
+    layout: {
+        improvedLayout: true,
+    },
+    physics: {
+        enabled: true,
+    }
+};
+
+
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
     'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent', 'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL'
@@ -1099,13 +1115,13 @@ function showNetworkMap(devices, map) {
     const edges = [];
 
     if (map.lqis == undefined || map.lqis.length === 0) { // first init
-        $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh').change(function () {
+        $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh, #physicsOn').change(function () {
             updateMapFilter();
         });
     }
 
     const createNode = function (dev, mapEntry) {
-        if (dev.common && dev.common.type == 'group') return undefined;
+        if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) return undefined;
         const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const node = {
             id: dev._id,
@@ -1296,19 +1312,8 @@ function showNetworkMap(devices, map) {
         nodes: nodesArray,
         edges: mapEdges
     };
-    const options = {
-        autoResize: true,
-        height: '100%',
-        width: '100%',
-        nodes: {
-            shape: 'box'
-        },
-        layout: {
-            improvedLayout: true,
-        }
-    };
-
-    network = new vis.Network(container, data, options);
+    
+    network = new vis.Network(container, data, networkOptions);
 
     const onMapSelect = function (event) {
         // workaround for https://github.com/almende/vis/issues/4112
@@ -1406,6 +1411,8 @@ function updateMapFilter() {
     const showSibl = $('#filterSibl').is(':checked');
     const showPrvChild = $('#filterPrvChild').is(':checked');
     const invisColor = $('#filterMesh').is(':checked') ? 0.2 : 0;
+    networkOptions.physics.enabled = $('#physicsOn').is(':checked');
+    network.setOptions(networkOptions);
     mapEdges.forEach((edge) => {
         if (((edge.relationship === 0 || edge.relationship === 1) && showParent)
             || (edge.relationship === 2 && showSibl)

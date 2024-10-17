@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.9",
+    "version": "1.10.10",
     "news": {
+      "1.10.10": {
+        "en": "core update\ndependency update",
+        "de": "kern-update\naktualisierung der abhängigkeit",
+        "ru": "обновление\nобновление",
+        "pt": "atualização do núcleo\natualização de dependência",
+        "nl": "kernupdate\nafhankelijkheidsupdate",
+        "fr": "mise à jour de base\nmise à jour de la dépendance",
+        "it": "aggiornamento del core\naggiornamento della dipendenza",
+        "es": "actualización básica\nactualización de la dependencia",
+        "pl": "podstawowa aktualizacja\naktualizacja zależności",
+        "uk": "оновлення ядра\nоновлення залежності",
+        "zh-cn": "核心更新\n依赖性更新"
+      },
       "1.10.9": {
         "en": "typo admin settings\neslint config",
         "de": "typo admin einstellungen\neslint config",

@@ -625,12 +625,18 @@ class Zigbee extends utils.Adapter {
             this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
 
             const mappedModel = entity.mapped;
-
+    
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
                 return;
             }
 
+            if (!mappedModel.toZigbee)
+                {
+                    this.log.error(`No toZigbee in mapped model for ${model}`);
+                    return;
+                }
+            
             stateList.forEach(async changedState => {
                 const stateDesc = changedState.stateDesc;
                 const value = changedState.value;
@@ -691,13 +697,35 @@ class Zigbee extends utils.Adapter {
                     }
                     return;
                 }
-                const converter = mappedModel.toZigbee.find(c => c && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
-                if (!converter) {
-                    this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                    this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                    return;
-                }
 
+                let converter = undefined;
+                for (const c of mappedModel.toZigbee) {
+                    
+                    if (!c.hasOwnProperty('convertSet')) continue;
+                    this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
+                    if (!c.hasOwnProperty('key') && c.hasOwnProperty('convertSet') && converter === undefined)
+                    {
+                        converter = c;
+                        this.log.debug('setting converter to keyless converter')
+                        continue;
+                    }
+                    if (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id))
+                    {
+                        this.log.debug(`${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
+                        converter = c;
+                    }
+
+                }
+/*
+                if (!mappedModel.toZigbee[0].hasOwnProperty('key') && mappedModel.toZigbee[0].hasOwnProperty('convertSet')) converter = mappedModel.toZigbee[0];
+                converter = mappedModel.toZigbee.find(c => c && c.hasOwnProperty('key') && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
+*/
+                    if (converter === undefined) {
+                        this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                        this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                        return;
+                    }
+    
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
                 const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
 
