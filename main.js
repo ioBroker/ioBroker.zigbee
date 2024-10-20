@@ -467,8 +467,15 @@ class Zigbee extends utils.Adapter {
         const devId = device.ieeeAddr.substr(2);
         const meta = {device};
         
-        if (this.stController.checkDebugDevice(devId))
-            this.log.warn(`ELEVATED: Zigbee Event of Type ${type} from device ${safeJsonStringify(device.ieeeAddr)}, incoming event: ${safeJsonStringify(message)}`);
+        if (this.stController.checkDebugDevice(devId)) {
+            const shortMessage = {};
+            for(var propertyName in message) {
+                if (propertyName == 'object' || propertyName == 'meta') continue;
+                shortMessage[propertyName] = message[propertyName];
+             }
+             
+            this.log.warn(`ELEVATED: Zigbee Event of Type ${type} from device ${safeJsonStringify(device.ieeeAddr)}, incoming event: ${safeJsonStringify(shortMessage)}`);
+        }
         // this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
         meta.logger = this.log;
 
