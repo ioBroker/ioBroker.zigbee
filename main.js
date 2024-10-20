@@ -613,6 +613,7 @@ class Zigbee extends utils.Adapter {
 
     async publishFromState(deviceId, model, stateModel, stateList, options) {
         let isGroup = false;
+        const has_elevated_debug = this.stController.checkDebugDevice(deviceId)
 
         this.log.debug(`publishFromState : ${deviceId} ${model} ${safeJsonStringify(stateList)}`);
         if (model === 'group') {
@@ -628,6 +629,7 @@ class Zigbee extends utils.Adapter {
     
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
+                if (has_elevated_debug) this.log.warn(`ELEVATED: No mapped model for ${model}`)
                 return;
             }
 
@@ -706,6 +708,7 @@ class Zigbee extends utils.Adapter {
                     if (!c.hasOwnProperty('key') && c.hasOwnProperty('convertSet') && converter === undefined)
                     {
                         converter = c;
+                        if (has_elevated_debug) this.log.warn(`ELEVATED: setting converter to keyless converter for ${deviceID} of type ${model}`)
                         this.log.debug('setting converter to keyless converter')
                         continue;
                     }
@@ -720,11 +723,11 @@ class Zigbee extends utils.Adapter {
                 if (!mappedModel.toZigbee[0].hasOwnProperty('key') && mappedModel.toZigbee[0].hasOwnProperty('convertSet')) converter = mappedModel.toZigbee[0];
                 converter = mappedModel.toZigbee.find(c => c && c.hasOwnProperty('key') && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
 */
-                    if (converter === undefined) {
-                        this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                        this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                        return;
-                    }
+                if (converter === undefined) {
+                    this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                    this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                    return;
+                }
     
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
                 const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
@@ -742,6 +745,7 @@ class Zigbee extends utils.Adapter {
                 const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
                 const key = stateDesc.prop || stateDesc.id || stateDesc.setattr;
                 this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
+                if (has_elevated_debug) this.log.warn(`ELEVATED: convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)} for device ${deviceId}`);
 
                 let target;
                 if (model === 'group') {
@@ -781,6 +785,7 @@ class Zigbee extends utils.Adapter {
                 try {
                     const result = await converter.convertSet(target, key, preparedValue, meta);
                     this.log.debug(`convert result ${safeJsonStringify(result)}`);
+                    if (has_elevated_debug) this.log.warn(`ELEVATED: convert result ${safeJsonStringify(result)} for device ${deviceId}`);
                     if (result !== undefined) {
                         if (stateModel && !isGroup) {
                             this.acknowledgeState(deviceId, model, stateDesc, value);
