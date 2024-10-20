@@ -725,6 +725,7 @@ class Zigbee extends utils.Adapter {
                     if (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id))
                     {
                         this.log.debug(`${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
+                        if (has_elevated_debug) this.log.warn(`ELEVATED: ${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
                         converter = c;
                     }
 
