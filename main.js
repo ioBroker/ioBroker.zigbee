@@ -808,8 +808,11 @@ class Zigbee extends utils.Adapter {
                             this.acknowledgeState(deviceId, model, stateDesc, value);
                         }
                     }
+                    else
+                        if (has_elevated_debug) this.log.warn(`Error convert result for ${key} with ${safeJsonStringify(preparedValue)} is undefined on device ${deviceId}.`);
 
                 } catch (error) {
+                    if (has_elevated_debug) this.log.warn(`caught error ${safeJsonStringify(error)} is undefined on device ${deviceId}.`);
                     this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
                         ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
                 }
