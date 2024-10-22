@@ -409,20 +409,21 @@
     }
 
     .m .tabs .tab a.active {
-            color: #fff !important;
-            border-bottom: 2px solid #fff !important;
-        }
-
-    #tab-main {
-        margin-top: 48px;
+        color: #fff !important;
+        border-bottom: 2px solid #fff !important;
     }
 
     .m .navbar-fixed nav {
-        position: relative;
+        position: fixed;
+        z-index: 200;
     }
 
     #tabs {
         margin-top: 0;
+    }
+
+    .m .page {
+        margin-top: 7.0rem;
     }
 
     #sett {
@@ -433,8 +434,25 @@
         margin-left: 15px;
     }
 
+    #tab-main .navbar-fixed #nav-mobile {
+        position: fixed;
+        z-index: 100;
+    }
+
+    .m .navbar-fixed {
+        z-index: unset;
+    }
+
     .resposHeight {
         height: 36px !important;
+    }
+
+    /* Style for medium Screens */
+    @media screen and (max-width: 900px) {
+        .m nav ul a.btn-floating {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
     }
 
     /* Style for small Screens */
@@ -444,8 +462,8 @@
         }
 
         .m nav ul a.btn-floating {
-            margin-left: 11px;
-            margin-right: 11px;
+            margin-left: 5px;
+            margin-right: 5px;
         }
 
         #tab-sett {
@@ -495,6 +513,11 @@
 
     /* Style for very small Screens */
     @media screen and (max-width: 600px) {
+        .m .navbar-fixed nav {
+            position: relative;
+            z-index: unset;
+        }
+
         .m nav ul a.btn-floating {
             margin-left: 8px;
             margin-right: 8px;
@@ -508,7 +531,7 @@
             width: calc(100%);
         }
         .m .navbar-fixed {
-            position: static;
+            position: relative;
         }
         .m .dropdown-menu {
             position: fixed;
@@ -540,9 +563,16 @@
             width: calc(100%);
         }
 
+        #devices {
+            margin-top: 3rem;
+        }
+
         #tab-main .navbar-fixed #nav-mobile {
             display: flex;
             flex-wrap: wrap;
+            position: fixed;
+            margin-bottom: 4rem;
+            z-index: 100;
         }
 
         #tab-main .navbar-fixed #nav-mobile li:nth-child(1) {
@@ -599,6 +629,14 @@
 
         .resposHeight {
             height: 36px !important;
+        }
+
+        .m .navbar-fixed {
+            z-index: unset;
+        }
+
+        .m .page {
+            margin-top: 0rem;
         }
     }
 </style>

@@ -446,20 +446,17 @@
             border-bottom: 2px solid #fff !important;
         }
 
-        #tab-main {
-            margin-top: 40px;
-        }
-
         .m .navbar-fixed nav {
-            position: relative;
+            position: fixed;
+            z-index: 200;
         }
 
         #tabs {
             margin-top: 0;
         }
 
-        #tab-main {
-            margin-top: 0;
+        .m .page {
+            margin-top: 7.0rem;
         }
 
         #sett {
@@ -470,6 +467,23 @@
             margin-left: 15px;
         }
 
+        #tab-main .navbar-fixed #nav-mobile {
+            position: fixed;
+            z-index: 100;
+        }
+
+        .m .navbar-fixed {
+            z-index: unset;
+        }
+
+        /* Style for medium Screens */
+        @media screen and (max-width: 900px) {
+            .m nav ul a.btn-floating {
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+        }
+
         /* Style for small Screens */
         @media screen and (max-width: 768px) {
             #viewconfig {
@@ -477,20 +491,54 @@
             }
 
             .m nav ul a.btn-floating {
-                margin-left: 11px;
-                margin-right: 11px;
+                margin-left: 5px;
+                margin-right: 5px;
             }
 
-            #tab-sett {
-                margin-top: 10px;
+            .m .navbar-fixed {
+                position: relative;
+            }
+
+            #tab-main {
+                margin-top: 7rem;
+            }
+
+            #devices {
+                margin-top: 1rem;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile {
+                display: flex;
+                flex-wrap: wrap;
+                position: fixed;
+                margin-bottom: 4rem;
+                z-index: 100;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(1) {
+                flex: 0 0 10%;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(2) {
+                flex: 0 0 35%;
+                height: 30px;
+            }
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(3),
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(4) {
+                height: 36px;
             }
         }
 
         /* Style for very small Screens */
         @media screen and (max-width: 600px) {
+            .m .navbar-fixed nav {
+                position: relative;
+                z-index: unset;
+            }
+            
             .m nav ul a.btn-floating {
-                margin-left: 11px;
-                margin-right: 11px;
+                margin-left: 8px;
+                margin-right: 8px;
             }
 
             #nav-mobile {
@@ -501,7 +549,7 @@
                 width: calc(100%);
             }
             .m .navbar-fixed {
-                position: static;
+                position: relative;
             }
             .m .dropdown-menu {
                 position: fixed;
@@ -533,9 +581,16 @@
                 width: calc(100%);
             }
 
+            #devices {
+                margin-top: 3rem;
+            }
+
             #tab-main .navbar-fixed #nav-mobile {
                 display: flex;
                 flex-wrap: wrap;
+                position: fixed;
+                margin-bottom: 4rem;
+                z-index: 100;
             }
 
             #tab-main .navbar-fixed #nav-mobile li:nth-child(1) {
@@ -569,7 +624,15 @@
             }
 
             #tab-main {
-                margin-top: 0;
+                margin-top: .5rem;
+            }
+
+            .m .navbar-fixed {
+                z-index: unset;
+            }
+
+            .m .page {
+                margin-top: 0rem;
             }
         }
     </style>
