@@ -96,12 +96,12 @@ function loadSettings(callback) {
             if (typeof load === 'undefined') {
                 alert('Please implement save function in your admin/index.html');
             } else {
-                const _query = query.split('&');
+		const _query = query.split('&');
                 for (let q = 0; q < _query.length; q++) {
-                    if (_query[q].indexOf('react=') !== -1) {
-                        $('.adapter-container').addClass('react-' + _query[q].substring(6));
-                        theme = 'react-' + _query[q].substring(6);
-                    }
+			if (_query[q].indexOf('react=') !== -1) {
+				$('.adapter-container').addClass('react-' + _query[q].substring(6));
+				theme = 'react-' + _query[q].substring(6);
+			}
                 }
                 load(res.native, onChange);
             }
@@ -114,7 +114,99 @@ function loadSettings(callback) {
             }
             alert('error loading settings for ' + _adapterInstance + '\n\n' + err);
         }
+        // Design Fix simatec
+        checkMediaQuery();
     });
+}
+
+window.addEventListener('resize', checkMediaQuery);
+
+function checkMediaQuery() {
+    const mediaQuery = window.matchMedia("(max-width: 600px)");
+
+    if (mediaQuery.matches) {
+        designFix();
+        console.log("Screen < 600px.");
+    } else {
+        console.log("Screen > 600px.");
+    }
+}
+
+// Design Fix simatec
+function designFix() {
+    var dropdownToggle = document.querySelector('.dropdown-toggle');
+
+    if (!dropdownToggle) {
+        const cols = document.querySelectorAll('.col:not(.tab)');
+        const sClasses = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11'];
+
+        cols.forEach(col => {
+            sClasses.forEach(sClass => {
+                if (col.classList.contains(sClass)) {
+                    col.classList.remove(sClass);
+                }
+            });
+
+            col.classList.add('s12');
+        });
+
+        const logo = document.querySelector('.logo');
+
+        if (logo) {
+            const col = logo.closest('.col');
+            if (col) {
+                const sClasses = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 'm2', 'm4', 'm8', 'm10', 'm12', 'l2', 'l4', 'l8', 'l10', 'l12',];
+                sClasses.forEach(sClass => {
+                    if (col.classList.contains(sClass)) {
+                        col.classList.remove(sClass);
+                    }
+                });
+                col.classList.add('s10');
+                col.classList.add('m6');
+                col.classList.add('l6');
+            }
+        }
+
+        const allTabs = document.querySelectorAll('.tabs');
+
+        allTabs.forEach(function (tabs) {
+            const dropdownToggle = document.createElement('div');
+            dropdownToggle.classList.add('dropdown-toggle');
+
+            const icon = document.createElement('i');
+            icon.classList.add('material-icons');
+            icon.textContent = 'menu';
+            dropdownToggle.appendChild(icon);
+
+            tabs.insertAdjacentElement('beforebegin', dropdownToggle);
+
+            const dropdownMenu = document.createElement('div');
+            dropdownMenu.classList.add('dropdown-menu');
+
+            const tabLinks = tabs.querySelectorAll('li a');
+
+            tabLinks.forEach(function (tab) {
+                const dropdownLink = document.createElement('a');
+                dropdownLink.href = tab.getAttribute('href');
+                dropdownLink.textContent = tab.textContent;
+                dropdownMenu.appendChild(dropdownLink);
+                dropdownLink.addEventListener('click', function () {
+                    tab.click();
+                    dropdownMenu.classList.remove('show');
+                });
+            });
+
+            tabs.insertAdjacentElement('beforebegin', dropdownMenu);
+
+            dropdownToggle.addEventListener('click', function () {
+                dropdownMenu.classList.toggle('show');
+            });
+
+            const rect = dropdownToggle.getBoundingClientRect();
+            dropdownMenu.style.top = `${rect.bottom}px`;
+            dropdownMenu.style.right = '10px';
+        });
+    }
 }
 
 function prepareTooltips() {

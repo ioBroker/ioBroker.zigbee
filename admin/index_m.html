@@ -1,4 +1,4 @@
-s<html>
+<html>
 <head>
     <!-- these 4 files always have to be included -->
     <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css">
@@ -44,6 +44,7 @@ s<html>
         .m .zlogo {
             padding: 0.5rem;
             width: 64px;
+            margin-right: 10px;
         }
 
         .input-group {
@@ -80,7 +81,7 @@ s<html>
         }
 
         #tabs {
-            margin-top: 115px;
+            margin-top: 40px;
         }
 
         #main {
@@ -439,6 +440,201 @@ s<html>
         .m.react-dark .switch label .lever:after {
             background-color: #436a93;
         }
+
+        .m .tabs .tab a.active {
+            color: #fff !important;
+            border-bottom: 2px solid #fff !important;
+        }
+
+        .m .navbar-fixed nav {
+            position: fixed;
+            z-index: 200;
+        }
+
+        #tabs {
+            margin-top: 0;
+        }
+
+        .m .page {
+            margin-top: 7.0rem;
+        }
+
+        #sett {
+            margin-top: 40px;
+        }
+
+        .m .row .col.offset-s11 {
+            margin-left: 15px;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile {
+            position: fixed;
+            z-index: 100;
+        }
+
+        .m .navbar-fixed {
+            z-index: unset;
+        }
+
+        /* Style for medium Screens */
+        @media screen and (max-width: 900px) {
+            .m nav ul a.btn-floating {
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+        }
+
+        /* Style for small Screens */
+        @media screen and (max-width: 768px) {
+            #viewconfig {
+                margin-top: 0;
+            }
+
+            .m nav ul a.btn-floating {
+                margin-left: 5px;
+                margin-right: 5px;
+            }
+
+            .m .navbar-fixed {
+                position: relative;
+            }
+
+            #tab-main {
+                margin-top: 7rem;
+            }
+
+            #devices {
+                margin-top: 1rem;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile {
+                display: flex;
+                flex-wrap: wrap;
+                position: fixed;
+                margin-bottom: 4rem;
+                z-index: 100;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(1) {
+                flex: 0 0 10%;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(2) {
+                flex: 0 0 35%;
+                height: 30px;
+            }
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(3),
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(4) {
+                height: 36px;
+            }
+        }
+
+        /* Style for very small Screens */
+        @media screen and (max-width: 600px) {
+            .m .navbar-fixed nav {
+                position: relative;
+                z-index: unset;
+            }
+            
+            .m nav ul a.btn-floating {
+                margin-left: 8px;
+                margin-right: 8px;
+            }
+
+            #nav-mobile {
+                background-color: #39c;
+                padding-bottom: 2px;
+                padding-top: 2px;
+                margin-top: -8px;
+                width: calc(100%);
+            }
+            .m .navbar-fixed {
+                position: relative;
+            }
+            .m .dropdown-menu {
+                position: fixed;
+            }
+
+            #viewconfig {
+                margin-top: 0;
+            }
+
+            .m .modal {
+                width: 98%;
+            }
+            .m .modal .modal-content {
+                padding: 24px;
+            }
+
+            #tab-dev {
+                overflow-x: hidden;
+            }
+
+            .m .row .col.offset-s11 {
+                margin-left: 13px;
+                margin-bottom: 10px;
+                width: calc(100% - 26px);
+            }
+
+            .device {
+                padding: 8px;
+                width: calc(100%);
+            }
+
+            #devices {
+                margin-top: 3rem;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile {
+                display: flex;
+                flex-wrap: wrap;
+                position: fixed;
+                margin-bottom: 4rem;
+                z-index: 100;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(1) {
+                flex: 0 0 20%;
+            }
+
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(2) {
+                flex: 0 0 70%;
+            }
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(3),
+            #tab-main .navbar-fixed #nav-mobile li:nth-child(4) {
+                height: 36px;
+                margin-top: 6px;
+            }
+
+            #dev_result_log {
+                overflow: auto;
+                height: 20em;
+                padding: 0.5em;
+                
+            }
+
+            .move-label-up {
+                position: absolute !important;
+                top: -60px !important;
+                left: 0 !important;
+            }
+
+            #tabs {
+                margin-top: 0;
+            }
+
+            #tab-main {
+                margin-top: .5rem;
+            }
+
+            .m .navbar-fixed {
+                z-index: unset;
+            }
+
+            .m .page {
+                margin-top: 0rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -447,11 +643,11 @@ s<html>
     <div class="row navbar-fixed">
         <nav class="nav-extended">
             <div class="nav-wrapper">
-                <div class="col s12 m1 l1">
+                <div class="col s12 m6 l6">
                     <img src="zigbee.png" class="zlogo left" height="64px"/>
-                </div>
-                <div class="col s12 m4 l4">
-                   <h5 class="translate center-align">Zigbee adapter</h5>
+                    <p>
+                        <h5 class="translate">Zigbee adapter</h5>
+                    </p>
                 </div>
                 <ul id="nav-mobile" class="right">
                     <li>
@@ -497,11 +693,11 @@ s<html>
                     <li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>                   
                     <li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a>
                     </li>
-                    <li class="tab col s2"><a href="#tab-binding" class="translate tooltipped">Binding</a></li>
-                    <li class="tab col s1"><a href="#tab-exclude" class="translate tooltipped">Excludes</a></li>
+                    <li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li>
+                    <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Excludes</a></li>
                     <li class="tab col s2"><a href="#tab-sett" id="settings" class="translate tooltipped">Settings</a>
                     </li>
-                    <li class="tab col s1"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
+                    <li class="tab col s2"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
                     </li>
                 </ul>
             </div>
@@ -510,7 +706,7 @@ s<html>
     <div id="tabs" class="tabs-content row">
         <div id="tab-main" class="col s12 page active">
             <div class="navbar-fixed" style="height: 36px;">
-                <nav style="height: 36px; margin-left: -12px; line-height: 24px;">
+                <nav style="height: 36px; margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
                     <ul id="nav-mobile" class="left">
                         <li>
                             <a id="rotate_btn"
@@ -741,15 +937,15 @@ s<html>
         </div>
 
         <div id="tab-dev" class="col s12 page">
-            <div id="develop" class="row">
+            <div id="develop" class="row col s12">
                 <div class="row">
-                    <div class="col s12">
+                    <div class="col s12 m12 l12">
                         <h6 class="translate">This page is needed only for advanced users that like to extend adapter
                             functionalities!</h6>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col s4">
+                    <div class="col s12 m6 l6">
                         <p class="translate">notImplementedText</p>
                         <p><span class="translate">You find good explanations what the settings mean</span>&nbsp;
                             <a href="https://docs.smartthings.com/en/latest/device-type-developers-guide/zigbee-primer.html"
@@ -763,7 +959,7 @@ s<html>
                             zigbee-herdsman-converters</a>)&nbsp;<span class="translate">to make it available for other user too</span>.
                         </p>
                     </div>
-                    <div class="col s8">
+                    <div class="col s12 m6 l6">
                         <div class="blue-grey-text">
                             <h6 class="translate">Examples:</h6>
                             <ul class="collapsible">
@@ -825,15 +1021,15 @@ s<html>
                         </div>
                     </div>
                 </div>
-                <div class="col s9">
+                <div class="col s12 m12">
                     <div class="row">
-                        <div class="input-field col s8">
+                        <div class="input-field col s12 m6 l4">
                             <select id="dev-selector">
                                 <option value="" disabled selected class="translate">Select a device</option>
                             </select>
                             <label for="dev-selector" class="translate">Device</label>
                         </div>
-                        <div class="input-field col s4 admin-tooltip-icon translateT"
+                        <div class="input-field col s12 m6 l4 admin-tooltip-icon translateT"
                              title="Some kind of 'device within device'. Every endpoint may have different functions. If one does not work, test another.">
                             <select id="ep-selector">
                                 <option value="" disabled selected class="translate">Select an Endpoint</option>
@@ -843,14 +1039,14 @@ s<html>
                     </div>
                     <div class="row">
                         <div class="row">
-                            <div class="input-field col s4 admin-tooltip-icon"
+                            <div class="input-field col s12 m6 l4 admin-tooltip-icon"
                                  title="Group of functions. AttributeIds will change depending on your choice here.">
                                 <select id="cid-selector">
                                     <option value="" disabled selected class="translate">Select cid</option>
                                 </select>
                                 <label for="cid-selector" class="translate">Cluster ID</label>
                             </div>
-                            <div class="input-field col s4 admin-tooltip-icon"
+                            <div class="input-field col s12 m6 l4 admin-tooltip-icon"
                                  title="Command type. Available commands will change depending on your choice here. Some actions need Foundation, others Functional, you may test both.">
                                 <select id="cmd-type-selector">
                                     <option value="foundation" selected>Foundation</option>
@@ -858,21 +1054,21 @@ s<html>
                                 </select>
                                 <label for="cid-selector" class="translate">Command Type</label>
                             </div>
-                            <div class="input-field col s4 admin-tooltip-icon" title="The action you want to run.">
+                            <div class="input-field col s12 m6 l4 admin-tooltip-icon" title="The action you want to run.">
                                 <select id="cmd-selector">
                                     <option value="" disabled selected class="translate">Select Command</option>
                                 </select>
                                 <label for="cmd-selector" class="translate">Command</label>
                             </div>
-                            <div class="input-field col s4 admin-tooltip-icon"
+                            <div class="input-field col s12 m6 l4 admin-tooltip-icon"
                                  title="The setting you are interested in.">
                                 <select id="attrid-selector">
                                     <option value="" disabled selected class="translate">Select Attribute</option>
                                 </select>
                                 <label for="attrid-selector" class="translate">Attribute ID</label>
                             </div>
-                            <div class="col s8">
-                                <div class="input-field col s5 offset-s1 admin-tooltip-icon translateT"
+                            <div class="col s12">
+                                <div class="input-field col s12 m6 l4 offset-s1 admin-tooltip-icon translateT"
                                      title="Check if your Command needs to submit a value. For example, cmd 'write' needs the value you want to write to your device.">
                                     <label for="value-needed" style="pointer-events: auto;">
                                         <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
@@ -881,18 +1077,18 @@ s<html>
                                         <span style="pointer-events: none;" class="translate">Needs value</span>
                                     </label>
                                 </div>
-                                <div class="input-field col s6 admin-tooltip-icon translateT"
+                                <div class="input-field col s12 m6 l4 admin-tooltip-icon translateT"
                                      title="The value to send to your device (use douple-quotes if a number is a string).">
                                     <input id="value-input" disabled placeholder="0">
-                                    <label for="value-input">Value</label>
+                                    <label for="value-input" class="move-label-up">Value</label>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col s3">
+                <div class="col s12 m12 l12">
                     <div class="row">
-                        <div id="expert-toggle" class="input-field col s12 admin-tooltip-icon translateT"
+                        <div id="expert-toggle" class="input-field col s12 m6 l4 admin-tooltip-icon translateT"
                              title="Switch expert mode to enter raw data, sent to zigbee device.">
                             <label for="expert-mode" style="pointer-events: auto;">
                                 <!-- workaround input not clickable https://codepen.io/alexisdiel/pen/gxwPWj -->
@@ -901,9 +1097,9 @@ s<html>
                                 <span style="pointer-events: none;" class="translate">Expert mode</span>
                             </label>
                         </div>
-                        <div id="expert-json-box" class="input-field col s12" style="display:none;">
+                        <div id="expert-json-box" class="input-field col s12 m12 l12" style="display:none;">
                             <p class="translate">zigbee-shepherd</p>
-                            <div class="input-field col s12">
+                            <div class="input-field col s12 m12 l12">
                                 <textarea id="expert-json" class="materialize-textarea"></textarea>
                                 <label for="expert-json">JSON</label>
                             </div>
@@ -925,7 +1121,7 @@ s<html>
             </div>
             <div id="sett" class="row">
                 <a class="col s1 offset-s11 btn-small" onClick="$('#dev_result_log').html('');">Clear Log</a>
-                <div class="col s12" class="card-panel ">
+                <div class="col s12 m12 l12" class="card-panel ">
                     <div id="dev_result_log" class="card-content black white-text"></div>
                     <label for="dev_result_log" class="translate">Results</label>
                 </div>
@@ -963,7 +1159,7 @@ s<html>
             </div>
         </div>
         <div id="tab-exclude" class="col s12 page">
-            <div class="row">
+            <div class="row col s12">
                 <p class="translate">ExcludeTextTranslation</p>
             </div>
             <div class="fixed-action-btn" style="margin-bottom: 100px">
@@ -1094,7 +1290,7 @@ s<html>
                     </div>
                 </div>
             </div>
-          </div>
+        </div>
         <div class="modal-footer">
             <a name="save" href="#!"
                class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
