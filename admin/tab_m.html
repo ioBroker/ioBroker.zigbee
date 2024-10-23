@@ -79,6 +79,7 @@
     .m .zlogo {
         padding: 0.5rem;
         width: 64px;
+        margin-right: 10px;
     }
     .input-group {
         display: table;
@@ -406,6 +407,242 @@
     .m.react-dark .switch label .lever:after {
         background-color: #436a93;
     }
+
+    .m .tabs .tab a.active {
+        color: #fff !important;
+        border-bottom: 2px solid #fff !important;
+    }
+
+    .m .navbar-fixed nav {
+        position: fixed;
+        z-index: 200;
+    }
+
+    #tabs {
+        margin-top: 0;
+    }
+
+    .m .page {
+        margin-top: 7.0rem;
+    }
+
+    #sett {
+        margin-top: 40px;
+    }
+
+    .m .row .col.offset-s11 {
+        margin-left: 15px;
+    }
+
+    #tab-main .navbar-fixed #nav-mobile {
+        position: fixed;
+        z-index: 100;
+    }
+
+    .m .navbar-fixed {
+        z-index: unset;
+    }
+
+    .resposHeight {
+        height: 36px !important;
+    }
+
+    /* Style for medium Screens */
+    @media screen and (max-width: 900px) {
+        .m nav ul a.btn-floating {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+    }
+
+    /* Style for small Screens */
+    @media screen and (max-width: 768px) {
+        #viewconfig {
+            margin-top: 0;
+        }
+
+        .m nav ul a.btn-floating {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        #tab-sett {
+            margin-top: 10px;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(1) {
+            flex: 0 0 5%;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(2) {
+            flex: 0 0 30%;
+        }
+        
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(3),
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4), 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(5) {
+            flex: 0 0 20%;
+            display: flex;
+            justify-content: center;
+            height: 36px;
+            margin-top: 6px;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(3) i.material-icons,
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) i.material-icons, 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(5) i.material-icons {
+            display: none;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(3) a.btn,
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) a.btn, 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(5) a.btn {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        .resposHeight {
+            height: 45px !important;
+        }
+
+        #devices {
+            margin-top: 1rem;
+        }
+    }
+
+    /* Style for very small Screens */
+    @media screen and (max-width: 600px) {
+        .m .navbar-fixed nav {
+            position: relative;
+            z-index: unset;
+        }
+
+        .m nav ul a.btn-floating {
+            margin-left: 8px;
+            margin-right: 8px;
+        }
+
+        #nav-mobile {
+            background-color: #39c;
+            padding-bottom: 2px;
+            padding-top: 2px;
+            margin-top: -8px;
+            width: calc(100%);
+        }
+        .m .navbar-fixed {
+            position: relative;
+        }
+        .m .dropdown-menu {
+            position: fixed;
+        }
+
+        #viewconfig {
+            margin-top: 0;
+        }
+
+        .m .modal {
+            width: 98%;
+        }
+        .m .modal .modal-content {
+            padding: 24px;
+        }
+
+        #tab-dev {
+            overflow-x: hidden;
+        }
+
+        .m .row .col.offset-s11 {
+            margin-left: 13px;
+            margin-bottom: 10px;
+            width: calc(100% - 26px);
+        }
+
+        .device {
+            padding: 8px;
+            width: calc(100%);
+        }
+
+        #devices {
+            margin-top: 3rem;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile {
+            display: flex;
+            flex-wrap: wrap;
+            position: fixed;
+            margin-bottom: 4rem;
+            z-index: 100;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(1) {
+            flex: 0 0 20%;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(2) {
+            flex: 0 0 70%;
+        }
+        
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(3),
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4), 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(5) {
+            flex: 0 0 30%;
+            display: flex;
+            justify-content: center;
+            height: 36px;
+            margin-top: 6px;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(3) i.material-icons,
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) i.material-icons, 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(5) i.material-icons {
+            display: none;
+        }
+
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(3) a.btn,
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) a.btn, 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(5) a.btn {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        #dev_result_log {
+            overflow: auto;
+            height: 20em;
+            padding: 0.5em;
+            
+        }
+
+        .move-label-up {
+            position: absolute !important;
+            top: -60px !important;
+            left: 0 !important;
+        }
+
+        #tabs {
+            margin-top: 0;
+        }
+
+        #tab-main {
+            margin-top: 0;
+        }
+
+        .resposHeight {
+            height: 36px !important;
+        }
+
+        .m .navbar-fixed {
+            z-index: unset;
+        }
+
+        .m .page {
+            margin-top: 0rem;
+        }
+    }
 </style>
 </head>
 <body>
@@ -414,11 +651,11 @@
         <div class="row navbar-fixed">
             <nav class="nav-extended">
                 <div class="nav-wrapper">
-                    <div class="col">
+                    <div class="col s12 m6 l6">
                         <img src="zigbee.png" class="zlogo left" height="64px"/>
-                    </div>
-                    <div class="col">
-                        <h5 class="translate center-align">Zigbee adapter</h5>
+                        <p>
+                            <h5 class="translate">Zigbee adapter</h5>
+                        </p>
                     </div>
                     <ul id="nav-mobile" class="right">
                         <li>
@@ -464,7 +701,7 @@
         <div id="tabs" class="tabs-content row">
             <div id="tab-main" class="col s12 page active">
                 <div class="navbar-fixed" style="height: 36px;">
-                    <nav style="height: 36px; margin-left: -12px; line-height: 24px;">
+                    <nav class="resposHeight" style="margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
                         <ul id="nav-mobile" class="left">
                             <li>
                                 <a id="rotate_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Rotate cards">
@@ -800,8 +1037,8 @@
                         <option value="1">select</option>
                     </select>
                     <label for="d_groups_ep6" class="translate">Groups</label>
-                </div>
-            </div>
+                      </div>
+                  </div>
               </div>
           </div>
           <div class="modal-footer">
@@ -967,9 +1204,9 @@
                              title="Physics On">
                        <label for="physicsOn" style="pointer-events: auto;">
                         <input style="pointer-events: none;" id="physicsOn" type="checkbox" class="filled-in"checked="checked"/>                           <span style="pointer-events: none;">Physics</span>
-                       </label>
-                   </div>
-                   </div>
+                            </label>
+                        </div>
+                    </div>
                     <div class="input-field input-group col s12 m6 l6">
                         <p class="translate">Device map info</p>
                     </div>
