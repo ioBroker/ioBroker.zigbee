@@ -718,6 +718,7 @@ class Zigbee extends utils.Adapter {
                     if (!c.hasOwnProperty('key') && c.hasOwnProperty('convertSet') && converter === undefined)
                     {
                         converter = c;
+
                         if (has_elevated_debug) this.log.warn(`ELEVATED: setting converter to keyless converter for ${deviceID} of type ${model}`)
                         this.log.debug('setting converter to keyless converter')
                         continue;
@@ -804,10 +805,10 @@ class Zigbee extends utils.Adapter {
                         // process sync state list
                         this.processSyncStatesList(deviceId, model, syncStateList);
 
-                        if (isGroup) {
-                            await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
-                            this.acknowledgeState(deviceId, model, stateDesc, value);
-                        }
+//                        if (isGroup) {
+//                            await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
+//                            this.acknowledgeState(deviceId, model, stateDesc, value);
+//                        }
                     }
                     else
                         if (has_elevated_debug) this.log.warn(`Error convert result for ${key} with ${safeJsonStringify(preparedValue)} is undefined on device ${deviceId}.`);
