@@ -51,7 +51,7 @@
     "Read Firmware": "Lire le micrologiciel",
     "Refresh": "Rafraîchir",
     "Rename device": "Renommer le dispositif",
-    "Reset Info": "Un redémarrage en douceur redémarrera uniquement les routines et le CC253x. Une réinitialisation matérielle efface les données de dispositifs couplés et réinitialise aussi la configuration du CC253x. Vous devez re-coupler TOUS vos dispositifs !",
+    "Reset Info": "Un redémarrage en douceur redémarrera uniquement les routines et le Coordinator. Une réinitialisation matérielle efface les données de dispositifs couplés et réinitialise aussi la configuration du Coordinator. Vous devez re-coupler TOUS vos dispositifs !",
     "Reset confirmation": "Confirmation de réinitialisation",
     "Reset...": "Réinitialiser…",
     "Results": "Résultats",
