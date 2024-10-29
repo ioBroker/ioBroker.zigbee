@@ -51,7 +51,7 @@
     "Read Firmware": "Lees Firmware",
     "Refresh": "Vernieuwen",
     "Rename device": "Apparaat hernoemen",
-    "Reset Info": "Een zachte reset herstart de routines en CC253x. Met een harde reset worden gegevens van gekoppelde apparaten gewist en ook de CC253x-instellingen gereset. U moet AL uw apparaten opnieuw aanleren!",
+    "Reset Info": "Een zachte reset herstart de routines en Coordinator. Met een harde reset worden gegevens van gekoppelde apparaten gewist en ook de Coordinator-instellingen gereset. U moet AL uw apparaten opnieuw aanleren!",
     "Reset confirmation": "Reset bevestiging",
     "Reset...": "Reset …",
     "Results": "Resultaten",

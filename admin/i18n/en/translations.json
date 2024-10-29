@@ -51,7 +51,7 @@
     "Read Firmware": "Read Firmware",
     "Refresh": "Refresh",
     "Rename device": "Rename device",
-    "Reset Info": "A soft reset will just restart routines and the CC253x. A hard reset will clear paired devices data and reset CC253x settings too. You will have to repair ALL of your devices!",
+    "Reset Info": "A soft reset will just restart routines and the Coordinator. A hard reset will clear paired devices data and reset the Coordinator settings too. You will have to repair ALL of your devices!",
     "Reset confirmation": "Reset confirmation",
     "Reset...": "Reset…",
     "Results": "Results",
