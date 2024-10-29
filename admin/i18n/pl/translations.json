@@ -51,7 +51,7 @@
     "Read Firmware": "Przeczytaj oprogramowanie sprzętowe",
     "Refresh": "Refresh",
     "Rename device": "Zmień nazwę urządzenia",
-    "Reset Info": "Soft reset zrestartuje tylko procedury i CC253x. Hard-Reset wyczyści dane połączonychurządzeń i zresetuje również ustawienia CC253x. Będziesz musiał naprawić WSZYSTKIE swoje urządzenia!",
+    "Reset Info": "Soft reset zrestartuje tylko procedury i Coordinator. Hard-Reset wyczyści dane połączonych urządzeń i zresetuje również ustawienia Coordynatora. Będziesz musiał połączyć WSZYSTKIE swoje urządzenia!",
     "Reset confirmation": "Reset potwierdzenie",
     "Reset...": "Resetowanie…",
     "Results": "Wyniki",
