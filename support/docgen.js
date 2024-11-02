@@ -1,7 +1,7 @@
 /**
  * This script generates the supported devices page.
  *
- */
+
 
 let devices = [...require('zigbee-herdsman-converters').devices];
 
@@ -91,3 +91,5 @@ vendors.forEach((vendor) => {
 });
 
 fs.writeFileSync(outputdir + '/' + file, text);
+
+ */

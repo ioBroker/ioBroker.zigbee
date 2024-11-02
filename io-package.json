@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.10",
+    "version": "1.10.11",
     "news": {
+      "1.10.11": {
+        "en": "BREAKING CHANGE\n\nbugs : ChannelScan is currently not available\n\n\nfix linter errors\ndisable map display for deactivated devices\nnew option on map: disable physics interaction\nnew zigbee-herdsman-converters 20.28.0\nnew zigbee-herdsman 2.1.1\nAllow use of keyless converters (used for TuYa and compatible devices in zigbee-herdsman-converters\nswap from request to axios\ndelete groups works again",
+        "de": "VERWENDUNGSBEREICH\n\nbugs : ChannelScan ist derzeit nicht verfügbar\n\n\nlinterfehler beheben\nkartenanzeige für deaktivierte geräte deaktivieren\nneue option auf der karte: physik-interaktion deaktivieren\nneue zickbee-herdsman-konverter 20.28.0\nneuer zickbee-herdsman 2.1.1\nVerwenden von schlüssellosen Wandlern (für TuYa und kompatible Geräte in Zickbee-herdsman-Konverter verwendet)\nswap von anfrage an axios\nlöschen von gruppen funktioniert wieder",
+        "ru": "ОБМЕН\n\nжуки: ChannelScan в настоящее время не доступен\n\n\nисправление ошибок\nотключить отображение карты для деактивированных устройств\nновый вариант на карте: отключить взаимодействие физики\n20.28.0\n2.1.1\nПозволить использовать бесключевые конвертеры (используемые для TuYa и совместимые устройства в zigbee-herdsman-конвертерах\nсвопа от запроса к axios\nудалить группы снова",
+        "pt": "ALTERAÇÕES DE TRABALHO\n\nbugs : ChannelScan não está disponível\n\n\ncorrigir erros do linter\ndesativar a exibição do mapa para dispositivos desativados\nnova opção no mapa: desativar a interação física\nnovos conversores de zigbee-herdsman 20.28.0\nnovo zigbee-herdsman 2.1.1\nPermitir o uso de conversores sem chave (usado para TuYa e dispositivos compatíveis em conversores de zigbee-herdsman\nswap de pedido para axios\nexcluir grupos funciona novamente",
+        "nl": "BREAKING VERANDERING\n\nbugs: ChannelScan is momenteel niet beschikbaar\n\n\nrepareren linter fouten\nkaartweergave voor gedeactiveerde apparaten uitschakelen\nnieuwe optie op de kaart: interactie natuurkunde uitschakelen\nnieuwe zigbee-herdsman-converters 20.28.0\nnieuwe zigbee-herdsman 2.1.1\nGebruik van sleutelloze converters toestaan (gebruikt voor TuYa en compatibele apparaten in zigbee-herdsman-converters\nruil van verzoek naar axios\ngroepen opnieuw verwijderen",
+        "fr": "CHANGEMENT DE BREAING\n\nbugs : ChannelScan n'est actuellement pas disponible\n\n\ncorrection des erreurs linter\ndésactiver l'affichage de la carte pour les appareils désactivés\nnouvelle option sur la carte: désactiver l'interaction physique\nnouveaux convertisseurs zigbee-herdsman 20.28.0\nnouveau zigbee-herdsman 2.1.1\nPermettre l'utilisation de convertisseurs sans clé (utilisés pour TuYa et appareils compatibles dans les convertisseurs zigbee-herdsman-converters\néchange de la demande à l'axios\nsupprimer les groupes fonctionne à nouveau",
+        "it": "CAPITOLO DI RICERCA\n\nbugs: ChannelScan non è attualmente disponibile\n\n\ncorreggere gli errori di linter\ndisabilitare la visualizzazione della mappa per i dispositivi disattivati\nnuova opzione sulla mappa: disabilitare l'interazione fisica\nnuovo zigbee-herdsman-converters 20.28.0\nnuovo zigbee-herdsman 2.1.1\nConsentire l'uso di convertitori senza chiave (utilizzati per TuYa e dispositivi compatibili in zigbee-herdsman-converter\nswap da richiesta a assios\ncancellare i gruppi funziona di nuovo",
+        "es": "BREAKING CHANGE\n\nbugs : ChannelScan actualmente no está disponible\n\n\ncorrige errores de invierno\npantalla de mapa deshabilitado para dispositivos desactivados\nnueva opción en el mapa: la interacción física deshabilitada\nnuevos zigbee-herdsman-converters 20.28.0\nnuevo zigbee-herdsman 2.1.1\nPermitir el uso de convertidores sin llave (utilizados para TuYa y dispositivos compatibles en zigbee-herdsman-converters\nswap from request to axios\neliminar grupos funciona de nuevo",
+        "pl": "ZMIANA ZBIORCZA\n\nbłędy: ChannelScan jest obecnie niedostępny\n\n\nnaprawić błędy lintera\nwyłączyć wyświetlacz mapy dla wyłączonych urządzeń\nnowa opcja na mapie: wyłączenie interakcji fizyki\nnowe konwertery zigbee- herdsman- 20.28.0\nnowy zigbee-herdsman 2.1.1\nZezwalaj na stosowanie konwerterów bezklawiszowych (używanych dla TuYa i kompatybilnych urządzeń w konwerterach zigbee- herdsman-\nzamiana z wniosku na aksjos\nusuń grupy działa ponownie",
+        "uk": "БРЕАКІНГ ЗМІН\n\nпомилки : CanalScan наразі немає\n\n\nвиправлено помилки linter\nвідключення відображення карти для деактивованих пристроїв\nновий варіант на карті: відключена фізика взаємодія\nнові zigbee-herdsman-converters 20.28.0\nновий zigbee-herdsman 2.1.1\nДозволити використання без ключів конвертерів (використовується для TuYa та сумісних пристроїв в zigbee-herdsman-converters\nковтання від запиту в осях\nвидалити групи знову",
+        "zh-cn": "破坏变化\n\n错误 : 频道扫描目前不可用\n\n\n修正线性错误\n禁用已停用设备的地图显示\n地图上的新选项: 禁用物理交互\n新齐格比-牧民-转换器 20.28.0\n新齐格比牧民 2.1.1\n允许使用无密钥转换器( 用于 TuYa 和 Zigbee- herdsman- 转换器中的兼容设备)\n从请求转换为轴\n再次删除组工作"
+      },
       "1.10.10": {
         "en": "core update\ndependency update",
         "de": "kern-update\naktualisierung der abhängigkeit",
@@ -80,32 +93,6 @@
         "pl": "icon ota aktualizacji urządzenia\nikona fix",
         "uk": "ota пристрій оновлення\nфіксатор ікони",
         "zh-cn": "图标 ota 设备更新\n图标修复"
-      },
-      "1.10.4": {
-        "en": "core update\ndependency update",
-        "de": "kern-update\naktualisierung der abhängigkeit",
-        "ru": "обновление\nобновление",
-        "pt": "atualização do núcleo\natualização de dependência",
-        "nl": "kernupdate\nafhankelijkheidsupdate",
-        "fr": "mise à jour de base\nmise à jour de la dépendance",
-        "it": "aggiornamento del core\naggiornamento della dipendenza",
-        "es": "actualización básica\nactualización de la dependencia",
-        "pl": "podstawowa aktualizacja\naktualizacja zależności",
-        "uk": "оновлення ядра\nоновлення залежності",
-        "zh-cn": "核心更新\n依赖性更新"
-      },
-      "1.10.3": {
-        "en": "dependency update\n",
-        "de": "aktualisierung der abhängigkeit\n",
-        "ru": "обновление\n",
-        "pt": "atualização de dependência\n",
-        "nl": "afhankelijkheidsupdate\n",
-        "fr": "mise à jour de la dépendance\n",
-        "it": "aggiornamento della dipendenza\n",
-        "es": "actualización de la dependencia\n",
-        "pl": "aktualizacja zależności\n",
-        "uk": "оновлення залежності\n",
-        "zh-cn": "依赖性更新\n"
       }
     },
     "titleLang": {
@@ -213,8 +200,8 @@
         "condition": {
           "operand": "and",
           "rules": [
-            "oldVersion<=1.8.22",
-            "newVersion>=1.8.24"
+            "oldVersion<=1.10.3",
+            "newVersion>=1.10.10"
           ]
         },
         "title": {
@@ -230,16 +217,17 @@
           "zh-cn": "重要通知!"
         },
         "text": {
-          "en": "This new version use exposes for Aqara Button WXKG01LM. Plz select this device into exposes/Auschliessen tab",
-          "ru": "Эта новая версия использует экспозиции для Aqara Button WXKG01LM. Пожалуйста, выберите это устройство в exposes/Auschliessen tab",
-          "pt": "Esta nova versão usa expões para Aqara Button WXKG01LM. Por favor, selecione este dispositivo no separador exposes/Auschliessen",
-          "nl": "Deze nieuwe versie gebruikt blootstellingen voor Aqara Button WXK01LM. Kies alsjeblieft dit apparaat uit in de openbare aanklagers",
-          "fr": "Cette nouvelle version utilise pour Aqara Button WXKG01LM. Veuillez sélectionner cet appareil dans l'onglet Affichage/Auschliessen",
-          "it": "Questa nuova versione utilizza per Aqara Button WXKG01LM. Si prega di selezionare questo dispositivo per exposes/Auschliessen scheda",
-          "es": "Este nuevo uso expone para Aqara Button WXKG01LM. Por favor, seleccione este dispositivo en la pestaña exposes/Auschliessen",
-          "pl": "Nowa wersja została udostępniona dla zmian Aqary Button WXKG01LM. Prosze dodać to do exposes/Auschliessen tabsena",
-          "uk": "Ця нова версія використовується для кнопки Aqara Button WXKG01LM. Будь ласка, оберіть цей пристрій у вкладці ",
-          "zh-cn": "这一新版本用于Aqara Button WXKG01LM。 请选择这一装置暴露/Auschliessen tab"
+          "en": "\"BREAKING CHANGE. after update to this Version you can't go back to Version <= 1.10.3. Only option is your Backup",
+          "de": "\"BREAKING CHANGE. nach dem Update könnt ihr nicht zurück zu einer Version <= 1.10.3. Es geht nur per ioBroker Backup was hoffentlich gemacht habt",
+          "ru": "\"Изменяюсь. После обновления этой версии вы не можете вернуться к версии <= 1.10.3. Единственный вариант - это ваша резервная копия",
+          "pt": "\"BREAKING CHANGE. após a atualização para esta versão você não pode voltar para Versão <= 1.10.3. A única opção é o seu Backup",
+          "nl": "\"Verandering. Na update naar deze versie kun je niet meer terug naar versie <= 1.10.3. De enige optie is uw back-up",
+          "fr": "\"C'est le changement. après la mise à jour de cette version, vous ne pouvez pas retourner à la version <= 1.10.3. Seule option est votre sauvegarde",
+          "it": "\"Cambiare il cambiamento. dopo l'aggiornamento a questa versione non si può tornare alla versione <= 1.10.3. Solo l'opzione è il backup",
+          "es": "\"Cambiando. después de la actualización a esta versión no puede volver a la versión 0 = 1.10.3. La única opción es tu Backup",
+          "pl": "\"ZMIENIONA ZMIANA. po aktualizacji do tej wersji nie można wrócić do wersji < = 1.10.3. Jedyną opcją jest kopia zapasowa",
+          "uk": "\"Бреагування ЗМІНИ. після оновлення цієї версії ви не можете повернутися до версії <= 1.10.3. Тільки варіант - Ваш Резервне копіювання",
+          "zh-cn": "\"呼吸变化。 更新到此版本后, 您不能返回到 QQ 1. 10. 3. 版本 。 唯一的选项是您的备份"
         },
         "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
         "level": "warn",
