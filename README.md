@@ -136,8 +136,12 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-
-### ### 1.10.10 (2024-09-27)
+### 1.10.11 (2024-11-02)
+* BREAKING CHANGE
+* 
+*  bugs : ChannelScan is currently not available
+* 
+* 
 * (lebrinkma) fix linter errors
 * (asgothian) disable map display for deactivated devices
 * (asgothian) new option on map: disable physics interaction
@@ -145,6 +149,7 @@ You can thank the authors by these links:
 * (asgothian) new zigbee-herdsman 2.1.1
 * (asgothian) Allow use of keyless converters (used for TuYa and compatible devices in zigbee-herdsman-converters
 * (arteck) swap from request to axios
+* (arteck) delete groups works again
 
 ### 1.10.9 (2024-09-05)
 * (arteck) typo admin settings
@@ -170,7 +175,6 @@ You can thank the authors by these links:
 ### 1.10.3 (2024-04-06)
 * (arteck) dependency update
 
-## Changelog
 ### 1.10.2 (2024-01-25)
 * (arteck) dependency update
 
@@ -591,7 +595,6 @@ new Zigbee-herdsman features:
 * More new devices
 * Some design update
 * Binding
-
 
 ## License
 The MIT License (MIT)

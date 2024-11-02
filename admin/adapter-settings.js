@@ -55,7 +55,7 @@ $(document).ready(function () {
 function loadSystemConfig(callback) {
     socket.emit('getObject', 'system.config', function (err, res) {
         if (!err && res && res.common) {
-            systemLang   = res.common.language || systemLang;
+        //    systemLang   = res.common.language || systemLang;
             systemConfig = res;
         }
         socket.emit('getObject', 'system.certificates', function (err, res) {
@@ -96,12 +96,12 @@ function loadSettings(callback) {
             if (typeof load === 'undefined') {
                 alert('Please implement save function in your admin/index.html');
             } else {
-		const _query = query.split('&');
+                const _query = query.split('&');
                 for (let q = 0; q < _query.length; q++) {
-			if (_query[q].indexOf('react=') !== -1) {
-				$('.adapter-container').addClass('react-' + _query[q].substring(6));
-				theme = 'react-' + _query[q].substring(6);
-			}
+                    if (_query[q].indexOf('react=') !== -1) {
+                        $('.adapter-container').addClass('react-' + _query[q].substring(6));
+                        theme = 'react-' + _query[q].substring(6);
+                    }
                 }
                 load(res.native, onChange);
             }
@@ -122,19 +122,19 @@ function loadSettings(callback) {
 window.addEventListener('resize', checkMediaQuery);
 
 function checkMediaQuery() {
-    const mediaQuery = window.matchMedia("(max-width: 600px)");
+    const mediaQuery = window.matchMedia('(max-width: 600px)');
 
     if (mediaQuery.matches) {
         designFix();
-        console.log("Screen < 600px.");
+        console.log('Screen < 600px.');
     } else {
-        console.log("Screen > 600px.");
+        console.log('Screen > 600px.');
     }
 }
 
 // Design Fix simatec
 function designFix() {
-    var dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
 
     if (!dropdownToggle) {
         const cols = document.querySelectorAll('.col:not(.tab)');

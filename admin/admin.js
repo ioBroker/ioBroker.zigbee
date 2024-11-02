@@ -70,7 +70,7 @@ function getDevice(ieeeAddr) {
     });
 }
 
-// eslint-disable-next-line no-unused-vars
+
 function getDeviceByNetwork(nwk) {
     return devices.find((devInfo) => {
         try {
@@ -795,7 +795,7 @@ function getMap() {
 }
 
 // the function loadSettings has to exist ...
-// eslint-disable-next-line no-unused-vars
+
 function load(settings, onChange) {
     if (settings.panID === undefined) {
         settings.panID = 6754;
@@ -984,7 +984,7 @@ function showPairingProcess() {
 
 // ... and the function save has to exist.
 // you have to make sure the callback is called with the settings object as first param!
-// eslint-disable-next-line no-unused-vars
+
 function save(callback) {
     const obj = {};
     $('.value').each(function () {
@@ -1312,7 +1312,7 @@ function showNetworkMap(devices, map) {
         nodes: nodesArray,
         edges: mapEdges
     };
-    
+
     network = new vis.Network(container, data, networkOptions);
 
     const onMapSelect = function (event) {
@@ -2552,7 +2552,7 @@ function showChannels() {
             }
         }
     });
-    showWaitingDialog('Scanning channels', 10);
+    showWaitingDialog('Scanning channels - not working yet', 10);
 }
 
 function onlyOne(devs) {

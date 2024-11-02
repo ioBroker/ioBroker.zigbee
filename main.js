@@ -466,15 +466,15 @@ class Zigbee extends utils.Adapter {
         const cluster = message.cluster;
         const devId = device.ieeeAddr.substr(2);
         const meta = {device};
-        
+
         if (this.stController.checkDebugDevice(devId)) {
             const shortMessage = {};
-            for(var propertyName in message) {
+            for(const propertyName in message) {
                 shortMessage[propertyName] = message[propertyName];
-             }
-             shortMessage.device = device.ieeeAddr;
-             shortMessage.meta = undefined;
-             shortMessage.endpoint = (message.endpoint.ID ? message.endpoint.ID: -1); 
+            }
+            shortMessage.device = device.ieeeAddr;
+            shortMessage.meta = undefined;
+            shortMessage.endpoint = (message.endpoint.ID ? message.endpoint.ID: -1);
             this.log.warn(`ELEVATED: Zigbee Event of Type ${type} from device ${safeJsonStringify(device.ieeeAddr)}, incoming event: ${safeJsonStringify(shortMessage)}`);
         }
         // this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
@@ -636,7 +636,7 @@ class Zigbee extends utils.Adapter {
             this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
 
             const mappedModel = entity.mapped;
-    
+
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
                 if (has_elevated_debug) this.log.warn(`ELEVATED: No mapped model for ${model}`)
@@ -644,11 +644,11 @@ class Zigbee extends utils.Adapter {
             }
 
             if (!mappedModel.toZigbee)
-                {
-                    this.log.error(`No toZigbee in mapped model for ${model}`);
-                    return;
-                }
-            
+            {
+                this.log.error(`No toZigbee in mapped model for ${model}`);
+                return;
+            }
+
             stateList.forEach(async changedState => {
                 const stateDesc = changedState.stateDesc;
                 const value = changedState.value;
@@ -712,14 +712,14 @@ class Zigbee extends utils.Adapter {
 
                 let converter = undefined;
                 for (const c of mappedModel.toZigbee) {
-                    
+
                     if (!c.hasOwnProperty('convertSet')) continue;
                     this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
                     if (!c.hasOwnProperty('key') && c.hasOwnProperty('convertSet') && converter === undefined)
                     {
                         converter = c;
 
-                        if (has_elevated_debug) this.log.warn(`ELEVATED: setting converter to keyless converter for ${deviceID} of type ${model}`)
+                        if (has_elevated_debug) this.log.warn(`ELEVATED: setting converter to keyless converter for ${deviceId} of type ${model}`)
                         this.log.debug('setting converter to keyless converter')
                         continue;
                     }
@@ -731,7 +731,7 @@ class Zigbee extends utils.Adapter {
                     }
 
                 }
-/*
+                /*
                 if (!mappedModel.toZigbee[0].hasOwnProperty('key') && mappedModel.toZigbee[0].hasOwnProperty('convertSet')) converter = mappedModel.toZigbee[0];
                 converter = mappedModel.toZigbee.find(c => c && c.hasOwnProperty('key') && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
 */
@@ -740,7 +740,7 @@ class Zigbee extends utils.Adapter {
                     this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
                     return;
                 }
-    
+
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
                 const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
 
@@ -805,10 +805,10 @@ class Zigbee extends utils.Adapter {
                         // process sync state list
                         this.processSyncStatesList(deviceId, model, syncStateList);
 
-//                        if (isGroup) {
-//                            await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
-//                            this.acknowledgeState(deviceId, model, stateDesc, value);
-//                        }
+                        //                        if (isGroup) {
+                        //                            await this.callPluginMethod('queryGroupMemberState', [deviceId, stateDesc]);
+                        //                            this.acknowledgeState(deviceId, model, stateDesc, value);
+                        //                        }
                     }
                     else
                         if (has_elevated_debug) this.log.warn(`Error convert result for ${key} with ${safeJsonStringify(preparedValue)} is undefined on device ${deviceId}.`);
