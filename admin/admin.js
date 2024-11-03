@@ -2552,7 +2552,7 @@ function showChannels() {
             }
         }
     });
-    showWaitingDialog('Scanning channels - not working yet', 10);
+    showWaitingDialog('Scanning channels', 10);
 }
 
 function onlyOne(devs) {
