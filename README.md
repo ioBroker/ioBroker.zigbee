@@ -136,6 +136,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### 1.10.12 (2024-11-03)
+* (asgothian) corr Channel Scan
+
 ### 1.10.11 (2024-11-02)
 * BREAKING CHANGE
 * 

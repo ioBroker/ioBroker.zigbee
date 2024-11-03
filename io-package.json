@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.11",
+    "version": "1.10.12",
     "news": {
+      "1.10.12": {
+        "en": "corr Channel Scan",
+        "de": "corr Channel Scan",
+        "ru": "корректор канала",
+        "pt": "escaneamento do canal de cortiça",
+        "nl": "corr kanaalscan",
+        "fr": "balayage du canal corr",
+        "it": "corr Channel Scansione",
+        "es": "corr Channel Scan",
+        "pl": "corr Channel Scan",
+        "uk": "сканування каналу",
+        "zh-cn": "频道扫描"
+      },
       "1.10.11": {
         "en": "BREAKING CHANGE\n\nbugs : ChannelScan is currently not available\n\n\nfix linter errors\ndisable map display for deactivated devices\nnew option on map: disable physics interaction\nnew zigbee-herdsman-converters 20.28.0\nnew zigbee-herdsman 2.1.1\nAllow use of keyless converters (used for TuYa and compatible devices in zigbee-herdsman-converters\nswap from request to axios\ndelete groups works again",
         "de": "VERWENDUNGSBEREICH\n\nbugs : ChannelScan ist derzeit nicht verfügbar\n\n\nlinterfehler beheben\nkartenanzeige für deaktivierte geräte deaktivieren\nneue option auf der karte: physik-interaktion deaktivieren\nneue zickbee-herdsman-konverter 20.28.0\nneuer zickbee-herdsman 2.1.1\nVerwenden von schlüssellosen Wandlern (für TuYa und kompatible Geräte in Zickbee-herdsman-Konverter verwendet)\nswap von anfrage an axios\nlöschen von gruppen funktioniert wieder",
@@ -80,19 +93,6 @@
         "pl": "podstawowa aktualizacja\naktualizacja zależności",
         "uk": "оновлення ядра\nоновлення залежності",
         "zh-cn": "核心更新\n依赖性更新"
-      },
-      "1.10.5": {
-        "en": "icon ota device update\nicon fix",
-        "de": "icon ota device update\nsymbol fix",
-        "ru": "обновление значок ota\nзначок",
-        "pt": "atualização do dispositivo do ícone ota\ncorreção do ícone",
-        "nl": "pictogram ota apparaat update\npictogramfix",
-        "fr": "icône ota mise à jour du périphérique\ncorrection de l'icône",
-        "it": "icona ota aggiornamento del dispositivo\nicona fix",
-        "es": "icono ota actualización del dispositivo\nicono de fijación",
-        "pl": "icon ota aktualizacji urządzenia\nikona fix",
-        "uk": "ota пристрій оновлення\nфіксатор ікони",
-        "zh-cn": "图标 ota 设备更新\n图标修复"
       }
     },
     "titleLang": {
