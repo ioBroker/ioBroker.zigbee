@@ -55,7 +55,7 @@ $(document).ready(function () {
 function loadSystemConfig(callback) {
     socket.emit('getObject', 'system.config', function (err, res) {
         if (!err && res && res.common) {
-        //    systemLang   = res.common.language || systemLang;
+            systemLang   = res.common.language;
             systemConfig = res;
         }
         socket.emit('getObject', 'system.certificates', function (err, res) {
