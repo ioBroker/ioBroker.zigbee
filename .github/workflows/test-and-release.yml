@@ -89,14 +89,14 @@ jobs:
         # The body may be multiline, therefore newlines and % need to be escaped
         run: |
           VERSION="${{ github.ref }}"
-          VERSION=${VERSION##*/v}
-          echo "::set-output name=VERSION::$VERSION"
+          VERSION=${VERSION##*/v}         
+          echo "{VERSION}={$VERSION}" >> $GITHUB_OUTPUT
           BODY=$(git show -s --format=%b)
           BODY="${BODY//'%'/'%25'}"
           BODY="${BODY//$'\n'/'%0A'}"
           BODY="${BODY//$'\r'/'%0D'}"
-          echo "::set-output name=BODY::$BODY"
-
+          echo "{BODY}={$BODY}" >> $GITHUB_OUTPUT
+             
 #     If you like, activate automated version publish to NPM
 #     Only if commit contains a version, see : https://github.com/AlCalzone/release-script
 
