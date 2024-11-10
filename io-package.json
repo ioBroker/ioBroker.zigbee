@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.12",
+    "version": "1.10.13",
     "news": {
+      "1.10.13": {
+        "en": "corr icon download bug (axios)",
+        "de": "corr icon download bug (axios)",
+        "ru": "значок скачать bug (axios)",
+        "pt": "corr ícone de download bug (eixos)",
+        "nl": "corr pictogram download bug (axios)",
+        "fr": "corr icône de téléchargement bug (axios)",
+        "it": "corr icon download bug (assios)",
+        "es": "corr icono descargar bug (axios)",
+        "pl": "corr ikona pobierz błąd (axios)",
+        "uk": "корр іконки завантажити помилку (axios)",
+        "zh-cn": "corr 图标下载错误( axios)"
+      },
       "1.10.12": {
         "en": "corr Channel Scan",
         "de": "corr Channel Scan",
@@ -80,19 +93,6 @@
         "pl": "dodaj opcję kontroli przepływu\ndodaj nowy NewHerdsman\ndodaj nowego koordynatora ezsp Firmware (7.4.1.0)",
         "uk": "додати варіант контролю потоку\nдодати новийHerdsman\nadd new ezsp manager Прошивка (7.4.1.0)",
         "zh-cn": "添加流量控制选项\n添加新赫兹曼\n添加新的 ezsp 协调员 Firmware (7.4.1.0)"
-      },
-      "1.10.6": {
-        "en": "core update\ndependency update",
-        "de": "kern-update\naktualisierung der abhängigkeit",
-        "ru": "обновление\nобновление",
-        "pt": "atualização do núcleo\natualização de dependência",
-        "nl": "kernupdate\nafhankelijkheidsupdate",
-        "fr": "mise à jour de base\nmise à jour de la dépendance",
-        "it": "aggiornamento del core\naggiornamento della dipendenza",
-        "es": "actualización básica\nactualización de la dependencia",
-        "pl": "podstawowa aktualizacja\naktualizacja zależności",
-        "uk": "оновлення ядра\nоновлення залежності",
-        "zh-cn": "核心更新\n依赖性更新"
       }
     },
     "titleLang": {
