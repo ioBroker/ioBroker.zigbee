@@ -441,7 +441,7 @@ class Zigbee extends utils.Adapter {
 
                             Promise.all(chain)
                                 .then(() =>
-                                    this.stController.deleteDeviceStates(devId, () =>
+                                    this.stController.deleteObj(devId, () =>
                                         this.stController.updateDev(devId, model, model, async () => {
                                             await this.stController.syncDevStates(device, model);
                                             resolve();
@@ -934,7 +934,7 @@ class Zigbee extends utils.Adapter {
         if (ieeeAddr) {
             const devId = ieeeAddr.substr(2);
             this.log.debug(`Delete device ${devId} from iobroker.`);
-            this.stController.deleteDeviceStates(devId);
+            this.stController.deleteObj(devId);
         }
     }
 

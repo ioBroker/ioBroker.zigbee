@@ -137,6 +137,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (arteck) deleteDeviceStates change to deleteObj
+
 ### 1.10.13 (2024-11-10)
 * (arteck) corr icon download bug (axios)
 
