@@ -7,7 +7,7 @@ body:
           value: |
               **IMPORTANT:** Before submitting:             
               - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is listed as supported at zigbee2mqtt.io.
-              - ensure that both the manufacturer and the model must match between your device and the listed device. 
+              - ensure that both the manufacturer and the model match between your device and the listed device. 
     - type: input
       id: zigbee_version
       attributes:
