@@ -28,7 +28,7 @@ body:
       attributes:
           label: Coordinator 
           description: 
-          placeholder: 'Electrolama zig-a-zig-ah! (zzh!), Slaesh's CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus....'
+          placeholder: Electrolama zig-a-zig-ah! (zzh!), Slaesh's CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus....
       validations:
           required: true
     - type: input
