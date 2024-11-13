@@ -30,10 +30,10 @@ body:
           placeholder: '_TZ3000_upgcbody'
       validations:
           required: true          
-     - type: input
-      id: Link to device
+    - type: input
+      id: Link_to_device
       attributes:
-          label: Link
+          label: Link to device
           description: Post the link of the device listing on zigbee2mqtt.io
           placeholder: 'https://www.zigbee2mqtt.io/supported-devices/'
       validations:
