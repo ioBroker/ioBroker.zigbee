@@ -7,14 +7,12 @@ body:
           value: |
               **IMPORTANT:** Before submitting:             
               - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is supported 
-
     - type: textarea
       id: what_problem
       attributes:
           label: what does not work?
       validations:
-          required: true
-    
+          required: true    
     - type: input
       id: adapter_version
       attributes:
@@ -22,9 +20,7 @@ body:
           description: Can be found in the Admin GUI
           placeholder: '1.10.3'
       validations:
-          required: true
-          
-   
+          required: true          
     - type: input
       id: coordinator_fwversion
       attributes:
@@ -33,26 +29,22 @@ body:
           placeholder: '20230921'
       validations:
           required: true
-     
-     - type: input
+    - type: input
       id: coordinator_type
       attributes:
           label: Coordinator 
           description: Hardware Coordinator
-          placeholder: Electrolama zig-a-zig-ah! (zzh!), Slaeshs CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus....
+          placeholder: Electrolama zig-a-zig-ah! (zzh!), Slaeshs CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus ...
       validations:
-          required: true
-          
-          
-      - type: input
+          required: true                    
+    - type: input
       id: setup
       attributes:
           label: Setup
           description: How do you run the adapter 
           placeholder: Add-on on Intel NUC, Docker container, RaspberryPi...
       validations:
-          required: true
-          
+          required: true        
     - type: textarea
       id: log
       attributes:
