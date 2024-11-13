@@ -1,5 +1,5 @@
 name: Problem
-description: Create a issue
+description: Create a generic issue
 labels: [problem]
 body:
     - type: markdown
