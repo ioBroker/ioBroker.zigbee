@@ -12,7 +12,7 @@ body:
     - type: textarea
       id: what_problem
       attributes:
-          label: describe the problem **in Detail**. What do you expect to happen ? What does happen ?
+          label: describe the problem in Detail. What do you expect to happen ? What does happen ?
       validations:
           required: true    
     - type: input
@@ -51,7 +51,7 @@ body:
       id: log
       attributes:
           label: Debug log
-          description: first 50 rows after starting adapter
+          description: first 50 rows after starting adapter. Encapsulate the log in code tags (<>).
           placeholder: Click here and drag the file into it or click on "Attach files by.." below
       validations:
           required: false
