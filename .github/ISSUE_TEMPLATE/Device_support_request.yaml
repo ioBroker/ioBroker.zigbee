@@ -1,5 +1,5 @@
 name: Device Support request
-description: Create a issue to support a device which is not currently supported in the zigbee adapter. **Note** not supported devices are reported as `supported:false` during pairing.
+description: Create a issue to support a device which is not currently supported in the zigbee adapter. Unsupported devices are reported as `supported:false` during pairing.
 labels: [devicesupport]
 body:
     - type: markdown
