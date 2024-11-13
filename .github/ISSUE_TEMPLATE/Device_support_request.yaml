@@ -16,7 +16,7 @@ body:
     - type: input
       id: model_zigbee
       attributes:
-          label: `modelZigbee:`
+          label: modelZigbee
           description: Can be found on the info-panel accessible from the backside of the device tile in the Admin GUI / Zigbee Tab
           placeholder: 'TS0601'
       validations:
@@ -24,7 +24,7 @@ body:
     - type: input
       id: manufacturer
       attributes:
-          label: `manufacturer:`
+          label: manufacturer
           description: Can be found on the info-panel accessible from the backside of the device tile in the Admin GUI / Zigbee Tab
           placeholder: '_TZ3000_upgcbody'
       validations:
