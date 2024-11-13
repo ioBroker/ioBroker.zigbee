@@ -1,0 +1,48 @@
+name: Device Support request
+description: Create a issue to support a device which is not currently supported in the zigbee adapter. Note: not supported devices are reported as 'supported:false' during pairing and the only objects generated for the device are 'available', 'link_quality', 'device_query', 'msg_from_zigbee' and 'send_payload'.
+labels: [devicesupport]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              **IMPORTANT:** Before submitting:             
+              - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is listed as supported at zigbee2mqtt.io. Note: Devices with similar looks or designations may be listed without your specific device being supported. In order for a device to be considered supported, both the manufacturer and the model must match. 
+    - type: input
+      id: zigbee_version
+      attributes:
+          label: Tested with adapter version
+      validations:
+          required: true    
+    - type: input
+      id: model_zigbee
+      attributes:
+          label: modelZigbee:
+          description: Can be found on the info-panel accessible from the backside of the device tile in the Admin GUI / Zigbee Tab
+          placeholder: 'TS0601'
+      validations:
+          required: true          
+    - type: input
+      id: manufacturer
+      attributes:
+          label: manufacturer:
+          description: Can be found on the info-panel accessible from the backside of the device tile in the Admin GUI / Zigbee Tab
+          placeholder: '_TZ3000_upgcbody'
+      validations:
+          required: true          
+    - type: input
+      id: coordinator_fwversion
+      attributes:
+          label: Coordinator firmware version
+          description: Can be found on the Device tile for the coordinator in the Admin GUI / Zigbee Tab
+          placeholder: '20230921'
+      validations:
+          required: true
+    - type: input
+      id: coordinator_type
+      attributes:
+          label: Coordinator 
+          description: Hardware Coordinator
+          placeholder: Electrolama zig-a-zig-ah! (zzh!), Slaeshs CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus ...
+      validations:
+          required: true                    
+         
