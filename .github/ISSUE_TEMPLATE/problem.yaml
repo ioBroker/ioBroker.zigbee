@@ -1,16 +1,18 @@
 name: Problem
-description: Create a issue
+description: Create a generic issue
 labels: [problem]
 body:
     - type: markdown
       attributes:
           value: |
               **IMPORTANT:** Before submitting:             
-              - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is supported 
+              - check whether the issue is linked to a single device or a group of devices
+              - verify that you can recreate the issue by executing a limited number of steps
+              - do **not** use this issue template to request support for new devices.
     - type: textarea
       id: what_problem
       attributes:
-          label: what does not work?
+          label: describe the problem in Detail. What do you expect to happen ? What does happen ?
       validations:
           required: true    
     - type: input
@@ -48,8 +50,8 @@ body:
     - type: textarea
       id: log
       attributes:
-          label: Debug log
-          description: first 50 rows after starting adapter
+          label: Protocol of the error (as text, encapsulated in multiline code tags <>). Separate different occurrances into clearly split log sections
+          description: At least 50 lines from the iobroker protocol, run in INFO mode. Ensure to include a number of lines before and after the actual error message
           placeholder: Click here and drag the file into it or click on "Attach files by.." below
       validations:
           required: false
