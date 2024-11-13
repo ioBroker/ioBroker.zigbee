@@ -1,12 +1,13 @@
 name: Device Support request
-description: Create a issue to support a device which is not currently supported in the zigbee adapter. **Note** not supported devices are reported as `supported:false` during pairing and the only objects generated for the device are `available`, `link_quality`, `device_query`, `msg_from_zigbee` and `send_payload`.
+description: Create a issue to support a device which is not currently supported in the zigbee adapter. **Note** not supported devices are reported as `supported:false` during pairing.
 labels: [devicesupport]
 body:
     - type: markdown
       attributes:
           value: |
               **IMPORTANT:** Before submitting:             
-              - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is listed as supported at zigbee2mqtt.io. Note: Devices with similar looks or designations may be listed without your specific device being supported. In order for a device to be considered supported, both the manufacturer and the model must match. 
+              - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is listed as supported at zigbee2mqtt.io.
+              - ensure that both the manufacturer and the model must match between your device and the listed device. 
     - type: input
       id: zigbee_version
       attributes:
