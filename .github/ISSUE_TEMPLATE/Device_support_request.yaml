@@ -30,14 +30,14 @@ body:
           placeholder: '_TZ3000_upgcbody'
       validations:
           required: true          
-    - type: input
-      id: coordinator_fwversion
+     - type: input
+      id: Link to device
       attributes:
-          label: Coordinator firmware version
-          description: Can be found on the Device tile for the coordinator in the Admin GUI / Zigbee Tab
-          placeholder: '20230921'
+          label: Link
+          description: Post the link of the device listing on zigbee2mqtt.io
+          placeholder: 'https://www.zigbee2mqtt.io/supported-devices/'
       validations:
-          required: true
+          required: false          
     - type: input
       id: coordinator_type
       attributes:
@@ -46,4 +46,12 @@ body:
           placeholder: Electrolama zig-a-zig-ah! (zzh!), Slaeshs CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus ...
       validations:
           required: true                    
+    - type: input
+      id: coordinator_fwversion
+      attributes:
+          label: Coordinator firmware version
+          description: Can be found on the Device tile for the coordinator in the Admin GUI / Zigbee Tab
+          placeholder: '20230921'
+      validations:
+          required: false
          
