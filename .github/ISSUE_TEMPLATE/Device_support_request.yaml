@@ -1,5 +1,5 @@
 name: Device Support request
-description: Create a issue to support a device which is not currently supported in the zigbee adapter. Note: not supported devices are reported as `supported:false` during pairing and the only objects generated for the device are `available`, `link_quality`, `device_query`, `msg_from_zigbee` and `send_payload`.
+description: Create a issue to support a device which is not currently supported in the zigbee adapter. **Note** not supported devices are reported as `supported:false` during pairing and the only objects generated for the device are `available`, `link_quality`, `device_query`, `msg_from_zigbee` and `send_payload`.
 labels: [devicesupport]
 body:
     - type: markdown
