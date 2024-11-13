@@ -12,6 +12,7 @@ body:
       id: zigbee_version
       attributes:
           label: Tested with adapter version
+          placeholder: '1.10.13'
       validations:
           required: true    
     - type: input
