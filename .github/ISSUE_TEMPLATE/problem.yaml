@@ -50,7 +50,7 @@ body:
     - type: textarea
       id: log
       attributes:
-          label: Protocol of the error (encapsulated in code tags <>). Separate different occurrances into clearly split log sequences
+          label: Protocol of the error (as text, encapsulated in multiline code tags <>). Separate different occurrances into clearly split log sections
           description: At least 50 lines from the iobroker protocol, run in INFO mode. Ensure to include a number of lines before and after the actual error message
           placeholder: Click here and drag the file into it or click on "Attach files by.." below
       validations:
