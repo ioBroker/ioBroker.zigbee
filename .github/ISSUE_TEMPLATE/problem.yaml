@@ -6,11 +6,13 @@ body:
       attributes:
           value: |
               **IMPORTANT:** Before submitting:             
-              - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is supported 
+              - check whether the issue is linked to a single device or a group of devices
+              - verify that you can recreate the issue by executing a limited number of steps
+              - do **not** use this issue template to request support for new devices.
     - type: textarea
       id: what_problem
       attributes:
-          label: what does not work?
+          label: describe the problem **in Detail**. What do you expect to happen ? What does happen ?
       validations:
           required: true    
     - type: input
