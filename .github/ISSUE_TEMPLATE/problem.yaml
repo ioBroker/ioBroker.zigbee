@@ -23,14 +23,16 @@ body:
           placeholder: '1.10.3'
       validations:
           required: true
+          
     - type: input
       id: coordinator_type
       attributes:
           label: Coordinator 
-          description: 
+          description: Hardware Coordinator
           placeholder: Electrolama zig-a-zig-ah! (zzh!), Slaeshs CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus....
       validations:
           required: true
+          
     - type: input
       id: coordinator_fwversion
       attributes:
@@ -39,6 +41,7 @@ body:
           placeholder: '20230921'
       validations:
           required: true
+          
       - type: input
       id: setup
       attributes:
@@ -47,6 +50,7 @@ body:
           placeholder: Add-on on Intel NUC, Docker container, RaspberryPi...
       validations:
           required: true
+          
     - type: textarea
       id: log
       attributes:
