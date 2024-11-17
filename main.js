@@ -715,12 +715,20 @@ class Zigbee extends utils.Adapter {
 
                     if (!c.hasOwnProperty('convertSet')) continue;
                     this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
-                    if (!c.hasOwnProperty('key') && c.hasOwnProperty('convertSet') && converter === undefined)
+                    if (!c.hasOwnProperty('key')) 
                     {
-                        converter = c;
-
-                        if (has_elevated_debug) this.log.warn(`ELEVATED: setting converter to keyless converter for ${deviceId} of type ${model}`)
-                        this.log.debug('setting converter to keyless converter')
+                        if (c.hasOwnProperty('convertSet') && converter === undefined) 
+                        {
+                            converter = c;
+    
+                            if (has_elevated_debug) this.log.warn(`ELEVATED: setting converter to keyless converter for ${deviceId} of type ${model}`)
+                            this.log.debug('setting converter to keyless converter')
+                        } 
+                        else 
+                        {
+                            if (has_elevated_debug) this.log.warn(`ELEVATED: ignoring keyless converter for ${deviceId} of type ${model}`)
+                            this.log.debug('ignoring keyless converter')
+                        }
                         continue;
                     }
                     if (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id))
