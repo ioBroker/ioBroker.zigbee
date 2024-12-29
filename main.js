@@ -772,12 +772,9 @@ class Zigbee extends utils.Adapter {
                     target = entity.mapped;
                 } else {
                     target = await this.zbController.resolveEntity(deviceId, epName);
-                    const targetID = (target.device ? target.device.ID : '-1');
+                    if (has_elevated_debug) this.log.warn(`ELEVATED: Resolved target: ${safeJsonStringify(target)}`);
                     target = target.endpoint;
-                    const epID = (target.ID ? target.ID : '-1')
-                    const epIEEE = (target.deviceIeeeAddress ? target.deviceIeeeAddress : '0x0')
-                    if (has_elevated_debug) 
-                        this.log.warn(`ELEVATED: Target device ${epIEEE} (ID:${targetID}), EP ${epID}`);
+                    if (has_elevated_debug) this.log.warn(`ELEVATED: selected endpoint of resolved Target: ${safeJsonStringify(target)}`);
                 }
 
                 this.log.debug(`target: ${safeJsonStringify(target)}`);
