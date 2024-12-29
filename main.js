@@ -643,7 +643,7 @@ class Zigbee extends utils.Adapter {
 
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
-                if (has_elevated_debug) this.log.warn(`ELEVATED: No mapped model for ${model}`)
+                if (has_elevated_debug) this.log.warn(`ELEVATED O2: No mapped model for ${model}`)
                 return;
             }
 
