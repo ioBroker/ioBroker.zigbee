@@ -752,10 +752,6 @@ class Zigbee extends utils.Adapter {
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
                 const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
 
-                if (preparedOptions.hasOwnProperty('hue_calibration')) {
-                    delete preparedOptions.hue_calibration;
-                }
-
                 let syncStateList = [];
                 if (stateModel && stateModel.syncStates) {
                     stateModel.syncStates.forEach(syncFunct => {
@@ -786,7 +782,7 @@ class Zigbee extends utils.Adapter {
 
                 this.log.debug(`target: ${safeJsonStringify(target)}`);
 
-                                const meta = {
+                const meta = {
                     endpoint_name: epName,
                     options: preparedOptions,
                     device: entity.device,
