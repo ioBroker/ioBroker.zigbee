@@ -813,7 +813,7 @@ class Zigbee extends utils.Adapter {
                         this.processSyncStatesList(deviceId, model, syncStateList);
                     }
                     else
-                        if (has_elevated_debug) 
+                        if (has_elevated_debug)
                             this.log.error(`ELEVATED OE2: Error convert result for ${key} with ${safeJsonStringify(preparedValue)} is undefined on device ${deviceId}.`);
 
                 } catch (error) {
