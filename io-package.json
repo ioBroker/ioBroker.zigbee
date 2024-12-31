@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.14",
+    "version": "1.10.15",
     "news": {
+      "1.10.15": {
+        "en": "Work in progress",
+        "de": "Work in progress",
+        "ru": "Work in progress",
+        "pt": "Work in progress",
+        "nl": "Work in progress",
+        "fr": "Work in progress",
+        "it": "Work in progress",
+        "es": "Work in progress",
+        "pl": "Work in progress",
+        "uk": "Work in progress",
+        "zh-cn": "Work in progress"
+      },
       "1.10.14": {
         "en": "Herdsman 2.1.9, Converters 20.58.0",
         "de": "Herdsman 2.1.9, Converters 20.58.0",
