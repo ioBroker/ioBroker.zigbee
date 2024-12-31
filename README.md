@@ -138,6 +138,11 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
+
+
+### 1.10.14 (2024-12-31)
+* (arteck) Herdsman 2.1.9, Converters 20.58.0
+* (asgothian) Fix: Aqara T1M (CL-L02D) 
 * (arteck) deleteDeviceStates change to deleteObj
 
 ### 1.10.13 (2024-11-10)

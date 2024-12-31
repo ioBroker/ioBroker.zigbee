@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.13",
+    "version": "1.10.14",
     "news": {
+      "1.10.14": {
+        "en": "Herdsman 2.1.9, Converters 20.58.0",
+        "de": "Herdsman 2.1.9, Converters 20.58.0",
+        "ru": "Herdsman 2.1.9, Converters 20.58.0",
+        "pt": "Herdsman 2.1.9, Converters 20.58.0",
+        "nl": "Herdsman 2.1.9, Converters 20.58.0",
+        "fr": "Herdsman 2.1.9, Converters 20.58.0",
+        "it": "Herdsman 2.1.9, Converters 20.58.0",
+        "es": "Herdsman 2.1.9, Converters 20.58.0",
+        "pl": "Herdsman 2.1.9, Converters 20.58.0",
+        "uk": "Herdsman 2.1.9, Converters 20.58.0",
+        "zh-cn": "Herdsman 2.1.9, Converters 20.58.0"
+      },
       "1.10.13": {
         "en": "corr icon download bug (axios)",
         "de": "corr icon download bug (axios)",
