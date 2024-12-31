@@ -560,7 +560,7 @@ class Zigbee extends utils.Adapter {
         if (!converters.length) {
             if (type !== 'readResponse') {
                 this.log.debug(`No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
-                if (has_elevated_debug) 
+                if (has_elevated_debug)
                     this.log.warn(`ELEVATED IE0: No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
             }
             return;
@@ -719,16 +719,16 @@ class Zigbee extends utils.Adapter {
 
                     if (!c.hasOwnProperty('convertSet')) continue;
                     this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
-                    if (!c.hasOwnProperty('key')) 
+                    if (!c.hasOwnProperty('key'))
                     {
-                        if (c.hasOwnProperty('convertSet') && converter === undefined) 
+                        if (c.hasOwnProperty('convertSet') && converter === undefined)
                         {
                             converter = c;
-    
-                            if (has_elevated_debug) this.log.warn(`ELEVATED O3A: Setting converter to keyless converter for ${deviceId} of type ${model}`)
+                            if (has_elevated_debug)
+                                this.log.warn(`ELEVATED O3A: Setting converter to keyless converter for ${deviceId} of type ${model}`)
                             this.log.debug('setting converter to keyless converter')
-                        } 
-                        else 
+                        }
+                        else
                         {
                             if (has_elevated_debug) this.log.warn(`ELEVATED O3B: ignoring keyless converter for ${deviceId} of type ${model}`)
                             this.log.debug('ignoring keyless converter')
@@ -741,12 +741,7 @@ class Zigbee extends utils.Adapter {
                         if (has_elevated_debug) this.log.warn(`ELEVATED O3C: ${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
                         converter = c;
                     }
-
                 }
-                /*
-                if (!mappedModel.toZigbee[0].hasOwnProperty('key') && mappedModel.toZigbee[0].hasOwnProperty('convertSet')) converter = mappedModel.toZigbee[0];
-                converter = mappedModel.toZigbee.find(c => c && c.hasOwnProperty('key') && (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id)));
-*/
                 if (converter === undefined) {
                     this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
                     this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
@@ -818,11 +813,11 @@ class Zigbee extends utils.Adapter {
                         this.processSyncStatesList(deviceId, model, syncStateList);
                     }
                     else
-                        if (has_elevated_debug) 
+                        if (has_elevated_debug)
                             this.log.error(`ELEVATED OE2: Error convert result for ${key} with ${safeJsonStringify(preparedValue)} is undefined on device ${deviceId}.`);
 
                 } catch (error) {
-                    if (has_elevated_debug) 
+                    if (has_elevated_debug)
                         this.log.error(`ELEVATED OE3: caught error ${safeJsonStringify(error)} when setting value for device ${deviceId}.`);
                     this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
                         ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
