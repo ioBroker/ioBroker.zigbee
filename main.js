@@ -817,7 +817,7 @@ class Zigbee extends utils.Adapter {
                             this.log.error(`ELEVATED OE2: Error convert result for ${key} with ${safeJsonStringify(preparedValue)} is undefined on device ${deviceId}.`);
 
                 } catch (error) {
-                    if (has_elevated_debug) 
+                    if (has_elevated_debug)
                         this.log.error(`ELEVATED OE3: caught error ${safeJsonStringify(error)} when setting value for device ${deviceId}.`);
                     this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
                         ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
