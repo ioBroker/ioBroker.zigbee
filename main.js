@@ -1106,9 +1106,12 @@ class Zigbee extends utils.Adapter {
                 if (typeof data === 'string') {
                     logger(`${msg}. ${data}`);
                 } else {
-                    if (this.log.level==level)         
+                    if ((this.log.level==level) ||
+                        ((this.log.level='warn')&&(level='error')) ||
+                        ((this.log.level='info')&&(level='error' || level=='warn'))
+                       )
                           logger(`${msg}. ${safeJsonStringify(data)}`)
-                    else  logger(`${msg}. {DATA unavailable. Check log level}`);
+                    else  logger(`${msg}. DATA unavailable. Check log level. MsgLevel:${level} AdaptorLevel:${this.log.level}`);
                 }
             } else {
                 logger(msg);
