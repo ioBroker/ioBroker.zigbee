@@ -29,7 +29,7 @@
     "uri-js": "^4.4.1",
     "typescript": "^5.6.3",
     "zigbee-herdsman": "2.1.9",
-    "zigbee-herdsman-converters": "20.58.0"   
+    "zigbee-herdsman-converters": "20.58.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -40,7 +40,7 @@
     "@iobroker/testing": "^5.0.0",
     "chai": "^5.1.2",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^9.13.0",
+    "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "gulp": "^4.0.2",
