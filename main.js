@@ -477,7 +477,7 @@ class Zigbee extends utils.Adapter {
             shortMessage.device = device.ieeeAddr;
             shortMessage.meta = undefined;
             shortMessage.endpoint = (message.endpoint.ID ? message.endpoint.ID: -1);
-            this.log.warn(`ELEVATED I0: Zigbee Event of Type ${type} from device ${safeJsonStringify(device.ieeeAddr)}, incoming event: ${safeJsonStringify(shortMessage)}`);
+            this.log.warn(`ELEVATED I00: Zigbee Event of Type ${type} from device ${safeJsonStringify(device.ieeeAddr)}, incoming event: ${safeJsonStringify(shortMessage)}`);
         }
         // this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
         meta.logger = this.log;
@@ -561,7 +561,7 @@ class Zigbee extends utils.Adapter {
             if (type !== 'readResponse') {
                 this.log.debug(`No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
                 if (has_elevated_debug)
-                    this.log.warn(`ELEVATED IE0: No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
+                    this.log.warn(`ELEVATED IE00: No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
             }
             return;
         }
@@ -643,7 +643,7 @@ class Zigbee extends utils.Adapter {
 
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
-                if (has_elevated_debug) this.log.warn(`ELEVATED O2: No mapped model for ${model}`)
+                if (has_elevated_debug) this.log.warn(`ELEVATED O02: No mapped model for ${model}`)
                 return;
             }
 
@@ -715,6 +715,7 @@ class Zigbee extends utils.Adapter {
                 }
 
                 let converter = undefined;
+                let msg_counter = 0;
                 for (const c of mappedModel.toZigbee) {
 
                     if (!c.hasOwnProperty('convertSet')) continue;
@@ -725,21 +726,24 @@ class Zigbee extends utils.Adapter {
                         {
                             converter = c;
                             if (has_elevated_debug)
-                                this.log.warn(`ELEVATED O3A: Setting converter to keyless converter for ${deviceId} of type ${model}`)
+                                this.log.warn(`ELEVATED O3.${msg_counter}: Setting converter to keyless converter for ${deviceId} of type ${model}`)
                             this.log.debug('setting converter to keyless converter')
+                            msg_counter++;
                         }
                         else
                         {
-                            if (has_elevated_debug) this.log.warn(`ELEVATED O3B: ignoring keyless converter for ${deviceId} of type ${model}`)
+                            if (has_elevated_debug) this.log.warn(`ELEVATED O3.${msg_counter}: ignoring keyless converter for ${deviceId} of type ${model}`)
                             this.log.debug('ignoring keyless converter')
+                            msg_counter++;
                         }
                         continue;
                     }
                     if (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id))
                     {
                         this.log.debug(`${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
-                        if (has_elevated_debug) this.log.warn(`ELEVATED O3C: ${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
+                        if (has_elevated_debug) this.log.warn(`ELEVATED O3.${msg_counter}: ${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
                         converter = c;
+                        msg_counter++;
                     }
                 }
                 if (converter === undefined) {
