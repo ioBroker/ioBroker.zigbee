@@ -1,8 +1,34 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.12",
+    "version": "1.10.14",
     "news": {
+      "1.10.14": {
+        "en": "Herdsman 2.1.9, Converters 20.58.0\nFix: Aqara T1M (CL-L02D) \ndeleteDeviceStates change to deleteObj",
+        "de": "Herdsman 2.1.9, Konverter 20.58.0\nFix: Aqara T1M (CL-L02D)\nlöschen DeviceState Änderung zum Löschen Ob",
+        "ru": "Herdsman 2.1.9, Converters 20.58.0\nFix: Aqara T1M (CL-L02D)\nудалить Устройства меняются для удаления Obj",
+        "pt": "Herdsman 2.1.9, Conversores 20.58.0\nFix: Aqara T1M (CL-L02D)\nexcluir DeviceStates mudam para excluir Objecção",
+        "nl": "Herdsman 2.1.9, Converters 20.58.0\nFix: Aqara T1M (CL-L02D)\nverwijderen Apparaatstaten wijzigen om te verwijderen Obj",
+        "fr": "Herdsman 2.1.9, Convertisseurs 20.58.0\nCorrection: Aqara T1M (CL-L02D)\nsupprimer Les états de périphérique changent pour supprimer OBJ",
+        "it": "Herdsman 2.1.9, Convertitori 20.58.0\nFisso: Aqara T1M (CL-L02D)\ncancella DeviceStates modifica per eliminare Obj",
+        "es": "Herdsman 2.1.9, convertidores 20.58.0\nFijación: Aqara T1M (CL-L02D)\nborrar Los Estados de dispositivos cambian para eliminar Obj",
+        "pl": "Herdsman 2.1.9, konwertery 20.58.0\nFix: Aqara T1M (CL- L02D)\nusuń DeviceStates zmienić, aby usunąć Obj",
+        "uk": "Herdsman 2.1.9, Конвертер 20.58.0\nФіксація: Aqara T1M (CL-L02D)\nвидалити Зміна стану пристроїв для видалення Офіціант",
+        "zh-cn": "牧民2.1.9,转换器 20.58.0\n修补:Aqara T1M(CL-L02D)\n删除 设备状态更改以删除 欧比"
+      },
+      "1.10.13": {
+        "en": "corr icon download bug (axios)",
+        "de": "corr icon download bug (axios)",
+        "ru": "значок скачать bug (axios)",
+        "pt": "corr ícone de download bug (eixos)",
+        "nl": "corr pictogram download bug (axios)",
+        "fr": "corr icône de téléchargement bug (axios)",
+        "it": "corr icon download bug (assios)",
+        "es": "corr icono descargar bug (axios)",
+        "pl": "corr ikona pobierz błąd (axios)",
+        "uk": "корр іконки завантажити помилку (axios)",
+        "zh-cn": "corr 图标下载错误( axios)"
+      },
       "1.10.12": {
         "en": "corr Channel Scan",
         "de": "corr Channel Scan",
@@ -67,32 +93,6 @@
         "pl": "ustawienia admin corr\ndodaj nową wersję eslint\n",
         "uk": "корр налаштування адміністратора\nдодати нову версію eslint\n",
         "zh-cn": "corr 管理员设置\n添加新的 eslint 版本\n"
-      },
-      "1.10.7": {
-        "en": "add flow control option \nadd new NewHerdsman\nadd new ezsp coordinator Firmware (7.4.1.0)",
-        "de": "möglichkeit der durchflussregelung\nneues hinzufügen NewHerdsman\nezsp Koordinator Firmware hinzufügen (7.4.1.0)",
-        "ru": "добавить параметр управления потоком\nдобавить новый NewHerdsman\nдобавить новый координатор ezsp Firmware (7.4.1.0)",
-        "pt": "adicionar opção de controle de fluxo\nadicionar novo NewHerdsman\nadicionar novo coordenador ezsp Firmware (7.4.1.0)",
-        "nl": "flow control optie toevoegen\nnieuwe NewHerdsman toevoegen\nnieuwe ezsp coördinator Firmware (7.4.1.0) toevoegen",
-        "fr": "ajouter l'option de contrôle du débit\najouter un nouveau NewHerdsman\najouter un nouveau logiciel ezsp coordinator (7.4.1.0)",
-        "it": "aggiungere opzione di controllo del flusso\naggiungere nuovo NewHerdsman\naggiungere nuovo coordinatore ezsp Firmware (7.4.1.0)",
-        "es": "añadir opción de control de flujo\nañadir nuevo NewHerdsman\nañadir nuevo coordinador de ezsp Firmware (7.4.1.0)",
-        "pl": "dodaj opcję kontroli przepływu\ndodaj nowy NewHerdsman\ndodaj nowego koordynatora ezsp Firmware (7.4.1.0)",
-        "uk": "додати варіант контролю потоку\nдодати новийHerdsman\nadd new ezsp manager Прошивка (7.4.1.0)",
-        "zh-cn": "添加流量控制选项\n添加新赫兹曼\n添加新的 ezsp 协调员 Firmware (7.4.1.0)"
-      },
-      "1.10.6": {
-        "en": "core update\ndependency update",
-        "de": "kern-update\naktualisierung der abhängigkeit",
-        "ru": "обновление\nобновление",
-        "pt": "atualização do núcleo\natualização de dependência",
-        "nl": "kernupdate\nafhankelijkheidsupdate",
-        "fr": "mise à jour de base\nmise à jour de la dépendance",
-        "it": "aggiornamento del core\naggiornamento della dipendenza",
-        "es": "actualización básica\nactualización de la dependencia",
-        "pl": "podstawowa aktualizacja\naktualizacja zależności",
-        "uk": "оновлення ядра\nоновлення залежності",
-        "zh-cn": "核心更新\n依赖性更新"
       }
     },
     "titleLang": {

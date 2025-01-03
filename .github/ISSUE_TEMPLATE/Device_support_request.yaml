@@ -1,0 +1,67 @@
+name: Device Support request
+description: Create a issue to support a device which is not currently supported in the zigbee adapter. Unsupported devices are reported as `supported:false` during pairing.
+labels: [devicesupport]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              **IMPORTANT:**    
+              - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is listed as supported at zigbee2mqtt.io. Any device without a link to zigbee2mqtt.io will be assumed not supported - integration of these devices requires physical access to the device, so it is unlikely that any work will be done on it in this project.
+              - ensure that both the manufacturer and the model match between your device and the listed device.
+              - lack of testing with the current github version will result in no action taken. Please ensure to test if a device works in the current github version before submitting a report.
+    - type: input
+      id: zigbee_version
+      attributes:
+          label: Tested with adapter version
+          placeholder: '1.10.13'
+      validations:
+          required: true    
+    - type: input
+      id: model_zigbee
+      attributes:
+          label: modelZigbee
+          description: Can be found on the info-panel accessible from the backside of the device tile in the Admin GUI / Zigbee Tab
+          placeholder: 'TS0601'
+      validations:
+          required: true          
+    - type: input
+      id: manufacturer
+      attributes:
+          label: manufacturer
+          description: Can be found on the info-panel accessible from the backside of the device tile in the Admin GUI / Zigbee Tab
+          placeholder: '_TZ3000_upgcbody'
+      validations:
+          required: true          
+    - type: input
+      id: Link_to_device
+      attributes:
+          label: Link to device
+          description: Post the link of the device listing on zigbee2mqtt.io
+          placeholder: 'https://www.zigbee2mqtt.io/supported-devices/'
+      validations:
+          required: false          
+    - type: input
+      id: coordinator_type_a
+      attributes:
+          label: Coordinator type selected in adapter setting
+          description: The selection made for the coordinator-type in the adapters settings.
+          placeholder: 'TI Z-Stack/CCxxxx'
+      validations:
+          required: false
+    - type: input
+      id: coordinator_type
+      attributes:
+          label: Coordinator 
+          description: Hardware Coordinator
+          placeholder: Electrolama zig-a-zig-ah! (zzh!), Slaeshs CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus ...
+      validations:
+          required: false                    
+    - type: input
+      id: coordinator_fwversion
+      attributes:
+          label: Coordinator firmware version and revision
+          description: Both firmware version and revision are shown on the Device tile for the coordinator in the Admin GUI / Zigbee Tab
+          placeholder: 'version 2-1.2.7.1., revision 20191106'
+      validations:
+          required: false
+         

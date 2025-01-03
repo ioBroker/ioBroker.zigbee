@@ -1,0 +1,58 @@
+name: Problem
+description: Create a generic issue
+labels: [problem]
+body:
+    - type: markdown
+      attributes:
+          value: |
+              **IMPORTANT:** Before submitting:             
+              - check whether the issue is linked to a single device or a group of devices
+              - verify that you can recreate the issue by executing a limited number of steps
+              - do **not** use this issue template to request support for new devices.
+    - type: textarea
+      id: what_problem
+      attributes:
+          label: describe the problem in Detail. What do you expect to happen ? What does happen ?
+      validations:
+          required: true    
+    - type: input
+      id: adapter_version
+      attributes:
+          label: Adapter version
+          description: Can be found in the Admin GUI
+          placeholder: '1.10.3'
+      validations:
+          required: true          
+    - type: input
+      id: coordinator_fwversion
+      attributes:
+          label: Coordinator firmware version
+          description: Can be found in the Adapter settings
+          placeholder: '20230921'
+      validations:
+          required: true
+    - type: input
+      id: coordinator_type
+      attributes:
+          label: Coordinator 
+          description: Hardware Coordinator
+          placeholder: Electrolama zig-a-zig-ah! (zzh!), Slaeshs CC2652RB stick, SONOFF Zigbee 3.0 USB Dongle Plus ...
+      validations:
+          required: true                    
+    - type: input
+      id: setup
+      attributes:
+          label: Setup
+          description: How do you run the adapter 
+          placeholder: Add-on on Intel NUC, Docker container, RaspberryPi...
+      validations:
+          required: true        
+    - type: textarea
+      id: log
+      attributes:
+          label: Protocol of the error (as text, encapsulated in multiline code tags <>). Separate different occurrances into clearly split log sections
+          description: At least 50 lines from the iobroker protocol, run in INFO mode. Ensure to include a number of lines before and after the actual error message
+          placeholder: Click here and drag the file into it or click on "Attach files by.." below
+      validations:
+          required: false
+          
