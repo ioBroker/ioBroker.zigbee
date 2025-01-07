@@ -848,7 +848,7 @@ function load(settings, onChange) {
 
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
-    getMap();
+    //getMap();
     //addCard();
 
     // Signal to admin, that no changes yet
