@@ -8,6 +8,7 @@ const Materialize = (typeof M !== 'undefined') ? M : Materialize,
     namespace = 'zigbee.' + instance,
     namespaceLen = namespace.length;
 let devices = [],
+    debugDevices = [],
     messages = [],
     map = {},
     mapEdges = null,
@@ -94,7 +95,7 @@ function getLQICls(value) {
         if (value < 20) return 'icon-red';
         if (value < 50) return 'icon-orange';
     }
-    return '';
+    return 'icon-green';
 }
 
 
@@ -173,7 +174,7 @@ function getGroupCard(dev) {
     info = info.concat(`                    </ul>
                 </div>`);
     const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
-    const dashCard = getDashCard(dev, `img/group_${memberCount}.png`);
+    const dashCard = getDashCard(dev, `img/group_${memberCount}.png`, memberCount > 0);
     const card = `<div id="${id}" class="device group">
                   <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
@@ -220,7 +221,9 @@ function getCard(dev) {
         img_src = dev.icon || dev.common.icon,
         rooms = [],
         isActive = (dev.common.deactivated ? false : true),
-        lang = systemLang || 'en';
+        lang = systemLang || 'en',
+        ieee = id.replace(namespace + '.', ''),
+        isDebug = checkDebugDevice(ieee);
     for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
             rooms.push(dev.rooms[r][lang]);
@@ -228,6 +231,7 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
+    console.warn('debug for ' + ieee + ' is ' + isDebug);
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
@@ -237,18 +241,19 @@ function getCard(dev) {
         battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
-        status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (isActive ? `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>` : ''),
+        lq = (dev.link_quality > 0) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` 
+                                    : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        status = (isActive ? lq : `<div class="col tool"><i class="material-icons icon-red">cancel</i></div>`),
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-                        <li><span class="labelinfo">ieee:</span><span>0x${id.replace(namespace + '.', '')}</span></li>
+                        <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
                         <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
                         <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
                         <li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
-        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons icon-${(isActive ? 'red' : 'green')}">power_settings_new</i></button>`,
+        debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'Automatic by '+debugDevices[isDebug-1]: 'Disable Debug' : 'Enable Debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
@@ -259,7 +264,7 @@ function getCard(dev) {
                             <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
                                 ${battery}
-                                ${lq}
+                                <!--${lq}-->
                                 ${status}
                             </span>
                             <!--/a--!>
@@ -274,17 +279,17 @@ function getCard(dev) {
                                 ${infoBtn}
                                 <span class="left" style="padding-top:8px">${room}</span>
                                 <span class="left fw_info"></span>
-                                <button name="delete" class="right btn-flat btn-small">
+                                <button name="delete" class="right btn-flat btn-small tooltipped" title="Delete">
                                     <i class="material-icons icon-black">delete</i>
                                 </button>
-                                <button name="edit" class="right btn-flat btn-small">
+                                <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit">
                                     <i class="material-icons icon-green">edit</i>
                                 </button>
                                 <button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
                                     <i class="material-icons icon-red">sync</i>
                                 </button>
                                 ${deactBtn}
-                                ${permitJoinBtn}
+                                ${debugBtn}
                             </div>
                         </div>
                     </div>
@@ -616,6 +621,12 @@ function showDevices() {
         const name = getDevName(dev_block);
         editName(id, name);
     });
+    $('.card-reveal-buttons button[name=\'swapdebug\']').click(function () {
+        const dev_block = $(this).parents('div.device');
+        const id = getDevId(dev_block);
+        const name = getDevName(dev_block);
+        toggleDebugDevice(id, name);
+    });
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = dev_block.attr('id').replace(namespace + '.group_', '');
@@ -751,9 +762,39 @@ function getCoordinatorInfo() {
         }
     });
 }
+function checkDebugDevice(id) {
+    if (debugDevices.indexOf(id) > -1) return 0
+    for (const addressPart of debugDevices) {
+        if (typeof id === 'string' && id.includes(addressPart)) {
+            return debugDevices.indexOf(addressPart)+1;
+        }
+    }
+    return -1;
+}
+async function toggleDebugDevice(id) {
+    console.warn('toggleDebugDevices with id ' + id);
+    sendTo(namespace, 'setDeviceDebug', {id:id}, function (msg) {
+        sendTo(namespace, 'getDebugDevices', {}, function(msg) {
+            if (msg && typeof (msg.debugDevices == 'array')) {
+                debugDevices = msg.debugDevices; 
+            }
+            else 
+                debugDevices = [];
+            });
+        console.warn('toggleDebugDevices.result ' + JSON.stringify(debugDevices));
+        showDevices();
+    });
+}
 
 function getDevices() {
     getCoordinatorInfo();
+    sendTo(namespace, 'getDebugDevices', {}, function(msg) {
+        if (msg && typeof (msg.debugDevices == 'array')) {
+            debugDevices = msg.debugDevices; 
+        }
+        else 
+            debugDevices = [];
+        });
     sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -2827,7 +2868,7 @@ function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }
 
-function getDashCard(dev, groupImage) {
+function getDashCard(dev, groupImage, groupstatus) {
     const title = dev.common.name,
         id = dev._id,
         type = dev.common.type,
@@ -2842,11 +2883,13 @@ function getDashCard(dev, groupImage) {
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
+        unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>')
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : ''),
-        status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
-        permitJoinBtn = (isActive && dev.info && dev.info.device._type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
+        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` 
+                                                : (isActive ? unconnected_icon : ''),
+        //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
+        //permitJoinBtn = (isActive && dev.info && dev.info.device._type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
     const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
         const id = stateDef.id;
@@ -2888,7 +2931,6 @@ function getDashCard(dev, groupImage) {
                 ${idleTime}
                 ${battery}
                 ${lq}
-                ${status}
             </span>
             <span class="card-title truncate">${title}</span>
             </div>
