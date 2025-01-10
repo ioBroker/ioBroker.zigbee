@@ -687,7 +687,7 @@ class Zigbee extends utils.Adapter {
                         }
                         if (mappedModel) {
                             this.query_device_block.push(deviceId);
-                            this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
+                            this.log.warn(`Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`);
                             let t;
                             for (const converter of mappedModel.toZigbee) {
                                 if (converter.hasOwnProperty('convertGet')) {
@@ -699,17 +699,17 @@ class Zigbee extends utils.Adapter {
                                             const delta = new Date().getTime()-t;
                                             this.log.warn(`Failed to read state (1)'${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} ' after ${delta} ms from query with '${error && error.message ? error.message : 'no error message'}`);
                                         }
-                                        t = new Date().getTime();
-                                        try {
-                                            await converter.convertGet(entity.device, ckey, {});
-                                        } catch (error) {
-                                            const delta = new Date().getTime()-t;
-                                            this.log.warn(`Failed to read state (2)'${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after ${delta} ms from query with '${error && error.message ? error.message : 'no error message'}`);
-                                        }
+//                                        t = new Date().getTime();
+//                                        try {
+//                                            await converter.convertGet(entity.device, ckey, {});
+//                                        } catch (error) {
+//                                            const delta = new Date().getTime()-t;
+//                                            this.log.warn(`Failed to read state (2)'${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after ${delta} ms from query with '${error && error.message ? error.message : 'no error message'}`);
+//                                        }
                                     }
                                 }
                             }
-                            this.log.debug(`Device query for '${entity.device.ieeeAddr}' done`);
+                            this.log.warn(`Device query for '${entity.device.ieeeAddr}' complete`);
                             const idToRemove = deviceId;
                             setTimeout(() => {
                                 const idx = this.query_device_block.indexOf(idToRemove);
