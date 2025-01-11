@@ -833,7 +833,7 @@ class Zigbee extends utils.Adapter {
                 }
             });
         } catch (err) {
-            this.log.error(`No entity for ${deviceId}`);
+            this.log.error(`No entity for ${deviceId} : ${err && err.message ? err.message : ''}`);
         }
     }
 
