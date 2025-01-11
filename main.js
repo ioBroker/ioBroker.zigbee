@@ -697,7 +697,7 @@ class Zigbee extends utils.Adapter {
                                             await converter.convertGet(entity.device.endpoints[0], ckey, {});
                                         } catch (error) {
                                             const delta = new Date().getTime()-t;
-                                            this.log.warn(`Failed to read state (1)'${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} ' after ${delta} ms from query with '${error && error.message ? error.message : 'no error message'}`);
+                                            this.log.warn(`Failed to read state (1)'${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} ' after ${delta} ms from query with '${error && error.message ? error.message : 'no error message'}('${error && error.stack ? error.stack : 'no call stack'})`);
                                         }
 //                                        t = new Date().getTime();
 //                                        try {
