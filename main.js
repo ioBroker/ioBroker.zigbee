@@ -687,27 +687,34 @@ class Zigbee extends utils.Adapter {
                     // on activation of the 'device_query' state trigger hardware query where possible
                     if (stateDesc.id === 'device_query') {
                         if (this.query_device_block.indexOf(deviceId) > -1) {
-                            this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
+                            this.log.info(`Device query for '${entity.device.ieeeAddr}' blocked`);
                             return;
                         }
                         if (mappedModel) {
                             this.query_device_block.push(deviceId);
-                            this.log.warn(`Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`);
+                            if (has_elevated_debug)
+                                this.log.warn(`ELEVATED O06: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`);
                             let t;
                             for (const converter of mappedModel.toZigbee) {
                                 if (converter.hasOwnProperty('convertGet')) {
                                     for (const ckey of converter.key) {
-                                        t = new Date().getTime();
                                         try {
                                             await converter.convertGet(entity.device.endpoints[0], ckey, {endpoint_name:entity.device.endpoints[0].ID.toString()});
                                         } catch (error) {
-                                            const delta = new Date().getTime()-t;
-                                            this.log.warn(`Failed to read state (1)'${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} ' after ${delta} ms from query with '${error && error.message ? error.message : 'no error message'}('${error && error.stack ? error.stack : 'no call stack'})`);
+                                            if (has_elevated_debug) {
+                                                this.log.warn(`ELEVATED OE02.1 Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`);
+                                            }
+                                            else 
+                                                this.log.info(`failed to read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
                                         }
                                     }
                                 }
                             }
-                            this.log.warn(`Device query for '${entity.device.ieeeAddr}' complete`);
+                            if (has_elevated_debug)
+                                this.log.warn(`ELEVATED O07: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`);
+                            else 
+                                this.log.info(`Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`);
+
                             const idToRemove = deviceId;
                             setTimeout(() => {
                                 const idx = this.query_device_block.indexOf(idToRemove);
