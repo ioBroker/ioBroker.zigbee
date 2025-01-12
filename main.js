@@ -629,10 +629,10 @@ class Zigbee extends utils.Adapter {
         let isGroup = false;
         const has_elevated_debug = this.stController.checkDebugDevice(deviceId)
 
-        if (has_elevated_debug) 
-        {   
-            let stateNames = [];
-            stateList.forEach( state => stateNames.push(state.id)); 
+        if (has_elevated_debug)
+        {
+            const stateNames = [];
+            stateList.forEach( state => stateNames.push(state.id));
             this.log.warn(`ELEVATED O03: Publishing to ${deviceId} of model ${model} ${stateNames.join(', ')}`);
         }
         else
@@ -704,7 +704,7 @@ class Zigbee extends utils.Adapter {
                                             if (has_elevated_debug) {
                                                 this.log.warn(`ELEVATED OE02.1 Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`);
                                             }
-                                            else 
+                                            else
                                                 this.log.info(`failed to read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
                                         }
                                     }
@@ -712,7 +712,7 @@ class Zigbee extends utils.Adapter {
                             }
                             if (has_elevated_debug)
                                 this.log.warn(`ELEVATED O07: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`);
-                            else 
+                            else
                                 this.log.info(`Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`);
 
                             const idToRemove = deviceId;
