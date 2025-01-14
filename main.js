@@ -786,9 +786,12 @@ class Zigbee extends utils.Adapter {
                 }
 
                 const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
+
                 const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
-                if (has_elevated_debug)
+                if (has_elevated_debug) {
+                    const epmsg = (stateDesc.epname !== undefined ? ' Endpoint '+epName : ' unnamed Endpoint');
                     this.log.warn(`ELEVATED O4: convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)} for device ${deviceId} with Endpoint ${epName}`);
+                }
                 else
                     this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
                 let target;
@@ -797,6 +800,7 @@ class Zigbee extends utils.Adapter {
                 } else {
                     target = await this.zbController.resolveEntity(deviceId, epName);
                     target = target.endpoint;
+                    EPID=target.ID
                 }
 
                 if (has_elevated_debug)
@@ -830,7 +834,17 @@ class Zigbee extends utils.Adapter {
                 }
 
                 try {
-                    if (has_elevated_debug) this.log.warn(`ELEVATED OX: calling convertSet with Parameters ${safeJsonStringify(target)},${safeJsonStringify(key)},${safeJsonStringify(preparedValue)},${safeJsonStringify(meta)}`)
+                    if (has_elevated_debug) {
+                        let metastring = ['{'];
+                        for (const prop in meta) {
+                            if (prop != 'device')
+                                metastring.push(`${prop}: ${JSON.stringify(meta.prop)}`);
+                            else
+                            metastring.push(`${prop}: "zigbee device"`);
+                        }
+                        metastring.push('}');
+                        this.log.warn(`ELEVATED OX: calling convertSet with Parameters ${safeJsonStringify(target)},${safeJsonStringify(key)},${safeJsonStringify(preparedValue)},${safeJsonStringify(metastring.join(','))}`);
+                    }
                     const result = await converter.convertSet(target, key, preparedValue, meta);
                     if (has_elevated_debug)
                         this.log.warn(`ELEVATED O05: convert result ${safeJsonStringify(result)} sent to device ${deviceId}`);
