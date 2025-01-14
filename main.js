@@ -625,7 +625,8 @@ class Zigbee extends utils.Adapter {
         });
     }
 
-    async publishFromState(deviceId, model, stateModel, stateList, options) {
+
+        async publishFromState(deviceId, model, stateModel, stateList, options) {
         let isGroup = false;
         const has_elevated_debug = this.stController.checkDebugDevice(deviceId)
 
@@ -654,7 +655,10 @@ class Zigbee extends utils.Adapter {
 
             if (!mappedModel.toZigbee)
             {
-                this.log.error(`No toZigbee in mapped model for ${model}`);
+                if (has_elevated_debug)
+                    this.log.error(`ELEVATED OE01: No toZigbee in mapped model ${model}`)
+                else
+                    this.log.error(`No toZigbee in mapped model for ${model}`);
                 return;
             }
 
@@ -733,7 +737,10 @@ class Zigbee extends utils.Adapter {
                 for (const c of mappedModel.toZigbee) {
 
                     if (!c.hasOwnProperty('convertSet')) continue;
-                    this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
+                    if (has_elevated_debug)
+                        this.log.warn(`EX Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
+                    else
+                        this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
                     if (!c.hasOwnProperty('key'))
                     {
                         if (c.hasOwnProperty('convertSet') && converter === undefined)
@@ -763,6 +770,7 @@ class Zigbee extends utils.Adapter {
                     this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
                     return;
                 }
+                if (has_elevated_debug) this.log.warn('EX: converter found for ' + JSON.stringify(converter.key));
 
                 const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
                 const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
@@ -779,9 +787,10 @@ class Zigbee extends utils.Adapter {
 
                 const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
                 const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
-                this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
-                if (has_elevated_debug) this.log.warn(`ELEVATED O4: convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)} for device ${deviceId} with Endpoint ${epName}`);
-
+                if (has_elevated_debug)
+                    this.log.warn(`ELEVATED O4: convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)} for device ${deviceId} with Endpoint ${epName}`);
+                else
+                    this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
                 let target;
                 if (model === 'group') {
                     target = entity.mapped;
@@ -790,7 +799,10 @@ class Zigbee extends utils.Adapter {
                     target = target.endpoint;
                 }
 
-                this.log.debug(`target: ${safeJsonStringify(target)}`);
+                if (has_elevated_debug)
+                    this.log.warn(`EX: target is ${safeJsonStringify(target)}`);
+                else
+                    this.log.debug(`target: ${safeJsonStringify(target)}`);
 
                 const meta = {
                     endpoint_name: epName,
@@ -818,9 +830,12 @@ class Zigbee extends utils.Adapter {
                 }
 
                 try {
+                    if (has_elevated_debug) this.log.warn(`ELEVATED OX: calling convertSet with Parameters ${safeJsonStringify(target)},${safeJsonStringify(key)},${safeJsonStringify(preparedValue)},${safeJsonStringify(meta)}`)
                     const result = await converter.convertSet(target, key, preparedValue, meta);
-                    this.log.debug(`convert result ${safeJsonStringify(result)}`);
-                    if (has_elevated_debug) this.log.warn(`ELEVATED O05: convert result ${safeJsonStringify(result)} sent to device ${deviceId}`);
+                    if (has_elevated_debug)
+                        this.log.warn(`ELEVATED O05: convert result ${safeJsonStringify(result)} sent to device ${deviceId}`);
+                    else
+                        this.log.debug(`convert result ${safeJsonStringify(result)}`);
                     if (result !== undefined) {
                         if (stateModel && !isGroup) {
                             this.acknowledgeState(deviceId, model, stateDesc, value);
