@@ -800,7 +800,6 @@ class Zigbee extends utils.Adapter {
                 } else {
                     target = await this.zbController.resolveEntity(deviceId, epName);
                     target = target.endpoint;
-                    EPID=target.ID
                 }
 
                 if (has_elevated_debug)
