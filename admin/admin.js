@@ -807,11 +807,12 @@ sendTo(namespace, 'getLocalImages', {}, function(msg) {
 */
 
 function updateDeviceImage(device, image, global) {
+    console.warn(`update device image : ${JSON.stringify(device)} : ${image} : ${global}`);
     sendTo(namespace, 'updateDeviceImage', {target: device, image: image, global:global}, function(msg) {
         if (msg && msg.hasOwnProperty.error) {
             showMessage(msg.error, _('Error'));
         }
-        getDevices((global ? '':device));
+        getDevices();
     });
 }
 
@@ -823,7 +824,7 @@ async function selectImageOverride(id) {
         if (msg && msg.imageData) {
     //            const element = $('#localimages');
             const imagedata = msg.imageData;
-            imagedata.push( { file:'none', name:'default', data:dev.common.icon || dev.icon})
+            imagedata.unshift( { file:'none', name:'default', data:dev.common.icon || dev.icon});
     
             list2select('#images', imagedata, selectItems,
                 function (key, image) {
@@ -841,10 +842,11 @@ async function selectImageOverride(id) {
                 },
             );
             
-            $('#modaledit a.btn[name=\'save\']').unbind('click');
-            $('#modaledit a.btn[name=\'save\']').click(() => {
+            $('#chooseimage a.btn[name=\'save\']').unbind('click');
+            $('#chooseimage a.btn[name=\'save\']').click(() => {
                 const image = $('#chooseimage').find('#images option:selected').val();
                 const global = $('#chooseimage').find('#globaloverride').prop('checked');                
+                console.warn(`update device image : ${id} : ${image} : ${global}`);
                 updateDeviceImage(id, image, global);
         //        console.warn(`selected image file name is ${newName}`);
         //        updateDev(id, newName, groupsbyid);
