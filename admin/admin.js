@@ -234,7 +234,6 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
-    console.warn('debug for ' + ieee + ' is ' + isDebug);
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
@@ -2775,17 +2774,18 @@ function addExcludeDialog() {
 }
 
 function addExclude(exclude_model) {
-    sendTo(namespace, 'addExclude', {
-        exclude_model: exclude_model
-    }, function (msg) {
-        closeWaitingDialog();
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
+    if (typeof exclude_model == 'object' && exclude_model.hasOwnProperty('common'))
+         sendTo(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
+            closeWaitingDialog();
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'));
+                }
             }
-        }
-        getExclude();
-    });
+            console.log('getting excludes ?');
+            getExclude();
+        });
+    else closeWaitingDialog();
 }
 
 function getExclude() {
@@ -2794,10 +2794,10 @@ function getExclude() {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
             } else {
-                excludes = msg;
+                excludes = msg.legacy;
                 showExclude();
             }
-        }
+        } else console.warn('getExclude without msg')
     });
 }
 
@@ -2809,10 +2809,14 @@ function showExclude() {
         return;
     }
 
-    excludes.forEach(b => {
-        const exclude_id = b.id;
+    excludes.forEach(id => {
+//        const b = devices.find((item) => item._id.contains(id));
+        const exclude_id = id.key;
+        const exclude_icon = id.value;
 
         const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}};
+//        console.warn('showExcludes for id ' + exclude_id + ' with b = ' + JSON.stringify(exclude_dev));
+
         // exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
 
         const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(exclude_id)}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
@@ -2845,7 +2849,7 @@ function showExclude() {
     $('#exclude button[name=\'delete\']').click(function () {
         const exclude_id = $(this).parents('.exclude')[0].id;
         deleteExcludeConfirmation(exclude_id);
-        deleteExclude(exclude_id);
+        //deleteExclude(exclude_id);
     });
 }
 
@@ -2870,6 +2874,7 @@ function deleteExclude(id) {
                 showMessage(msg.error, _('Error'));
             }
         }
+        console.log('getting excludes ?');
         getExclude();
     });
 }

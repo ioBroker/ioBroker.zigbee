@@ -193,9 +193,8 @@ class Zigbee extends utils.Adapter {
 
         // external converters
         this.applyExternalConverters();
-        // get exclude list from object
-        this.getState('exclude.all', (err, state) =>
-            this.stController.getExcludeExposes(state));
+        // get devices from exposes
+        this.stController.getExposes();
 
         this.subscribeStates('*');
         // set connection false before connect to zigbee
@@ -312,6 +311,8 @@ class Zigbee extends utils.Adapter {
                 }
                 this.log.info(`Installed Version: ${gitVers}`);
             });
+
+
 
             await this.zbController.start();
         } catch (error) {
