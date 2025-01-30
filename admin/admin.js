@@ -234,6 +234,7 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
+    console.warn('debug for ' + ieee + ' is ' + isDebug);
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
@@ -632,11 +633,13 @@ function showDevices() {
         const name = getDevName(dev_block);
         toggleDebugDevice(id, name);
     });
+
     $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = getDevId(dev_block);
         selectImageOverride(id);
     });
+
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = dev_block.attr('id').replace(namespace + '.group_', '');
@@ -795,15 +798,6 @@ async function toggleDebugDevice(id) {
     });
 }
 
-/*
-sendTo(namespace, 'getLocalImages', {}, function(msg) {
-    if (msg && msg.imageData) {
-//            const element = $('#localimages');
-        console.warn('imageData length is ' + msg.imageData.length);
-        localImages = msg.imageData;
-    }
-});
-*/
 
 function updateDeviceImage(device, image, global) {
     console.warn(`update device image : ${JSON.stringify(device)} : ${image} : ${global}`);

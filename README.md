@@ -137,6 +137,17 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### 1.11.1 (2025-01-02)
+* (asgothian) Fix Pairing
+* (asgothian) change ping
+* (asgothian) delay map generation until refresh is activated
+* (asgothian) remove bindings tab from zigbee tab
+* (asgothian) reorder tabs in configuration
+* (asgothian) remove binding tab from configuration
+* (asgothian) remove map from configuration
+* (asgothian) add debug to zigbee tab (work in progress)
+* (asgothian) Herdsman 3.2.0, Converters 21.11.0
+
 ### 1.10.14 (2025-01-01)
 * (arteck) Herdsman 2.1.9, Converters 20.58.0
 * (asgothian) Fix: Aqara T1M (CL-L02D) 
