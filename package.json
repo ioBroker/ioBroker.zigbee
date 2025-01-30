@@ -47,7 +47,8 @@
     "gulp-jsdoc3": "^3.0.0",
     "gulp-replace": "^1.1.4",
     "mixin-deep": "^2.0.1",
-    "mocha": "^10.8.2"
+    "mocha": "^10.8.2",
+    "dev-server": "^0.7.7"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
@@ -91,6 +92,7 @@
     "release": "release-script",
     "release-patch": "release-script patch --yes --no-update-lockfile",
     "release-minor": "release-script minor --yes --no-update-lockfile",
-    "release-major": "release-script major --yes --no-update-lockfile"
+    "release-major": "release-script major --yes --no-update-lockfile",
+    "dev-server": "dev-server"
   }
 }

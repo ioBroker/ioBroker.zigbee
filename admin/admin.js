@@ -200,6 +200,9 @@ function getGroupCard(dev) {
                                 <button name="editgrp" class="right btn-flat btn-small">
                                     <i class="material-icons icon-green">edit</i>
                                 </button>
+                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Edit">
+                                    <i class="material-icons icon-black">image</i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -218,7 +221,7 @@ function getCard(dev) {
         id = dev._id,
         type = (dev.common.type ? dev.common.type : 'unknown'),
         type_url = (dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown'),
-        img_src = dev.icon || dev.common.icon,
+        img_src = dev.common.icon || dev.icon,
         rooms = [],
         isActive = (dev.common.deactivated ? false : true),
         lang = systemLang || 'en',
@@ -284,6 +287,9 @@ function getCard(dev) {
                                 </button>
                                 <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit">
                                     <i class="material-icons icon-green">edit</i>
+                                </button>
+                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Select Image">
+                                    <i class="material-icons icon-black">image</i>
                                 </button>
                                 <button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
                                     <i class="material-icons icon-red">sync</i>
@@ -627,6 +633,13 @@ function showDevices() {
         const name = getDevName(dev_block);
         toggleDebugDevice(id, name);
     });
+
+    $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
+        const dev_block = $(this).parents('div.device');
+        const id = getDevId(dev_block);
+        selectImageOverride(id);
+    });
+
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = dev_block.attr('id').replace(namespace + '.group_', '');
@@ -772,7 +785,6 @@ function checkDebugDevice(id) {
     return -1;
 }
 async function toggleDebugDevice(id) {
-    console.warn('toggleDebugDevices with id ' + id);
     sendTo(namespace, 'setDeviceDebug', {id:id}, function (msg) {
         sendTo(namespace, 'getDebugDevices', {}, function(msg) {
             if (msg && typeof (msg.debugDevices == 'array')) {
@@ -783,6 +795,58 @@ async function toggleDebugDevice(id) {
             });
         console.warn('toggleDebugDevices.result ' + JSON.stringify(debugDevices));
         showDevices();
+    });
+}
+
+
+function updateDeviceImage(device, image, global) {
+    console.warn(`update device image : ${JSON.stringify(device)} : ${image} : ${global}`);
+    sendTo(namespace, 'updateDeviceImage', {target: device, image: image, global:global}, function(msg) {
+        if (msg && msg.hasOwnProperty.error) {
+            showMessage(msg.error, _('Error'));
+        }
+        getDevices();
+    });
+}
+
+async function selectImageOverride(id) {
+    const dev = devices.find((d) => d._id == id);
+    let localImages = undefined;
+    const selectItems= [''];
+    sendTo(namespace, 'getLocalImages', {}, function(msg) {
+        if (msg && msg.imageData) {
+    //            const element = $('#localimages');
+            const imagedata = msg.imageData;
+            imagedata.unshift( { file:'none', name:'default', data:dev.common.icon || dev.icon});
+    
+            list2select('#images', imagedata, selectItems,
+                function (key, image) {
+                    return image.name
+                },
+                function (key, image) {
+                    return image.file;
+                },
+                function (key, image) {
+                    if (image.file == 'none') {
+                        return `data-icon="${image.data}"`;
+                    } else {
+                        return `data-icon="data:image/png; base64, ${image.data}"`;
+                    }
+                },
+            );
+            
+            $('#chooseimage a.btn[name=\'save\']').unbind('click');
+            $('#chooseimage a.btn[name=\'save\']').click(() => {
+                const image = $('#chooseimage').find('#images option:selected').val();
+                const global = $('#chooseimage').find('#globaloverride').prop('checked');                
+                console.warn(`update device image : ${id} : ${image} : ${global}`);
+                updateDeviceImage(id, image, global);
+        //        console.warn(`selected image file name is ${newName}`);
+        //        updateDev(id, newName, groupsbyid);
+            });
+            $('#chooseimage').modal('open');
+            Materialize.updateTextFields();
+        }
     });
 }
 
@@ -835,14 +899,26 @@ function getMap() {
     });
 }
 
+function getRandomExtPanID()
+{
+    const bytes = [];
+    for (var i = 0;i<16;i++) {
+        bytes.push(Math.floor(Math.random() * 16).toString(16));
+    }
+    return bytes.join('');
+}
+
+
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
     if (settings.panID === undefined) {
-        settings.panID = 6754;
+//        settings.panID = 6754;
+        settings.panID = Math.floor(Math.random() * 10000);
     }
     if (settings.extPanID === undefined) {
-        settings.extPanID = 'DDDDDDDDDDDDDDDD';
+//        settings.extPanID = 'DDDDDDDDDDDDDDDD';
+        settings.extPanID = getRandomExtPanID();
     }
     // fix for previous wrong value
     if (settings.extPanID === 'DDDDDDDDDDDDDDD') {
@@ -884,6 +960,7 @@ function load(settings, onChange) {
             });
         }
     }
+
 
     getComPorts(onChange);
 
@@ -1106,7 +1183,7 @@ socket.on('stateChange', function (id, state) {
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
     //console.log('objectChange', id, obj);
-    if (obj && obj.type == 'device' && obj.common.type !== 'group') {
+    if (obj && obj.type == 'device') { // && obj.common.type !== 'group') {
         updateDevice(id);
     }
     if (!obj) {
@@ -1169,7 +1246,7 @@ function showNetworkMap(devices, map) {
             label: (dev.link_quality > 0 ? dev.common.name : `${dev.common.name}\n(disconnected)`),
             title: dev._id.replace(namespace + '.', '') + extInfo,
             shape: 'circularImage',
-            image: dev.icon,
+            image: dev.common.icon || dev.icon,
             imagePadding: {top: 5, bottom: 5, left: 5, right: 5},
             color: {background: 'white', highlight: {background: 'white'}},
             font: {color: '#007700'},
@@ -2691,17 +2768,18 @@ function addExcludeDialog() {
 }
 
 function addExclude(exclude_model) {
-    sendTo(namespace, 'addExclude', {
-        exclude_model: exclude_model
-    }, function (msg) {
-        closeWaitingDialog();
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
+    if (typeof exclude_model == 'object' && exclude_model.hasOwnProperty('common'))
+         sendTo(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
+            closeWaitingDialog();
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'));
+                }
             }
-        }
-        getExclude();
-    });
+            console.log('getting excludes ?');
+            getExclude();
+        });
+    else closeWaitingDialog();
 }
 
 function getExclude() {
@@ -2710,10 +2788,10 @@ function getExclude() {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
             } else {
-                excludes = msg;
+                excludes = msg.legacy;
                 showExclude();
             }
-        }
+        } else console.warn('getExclude without msg')
     });
 }
 
@@ -2725,10 +2803,14 @@ function showExclude() {
         return;
     }
 
-    excludes.forEach(b => {
-        const exclude_id = b.id;
+    excludes.forEach(id => {
+//        const b = devices.find((item) => item._id.contains(id));
+        const exclude_id = id.key;
+        const exclude_icon = id.value;
 
         const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}};
+//        console.warn('showExcludes for id ' + exclude_id + ' with b = ' + JSON.stringify(exclude_dev));
+
         // exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
 
         const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(exclude_id)}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
@@ -2761,7 +2843,7 @@ function showExclude() {
     $('#exclude button[name=\'delete\']').click(function () {
         const exclude_id = $(this).parents('.exclude')[0].id;
         deleteExcludeConfirmation(exclude_id);
-        deleteExclude(exclude_id);
+        //deleteExclude(exclude_id);
     });
 }
 
@@ -2786,6 +2868,7 @@ function deleteExclude(id) {
                 showMessage(msg.error, _('Error'));
             }
         }
+        console.log('getting excludes ?');
         getExclude();
     });
 }
@@ -2872,7 +2955,7 @@ function getDashCard(dev, groupImage, groupstatus) {
     const title = dev.common.name,
         id = dev._id,
         type = dev.common.type,
-        img_src = (groupImage ? groupImage : dev.icon || dev.common.icon),
+        img_src = (groupImage ? groupImage : dev.common.icon || dev.icon),
         isActive = !dev.common.deactivated,
         rooms = [],
         lang = systemLang || 'en';
