@@ -629,7 +629,14 @@ class Zigbee extends utils.Adapter {
         let isGroup = false;
         const has_elevated_debug = this.stController.checkDebugDevice(deviceId)
 
-        this.log.debug(`publishFromState : ${deviceId} ${model} ${safeJsonStringify(stateList)}`);
+        if (has_elevated_debug)
+        {
+            const stateNames = [];
+            stateList.forEach( state => stateNames.push(state.id));
+            this.log.warn(`ELEVATED O03: Publishing to ${deviceId} of model ${model} ${stateNames.join(', ')}`);
+        }
+        else
+            this.log.debug(`publishFromState : ${deviceId} ${model} ${safeJsonStringify(stateList)}`);
         if (model === 'group') {
             isGroup = true;
             deviceId = parseInt(deviceId);
@@ -637,9 +644,7 @@ class Zigbee extends utils.Adapter {
         try {
             const entity = await this.zbController.resolveEntity(deviceId);
 
-            this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
-
-            const mappedModel = entity.mapped;
+            const mappedModel = (entity ? entity.mapped : undefined);
 
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
@@ -682,25 +687,34 @@ class Zigbee extends utils.Adapter {
                     // on activation of the 'device_query' state trigger hardware query where possible
                     if (stateDesc.id === 'device_query') {
                         if (this.query_device_block.indexOf(deviceId) > -1) {
-                            this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
+                            this.log.info(`Device query for '${entity.device.ieeeAddr}' blocked`);
                             return;
                         }
                         if (mappedModel) {
                             this.query_device_block.push(deviceId);
-                            this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
+                            if (has_elevated_debug)
+                                this.log.warn(`ELEVATED O06: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`);
+                            let t;
                             for (const converter of mappedModel.toZigbee) {
                                 if (converter.hasOwnProperty('convertGet')) {
                                     for (const ckey of converter.key) {
                                         try {
-                                            await converter.convertGet(entity.device.endpoints[0], ckey, {});
+                                            await converter.convertGet(entity.device.endpoints[0], ckey, {endpoint_name:entity.device.endpoints[0].ID.toString()});
                                         } catch (error) {
-                                            this.log.warn(`Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}' after query with '${JSON.stringify(error)}'`);
-
+                                            if (has_elevated_debug) {
+                                                this.log.warn(`ELEVATED OE02.1 Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`);
+                                            }
+                                            else
+                                                this.log.info(`failed to read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
                                         }
                                     }
                                 }
                             }
-                            this.log.debug(`Device query for '${entity.device.ieeeAddr}' done`);
+                            if (has_elevated_debug)
+                                this.log.warn(`ELEVATED O07: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`);
+                            else
+                                this.log.info(`Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`);
+
                             const idToRemove = deviceId;
                             setTimeout(() => {
                                 const idx = this.query_device_block.indexOf(idToRemove);
@@ -715,6 +729,7 @@ class Zigbee extends utils.Adapter {
                 }
 
                 let converter = undefined;
+
                 let msg_counter = 0;
                 for (const c of mappedModel.toZigbee) {
 
@@ -808,7 +823,7 @@ class Zigbee extends utils.Adapter {
                 try {
                     const result = await converter.convertSet(target, key, preparedValue, meta);
                     this.log.debug(`convert result ${safeJsonStringify(result)}`);
-                    if (has_elevated_debug) this.log.warn(`ELEVATED O5: convert result ${safeJsonStringify(result)} for device ${deviceId}`);
+                    if (has_elevated_debug) this.log.warn(`ELEVATED O05: convert result ${safeJsonStringify(result)} sent to device ${deviceId}`);
                     if (result !== undefined) {
                         if (stateModel && !isGroup) {
                             this.acknowledgeState(deviceId, model, stateDesc, value);
@@ -828,7 +843,7 @@ class Zigbee extends utils.Adapter {
                 }
             });
         } catch (err) {
-            this.log.error(`No entity for ${deviceId}`);
+            this.log.error(`No entity for ${deviceId} : ${err && err.message ? err.message : ''}`);
         }
     }
 

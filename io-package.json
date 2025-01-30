@@ -67,45 +67,6 @@
         "pl": "ZMIANA ZBIORCZA\n\nbłędy: ChannelScan jest obecnie niedostępny\n\n\nnaprawić błędy lintera\nwyłączyć wyświetlacz mapy dla wyłączonych urządzeń\nnowa opcja na mapie: wyłączenie interakcji fizyki\nnowe konwertery zigbee- herdsman- 20.28.0\nnowy zigbee-herdsman 2.1.1\nZezwalaj na stosowanie konwerterów bezklawiszowych (używanych dla TuYa i kompatybilnych urządzeń w konwerterach zigbee- herdsman-\nzamiana z wniosku na aksjos\nusuń grupy działa ponownie",
         "uk": "БРЕАКІНГ ЗМІН\n\nпомилки : CanalScan наразі немає\n\n\nвиправлено помилки linter\nвідключення відображення карти для деактивованих пристроїв\nновий варіант на карті: відключена фізика взаємодія\nнові zigbee-herdsman-converters 20.28.0\nновий zigbee-herdsman 2.1.1\nДозволити використання без ключів конвертерів (використовується для TuYa та сумісних пристроїв в zigbee-herdsman-converters\nковтання від запиту в осях\nвидалити групи знову",
         "zh-cn": "破坏变化\n\n错误 : 频道扫描目前不可用\n\n\n修正线性错误\n禁用已停用设备的地图显示\n地图上的新选项: 禁用物理交互\n新齐格比-牧民-转换器 20.28.0\n新齐格比牧民 2.1.1\n允许使用无密钥转换器( 用于 TuYa 和 Zigbee- herdsman- 转换器中的兼容设备)\n从请求转换为轴\n再次删除组工作"
-      },
-      "1.10.10": {
-        "en": "core update\ndependency update",
-        "de": "kern-update\naktualisierung der abhängigkeit",
-        "ru": "обновление\nобновление",
-        "pt": "atualização do núcleo\natualização de dependência",
-        "nl": "kernupdate\nafhankelijkheidsupdate",
-        "fr": "mise à jour de base\nmise à jour de la dépendance",
-        "it": "aggiornamento del core\naggiornamento della dipendenza",
-        "es": "actualización básica\nactualización de la dependencia",
-        "pl": "podstawowa aktualizacja\naktualizacja zależności",
-        "uk": "оновлення ядра\nоновлення залежності",
-        "zh-cn": "核心更新\n依赖性更新"
-      },
-      "1.10.9": {
-        "en": "typo admin settings\neslint config",
-        "de": "typo admin einstellungen\neslint config",
-        "ru": "настройки admin\neslint config",
-        "pt": "configurações de administração do tipo\neslint config",
-        "nl": "typo admin instellingen\neslint config",
-        "fr": "paramètres d'administration typo\nconfig eslint",
-        "it": "impostazioni dell'amministratore\neslint config",
-        "es": "configuración de administración de tipo\neslint config",
-        "pl": "ustawienia admin typo\neslint config",
-        "uk": "параметри адміністратора\neslint config",
-        "zh-cn": "类型管理员设置\n埃斯林特配置"
-      },
-      "1.10.8": {
-        "en": "corr admin settings\nadd new eslint version\n",
-        "de": "korr admin einstellungen\nneue eslint-version hinzufügen\n",
-        "ru": "настройки администрирования\nдобавить новую версию eslint\n",
-        "pt": "configurações de administração de corrimento\nadicionar nova versão eslint\n",
-        "nl": "corr admin instellingen\nnieuwe eslint versie toevoegen\n",
-        "fr": "paramètres d'administration corr\najouter une nouvelle version eslint\n",
-        "it": "impostazioni dell'amministratore\naggiungere nuova versione eslint\n",
-        "es": "configuración de administración de corr\nañadir nueva versión eslint\n",
-        "pl": "ustawienia admin corr\ndodaj nową wersję eslint\n",
-        "uk": "корр налаштування адміністратора\nдодати нову версію eslint\n",
-        "zh-cn": "corr 管理员设置\n添加新的 eslint 版本\n"
       }
     },
     "titleLang": {
@@ -205,7 +166,7 @@
     ],
     "dependencies": [
       {
-        "js-controller": ">=3.3.0"
+        "js-controller": ">=5.0.19"
       }
     ],
     "messages": [
