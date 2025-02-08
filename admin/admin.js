@@ -244,7 +244,7 @@ function getCard(dev) {
         battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` 
+        lq = (dev.link_quality > 0) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
                                     : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
         status = (isActive ? lq : `<div class="col tool"><i class="material-icons icon-red">cancel</i></div>`),
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
@@ -788,9 +788,9 @@ async function toggleDebugDevice(id) {
     sendTo(namespace, 'setDeviceDebug', {id:id}, function (msg) {
         sendTo(namespace, 'getDebugDevices', {}, function(msg) {
             if (msg && typeof (msg.debugDevices == 'array')) {
-                debugDevices = msg.debugDevices; 
+                debugDevices = msg.debugDevices;
             }
-            else 
+            else
                 debugDevices = [];
             });
         console.warn('toggleDebugDevices.result ' + JSON.stringify(debugDevices));
@@ -818,7 +818,7 @@ async function selectImageOverride(id) {
     //            const element = $('#localimages');
             const imagedata = msg.imageData;
             imagedata.unshift( { file:'none', name:'default', data:dev.common.icon || dev.icon});
-    
+
             list2select('#images', imagedata, selectItems,
                 function (key, image) {
                     return image.name
@@ -834,11 +834,11 @@ async function selectImageOverride(id) {
                     }
                 },
             );
-            
+
             $('#chooseimage a.btn[name=\'save\']').unbind('click');
             $('#chooseimage a.btn[name=\'save\']').click(() => {
                 const image = $('#chooseimage').find('#images option:selected').val();
-                const global = $('#chooseimage').find('#globaloverride').prop('checked');                
+                const global = $('#chooseimage').find('#globaloverride').prop('checked');
                 console.warn(`update device image : ${id} : ${image} : ${global}`);
                 updateDeviceImage(id, image, global);
         //        console.warn(`selected image file name is ${newName}`);
@@ -854,9 +854,9 @@ function getDevices() {
     getCoordinatorInfo();
     sendTo(namespace, 'getDebugDevices', {}, function(msg) {
         if (msg && typeof (msg.debugDevices == 'array')) {
-            debugDevices = msg.debugDevices; 
+            debugDevices = msg.debugDevices;
         }
-        else 
+        else
             debugDevices = [];
         });
     sendTo(namespace, 'getDevices', {}, function (msg) {
@@ -2066,12 +2066,15 @@ function deleteGroup(id) {
 
 function updateDev(id, newName, newGroups) {
     const dev = devices.find((d) => d._id === id);
-    if (dev && dev.common.name !== newName) {
-        renameDevice(id, newName);
+    const command = {id: id, groups: newGroups, name: id};
+    if (dev) {
+        if (dev.common.name !== newName) command.name = newName;
+        else command.name = dev.common.name;
     }
+
     const keys = Object.keys(newGroups);
     if (keys && keys.length) {
-        sendTo(namespace, 'updateGroupMembership', {id: id, groups: newGroups}, function (msg) {
+        sendTo(namespace, 'updateGroupMembership', command, function (msg) {
             closeWaitingDialog();
             if (msg && msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -2968,7 +2971,7 @@ function getDashCard(dev, groupImage, groupstatus) {
         lqi_cls = getLQICls(dev.link_quality),
         unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>')
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` 
+        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
                                                 : (isActive ? unconnected_icon : ''),
         //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
         //permitJoinBtn = (isActive && dev.info && dev.info.device._type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',

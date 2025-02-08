@@ -933,7 +933,7 @@ class Zigbee extends utils.Adapter {
                     this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () =>
                         this.stController.syncDevStates(dev, model));
                 }
-                //                else this.log.warn(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
+                else this.log.debug(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
             });
         }
     }
