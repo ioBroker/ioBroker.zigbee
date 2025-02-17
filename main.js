@@ -411,9 +411,9 @@ class Zigbee extends utils.Adapter {
             }
         }
 
-        this.setState('info.connection', true, true);
+        await this.setState('info.connection', true, true);
 
-        const devicesFromDB = await this.zbController.getClients(false);
+        const devicesFromDB = this.zbController.getClientIterator(false);
         for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
@@ -673,9 +673,13 @@ class Zigbee extends utils.Adapter {
                     return;
                 }
 
-                if (stateDesc.isOption) {
+                if (stateDesc.isOption || stateDesc.compositeState) {
                     // acknowledge state with given value
+                    this.log.warn('changed state: ' + JSON.stringify(changedState));
                     this.acknowledgeState(deviceId, model, stateDesc, value);
+                    if (stateDesc.compositeState && stateDesc.compositeTimeout) {
+                        this.stController.triggerComposite(deviceId, model, stateDesc, changedState.source.includes('.admin.'));
+                    }
                     // process sync state list
                     //this.processSyncStatesList(deviceId, modelId, syncStateList);
                     // if this is the device query state => trigger the device query

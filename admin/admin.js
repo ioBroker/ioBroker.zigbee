@@ -173,8 +173,8 @@ function getGroupCard(dev) {
     ;
     info = info.concat(`                    </ul>
                 </div>`);
-    const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
-    const dashCard = getDashCard(dev, `img/group_${memberCount}.png`, memberCount > 0);
+    const image = `<img src="${dev.common.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
+    const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
     const card = `<div id="${id}" class="device group">
                   <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
@@ -217,8 +217,10 @@ function sanitizeModelParameter(parameter) {
 }
 
 function getCard(dev) {
+    //console.warn(JSON.stringify(dev));
+    if (!dev._id) return '';
     const title = dev.common.name,
-        id = dev._id,
+        id = (dev._id ? dev._id : ''),
         type = (dev.common.type ? dev.common.type : 'unknown'),
         type_url = (dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown'),
         img_src = dev.common.icon || dev.icon,
@@ -498,6 +500,7 @@ function cleanDeviceStates(force) {
 }
 
 function renameDevice(id, name) {
+    showMessage('rename device with ' + id + ' and ' + name, _('Error'));
     sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -809,15 +812,32 @@ function updateDeviceImage(device, image, global) {
     });
 }
 
+function updateDeviceData(device, data, global) {
+    sendTo(namespace, 'updateDeviceData', {target: device, data:data, global:global}, function(msg) {
+        if (msg && msg.hasOwnProperty.error) {
+            showMessage(msg.error, _('Error'));
+        }
+        getDevices();
+    });
+}
+
+
 async function selectImageOverride(id) {
     const dev = devices.find((d) => d._id == id);
     let localImages = undefined;
+    const imghtml = `<img src="${dev.common.icon || dev.icon}" width="80px">`
+    //console.error(imghtml)
     const selectItems= [''];
+    $('#chooseimage').find('input[id=\'d_name\']').val(dev.common.name);
+    $('#chooseimage').find('.currentIcon').html(imghtml);
+
     sendTo(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
     //            const element = $('#localimages');
             const imagedata = msg.imageData;
-            imagedata.unshift( { file:'none', name:'default', data:dev.common.icon || dev.icon});
+            console.warn(JSON.stringify(dev.common));
+            const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
+            imagedata.unshift( { file:'none', name:'default', data:default_icon});
 
             list2select('#images', imagedata, selectItems,
                 function (key, image) {
@@ -839,10 +859,13 @@ async function selectImageOverride(id) {
             $('#chooseimage a.btn[name=\'save\']').click(() => {
                 const image = $('#chooseimage').find('#images option:selected').val();
                 const global = $('#chooseimage').find('#globaloverride').prop('checked');
-                console.warn(`update device image : ${id} : ${image} : ${global}`);
-                updateDeviceImage(id, image, global);
-        //        console.warn(`selected image file name is ${newName}`);
-        //        updateDev(id, newName, groupsbyid);
+                const name = $('#chooseimage').find('input[id=\'d_name\']').val();
+                console.warn(`update device image : ${id} : ${image} : ${global} : ${name} : ${dev.common.name}`);
+                const data = { icon: image};
+                if (name != dev.common.name) data.name = name;
+                //updateDeviceImage(id, image, global);
+//console.warn('updating device data with ' + JSON.stringify(data));
+                updateDeviceData(id, data, global);
             });
             $('#chooseimage').modal('open');
             Materialize.updateTextFields();
@@ -2066,14 +2089,19 @@ function deleteGroup(id) {
 
 function updateDev(id, newName, newGroups) {
     const dev = devices.find((d) => d._id === id);
-    const command = {id: id, groups: newGroups, name: id};
+    const command = {id: id, name: id};
+    let needName = false;
     if (dev) {
-        if (dev.common.name !== newName) command.name = newName;
+        if (dev.common.name !== newName) {
+            command.name = newName;
+            needName = true;
+        }
         else command.name = dev.common.name;
     }
 
     const keys = Object.keys(newGroups);
     if (keys && keys.length) {
+        command.groups = newGroups
         sendTo(namespace, 'updateGroupMembership', command, function (msg) {
             closeWaitingDialog();
             if (msg && msg.error) {
@@ -2084,6 +2112,20 @@ function updateDev(id, newName, newGroups) {
             }
         });
         showWaitingDialog('Updating group memberships', 10);
+
+    }
+    else if (needName)
+    {
+        sendTo(namespace, 'renameDevice', command, function(msg) {
+            //closeWaitingDialog();
+            if (msg && msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                // save dev-groups on success
+                getDevices();
+            }
+
+        })
 
     }
     /*

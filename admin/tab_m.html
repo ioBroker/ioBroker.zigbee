@@ -482,9 +482,9 @@
         #tab-main .navbar-fixed #nav-mobile li:nth-child(2) {
             flex: 0 0 30%;
         }
-        
+
         #tab-main .navbar-fixed #nav-mobile li:nth-child(3),
-        #tab-main .navbar-fixed #nav-mobile li:nth-child(4), 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4),
         #tab-main .navbar-fixed #nav-mobile li:nth-child(5) {
             flex: 0 0 20%;
             display: flex;
@@ -494,13 +494,13 @@
         }
 
         #tab-main .navbar-fixed #nav-mobile li:nth-child(3) i.material-icons,
-        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) i.material-icons, 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) i.material-icons,
         #tab-main .navbar-fixed #nav-mobile li:nth-child(5) i.material-icons {
             display: none;
         }
 
         #tab-main .navbar-fixed #nav-mobile li:nth-child(3) a.btn,
-        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) a.btn, 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) a.btn,
         #tab-main .navbar-fixed #nav-mobile li:nth-child(5) a.btn {
             margin-left: 5px;
             margin-right: 5px;
@@ -586,9 +586,9 @@
         #tab-main .navbar-fixed #nav-mobile li:nth-child(2) {
             flex: 0 0 70%;
         }
-        
+
         #tab-main .navbar-fixed #nav-mobile li:nth-child(3),
-        #tab-main .navbar-fixed #nav-mobile li:nth-child(4), 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4),
         #tab-main .navbar-fixed #nav-mobile li:nth-child(5) {
             flex: 0 0 30%;
             display: flex;
@@ -598,13 +598,13 @@
         }
 
         #tab-main .navbar-fixed #nav-mobile li:nth-child(3) i.material-icons,
-        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) i.material-icons, 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) i.material-icons,
         #tab-main .navbar-fixed #nav-mobile li:nth-child(5) i.material-icons {
             display: none;
         }
 
         #tab-main .navbar-fixed #nav-mobile li:nth-child(3) a.btn,
-        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) a.btn, 
+        #tab-main .navbar-fixed #nav-mobile li:nth-child(4) a.btn,
         #tab-main .navbar-fixed #nav-mobile li:nth-child(5) a.btn {
             margin-left: 5px;
             margin-right: 5px;
@@ -614,7 +614,7 @@
             overflow: auto;
             height: 20em;
             padding: 0.5em;
-            
+
         }
 
         .move-label-up {
@@ -1103,27 +1103,38 @@
       <div id="chooseimage" class="modal">
         <div class="modal-content">
             <div class="row">
-                <h3 class="translate">Image override</h3>
+                <h3 class="translate">Data override</h3>
                 <div class="row">
                     <div class="col s12 input-field">
+                        <input id="d_name" type="text" class="value validate">
+                        <label for="d_name" class="translate">Name</label>
+                    </div>
+                </div>
+                    <div class="row">
+                    <div class="col s9 input-field">
                         <select id="images" class="icons">
                         </select>
                         <label for="images" class="translate">Image</label>
                     </div>
+                    <div class="col s3 ">
+                        <div class="currentIcon"><img src="img/unknown.png"></div>
+                    </div>
                 </div>
             </div>
             <div class="row">
-                <div class="col s19 input-field">
-                    <input id="globaloverride" type="checkbox" class="value"/>
-                    <label class="translate" for="globaloverride">Apply to model</label>
-                </div>
             </div>
         </div>
         <div class="modal-footer">
+            <div class="forcedelete" id = "globaldiv">
+                <label>
+                    <input id="globaloverride" type="checkbox" class="value"/>
+                    <span class="translate" for="globaloverride">Apply to model</span>
+                </label>
+            </div>
             <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
             <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
-    </div>
+      </div>
 
 
       <div id="modaldelete" class="modal">
