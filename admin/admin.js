@@ -257,7 +257,7 @@ function getCard(dev) {
                         <li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
-        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons icon-${(isActive ? 'red' : 'green')}">power_settings_new</i></button>`,
+        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
         debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'Automatic by '+debugDevices[isDebug-1]: 'Disable Debug' : 'Enable Debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const dashCard = getDashCard(dev);
@@ -285,10 +285,10 @@ function getCard(dev) {
                                 <span class="left" style="padding-top:8px">${room}</span>
                                 <span class="left fw_info"></span>
                                 <button name="delete" class="right btn-flat btn-small tooltipped" title="Delete">
-                                    <i class="material-icons icon-black">delete</i>
+                                    <i class="material-icons icon-red">delete</i>
                                 </button>
                                 <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit">
-                                    <i class="material-icons icon-green">edit</i>
+                                    <i class="material-icons icon-black">edit</i>
                                 </button>
                                 <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Select Image">
                                     <i class="material-icons icon-black">image</i>
@@ -647,7 +647,7 @@ function showDevices() {
         const dev_block = $(this).parents('div.device');
         const id = dev_block.attr('id').replace(namespace + '.group_', '');
         const name = getDevName(dev_block);
-        editGroupName(id, name, false);
+        editGroup(id, name, false);
     });
     $('button.btn-floating[name=\'join\']').click(function () {
         const dev_block = $(this).parents('div.device');
@@ -837,7 +837,9 @@ async function selectImageOverride(id) {
             const imagedata = msg.imageData;
             console.warn(JSON.stringify(dev.common));
             const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
+            if (dev.legacyIcon) imagedata.unshift( { file:'none', name:'legacy', data:dev.legacyIcon});
             imagedata.unshift( { file:'none', name:'default', data:default_icon});
+            imagedata.unshift( { file:'none', name:'current', data:dev.common.icon || dev.icon});
 
             list2select('#images', imagedata, selectItems,
                 function (key, image) {
@@ -863,8 +865,6 @@ async function selectImageOverride(id) {
                 console.warn(`update device image : ${id} : ${image} : ${global} : ${name} : ${dev.common.name}`);
                 const data = { icon: image};
                 if (name != dev.common.name) data.name = name;
-                //updateDeviceImage(id, image, global);
-//console.warn('updating device data with ' + JSON.stringify(data));
                 updateDeviceData(id, data, global);
             });
             $('#chooseimage').modal('open');
@@ -1033,17 +1033,17 @@ function load(settings, onChange) {
 
     sendTo(namespace, 'getGroups', {}, function (data) {
         groups = data.groups;
-        showGroups();
+        //showGroups();
     });
 
     $('#add_group').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
-        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
+        addGroup(maxind + 1, 'Group ' + maxind + 1);
     });
 
     $('#add_grp_btn').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
-        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
+        addGroup(maxind + 1, 'Group ' + maxind + 1);
     });
 
     $('#code_pairing').click(function () {
@@ -1992,6 +1992,7 @@ function list2select(selector, list, selected, getText, getKey, getData) {
     element.select();
 }
 
+/*
 function showGroups() {
     $('#groups_table').find('.group').remove();
     if (!groups) return;
@@ -2014,45 +2015,56 @@ function showGroups() {
         deleteGroupConfirmation(index, name);
     });
 }
+*/
 
-function editGroupName(id, name, isnew) {
-    //const dev = devices.find((d) => d._id == id);
-    //console.log('devices: '+ JSON.stringify(devices));
-    const groupables = [];
-    for (const d of devices) {
-        if (d && d.info && d.info.endpoints) {
-            for (const ep of d.info.endpoints) {
-                if (ep.inputClusters.includes(4)) {
-                    groupables.push(ep);
-                }
-            }
+function editGroup(id, name) {
+    const grp = devGroups[id];
+    let info = '';
+    if (grp && grp.memberinfo) {
+        for (let m=0; m< grp.memberinfo.length; m++) {
+            const mi = grp.memberinfo[m];
+            if (mi)
+                info = info.concat(`<li class="collection-item"><label><input id="member_${m}" type="checkbox" checked="checked"/><span for="member_${m}">${mi.device} Endpoint ${mi.epid} (${mi.ieee})</span></label></li>`);
         }
-        //console.log('device ' + JSON.stringify(d));
     }
-
+    $('#groupedit').find('.collection').html(info);
     //var text = 'Enter new name for "'+name+'" ('+id+')?';
-    if (isnew) {
-        $('#groupedit').find('.editgroup').addClass('hide');
-        $('#groupedit').find('.addgroup').removeClass('hide');
-        $('#groupedit').find('.input-field.members').addClass('hide');
-        $('#groupedit').find('.input-field.groupid').removeClass('hide');
-    } else {
-        $('#groupedit').find('.editgroup').removeClass('hide');
-        $('#groupedit').find('.addgroup').addClass('hide');
-        $('#groupedit').find('.input-field.members').removeClass('hide');
-        $('#groupedit').find('.input-field.groupid').addClass('hide');
-    }
+    $('#groupedit').find('.editgroup').removeClass('hide');
     $('#groupedit').find('input[id=\'g_index\']').val(id);
     $('#groupedit').find('input[id=\'g_name\']').val(name);
     $('#groupedit a.btn[name=\'save\']').unbind('click');
     $('#groupedit a.btn[name=\'save\']').click(() => {
-        const newId = $('#groupedit').find('input[id=\'g_index\']').val(),
-            newName = $('#groupedit').find('input[id=\'g_name\']').val();
-        updateGroup(id, newId, newName);
+        const newName = $('#groupedit').find('input[id=\'g_name\']').val();
+        const Id = $('#groupedit').find('input[id=\'g_index\']').val();
+        const grp = devGroups[Id];
+        const removeMembers = [];
+        if (grp && grp.memberinfo) {
+            for (let m=0; m<grp.memberinfo.length;m++) {
+                const member = grp.memberinfo[m];
+                if (!$(`#member_${m}`).prop('checked'))
+                    removeMembers.push({id:member.ieee.replace('0x',''), ep:member.epid})
+            }
+        }
+        console.warn(`ID: ${Id} name: ${newName} removeMembers: ${JSON.stringify(removeMembers)}`)
+        //updateGroup(Id, newName, (removeMembers.length > 0 ? removeMembers: undefined));
         // showGroups();
         // getDevices();
     });
     $('#groupedit').modal('open');
+    Materialize.updateTextFields();
+}
+
+function addGroup(id, name) {
+    //var text = 'Enter new name for "'+name+'" ('+id+')?';
+    $('#groupadd').find('input[id=\'g_index\']').val(id);
+    $('#groupadd').find('input[id=\'g_name\']').val(name);
+    $('#groupadd a.btn[name=\'save\']').unbind('click');
+    $('#groupadd a.btn[name=\'save\']').click(() => {
+        const newId = $('#groupadd').find('input[id=\'g_index\']').val(),
+            newName = $('#groupadd').find('input[id=\'g_name\']').val();
+        updateGroup(newId, newName);
+    });
+    $('#groupadd').modal('open');
     Materialize.updateTextFields();
 }
 
@@ -2069,10 +2081,9 @@ function deleteGroupConfirmation(id, name) {
     $('#modaldelete').modal('open');
 }
 
-function updateGroup(id, newId, newName) {
-    delete groups[id];
+function updateGroup(newId, newName, remove) {
     groups[newId] = newName;
-    sendTo(namespace, 'renameGroup', {id: newId, name: newName}, function (msg) {
+    sendTo(namespace, 'renameGroup', {id: newId, name: newName, remove: remove}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -2628,6 +2639,7 @@ function showDevInfo(id) {
     $('#modaldevinfo').modal('open');
 }
 
+/*
 function showGroupList(show) {
     const htmlsections = [];
     for (const groupid in devGroups) {
@@ -2658,7 +2670,7 @@ function showGroupList(show) {
     $('#grouplist').html(htmlsections.join(''));
     $('#add').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
-        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
+        addGroup(maxind + 1, 'Group ' + maxind + 1, true);
         showGroupList(false);
     });
 
@@ -2667,6 +2679,7 @@ function showGroupList(show) {
     });
     if (show) $('#modalgrouplist').modal('open');
 }
+*/
 
 let waitingTimeout, waitingInt;
 

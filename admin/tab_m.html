@@ -296,11 +296,17 @@
         padding: 20px 20px 5px 20px;
         border-bottom: 1px solid rgba(0,0,0,.1);
     }
-    .m .modal.modal-fixed-footer.modal-fixed-header .modal-content{
+    .m .modal .modal-fixed-footer .modal-fixed-header .modal-content{
         height: calc(100% - 140px)!important;
         padding-top: 5px;
         padding-bottom: 5px;
     }
+
+    .modal-tall {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
     .m .page {
         height: calc(100% - 120px);
         overflow: auto;
@@ -883,27 +889,6 @@
                     </div>
                 </div>
             </div>
-
-            <div id="tab-groups" class="col s12 page">
-                <div class="row">
-                    <div class="col s12">
-                        <div class="col s12">
-                            <table class="">
-                                <thead>
-                                    <tr>
-                                        <th data-name="num" class="translate">№</th>
-                                        <th data-name="name" class="translate">Name</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="groups_table"></tbody>
-                            </table>
-                        </div>
-                        <a id="add_group" class="btn-floating waves-effect waves-light blue table-button-add tooltipped hoverable translateT" title="Add group">
-                            <i class="material-icons">add</i>
-                        </a>
-                    </div>
-                </div>
-            </div>
             <div id="tab-binding" class="col s12 page">
                 <div class="fixed-action-btn">
                     <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add binding"><i class="material-icons large">add</i></a>
@@ -1065,31 +1050,67 @@
               <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
           </div>
       </div>
+
+      <div id="groupadd" class="modal">
+        <div class="modal-content">
+            <div class = "addgroup">
+                <h3 class="translate">Create Group</h3>
+            </div>
+            <div class="row">
+                <div class="col s4 m4 l2">
+                  <div class="input-field groupid">
+                    <input id="g_index" type="number" min="1" class="value validate">
+                    <label for="g_index" class="translate">№</label>
+                  </div>
+                </div>
+                <div class="input-field col s8 m8 l10">
+                    <input id="g_name" type="text" class="value validate">
+                    <label for="g_name" class="translate">Name</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+        </div>
+    </div>
+
       <div id="groupedit" class="modal">
           <div class="modal-content">
-              <div class = "addgroup">
-                  <h3 class="translate">Add Group</h3>
-              </div>
               <div class = "editgroup">
                   <h3 class="translate">Edit Group</h3>
               </div>
               <div class="row">
-                  <div class="col s4 m4 l2">
+                <div class="col s4 m4 l2 hide">
                     <div class="input-field groupid">
                       <input id="g_index" type="number" min="1" class="value validate">
                       <label for="g_index" class="translate">№</label>
                     </div>
                   </div>
-                  <div class="input-field col s8 m8 l10">
+                    <div class="input-field col s8 m8 l10">
                       <input id="g_name" type="text" class="value validate">
                       <label for="g_name" class="translate">Name</label>
                   </div>
               </div>
-              <div class="row hide">
+              <div class="row">
                 <div class="col s12">
                   <div class="input-field members">
                     <label for="g_members" class="translate">Members</label>
-                    <select id="g_members" class="materialSelect" multiple><option value="1">value</option></select>
+                    <ul class="collection">
+                        <li class="collection-item">
+                        <label>
+                            <input id="member1" type="checkbox" class="value"/>
+                            <span class="translate" for="member1">Member 1</span>
+                        </label>
+                        </li>
+                        <li class="collection-item">
+                            Member 2
+                            <label>
+                            <input id="globaloverride" type="checkbox" class="value"/>
+                            <span class="translate" for="member2"></span>
+                            </label>
+                        </li>
+                    </ul>
                   </div>
                 </div>
               </div>
@@ -1100,7 +1121,7 @@
           </div>
       </div>
 
-      <div id="chooseimage" class="modal">
+      <div id="chooseimage" class="modal modal-fixed-footer">
         <div class="modal-content">
             <div class="row">
                 <h3 class="translate">Data override</h3>
@@ -1120,8 +1141,6 @@
                         <div class="currentIcon"><img src="img/unknown.png"></div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
             </div>
         </div>
         <div class="modal-footer">
