@@ -915,6 +915,9 @@ function getMap() {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
             } else {
+                if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
+                    showMessage(msg.errors.join('<p>'), 'Map generation messages');
+                }
                 map = msg;
                 showNetworkMap(devices, map);
             }
