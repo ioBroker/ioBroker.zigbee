@@ -1274,8 +1274,8 @@ function showNetworkMap(devices, map) {
             shape: 'circularImage',
             image: dev.common.icon || dev.icon,
             imagePadding: {top: 5, bottom: 5, left: 5, right: 5},
-            color: {background: 'white', highlight: {background: 'white'}},
-            font: {color: '#007700'},
+            color: {background: '#cccccc', highlight: {background: 'white'}},
+            font: {color: '#00bb00'},
             borderWidth: 1,
             borderWidthSelected: 4,
         };
@@ -1283,7 +1283,7 @@ function showNetworkMap(devices, map) {
             // node.shape = 'star';
             node.image = 'zigbee.png';
             node.label = 'Coordinator';
-            delete node.color;
+            // delete node.color;
         }
         return node;
     };
@@ -1322,7 +1322,7 @@ function showNetworkMap(devices, map) {
                     // // parent/child
                     if (mapEntry.status !== 'online') {
                         label = label + ' (off)';
-                        linkColor = '#ff0000';
+                        linkColor = '#660000';
                     }
                     if (mapEntry.lqi < 10) {
                         linkColor = '#ff0000';
@@ -1380,9 +1380,7 @@ function showNetworkMap(devices, map) {
             }
         });
     }
-
-    // routing
-    /*
+/*
     if (map.routing) {
         map.routing.forEach((route)=>{
             if (!route.nextHop) return;
@@ -1392,7 +1390,7 @@ function showNetworkMap(devices, map) {
                 const to = routeDest._id;
                 const from = routeSource._id;
                 const label = route.status;
-                const linkColor = '#ff00ff';
+                const linkColor = '#ff55ff';
                 const edge = {
                     from: from,
                     to: to,
@@ -1428,7 +1426,7 @@ function showNetworkMap(devices, map) {
             }
         });
     }
-    */
+*/
 
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
@@ -1442,7 +1440,7 @@ function showNetworkMap(devices, map) {
             if (node) {
                 node.font = {color: '#ff0000'};
                 if (dev.info && dev.info.device._type == 'Coordinator') {
-                    node.font = {color: '#000000'};
+                    node.font = {color: '#00ff00'};
                 }
                 nodesArray.push(node);
             }
@@ -1468,6 +1466,7 @@ function showNetworkMap(devices, map) {
                 const options = data.edges._data.get(id);
                 if (select) {
                     options.font.size = 15;
+                    console.warn(JSON.stringify(options.font));
                 } else {
                     options.font.size = 0;
                 }
@@ -1479,15 +1478,16 @@ function showNetworkMap(devices, map) {
             doSelection(false, event.previousSelection.edges, this.body.data);
         }
         doSelection(true, event.edges, this.body.data);
-
-        // if (event.nodes) {
-        //     event.nodes.forEach((node)=>{
-        //         //const options = network.clustering.findNode[node];
-        //         network.clustering.updateClusteredNode(
-        //             node, {size: 50}
-        //         );
-        //     });
-        // }
+/*
+        if (event.nodes) {
+            event.nodes.forEach((node)=>{
+                //const options = network.clustering.findNode[node];
+                 network.clustering.updateClusteredNode(
+                    node, {size: 50}
+                );
+            });
+        }
+*/
     };
     network.on('selectNode', onMapSelect);
     network.on('deselectNode', onMapSelect);
@@ -2046,9 +2046,9 @@ function editGroup(id, name) {
             }
         }
         console.warn(`ID: ${Id} name: ${newName} removeMembers: ${JSON.stringify(removeMembers)}`)
-        //updateGroup(Id, newName, (removeMembers.length > 0 ? removeMembers: undefined));
+        updateGroup(Id, newName, (removeMembers.length > 0 ? removeMembers: undefined));
         // showGroups();
-        // getDevices();
+        getDevices();
     });
     $('#groupedit').modal('open');
     Materialize.updateTextFields();
@@ -2142,24 +2142,6 @@ function updateDev(id, newName, newGroups) {
         })
 
     }
-    /*
-        if (dev.info.device._type == 'Router') {
-            const oldGroups = devGroups[id] || [];
-            if (oldGroups.toString() != newGroups.toString()) {
-                devGroups[id] = newGroups;
-                sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
-                    if (msg && msg.error) {
-                            showMessage(msg.error, _('Error'));
-                        }
-                        else {
-                        // save dev-groups on success
-                            dev.groups = newGroups;
-                        }
-                    showDevices();
-                });
-            }
-        }
-    */
 }
 
 function resetConfirmation() {
