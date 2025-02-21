@@ -249,8 +249,9 @@ function getCard(dev) {
         battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
-                                    : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        lq = (dev.link_quality > 0)
+            ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
+            : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
         status = (isActive ? lq : `<div class="col tool"><i class="material-icons icon-red">cancel</i></div>`),
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
@@ -380,6 +381,7 @@ function cleanConfirmation() {
     const text = translateWord('Do you really want to remove orphaned states?');
     $('#modalclean').find('p').text(text);
     $('#cforce').prop('checked', false);
+    $('#cforce').removeClass('hide');
     $('#cforcediv').removeClass('hide');
     $('#modalclean a.btn[name=\'yes\']').unbind('click');
     $('#modalclean a.btn[name=\'yes\']').click(() => {
@@ -495,11 +497,14 @@ function cleanDeviceStates(force) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
             } else {
+                if (msg.stateList) {
+                    //showMessage(msg.stateList.join('<p>'), 'State cleanup results');
+                }
                 getDevices();
             }
         }
     });
-    showWaitingDialog('Device is being removed', 10);
+    showWaitingDialog('Orphaned states are being removed', 10);
 }
 
 function renameDevice(id, name) {
@@ -798,13 +803,13 @@ async function toggleDebugDevice(id) {
             }
             else
                 debugDevices = [];
-            });
+        });
         console.warn('toggleDebugDevices.result ' + JSON.stringify(debugDevices));
         showDevices();
     });
 }
 
-
+/*
 function updateDeviceImage(device, image, global) {
     console.warn(`update device image : ${JSON.stringify(device)} : ${image} : ${global}`);
     sendTo(namespace, 'updateDeviceImage', {target: device, image: image, global:global}, function(msg) {
@@ -814,6 +819,7 @@ function updateDeviceImage(device, image, global) {
         getDevices();
     });
 }
+*/
 
 function updateDeviceData(device, data, global) {
     sendTo(namespace, 'updateDeviceData', {target: device, data:data, global:global}, function(msg) {
@@ -827,7 +833,6 @@ function updateDeviceData(device, data, global) {
 
 async function selectImageOverride(id) {
     const dev = devices.find((d) => d._id == id);
-    let localImages = undefined;
     const imghtml = `<img src="${dev.common.icon || dev.icon}" width="80px">`
     //console.error(imghtml)
     const selectItems= [''];
@@ -836,7 +841,6 @@ async function selectImageOverride(id) {
 
     sendTo(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
-    //            const element = $('#localimages');
             const imagedata = msg.imageData;
             console.warn(JSON.stringify(dev.common));
             const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
@@ -884,7 +888,7 @@ function getDevices() {
         }
         else
             debugDevices = [];
-        });
+    });
     sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -902,7 +906,6 @@ function getDevices() {
 function getNamedColors() {
     sendTo(namespace, 'getNamedColors', {}, function(msg) {
         if (msg && typeof msg.colors) {
-//            console.warn('get named color returned with ' + JSON.stringify(msg.colors));
             namedColors = msg.colors;
         }
     });
@@ -940,7 +943,7 @@ function getMap() {
 function getRandomExtPanID()
 {
     const bytes = [];
-    for (var i = 0;i<16;i++) {
+    for (let i = 0;i<16;i++) {
         bytes.push(Math.floor(Math.random() * 16).toString(16));
     }
     return bytes.join('');
@@ -951,11 +954,9 @@ function getRandomExtPanID()
 
 function load(settings, onChange) {
     if (settings.panID === undefined) {
-//        settings.panID = 6754;
         settings.panID = Math.floor(Math.random() * 10000);
     }
     if (settings.extPanID === undefined) {
-//        settings.extPanID = 'DDDDDDDDDDDDDDDD';
         settings.extPanID = getRandomExtPanID();
     }
     // fix for previous wrong value
@@ -1393,7 +1394,7 @@ function showNetworkMap(devices, map) {
             }
         });
     }
-/*
+    /*
     if (map.routing) {
         map.routing.forEach((route)=>{
             if (!route.nextHop) return;
@@ -1439,7 +1440,7 @@ function showNetworkMap(devices, map) {
             }
         });
     }
-*/
+    */
 
     const nodesArray = Object.values(nodes);
     // add devices without network links to map
@@ -1491,7 +1492,7 @@ function showNetworkMap(devices, map) {
             doSelection(false, event.previousSelection.edges, this.body.data);
         }
         doSelection(true, event.edges, this.body.data);
-/*
+        /*
         if (event.nodes) {
             event.nodes.forEach((node)=>{
                 //const options = network.clustering.findNode[node];
@@ -1500,7 +1501,7 @@ function showNetworkMap(devices, map) {
                 );
             });
         }
-*/
+        */
     };
     network.on('selectNode', onMapSelect);
     network.on('deselectNode', onMapSelect);
@@ -2814,18 +2815,19 @@ function addExcludeDialog() {
         const ids = devices.map(el => el._id);
         const idx = ids.indexOf(exclude_id);
         const exclude_model = devices[idx];
+        console.warn('calling addExclude mit model ' + exclude_model)
 
         addExclude(exclude_model);
     });
     prepareExcludeDialog();
-
+    console.warn('opening dialog');
     $('#excludemodaledit').modal('open');
     Materialize.updateTextFields();
 }
 
 function addExclude(exclude_model) {
     if (typeof exclude_model == 'object' && exclude_model.hasOwnProperty('common'))
-         sendTo(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
+        sendTo(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
             closeWaitingDialog();
             if (msg) {
                 if (msg.error) {
@@ -2860,17 +2862,10 @@ function showExclude() {
     }
 
     excludes.forEach(id => {
-//        const b = devices.find((item) => item._id.contains(id));
         const exclude_id = id.key;
         const exclude_icon = id.value;
-
         const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}};
-//        console.warn('showExcludes for id ' + exclude_id + ' with b = ' + JSON.stringify(exclude_dev));
-
-        // exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
-
         const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(exclude_id)}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
-
         const card = `
                     <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3" style="height: 135px;padding-bottom: 10px;">
                         <div class="card hoverable">
@@ -3022,10 +3017,9 @@ function getDashCard(dev, groupImage, groupstatus) {
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
-        unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>')
+        unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>'),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
-                                                : (isActive ? unconnected_icon : ''),
+        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
         //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
         //permitJoinBtn = (isActive && dev.info && dev.info.device._type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',

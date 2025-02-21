@@ -9,6 +9,7 @@
 <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css"/> -->
 <script type="text/javascript" src="vis-network.min.js"></script>
+<script type="text/javascript" src="webcolors.js"></script>
 <link rel="stylesheet" type="text/css" href="vis-network.min.css"/>
 
 <!-- these files always have to be included -->
@@ -666,7 +667,7 @@
                     <ul id="nav-mobile" class="right">
                         <li>
                             <a id="state_cleanup_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT" title="State Cleanup">
-                            <i class="material-icons large icon-blue">sync</i></a>
+                            <i class="material-icons large icon-blue">delete_sweep</i></a>
                         </li>
                         <li>
                             <a id="fw_check_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Check firmware updates">
@@ -1179,7 +1180,7 @@
                 <p>A bunch of text</p>
             </div>
             <div class="modal-footer">
-                <div id="cforcediv" class="hide forcedelete">
+                <div id="cforcediv" class="forcedelete">
                     <input id="cforce" type="checkbox" class="value" />
                     <label class="translate" for="cforce">Force removed states with custom configuration (history, upnp, etc.)</label>
                 </div>

@@ -654,7 +654,7 @@
                         <a id="state_cleanup_btn"
                            class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT"
                            title="State Cleanup">
-                            <i class="material-icons large icon-blue">sync</i></a>
+                            <i class="material-icons large icon-blue">delete_sweep</i></a>
                     </li>
                     <li>
                         <a id="fw_check_btn"
@@ -1298,34 +1298,47 @@
 
     <div id="groupedit" class="modal">
         <div class="modal-content">
-            <div class="addgroup">
-                <h3 class="translate">Add Group</h3>
-            </div>
-            <div class="editgroup">
+            <div class = "editgroup">
                 <h3 class="translate">Edit Group</h3>
             </div>
             <div class="row">
-                <div class="col s4 m4 l2">
-                    <div class="input-field groupid">
-                        <input id="g_index" type="number" min="1" class="value validate">
-                        <label for="g_index" class="translate">№</label>
-                    </div>
+              <div class="col s4 m4 l2 hide">
+                  <div class="input-field groupid">
+                    <input id="g_index" type="number" min="1" class="value validate">
+                    <label for="g_index" class="translate">№</label>
+                  </div>
                 </div>
-                <div class="input-field col s8 m8 l10">
+                  <div class="input-field col s8 m8 l10">
                     <input id="g_name" type="text" class="value validate">
                     <label for="g_name" class="translate">Name</label>
                 </div>
             </div>
-            <div class="row hide">
-                <div class="col s12">
-                    <div class="input-field members">
-                        <label for="g_members" class="translate">Members</label>
-                        <select id="g_members" class="materialSelect" multiple>
-                            <option value="1">value</option>
-                        </select>
-                    </div>
+            <div class="row">
+              <div class="col s12">
+                <div class="input-field members">
+                  <label for="g_members" class="translate">Members</label>
+                  <ul class="collection">
+                      <li class="collection-item">
+                      <label>
+                          <input id="member1" type="checkbox" class="value"/>
+                          <span class="translate" for="member1">Member 1</span>
+                      </label>
+                      </li>
+                      <li class="collection-item">
+                          Member 2
+                          <label>
+                          <input id="globaloverride" type="checkbox" class="value"/>
+                          <span class="translate" for="member2"></span>
+                          </label>
+                      </li>
+                  </ul>
                 </div>
+              </div>
             </div>
+        </div>
+        <div class="modal-footer">
+            <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
 
@@ -1405,13 +1418,11 @@
             <p>A bunch of text</p>
         </div>
         <div class="modal-footer">
-            <div id="cforcediv" class="hide forcedelete">
+            <div id="cforcediv" class="forcedelete">
                 <input id="cforce" type="checkbox" class="value"/>
-                <label class="translate" for="cforce">Force removed states with custom configuration (history, upnp,
-                    etc.)</label>
+                <label class="translate" for="cforce">Force removed states with custom configuration (history, upnp, etc.)</label>
             </div>
-            <a name="yes" href="#!"
-               class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+            <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
             <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
