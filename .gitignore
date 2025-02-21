@@ -10,5 +10,4 @@ admin/i18n/*/flat.txt
 debugidentify.js
 .devcontainer
 docs
-*.png
 .dev-server/
