@@ -3,6 +3,8 @@
 /*
  * you must run 'iobroker upload zigbee' if you edited this file to make changes visible
  */
+
+
 const Materialize = (typeof M !== 'undefined') ? M : Materialize,
     anime = (typeof M !== 'undefined') ? M.anime : anime,
     namespace = 'zigbee.' + instance,
@@ -11,6 +13,7 @@ let devices = [],
     debugDevices = [],
     messages = [],
     map = {},
+    namedColors = [],
     mapEdges = null,
     network,
     networkEvents,
@@ -896,6 +899,15 @@ function getDevices() {
     });
 }
 
+function getNamedColors() {
+    sendTo(namespace, 'getNamedColors', {}, function(msg) {
+        if (msg && typeof msg.colors) {
+//            console.warn('get named color returned with ' + JSON.stringify(msg.colors));
+            namedColors = msg.colors;
+        }
+    });
+}
+
 function getDeviceCards() {
     return $('#devices .device').not('.group');
 }
@@ -992,6 +1004,7 @@ function load(settings, onChange) {
 
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
+    getNamedColors();
     //getMap();
     //addCard();
 
@@ -3030,6 +3043,12 @@ function getDashCard(dev, groupImage, groupstatus) {
         } else if (stateDef.type === 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+        } else if (stateDef.role === 'level.color.rgb') {
+            let options = []
+            for (const key of namedColors) {
+                options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
+            }
+            val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
         } else if (stateDef.states && stateDef.write) {
             let options;
             if (typeof stateDef.states == 'string') {
@@ -3041,7 +3060,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             } else {
                 options = [];
                 for (const [key, value] of Object.entries(stateDef.states)) {
-                    options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${value}</option>`);
+                    options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${key}</option>`);
                 }
             }
             val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
