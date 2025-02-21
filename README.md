@@ -138,7 +138,6 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
-### 2.0.0 (2025-02-21)
 * BREAKING CHANGES
 *
 * switch to converters 21 changes the exposes for a large numbern of devices (mostly remotes)
