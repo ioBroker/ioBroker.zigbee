@@ -803,9 +803,8 @@ async function toggleDebugDevice(id) {
             }
             else
                 debugDevices = [];
+            showDevices();
         });
-        console.warn('toggleDebugDevices.result ' + JSON.stringify(debugDevices));
-        showDevices();
     });
 }
 
