@@ -137,6 +137,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### 2.0.0 (2025-02-22)
+* (asgothian) new herdsman adaption
+
 ### 1.10.14 (2025-01-01)
 * (arteck) Herdsman 2.1.9, Converters 20.58.0
 * (asgothian) Fix: Aqara T1M (CL-L02D) 

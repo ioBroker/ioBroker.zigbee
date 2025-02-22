@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.15",
+    "version": "2.0.0",
     "news": {
+      "2.0.0": {
+        "en": "new herdsman adaption",
+        "de": "neue herdsman adaption",
+        "ru": "адаптация нового пастуха",
+        "pt": "nova adaptação herdsman",
+        "nl": "nieuwe aanpassing van herders",
+        "fr": "nouvelle adaptation des éleveurs",
+        "it": "nuovo adattamento mandriano",
+        "es": "nueva adaptación del pastor",
+        "pl": "nowa adaptacja zioła",
+        "uk": "новий гердман адаптація",
+        "zh-cn": "新牧民适应"
+      },
       "1.10.15": {
         "en": "Work in progress",
         "de": "Work in progress",
