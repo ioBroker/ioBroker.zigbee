@@ -30,6 +30,8 @@ let devices = [],
         channel: 'd2'
     },
     cidList,
+    uploadRequired = false,
+    cleanupRequired = false,
     shuffleInstance;
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 
@@ -881,6 +883,23 @@ async function selectImageOverride(id) {
 
 function getDevices() {
     getCoordinatorInfo();
+    sendTo(namespace, 'getUploadRequired', {}, function(msg) {
+        if (msg) {
+            if (msg.upload) {
+                $('#uploadQuery_btn').removeClass('hide');
+                $('#uploadQuery').removeClass('hide');
+            }
+            else {
+                $('#uploadQuery_btn').addClass('hide');
+                $('#uploadQuery').addClass('hide');
+            }
+            if (msg.clean)
+                $('#state_cleanup_btn').removeClass('hide');
+            else
+                $('#state_cleanup_btn').addClass('hide');
+        }
+
+    })
     sendTo(namespace, 'getDebugDevices', {}, function(msg) {
         if (msg && typeof (msg.debugDevices == 'array')) {
             debugDevices = msg.debugDevices;
@@ -3037,7 +3056,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
         } else if (stateDef.role === 'level.color.rgb') {
-            let options = []
+            const options = []
             for (const key of namedColors) {
                 options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
             }

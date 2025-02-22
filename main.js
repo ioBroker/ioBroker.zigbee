@@ -31,6 +31,8 @@ const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
 const ExcludePlugin = require('./lib/exclude');
 const zigbeeHerdsmanConverters = require('zigbee-herdsman-converters');
+const zigbeeHerdsmanConvertersPackage = require('zigbee-herdsman-converters/package.json')
+const zigbeeHerdsmanPackage = require('zigbee-herdsman/package.json')
 const vm = require('vm');
 const util = require('util');
 const dmZigbee  = require('./lib/devicemgmt.js');
@@ -68,6 +70,7 @@ class Zigbee extends utils.Adapter {
         this.on('ready', () => this.onReady());
         this.on('unload', callback => this.onUnload(callback));
         this.on('message', obj => this.onMessage(obj));
+        this.uploadRequired = false;
 
         this.query_device_block = [];
 
@@ -309,7 +312,7 @@ class Zigbee extends utils.Adapter {
                 } else {
                     gitVers = obj.common.installedFrom;
                 }
-                this.log.info(`Installed Version: ${gitVers}`);
+                this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
             });
 
             await this.zbController.start();
@@ -327,6 +330,11 @@ class Zigbee extends utils.Adapter {
                 this.tryToReconnect();
             }
         }
+    }
+
+    UploadRequired(status) {
+        this.uploadRequired = (typeof status === 'boolean' ? status : this.uploadRequired) ;
+        return status;
     }
 
     async onZigbeeAdapterDisconnected() {
@@ -412,6 +420,7 @@ class Zigbee extends utils.Adapter {
         await this.setState('info.connection', true, true);
 
         const devicesFromDB = this.zbController.getClientIterator(false);
+        this.stController.CleanupRequired(false);
         for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
