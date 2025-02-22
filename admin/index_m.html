@@ -535,7 +535,7 @@
                 position: relative;
                 z-index: unset;
             }
-            
+
             .m nav ul a.btn-floating {
                 margin-left: 8px;
                 margin-right: 8px;
@@ -610,7 +610,7 @@
                 overflow: auto;
                 height: 20em;
                 padding: 0.5em;
-                
+
             }
 
             .move-label-up {
@@ -690,13 +690,11 @@
             </div>
             <div class="nav-content">
                 <ul class="tabs tabs-transparent">
-                    <li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>                   
-                    <li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a>
-                    </li>
-                    <li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li>
-                    <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Excludes</a></li>
-                    <li class="tab col s2"><a href="#tab-sett" id="settings" class="translate tooltipped">Settings</a>
-                    </li>
+                    <li class="tab col s2"><a href="#tab-sett" id="settings" class="translate tooltipped">Settings</a></li>
+                    <!--<li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a></li> -->
+                    <!--<li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li> -->
+                    <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>
+                    <li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>
                     <li class="tab col s2"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
                     </li>
                 </ul>
@@ -796,12 +794,12 @@
                     </select>
                     <label class="translate">Type</label>
                 </div>
-                
+
                <div class="input-field col s6 m3 l2">
                     <input id="flowCTRL" type="checkbox" class="value"/>
                     <label class="translate" for="flowCTRL">flow control</label>
                 </div>
-                                
+
                 <div class="input-field col s6 m3 l2">
                     <input id="baudRate" type="number" min="38400" max="115200" class="value"/>
                     <label class="translate" for="baudRate">Baudate Deconz/Conbee</label>
@@ -1300,41 +1298,85 @@
 
     <div id="groupedit" class="modal">
         <div class="modal-content">
-            <div class="addgroup">
-                <h3 class="translate">Add Group</h3>
-            </div>
-            <div class="editgroup">
+            <div class = "editgroup">
                 <h3 class="translate">Edit Group</h3>
             </div>
             <div class="row">
-                <div class="col s4 m4 l2">
-                    <div class="input-field groupid">
-                        <input id="g_index" type="number" min="1" class="value validate">
-                        <label for="g_index" class="translate">№</label>
-                    </div>
+              <div class="col s4 m4 l2 hide">
+                  <div class="input-field groupid">
+                    <input id="g_index" type="number" min="1" class="value validate">
+                    <label for="g_index" class="translate">№</label>
+                  </div>
                 </div>
-                <div class="input-field col s8 m8 l10">
+                  <div class="input-field col s8 m8 l10">
                     <input id="g_name" type="text" class="value validate">
                     <label for="g_name" class="translate">Name</label>
                 </div>
             </div>
-            <div class="row hide">
-                <div class="col s12">
-                    <div class="input-field members">
-                        <label for="g_members" class="translate">Members</label>
-                        <select id="g_members" class="materialSelect" multiple>
-                            <option value="1">value</option>
-                        </select>
-                    </div>
+            <div class="row">
+              <div class="col s12">
+                <div class="input-field members">
+                  <label for="g_members" class="translate">Members</label>
+                  <ul class="collection">
+                      <li class="collection-item">
+                      <label>
+                          <input id="member1" type="checkbox" class="value"/>
+                          <span class="translate" for="member1">Member 1</span>
+                      </label>
+                      </li>
+                      <li class="collection-item">
+                          Member 2
+                          <label>
+                          <input id="globaloverride" type="checkbox" class="value"/>
+                          <span class="translate" for="member2"></span>
+                          </label>
+                      </li>
+                  </ul>
                 </div>
+              </div>
             </div>
         </div>
         <div class="modal-footer">
-            <a name="save" href="#!"
-               class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+            <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
             <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
+
+    <div id="chooseimage" class="modal">
+        <div class="modal-content">
+            <div class="row">
+                <h3 class="translate">Data override</h3>
+                <div class="row">
+                    <div class="col s12 input-field">
+                        <input id="d_name" type="text" class="value validate">
+                        <label for="d_name" class="translate">Name</label>
+                    </div>
+                </div>
+                    <div class="row">
+                    <div class="col s9 input-field">
+                        <select id="images" class="icons">
+                        </select>
+                        <label for="images" class="translate">Image</label>
+                    </div>
+                    <div class="col s3 ">
+                        <div class="currentIcon"><img src="img/unknown.png"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div class="forcedelete" id = "globaldiv">
+                <label>
+                    <input id="globaloverride" type="checkbox" class="value"/>
+                    <span class="translate" for="globaloverride">Apply to model</span>
+                </label>
+            </div>
+            <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+        </div>
+      </div>
 
     <div id="codeentry" class="modal">
         <div class="modal-content">
@@ -1376,13 +1418,11 @@
             <p>A bunch of text</p>
         </div>
         <div class="modal-footer">
-            <div id="cforcediv" class="hide forcedelete">
+            <div id="cforcediv" class="forcedelete">
                 <input id="cforce" type="checkbox" class="value"/>
-                <label class="translate" for="cforce">Force removed states with custom configuration (history, upnp,
-                    etc.)</label>
+                <label class="translate" for="cforce">Force removed states with custom configuration (history, upnp, etc.)</label>
             </div>
-            <a name="yes" href="#!"
-               class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+            <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
             <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
@@ -1469,7 +1509,15 @@
                     <div id="physicsOnTgl" class="input-field col s12 admin-tooltip-icon translateT"
                          title="Physics On">
                         <label for="physicsOn" style="pointer-events: auto;">
-                            <input style="pointer-events: none;" id="physicsOn" type="checkbox" class="filled-in"checked="checked"/>                            <span style="pointer-events: none;">Physics</span>
+                            <input style="pointer-events: none;" id="physicsOn" type="checkbox" class="filled-in"checked="checked"/>
+                            <span style="pointer-events: none;">Physics</span>
+                        </label>
+                    </div>
+                    <div id="errorCollectionTgl" class="input-field col s12 admin-tooltip-icon translateT"
+                         title="Show messages">
+                        <label for="errorCollectionOn" style="pointer-events: auto;">
+                            <input style="pointer-events: none;" id="errorCollectionOn" type="checkbox" class="filled-in"checked="checked"/>
+                            <span style="pointer-events: none;">Show messages</span>
                         </label>
                     </div>
                 </div>
@@ -1531,12 +1579,12 @@
     <div id="excludemodaledit" class="modal">
         <div class="modal-content">
             <div class="row">
-                <h3 class="translate">Exclude configuration</h3>
+                <h3 class="translate">Custom device configuration</h3>
                 <div class="row">
                     <div class="col s9 input-field">
                         <select id="exclude_target" class="icons">
                         </select>
-                        <label for="exclude_target" class="translate">exclude device</label>
+                        <label for="exclude_target" class="translate">use legacy implementation for device</label>
                     </div>
                 </div>
             </div>

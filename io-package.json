@@ -1,20 +1,20 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "1.10.15",
+    "version": "2.0.0",
     "news": {
-      "1.10.15": {
-        "en": "Work in progress",
-        "de": "Work in progress",
-        "ru": "Work in progress",
-        "pt": "Work in progress",
-        "nl": "Work in progress",
-        "fr": "Work in progress",
-        "it": "Work in progress",
-        "es": "Work in progress",
-        "pl": "Work in progress",
-        "uk": "Work in progress",
-        "zh-cn": "Work in progress"
+      "1.11.2": {
+        "en": "debug for states",
+        "de": "debug for states",
+        "ru": "debug for states",
+        "pt": "debug for states",
+        "nl": "debug for states",
+        "fr": "debug for states",
+        "it": "debug for states",
+        "es": "debug for states",
+        "pl": "debug for states",
+        "uk": "debug for states",
+        "zh-cn": "debug for states"
       },
       "1.10.14": {
         "en": "Herdsman 2.1.9, Converters 20.58.0\nFix: Aqara T1M (CL-L02D) \ndeleteDeviceStates change to deleteObj",
@@ -222,7 +222,8 @@
           "cancel"
         ]
       }
-    ]
+    ],
+    "installedFrom": "asgothian/ioBroker.zigbee#1.11"
   },
   "native": {
     "port": "",
