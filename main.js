@@ -1061,6 +1061,7 @@ class Zigbee extends utils.Adapter {
     onPairing(message, data) {
         if (Number.isInteger(data)) {
             this.setState('info.pairingCountdown', data, true);
+            this.setState('info.pairingMode', true, true);
         }
         if (data === 0) {
             // set pairing mode off
