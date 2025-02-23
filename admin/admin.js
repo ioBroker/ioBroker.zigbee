@@ -30,6 +30,8 @@ let devices = [],
         channel: 'd2'
     },
     cidList,
+    uploadRequired = false,
+    cleanupRequired = false,
     shuffleInstance;
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 
@@ -843,9 +845,9 @@ async function selectImageOverride(id) {
             const imagedata = msg.imageData;
             console.warn(JSON.stringify(dev.common));
             const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
-            if (dev.legacyIcon) imagedata.unshift( { file:'none', name:'legacy', data:dev.legacyIcon});
+            if (dev.legacyIcon) imagedata.unshift( { file:dev.legacyIcon, name:'legacy', data:dev.legacyIcon});
             imagedata.unshift( { file:'none', name:'default', data:default_icon});
-            imagedata.unshift( { file:'none', name:'current', data:dev.common.icon || dev.icon});
+            imagedata.unshift( { file:'current', name:'current', data:dev.common.icon || dev.icon});
 
             list2select('#images', imagedata, selectItems,
                 function (key, image) {
@@ -855,7 +857,7 @@ async function selectImageOverride(id) {
                     return image.file;
                 },
                 function (key, image) {
-                    if (image.file == 'none') {
+                    if (image.file.length < 50) {
                         return `data-icon="${image.data}"`;
                     } else {
                         return `data-icon="data:image/png; base64, ${image.data}"`;
@@ -869,7 +871,8 @@ async function selectImageOverride(id) {
                 const global = $('#chooseimage').find('#globaloverride').prop('checked');
                 const name = $('#chooseimage').find('input[id=\'d_name\']').val();
                 console.warn(`update device image : ${id} : ${image} : ${global} : ${name} : ${dev.common.name}`);
-                const data = { icon: image};
+                const data = {};
+                if (image != 'current') data.icon= image;
                 if (name != dev.common.name) data.name = name;
                 updateDeviceData(id, data, global);
             });
@@ -881,6 +884,14 @@ async function selectImageOverride(id) {
 
 function getDevices() {
     getCoordinatorInfo();
+    sendTo(namespace, 'getDeviceCleanupRequired', {}, function(msg) {
+        if (msg) {
+            if (msg.clean)
+                $('#state_cleanup_btn').removeClass('hide');
+            else
+                $('#state_cleanup_btn').addClass('hide');
+        }
+    })
     sendTo(namespace, 'getDebugDevices', {}, function(msg) {
         if (msg && typeof (msg.debugDevices == 'array')) {
             debugDevices = msg.debugDevices;
@@ -3037,7 +3048,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
         } else if (stateDef.role === 'level.color.rgb') {
-            let options = []
+            const options = []
             for (const key of namedColors) {
                 options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
             }
