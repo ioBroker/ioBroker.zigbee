@@ -884,22 +884,13 @@ async function selectImageOverride(id) {
 
 function getDevices() {
     getCoordinatorInfo();
-    sendTo(namespace, 'getUploadRequired', {}, function(msg) {
+    sendTo(namespace, 'getDeviceCleanupRequired', {}, function(msg) {
         if (msg) {
-            if (msg.upload) {
-                $('#uploadQuery_btn').removeClass('hide');
-                $('#uploadQuery').removeClass('hide');
-            }
-            else {
-                $('#uploadQuery_btn').addClass('hide');
-                $('#uploadQuery').addClass('hide');
-            }
             if (msg.clean)
                 $('#state_cleanup_btn').removeClass('hide');
             else
                 $('#state_cleanup_btn').addClass('hide');
         }
-
     })
     sendTo(namespace, 'getDebugDevices', {}, function(msg) {
         if (msg && typeof (msg.debugDevices == 'array')) {

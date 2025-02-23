@@ -330,13 +330,6 @@ class Zigbee extends utils.Adapter {
                 this.tryToReconnect();
             }
         }
-        /* try {
-            this.writeFile(`${this.name}.admin`, 'test.txt', 'test data', (err) => this.log.warn(err ? 'error writing file '+ JSON.stringify(err) : 'success'));
-        }
-        catch (error) {
-            this.log.error('error writing file ' + (error && error.message ? error.message: 'no error message'));
-
-        } */
     }
 
     UploadRequired(status) {
