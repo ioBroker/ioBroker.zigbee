@@ -687,7 +687,11 @@ class Zigbee extends utils.Adapter {
 
                 if (stateDesc.isOption || stateDesc.compositeState) {
                     // acknowledge state with given value
-                    this.log.warn('changed state: ' + JSON.stringify(changedState));
+                    if (has_elevated_debug)
+                        this.log.warn('ELEVATED OC: changed state: ' + JSON.stringify(changedState));
+                    else
+                        this.log.debug('changed composite state: ' + JSON.stringify(changedState));
+
                     this.acknowledgeState(deviceId, model, stateDesc, value);
                     if (stateDesc.compositeState && stateDesc.compositeTimeout) {
                         this.stController.triggerComposite(deviceId, model, stateDesc, changedState.source.includes('.admin.'));
