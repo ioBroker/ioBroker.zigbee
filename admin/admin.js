@@ -3057,7 +3057,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
         } else if (stateDef.role === 'level.color.rgb') {
-            let options = []
+            const options = []
             for (const key of namedColors) {
                 options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
             }
