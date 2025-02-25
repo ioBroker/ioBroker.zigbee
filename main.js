@@ -220,6 +220,62 @@ class Zigbee extends utils.Adapter {
         this.doConnect();
     }
 
+    sandboxAdd(sandbox, item, module) {
+        const multipleItems = item.split(',');
+        if (multipleItems.length > 1) {
+            for(const singleItem of multipleItems) {
+                this.log.warn(`trying to add "${singleItem.trim()} = require(${module})[${singleItem.trim()}]" to sandbox`)
+                sandbox[singleItem.trim()] = require(module)[singleItem.trim()];
+            }
+        }
+        else {
+            this.log.warn(`trying to add "${item} = require(${module})" to sandbox`)
+            sandbox[item] = require(module);
+        }
+    }
+
+    SandboxRequire(sandbox, items) {
+        if (!items) return true;
+        let converterLoaded = true;
+        for (const item of items) {
+            const modulePath = item[2].replace(/[\'\"]/gm, '');
+
+            let zhcm1 = modulePath.match(/^zigbee-herdsman-converters\//);
+            if (zhcm1) {
+                const i2 = modulePath.replace(/^zigbee-herdsman-converters\//, `../zigbee-herdsman-converters/`);
+                try {
+                    this.sandboxAdd(sandbox, item[1], i2);
+                }
+                catch (error) {
+                    this.log.error(`Sandbox error: ${(error && error.message ? error.message : 'no error message given')}`);
+                }
+                continue;
+            }
+            zhcm1 = modulePath.match(/^..\//);
+            if (zhcm1) {
+                const i2 = modulePath.replace(/^..\//, `../zigbee-herdsman-converters/`);
+                try {
+                    this.sandboxAdd(sandbox, item[1], i2);
+                }
+                catch (error) {
+                    this.log.error(`Sandbox error: ${(error && error.message ? error.message : 'no error message given')}`);
+                    converterLoaded = false;
+                }
+                continue;
+            }
+            try {
+                this.sandboxAdd(sandbox, item[1], modulePath);
+            }
+            catch (error) {
+                this.log.error(`Sandbox error: ${(error && error.message ? error.message : 'no error message given')}`);
+                converterLoaded = false;
+            }
+
+        }
+        return converterLoaded;
+    }
+
+
     * getExternalDefinition() {
         if (this.config.external === undefined) {
             return;
@@ -238,34 +294,40 @@ class Zigbee extends utils.Adapter {
             else {
                 const converterCode = fs.readFileSync(mN, {encoding: 'utf8'}).toString();
                 let converterLoaded = true;
-                if (converterCode.match(/..\/lib\/legacy/gm)) {
-                    this.log.warn(`External converter ${mN} contains an unsupported reference to '/lib/legacy' - external converter not loaded.`);
-                    converterLoaded = false;
-                }
-                else
-                {
-                    // remove the require statements and attempt to place them in the sandbox
-                    const requiredLibraries = converterCode.matchAll(/(\w+) += +require\(['"](\S+)['"]\);/gm);
-                    for (const line of requiredLibraries) {
-                        const movedLine = line[2].replace('..', '../zigbee-herdsman-converters');
-                        try {
-                            sandbox[line[1]] = require(movedLine);
-                        }
-                        catch (e) {
-                            this.log.warn(`error adding ${line[1]} (${movedLine}) to the sandbox: ${e}`);
-                            converterLoaded = false;
-                        }
-                    }
-                }
+                let modifiedCode = converterCode.replace(/\s+\/\/.+/gm, ''); // remove all lines starting with // (with the exception of the first.)
+                //fs.writeFileSync(mN+'.tmp1', modifiedCode)
+                modifiedCode = modifiedCode.replace(/^\/\/.+/gm, ''); // remove the fist line if it starts with //
+                //fs.writeFileSync(mN+'.tmp2', modifiedCode)
+
+                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\*\s+as\s+(\S+)\s+from\s+(\S+);/gm)]);
+                modifiedCode = modifiedCode.replace(/import\s+\*\s+as\s+\S+\s+from\s+\S+;/gm, '')
+                //fs.writeFileSync(mN+'.tmp3', modifiedCode)
+                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\{(.+)\}\s+from\s+(\S+);/gm)]);
+                modifiedCode = modifiedCode.replace(/import\s+\{.+\}\s+from\s+\S+;/gm, '');
+                //fs.writeFileSync(mN+'.tmp4', modifiedCode)
+                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+\{(.+)\}\s+=\s+require\((.+)\)/gm)]);
+                modifiedCode = modifiedCode.replace(/const\s+\{.+\}\s+=\s+require\(.+\)/gm, '');
+                //fs.writeFileSync(mN+'.tmp5', modifiedCode)
+                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+(\S+)\s+=\s+require\((.+)\)/gm)]);
+                modifiedCode = modifiedCode.replace(/const\s+\S+\s+=\s+require\(.+\)/gm, '');
+                //fs.writeFileSync(mN+'.tmp6', modifiedCode)
+
+                //fs.writeFileSync(mN+'.tmp', modifiedCode)
+
                 if (converterLoaded) {
-                    this.log.info(`Apply converter from module: ${mN}`);
-                    //this.log.warn(converterCode.replace(/const (\w+) += +require\(['"](\S+)['"]\);/gm, ''));
                     try {
-                        vm.runInNewContext(converterCode.replace(/const (\w+) += +require\(['"](\S+)['"]\);/gm, ''), sandbox);
+                        this.log.warn('Trying to run sandbox for ' + mN);
+                        vm.runInNewContext(modifiedCode, sandbox);
                         const converter = sandbox.module.exports;
 
-                        if (Array.isArray(converter)) for (const item of converter) yield item;
-                        else yield converter;
+                        if (Array.isArray(converter)) for (const item of converter) {
+                            this.log.info('Model ' + item.model + ' defined in external converter ' + mN);
+                            yield item;
+                        }
+                        else {
+                            this.log.info('Model ' + converter.model + ' defined in external converter ' + mN);
+                            yield converter;
+                        }
                     }
                     catch (e) {
                         this.log.error(`Unable to apply converter from module: ${mN} - the code does not run: ${e}`);
