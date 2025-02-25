@@ -11,7 +11,7 @@
 
 ## ioBroker adapter for Zigbee devices via TI cc26x2r/cc2538/cc26x2px and deCONZ ConBee/RaspBee.
 ### cc2531/cc2530 are obsolet
- 
+
 With the Zigbee-coordinator based on Texas Instruments SoC, deCONZ ConBee/RaspBee modules, Silicon Labs EZSP v8 or ZIGate USB-TTL it creates its own zigbee-network, into which zigbee-devices are connected.
 
 
@@ -124,7 +124,7 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 [in English](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/en/readme.md)
 
-or 
+or
 
 [wiki](https://github.com/ioBroker/ioBroker.zigbee/wiki)
 
@@ -137,12 +137,30 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### 2.0.0 (2025-02-22)
-* (asgothian) new herdsman adaption
+### 2.0.1 (2025-02-25)
+* BREAKING CHANGES
+*
+* switch to converters 21 changes the exposes for a large numbern of devices (mostly remotes)
+* new method for controlling color based on subchannels for rgb, hs and xy
+* Exposes as default for ALL devices. Use of old definition as option only
+* Requires Node 20.x or newer
+*
+* (asgothian) Fix Pairing
+* (asgothian) change ping
+* (asgothian) delay map generation until refresh is activated, map messages after generation
+* (asgothian) remove bindings tab from zigbee tab
+* (asgothian) reorder tabs in configuration
+* (asgothian) remove binding tab from configuration
+* (asgothian) remove map from configuration
+* (asgothian) add debug to zigbee tab
+* (asgothian) Herdsman 3.2.5, Converters 21.30.0
+* (asgothian) Exposes as default, use of old device definitions as legacy optional
+* (asgothian) User specific images (model based, device based)
+* (asgothian) Improved group editing - remove members from group card
 
 ### 1.10.14 (2025-01-01)
 * (arteck) Herdsman 2.1.9, Converters 20.58.0
-* (asgothian) Fix: Aqara T1M (CL-L02D) 
+* (asgothian) Fix: Aqara T1M (CL-L02D)
 * (arteck) deleteDeviceStates change to deleteObj
 
 ### 1.10.13 (2024-11-10)
@@ -153,10 +171,10 @@ You can thank the authors by these links:
 
 ### 1.10.11 (2024-11-02)
 * BREAKING CHANGE
-* 
+*
 *  bugs : ChannelScan is currently not available
-* 
-* 
+*
+*
 * (lebrinkma) fix linter errors
 * (asgothian) disable map display for deactivated devices
 * (asgothian) new option on map: disable physics interaction
@@ -175,7 +193,7 @@ You can thank the authors by these links:
 * (arteck) add new eslint version
 
 ### 1.10.7 (2024-09-05)
-* (arteck) add flow control option 
+* (arteck) add flow control option
 * (asgothian) add new NewHerdsman
 * (arteck) add new ezsp coordinator Firmware (7.4.1.0)
 

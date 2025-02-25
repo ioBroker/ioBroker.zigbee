@@ -3,13 +3,17 @@
 /*
  * you must run 'iobroker upload zigbee' if you edited this file to make changes visible
  */
+
+
 const Materialize = (typeof M !== 'undefined') ? M : Materialize,
     anime = (typeof M !== 'undefined') ? M.anime : anime,
     namespace = 'zigbee.' + instance,
     namespaceLen = namespace.length;
 let devices = [],
+    debugDevices = [],
     messages = [],
     map = {},
+    namedColors = [],
     mapEdges = null,
     network,
     networkEvents,
@@ -26,7 +30,8 @@ let devices = [],
         channel: 'd2'
     },
     cidList,
-    shuffleInstance;
+    shuffleInstance,
+    errorData = [];
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const networkOptions = {
@@ -94,7 +99,7 @@ function getLQICls(value) {
         if (value < 20) return 'icon-red';
         if (value < 50) return 'icon-orange';
     }
-    return '';
+    return 'icon-green';
 }
 
 
@@ -172,8 +177,8 @@ function getGroupCard(dev) {
     ;
     info = info.concat(`                    </ul>
                 </div>`);
-    const image = `<img src="img/group_${memberCount}.png" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
-    const dashCard = getDashCard(dev, `img/group_${memberCount}.png`);
+    const image = `<img src="${dev.common.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
+    const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
     const card = `<div id="${id}" class="device group">
                   <div class="card hoverable flipable">
                     <div class="front face">${dashCard}</div>
@@ -199,6 +204,9 @@ function getGroupCard(dev) {
                                 <button name="editgrp" class="right btn-flat btn-small">
                                     <i class="material-icons icon-green">edit</i>
                                 </button>
+                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Edit">
+                                    <i class="material-icons icon-black">image</i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -213,14 +221,18 @@ function sanitizeModelParameter(parameter) {
 }
 
 function getCard(dev) {
+    //console.warn(JSON.stringify(dev));
+    if (!dev._id) return '';
     const title = dev.common.name,
-        id = dev._id,
+        id = (dev._id ? dev._id : ''),
         type = (dev.common.type ? dev.common.type : 'unknown'),
         type_url = (dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown'),
-        img_src = dev.icon || dev.common.icon,
+        img_src = dev.common.icon || dev.icon,
         rooms = [],
         isActive = (dev.common.deactivated ? false : true),
-        lang = systemLang || 'en';
+        lang = systemLang || 'en',
+        ieee = id.replace(namespace + '.', ''),
+        isDebug = checkDebugDevice(ieee);
     for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
             rooms.push(dev.rooms[r][lang]);
@@ -228,6 +240,7 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
+    console.warn('debug for ' + ieee + ' is ' + isDebug);
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
@@ -237,18 +250,20 @@ function getCard(dev) {
         battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
-        status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (isActive ? `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>` : ''),
+        lq = (dev.link_quality > 0)
+            ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
+            : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        status = (isActive ? lq : `<div class="col tool"><i class="material-icons icon-red">cancel</i></div>`),
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-                        <li><span class="labelinfo">ieee:</span><span>0x${id.replace(namespace + '.', '')}</span></li>
+                        <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
                         <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
                         <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
                         <li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>
                     </ul>
                 </div>`,
-        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons icon-${(isActive ? 'red' : 'green')}">power_settings_new</i></button>`,
+        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
+        debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'Automatic by '+debugDevices[isDebug-1]: 'Disable Debug' : 'Enable Debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
@@ -259,7 +274,7 @@ function getCard(dev) {
                             <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
                                 ${battery}
-                                ${lq}
+                                <!--${lq}-->
                                 ${status}
                             </span>
                             <!--/a--!>
@@ -274,17 +289,20 @@ function getCard(dev) {
                                 ${infoBtn}
                                 <span class="left" style="padding-top:8px">${room}</span>
                                 <span class="left fw_info"></span>
-                                <button name="delete" class="right btn-flat btn-small">
-                                    <i class="material-icons icon-black">delete</i>
+                                <button name="delete" class="right btn-flat btn-small tooltipped" title="Delete">
+                                    <i class="material-icons icon-red">delete</i>
                                 </button>
-                                <button name="edit" class="right btn-flat btn-small">
-                                    <i class="material-icons icon-green">edit</i>
+                                <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit">
+                                    <i class="material-icons icon-black">edit</i>
+                                </button>
+                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Select Image">
+                                    <i class="material-icons icon-black">image</i>
                                 </button>
                                 <button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
                                     <i class="material-icons icon-red">sync</i>
                                 </button>
                                 ${deactBtn}
-                                ${permitJoinBtn}
+                                ${debugBtn}
                             </div>
                         </div>
                     </div>
@@ -364,6 +382,7 @@ function cleanConfirmation() {
     const text = translateWord('Do you really want to remove orphaned states?');
     $('#modalclean').find('p').text(text);
     $('#cforce').prop('checked', false);
+    $('#cforce').removeClass('hide');
     $('#cforcediv').removeClass('hide');
     $('#modalclean a.btn[name=\'yes\']').unbind('click');
     $('#modalclean a.btn[name=\'yes\']').click(() => {
@@ -479,14 +498,18 @@ function cleanDeviceStates(force) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
             } else {
+                if (msg.stateList) {
+                    //showMessage(msg.stateList.join('<p>'), 'State cleanup results');
+                }
                 getDevices();
             }
         }
     });
-    showWaitingDialog('Device is being removed', 10);
+    showWaitingDialog('Orphaned states are being removed', 10);
 }
 
 function renameDevice(id, name) {
+    showMessage('rename device with ' + id + ' and ' + name, _('Error'));
     sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -616,11 +639,24 @@ function showDevices() {
         const name = getDevName(dev_block);
         editName(id, name);
     });
+    $('.card-reveal-buttons button[name=\'swapdebug\']').click(function () {
+        const dev_block = $(this).parents('div.device');
+        const id = getDevId(dev_block);
+        const name = getDevName(dev_block);
+        toggleDebugDevice(id, name);
+    });
+
+    $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
+        const dev_block = $(this).parents('div.device');
+        const id = getDevId(dev_block);
+        selectImageOverride(id);
+    });
+
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = dev_block.attr('id').replace(namespace + '.group_', '');
         const name = getDevName(dev_block);
-        editGroupName(id, name, false);
+        editGroup(id, name, false);
     });
     $('button.btn-floating[name=\'join\']').click(function () {
         const dev_block = $(this).parents('div.device');
@@ -751,9 +787,111 @@ function getCoordinatorInfo() {
         }
     });
 }
+function checkDebugDevice(id) {
+    if (debugDevices.indexOf(id) > -1) return 0
+    for (const addressPart of debugDevices) {
+        if (typeof id === 'string' && id.includes(addressPart)) {
+            return debugDevices.indexOf(addressPart)+1;
+        }
+    }
+    return -1;
+}
+async function toggleDebugDevice(id) {
+    sendTo(namespace, 'setDeviceDebug', {id:id}, function (msg) {
+        sendTo(namespace, 'getDebugDevices', {}, function(msg) {
+            if (msg && typeof (msg.debugDevices == 'array')) {
+                debugDevices = msg.debugDevices;
+            }
+            else
+                debugDevices = [];
+            showDevices();
+        });
+    });
+}
+
+function updateDeviceData(device, data, global) {
+    sendTo(namespace, 'updateDeviceData', {target: device, data:data, global:global}, function(msg) {
+        if (msg && msg.hasOwnProperty.error) {
+            showMessage(msg.error, _('Error'));
+        }
+        getDevices();
+    });
+}
+
+
+async function selectImageOverride(id) {
+    const dev = devices.find((d) => d._id == id);
+    const imghtml = `<img src="${dev.common.icon || dev.icon}" width="80px">`
+    //console.error(imghtml)
+    const selectItems= [''];
+    $('#chooseimage').find('input[id=\'d_name\']').val(dev.common.name);
+    $('#chooseimage').find('.currentIcon').html(imghtml);
+
+    sendTo(namespace, 'getLocalImages', {}, function(msg) {
+        if (msg && msg.imageData) {
+            const imagedata = msg.imageData;
+            console.warn(JSON.stringify(dev.common));
+            const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
+            if (dev.legacyIcon) imagedata.unshift( { file:dev.legacyIcon, name:'legacy', data:dev.legacyIcon});
+            imagedata.unshift( { file:'none', name:'default', data:default_icon});
+            imagedata.unshift( { file:'current', name:'current', data:dev.common.icon || dev.icon});
+
+            list2select('#images', imagedata, selectItems,
+                function (key, image) {
+                    return image.name
+                },
+                function (key, image) {
+                    return image.file;
+                },
+                function (key, image) {
+                    if (image.file.length < 50) {
+                        return `data-icon="${image.data}"`;
+                    } else {
+                        return `data-icon="data:image/png; base64, ${image.data}"`;
+                    }
+                },
+            );
+
+            $('#chooseimage a.btn[name=\'save\']').unbind('click');
+            $('#chooseimage a.btn[name=\'save\']').click(() => {
+                const image = $('#chooseimage').find('#images option:selected').val();
+                const global = $('#chooseimage').find('#globaloverride').prop('checked');
+                const name = $('#chooseimage').find('input[id=\'d_name\']').val();
+                console.warn(`update device image : ${id} : ${image} : ${global} : ${name} : ${dev.common.name}`);
+                const data = {};
+                if (image != 'current') data.icon= image;
+                if (name != dev.common.name) data.name = name;
+                updateDeviceData(id, data, global);
+            });
+            $('#chooseimage').modal('open');
+            Materialize.updateTextFields();
+        }
+    });
+}
 
 function getDevices() {
     getCoordinatorInfo();
+    sendTo(namespace, 'getDeviceCleanupRequired', {}, function(msg) {
+        if (msg) {
+            if (msg.clean)
+                $('#state_cleanup_btn').removeClass('hide');
+            else
+                $('#state_cleanup_btn').addClass('hide');
+            if (msg.errors && msg.errors.length > 0) {
+                $('#show_errors_btn').removeClass('hide');
+                errorData = msg.errors;
+            }
+            else
+                $('#show_errors_btn').addClass('hide');
+        }
+    })
+    sendTo(namespace, 'getDebugDevices', {}, function(msg) {
+        if (msg && typeof (msg.debugDevices == 'array')) {
+            debugDevices = msg.debugDevices;
+        }
+        else
+            debugDevices = [];
+    });
     sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -764,6 +902,14 @@ function getDevices() {
                 getExclude();
                 getBinding();
             }
+        }
+    });
+}
+
+function getNamedColors() {
+    sendTo(namespace, 'getNamedColors', {}, function(msg) {
+        if (msg && typeof msg.colors) {
+            namedColors = msg.colors;
         }
     });
 }
@@ -787,6 +933,9 @@ function getMap() {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
             } else {
+                if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
+                    showMessage(msg.errors.join('<p>'), 'Map generation messages');
+                }
                 map = msg;
                 showNetworkMap(devices, map);
             }
@@ -794,14 +943,24 @@ function getMap() {
     });
 }
 
+function getRandomExtPanID()
+{
+    const bytes = [];
+    for (let i = 0;i<16;i++) {
+        bytes.push(Math.floor(Math.random() * 16).toString(16));
+    }
+    return bytes.join('');
+}
+
+
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
     if (settings.panID === undefined) {
-        settings.panID = 6754;
+        settings.panID = Math.floor(Math.random() * 10000);
     }
     if (settings.extPanID === undefined) {
-        settings.extPanID = 'DDDDDDDDDDDDDDDD';
+        settings.extPanID = getRandomExtPanID();
     }
     // fix for previous wrong value
     if (settings.extPanID === 'DDDDDDDDDDDDDDD') {
@@ -844,11 +1003,13 @@ function load(settings, onChange) {
         }
     }
 
+
     getComPorts(onChange);
 
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
-    getMap();
+    getNamedColors();
+    //getMap();
     //addCard();
 
     // Signal to admin, that no changes yet
@@ -856,6 +1017,9 @@ function load(settings, onChange) {
 
     $('#state_cleanup_btn').click(function () {
         cleanConfirmation();
+    });
+    $('#show_errors_btn').click(function () {
+        showMessage(errorData.join('<br>'), 'Stashed error messages');
     });
     $('#fw_check_btn').click(function () {
         checkFwUpdate();
@@ -889,17 +1053,17 @@ function load(settings, onChange) {
 
     sendTo(namespace, 'getGroups', {}, function (data) {
         groups = data.groups;
-        showGroups();
+        //showGroups();
     });
 
     $('#add_group').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
-        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
+        addGroup(maxind + 1, 'Group ' + maxind + 1);
     });
 
     $('#add_grp_btn').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
-        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
+        addGroup(maxind + 1, 'Group ' + maxind + 1);
     });
 
     $('#code_pairing').click(function () {
@@ -1065,7 +1229,7 @@ socket.on('stateChange', function (id, state) {
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
     //console.log('objectChange', id, obj);
-    if (obj && obj.type == 'device' && obj.common.type !== 'group') {
+    if (obj && obj.type == 'device') { // && obj.common.type !== 'group') {
         updateDevice(id);
     }
     if (!obj) {
@@ -1128,10 +1292,10 @@ function showNetworkMap(devices, map) {
             label: (dev.link_quality > 0 ? dev.common.name : `${dev.common.name}\n(disconnected)`),
             title: dev._id.replace(namespace + '.', '') + extInfo,
             shape: 'circularImage',
-            image: dev.icon,
+            image: dev.common.icon || dev.icon,
             imagePadding: {top: 5, bottom: 5, left: 5, right: 5},
-            color: {background: 'white', highlight: {background: 'white'}},
-            font: {color: '#007700'},
+            color: {background: '#cccccc', highlight: {background: 'white'}},
+            font: {color: '#00bb00'},
             borderWidth: 1,
             borderWidthSelected: 4,
         };
@@ -1139,7 +1303,7 @@ function showNetworkMap(devices, map) {
             // node.shape = 'star';
             node.image = 'zigbee.png';
             node.label = 'Coordinator';
-            delete node.color;
+            // delete node.color;
         }
         return node;
     };
@@ -1178,7 +1342,7 @@ function showNetworkMap(devices, map) {
                     // // parent/child
                     if (mapEntry.status !== 'online') {
                         label = label + ' (off)';
-                        linkColor = '#ff0000';
+                        linkColor = '#660000';
                     }
                     if (mapEntry.lqi < 10) {
                         linkColor = '#ff0000';
@@ -1236,8 +1400,6 @@ function showNetworkMap(devices, map) {
             }
         });
     }
-
-    // routing
     /*
     if (map.routing) {
         map.routing.forEach((route)=>{
@@ -1248,7 +1410,7 @@ function showNetworkMap(devices, map) {
                 const to = routeDest._id;
                 const from = routeSource._id;
                 const label = route.status;
-                const linkColor = '#ff00ff';
+                const linkColor = '#ff55ff';
                 const edge = {
                     from: from,
                     to: to,
@@ -1298,7 +1460,7 @@ function showNetworkMap(devices, map) {
             if (node) {
                 node.font = {color: '#ff0000'};
                 if (dev.info && dev.info.device._type == 'Coordinator') {
-                    node.font = {color: '#000000'};
+                    node.font = {color: '#00ff00'};
                 }
                 nodesArray.push(node);
             }
@@ -1324,6 +1486,7 @@ function showNetworkMap(devices, map) {
                 const options = data.edges._data.get(id);
                 if (select) {
                     options.font.size = 15;
+                    console.warn(JSON.stringify(options.font));
                 } else {
                     options.font.size = 0;
                 }
@@ -1335,15 +1498,16 @@ function showNetworkMap(devices, map) {
             doSelection(false, event.previousSelection.edges, this.body.data);
         }
         doSelection(true, event.edges, this.body.data);
-
-        // if (event.nodes) {
-        //     event.nodes.forEach((node)=>{
-        //         //const options = network.clustering.findNode[node];
-        //         network.clustering.updateClusteredNode(
-        //             node, {size: 50}
-        //         );
-        //     });
-        // }
+        /*
+        if (event.nodes) {
+            event.nodes.forEach((node)=>{
+                //const options = network.clustering.findNode[node];
+                 network.clustering.updateClusteredNode(
+                    node, {size: 50}
+                );
+            });
+        }
+        */
     };
     network.on('selectNode', onMapSelect);
     network.on('deselectNode', onMapSelect);
@@ -1848,6 +2012,7 @@ function list2select(selector, list, selected, getText, getKey, getData) {
     element.select();
 }
 
+/*
 function showGroups() {
     $('#groups_table').find('.group').remove();
     if (!groups) return;
@@ -1870,45 +2035,56 @@ function showGroups() {
         deleteGroupConfirmation(index, name);
     });
 }
+*/
 
-function editGroupName(id, name, isnew) {
-    //const dev = devices.find((d) => d._id == id);
-    //console.log('devices: '+ JSON.stringify(devices));
-    const groupables = [];
-    for (const d of devices) {
-        if (d && d.info && d.info.endpoints) {
-            for (const ep of d.info.endpoints) {
-                if (ep.inputClusters.includes(4)) {
-                    groupables.push(ep);
-                }
-            }
+function editGroup(id, name) {
+    const grp = devGroups[id];
+    let info = '';
+    if (grp && grp.memberinfo) {
+        for (let m=0; m< grp.memberinfo.length; m++) {
+            const mi = grp.memberinfo[m];
+            if (mi)
+                info = info.concat(`<li class="collection-item"><label><input id="member_${m}" type="checkbox" checked="checked"/><span for="member_${m}">${mi.device} Endpoint ${mi.epid} (${mi.ieee})</span></label></li>`);
         }
-        //console.log('device ' + JSON.stringify(d));
     }
-
+    $('#groupedit').find('.collection').html(info);
     //var text = 'Enter new name for "'+name+'" ('+id+')?';
-    if (isnew) {
-        $('#groupedit').find('.editgroup').addClass('hide');
-        $('#groupedit').find('.addgroup').removeClass('hide');
-        $('#groupedit').find('.input-field.members').addClass('hide');
-        $('#groupedit').find('.input-field.groupid').removeClass('hide');
-    } else {
-        $('#groupedit').find('.editgroup').removeClass('hide');
-        $('#groupedit').find('.addgroup').addClass('hide');
-        $('#groupedit').find('.input-field.members').removeClass('hide');
-        $('#groupedit').find('.input-field.groupid').addClass('hide');
-    }
+    $('#groupedit').find('.editgroup').removeClass('hide');
     $('#groupedit').find('input[id=\'g_index\']').val(id);
     $('#groupedit').find('input[id=\'g_name\']').val(name);
     $('#groupedit a.btn[name=\'save\']').unbind('click');
     $('#groupedit a.btn[name=\'save\']').click(() => {
-        const newId = $('#groupedit').find('input[id=\'g_index\']').val(),
-            newName = $('#groupedit').find('input[id=\'g_name\']').val();
-        updateGroup(id, newId, newName);
+        const newName = $('#groupedit').find('input[id=\'g_name\']').val();
+        const Id = $('#groupedit').find('input[id=\'g_index\']').val();
+        const grp = devGroups[Id];
+        const removeMembers = [];
+        if (grp && grp.memberinfo) {
+            for (let m=0; m<grp.memberinfo.length;m++) {
+                const member = grp.memberinfo[m];
+                if (!$(`#member_${m}`).prop('checked'))
+                    removeMembers.push({id:member.ieee.replace('0x',''), ep:member.epid})
+            }
+        }
+        console.warn(`ID: ${Id} name: ${newName} removeMembers: ${JSON.stringify(removeMembers)}`)
+        updateGroup(Id, newName, (removeMembers.length > 0 ? removeMembers: undefined));
         // showGroups();
-        // getDevices();
+        getDevices();
     });
     $('#groupedit').modal('open');
+    Materialize.updateTextFields();
+}
+
+function addGroup(id, name) {
+    //var text = 'Enter new name for "'+name+'" ('+id+')?';
+    $('#groupadd').find('input[id=\'g_index\']').val(id);
+    $('#groupadd').find('input[id=\'g_name\']').val(name);
+    $('#groupadd a.btn[name=\'save\']').unbind('click');
+    $('#groupadd a.btn[name=\'save\']').click(() => {
+        const newId = $('#groupadd').find('input[id=\'g_index\']').val(),
+            newName = $('#groupadd').find('input[id=\'g_name\']').val();
+        updateGroup(newId, newName);
+    });
+    $('#groupadd').modal('open');
     Materialize.updateTextFields();
 }
 
@@ -1925,10 +2101,9 @@ function deleteGroupConfirmation(id, name) {
     $('#modaldelete').modal('open');
 }
 
-function updateGroup(id, newId, newName) {
-    delete groups[id];
+function updateGroup(newId, newName, remove) {
     groups[newId] = newName;
-    sendTo(namespace, 'renameGroup', {id: newId, name: newName}, function (msg) {
+    sendTo(namespace, 'renameGroup', {id: newId, name: newName, remove: remove}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -1948,12 +2123,20 @@ function deleteGroup(id) {
 
 function updateDev(id, newName, newGroups) {
     const dev = devices.find((d) => d._id === id);
-    if (dev && dev.common.name !== newName) {
-        renameDevice(id, newName);
+    const command = {id: id, name: id};
+    let needName = false;
+    if (dev) {
+        if (dev.common.name !== newName) {
+            command.name = newName;
+            needName = true;
+        }
+        else command.name = dev.common.name;
     }
+
     const keys = Object.keys(newGroups);
     if (keys && keys.length) {
-        sendTo(namespace, 'updateGroupMembership', {id: id, groups: newGroups}, function (msg) {
+        command.groups = newGroups
+        sendTo(namespace, 'updateGroupMembership', command, function (msg) {
             closeWaitingDialog();
             if (msg && msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -1965,24 +2148,20 @@ function updateDev(id, newName, newGroups) {
         showWaitingDialog('Updating group memberships', 10);
 
     }
-    /*
-        if (dev.info.device._type == 'Router') {
-            const oldGroups = devGroups[id] || [];
-            if (oldGroups.toString() != newGroups.toString()) {
-                devGroups[id] = newGroups;
-                sendTo(namespace, 'updateGroupMembership', { id: id, groups: newGroups }, function (msg) {
-                    if (msg && msg.error) {
-                            showMessage(msg.error, _('Error'));
-                        }
-                        else {
-                        // save dev-groups on success
-                            dev.groups = newGroups;
-                        }
-                    showDevices();
-                });
+    else if (needName)
+    {
+        sendTo(namespace, 'renameDevice', command, function(msg) {
+            //closeWaitingDialog();
+            if (msg && msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                // save dev-groups on success
+                getDevices();
             }
-        }
-    */
+
+        })
+
+    }
 }
 
 function resetConfirmation() {
@@ -2462,6 +2641,7 @@ function showDevInfo(id) {
     $('#modaldevinfo').modal('open');
 }
 
+/*
 function showGroupList(show) {
     const htmlsections = [];
     for (const groupid in devGroups) {
@@ -2492,7 +2672,7 @@ function showGroupList(show) {
     $('#grouplist').html(htmlsections.join(''));
     $('#add').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
-        editGroupName(maxind + 1, 'Group ' + maxind + 1, true);
+        addGroup(maxind + 1, 'Group ' + maxind + 1, true);
         showGroupList(false);
     });
 
@@ -2501,6 +2681,7 @@ function showGroupList(show) {
     });
     if (show) $('#modalgrouplist').modal('open');
 }
+*/
 
 let waitingTimeout, waitingInt;
 
@@ -2640,27 +2821,29 @@ function addExcludeDialog() {
         const ids = devices.map(el => el._id);
         const idx = ids.indexOf(exclude_id);
         const exclude_model = devices[idx];
+        console.warn('calling addExclude mit model ' + exclude_model)
 
         addExclude(exclude_model);
     });
     prepareExcludeDialog();
-
+    console.warn('opening dialog');
     $('#excludemodaledit').modal('open');
     Materialize.updateTextFields();
 }
 
 function addExclude(exclude_model) {
-    sendTo(namespace, 'addExclude', {
-        exclude_model: exclude_model
-    }, function (msg) {
-        closeWaitingDialog();
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
+    if (typeof exclude_model == 'object' && exclude_model.hasOwnProperty('common'))
+        sendTo(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
+            closeWaitingDialog();
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'));
+                }
             }
-        }
-        getExclude();
-    });
+            console.log('getting excludes ?');
+            getExclude();
+        });
+    else closeWaitingDialog();
 }
 
 function getExclude() {
@@ -2669,10 +2852,10 @@ function getExclude() {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
             } else {
-                excludes = msg;
+                excludes = msg.legacy;
                 showExclude();
             }
-        }
+        } else console.warn('getExclude without msg')
     });
 }
 
@@ -2684,14 +2867,11 @@ function showExclude() {
         return;
     }
 
-    excludes.forEach(b => {
-        const exclude_id = b.id;
-
+    excludes.forEach(id => {
+        const exclude_id = id.key;
+        const exclude_icon = id.value;
         const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}};
-        // exclude_icon = (exclude_dev.icon) ? `<img src="${exclude_dev.icon}" width="64px">` : '';
-
         const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(exclude_id)}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
-
         const card = `
                     <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3" style="height: 135px;padding-bottom: 10px;">
                         <div class="card hoverable">
@@ -2720,7 +2900,7 @@ function showExclude() {
     $('#exclude button[name=\'delete\']').click(function () {
         const exclude_id = $(this).parents('.exclude')[0].id;
         deleteExcludeConfirmation(exclude_id);
-        deleteExclude(exclude_id);
+        //deleteExclude(exclude_id);
     });
 }
 
@@ -2745,6 +2925,7 @@ function deleteExclude(id) {
                 showMessage(msg.error, _('Error'));
             }
         }
+        console.log('getting excludes ?');
         getExclude();
     });
 }
@@ -2827,11 +3008,11 @@ function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }
 
-function getDashCard(dev, groupImage) {
+function getDashCard(dev, groupImage, groupstatus) {
     const title = dev.common.name,
         id = dev._id,
         type = dev.common.type,
-        img_src = (groupImage ? groupImage : dev.icon || dev.common.icon),
+        img_src = (groupImage ? groupImage : dev.common.icon || dev.icon),
         isActive = !dev.common.deactivated,
         rooms = [],
         lang = systemLang || 'en';
@@ -2842,11 +3023,12 @@ function getDashCard(dev, groupImage) {
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
+        unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>'),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : ''),
-        status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
-        permitJoinBtn = (isActive && dev.info && dev.info.device._type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
-        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
+        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
+        //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
+        //permitJoinBtn = (isActive && dev.info && dev.info.device._type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
     const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
         const id = stateDef.id;
@@ -2861,6 +3043,12 @@ function getDashCard(dev, groupImage) {
         } else if (stateDef.type === 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
             val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+        } else if (stateDef.role === 'level.color.rgb') {
+            const options = []
+            for (const key of namedColors) {
+                options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
+            }
+            val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
         } else if (stateDef.states && stateDef.write) {
             let options;
             if (typeof stateDef.states == 'string') {
@@ -2872,7 +3060,7 @@ function getDashCard(dev, groupImage) {
             } else {
                 options = [];
                 for (const [key, value] of Object.entries(stateDef.states)) {
-                    options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${value}</option>`);
+                    options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${key}</option>`);
                 }
             }
             val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
@@ -2888,7 +3076,6 @@ function getDashCard(dev, groupImage) {
                 ${idleTime}
                 ${battery}
                 ${lq}
-                ${status}
             </span>
             <span class="card-title truncate">${title}</span>
             </div>
