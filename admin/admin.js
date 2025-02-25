@@ -30,9 +30,7 @@ let devices = [],
         channel: 'd2'
     },
     cidList,
-    uploadRequired = false,
-    cleanupRequired = false,
-    shuffleInstance;
+    shuffleInstance,
     errorData = [];
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 

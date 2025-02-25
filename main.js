@@ -238,7 +238,7 @@ class Zigbee extends utils.Adapter {
         if (!items) return true;
         let converterLoaded = true;
         for (const item of items) {
-            const modulePath = item[2].replace(/[\'\"]/gm, '');
+            const modulePath = item[2].replace(/['"]/gm, '');
 
             let zhcm1 = modulePath.match(/^zigbee-herdsman-converters\//);
             if (zhcm1) {
