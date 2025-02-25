@@ -33,6 +33,7 @@ let devices = [],
     uploadRequired = false,
     cleanupRequired = false,
     shuffleInstance;
+    errorData = [];
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const networkOptions = {
@@ -810,18 +811,6 @@ async function toggleDebugDevice(id) {
     });
 }
 
-/*
-function updateDeviceImage(device, image, global) {
-    console.warn(`update device image : ${JSON.stringify(device)} : ${image} : ${global}`);
-    sendTo(namespace, 'updateDeviceImage', {target: device, image: image, global:global}, function(msg) {
-        if (msg && msg.hasOwnProperty.error) {
-            showMessage(msg.error, _('Error'));
-        }
-        getDevices();
-    });
-}
-*/
-
 function updateDeviceData(device, data, global) {
     sendTo(namespace, 'updateDeviceData', {target: device, data:data, global:global}, function(msg) {
         if (msg && msg.hasOwnProperty.error) {
@@ -890,6 +879,12 @@ function getDevices() {
                 $('#state_cleanup_btn').removeClass('hide');
             else
                 $('#state_cleanup_btn').addClass('hide');
+            if (msg.errors && msg.errors.length > 0) {
+                $('#show_errors_btn').removeClass('hide');
+                errorData = msg.errors;
+            }
+            else
+                $('#show_errors_btn').addClass('hide');
         }
     })
     sendTo(namespace, 'getDebugDevices', {}, function(msg) {
@@ -1024,6 +1019,9 @@ function load(settings, onChange) {
 
     $('#state_cleanup_btn').click(function () {
         cleanConfirmation();
+    });
+    $('#show_errors_btn').click(function () {
+        showMessage(errorData.join('<br>'), 'Stashed error messages');
     });
     $('#fw_check_btn').click(function () {
         checkFwUpdate();
