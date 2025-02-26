@@ -304,6 +304,9 @@ class Zigbee extends utils.Adapter {
                 //fs.writeFileSync(mN+'.tmp3', modifiedCode)
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\{(.+)\}\s+from\s+(\S+);/gm)]);
                 modifiedCode = modifiedCode.replace(/import\s+\{.+\}\s+from\s+\S+;/gm, '');
+
+                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+(.+)\s+from\s+(\S+);/gm)]);
+                modifiedCode = modifiedCode.replace(/import\s+.+\s+from\s+\S+;/gm, '');
                 //fs.writeFileSync(mN+'.tmp4', modifiedCode)
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+\{(.+)\}\s+=\s+require\((.+)\)/gm)]);
                 modifiedCode = modifiedCode.replace(/const\s+\{.+\}\s+=\s+require\(.+\)/gm, '');
@@ -312,7 +315,12 @@ class Zigbee extends utils.Adapter {
                 modifiedCode = modifiedCode.replace(/const\s+\S+\s+=\s+require\(.+\)/gm, '');
                 //fs.writeFileSync(mN+'.tmp6', modifiedCode)
 
-                //fs.writeFileSync(mN+'.tmp', modifiedCode)
+                for(const component of modifiedCode.matchAll(/const (.+):(.+)=/gm)) {
+                    modifiedCode = modifiedCode.replace(component[0], `const ${component[1]} = `);
+                }
+                modifiedCode = modifiedCode.replace(/export .+;/gm, '');
+
+                fs.writeFileSync(mN+'.tmp', modifiedCode)
 
                 if (converterLoaded) {
                     try {
@@ -434,7 +442,7 @@ class Zigbee extends utils.Adapter {
             const configExtPanId = this.config.extPanID ? `0x${this.config.extPanID.toLowerCase()}` : '0xdddddddddddddddd';
             let networkExtPanId = (await this.zbController.herdsman.getNetworkParameters()).extendedPanID;
             let needChange = false;
-            this.log.debug(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
+            this.log.info(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
             const adapterType = this.config.adapterType || 'zstack';
             if (adapterType === 'zstack') {
                 if (configExtPanId !== networkExtPanId) {
@@ -480,16 +488,19 @@ class Zigbee extends utils.Adapter {
         }
 
         await this.setState('info.connection', true, true);
+        // this.log.warn('enumerating devices from DB');
 
-        const devicesFromDB = this.zbController.getClientIterator(false);
         this.stController.CleanupRequired(false);
+        const devicesFromDB = this.zbController.getClientIterator(false);
         for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
+                // this.log.warn('sync dev states for ' + (entity.mapped ? entity.mapped.model : entity.device.modelID));
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
                 this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () =>
                     this.stController.syncDevStates(device, model));
             }
+            else (this.log.warn('resolveEntity returned no entity'));
         }
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
@@ -1023,6 +1034,7 @@ class Zigbee extends utils.Adapter {
 
     newDevice(entity) {
         this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
+        this.stController.AddModelFromHerdsman(entity.device, entity.mapped.model)
         const dev = entity.device;
         if (dev) {
             this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {

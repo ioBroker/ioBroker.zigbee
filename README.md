@@ -138,6 +138,8 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
+* fix expose generation with expose function requiring a device.
+### 2.0.1 (2025-02-25)
 * BREAKING CHANGES
 *
 * switch to converters 21 changes the exposes for a large numbern of devices (mostly remotes)
