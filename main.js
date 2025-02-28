@@ -367,15 +367,15 @@ class Zigbee extends utils.Adapter {
             const DebugIdentify = require('./debugidentify');
             debugversion = DebugIdentify.ReportIdentifier();
         } catch {
-            debugversion = ' npm ...';
+            debugversion = 'npm ...';
         }
 
         // installed version
         let gitVers = '';
         try {
-            this.log.info(`Starting Zigbee ${debugversion}`);
+            this.log.info(`Starting Adapter ${debugversion}`);
 
-            await this.getForeignObject(`system.adapter.${this.namespace}`, (err, obj) => {
+            this.getForeignObject(`system.adapter.${this.namespace}`,async (err, obj) => {
                 if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
                     const instFrom = obj.common.installedFrom;
                     gitVers = gitVers + instFrom.replace('tarball', 'commit');
@@ -383,9 +383,9 @@ class Zigbee extends utils.Adapter {
                     gitVers = obj.common.installedFrom;
                 }
                 this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
+                await this.zbController.start();
             });
 
-            await this.zbController.start();
         } catch (error) {
             this.setState('info.connection', false, true);
             this.log.error(`Failed to start Zigbee`);
