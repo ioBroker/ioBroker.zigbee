@@ -236,12 +236,13 @@
         ]
       }
     ],
+
     "installedFrom": "asgothian/ioBroker.zigbee#1.11"
   },
   "native": {
     "port": "",
-    "panID": 6754,
-    "extPanID": "DDDDDDDDDDDDDDDD",
+    "panID": 0,
+    "extPanID": "",
     "channel": 11,
     "disableLed": false,
     "precfgkey": "01030507090B0D0F00020406080A0C0D",

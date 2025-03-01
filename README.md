@@ -137,6 +137,19 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* fix expose generation with expose function requiring a device. (Issue #1842)
+* fix failure to configure for devices needing multiple configurations (Issue #2375)
+* fix hold/release and press/release action handling (Issue #2387)
+* fix lib/legacy requirement for external converters (Issue #2376)
+* improved external converter handling
+* fix OTA bug
+* improved message handling for devices which report values outside their defined ranges
+* preparation for ZHC 22.x (model definition loaded on demand
+* fix legacy definition for devices
+* added action state for remotes.
+*
+
 ### 2.0.1 (2025-02-25)
 * BREAKING CHANGES
 *

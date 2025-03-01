@@ -304,6 +304,9 @@ class Zigbee extends utils.Adapter {
                 //fs.writeFileSync(mN+'.tmp3', modifiedCode)
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\{(.+)\}\s+from\s+(\S+);/gm)]);
                 modifiedCode = modifiedCode.replace(/import\s+\{.+\}\s+from\s+\S+;/gm, '');
+
+                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+(.+)\s+from\s+(\S+);/gm)]);
+                modifiedCode = modifiedCode.replace(/import\s+.+\s+from\s+\S+;/gm, '');
                 //fs.writeFileSync(mN+'.tmp4', modifiedCode)
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+\{(.+)\}\s+=\s+require\((.+)\)/gm)]);
                 modifiedCode = modifiedCode.replace(/const\s+\{.+\}\s+=\s+require\(.+\)/gm, '');
@@ -312,7 +315,12 @@ class Zigbee extends utils.Adapter {
                 modifiedCode = modifiedCode.replace(/const\s+\S+\s+=\s+require\(.+\)/gm, '');
                 //fs.writeFileSync(mN+'.tmp6', modifiedCode)
 
-                //fs.writeFileSync(mN+'.tmp', modifiedCode)
+                for(const component of modifiedCode.matchAll(/const (.+):(.+)=/gm)) {
+                    modifiedCode = modifiedCode.replace(component[0], `const ${component[1]} = `);
+                }
+                modifiedCode = modifiedCode.replace(/export .+;/gm, '');
+
+                fs.writeFileSync(mN+'.tmp', modifiedCode)
 
                 if (converterLoaded) {
                     try {
@@ -345,10 +353,27 @@ class Zigbee extends utils.Adapter {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
             try {
-                zigbeeHerdsmanConverters.addDefinition(toAdd);
+                if (zigbeeHerdsmanConverters.hasOwnProperty('addExternalDefinition')) {
+                    zigbeeHerdsmanConverters.addExternalDefinition(toAdd);
+                    this.log.info('added external converter using addExternalDefinition')
+                }
+                else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
+                    zigbeeHerdsmanConverters.addDefinition(toAdd);
+                    this.log.info('added external converter using addDefinition')
+                }
+
+                /*
+                for (const zigbeeModel of toAdd.zigbeeModel)
+                {
+                    try {
+                        zigbeeHerdsmanConverters.addToExternalDefinitionsLookup(zigbeeModel, toAdd.toAdd);
+                    } catch (e) {
+                        this.log.error(`unable to apply external converter ${JSON.stringify(toAdd)} for device ${zigbeeModel}: ${e && e.message ? e.message : 'no error message available'}`);
+                    }
+                }
+                    */
             } catch (e) {
-                this.log.error(`unable to apply external converter ${JSON.stringify(toAdd)}`);
-                this.log.error(`${e}`);
+                this.log.error(`unable to apply external converter for ${JSON.stringify(toAdd.model)}: ${e && e.message ? e.message : 'no error message available'}`);
             }
         }
     }
@@ -359,15 +384,15 @@ class Zigbee extends utils.Adapter {
             const DebugIdentify = require('./debugidentify');
             debugversion = DebugIdentify.ReportIdentifier();
         } catch {
-            debugversion = ' npm ...';
+            debugversion = 'npm ...';
         }
 
         // installed version
         let gitVers = '';
         try {
-            this.log.info(`Starting Zigbee ${debugversion}`);
+            this.log.info(`Starting Adapter ${debugversion}`);
 
-            await this.getForeignObject(`system.adapter.${this.namespace}`, (err, obj) => {
+            this.getForeignObject(`system.adapter.${this.namespace}`,async (err, obj) => {
                 if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
                     const instFrom = obj.common.installedFrom;
                     gitVers = gitVers + instFrom.replace('tarball', 'commit');
@@ -375,9 +400,9 @@ class Zigbee extends utils.Adapter {
                     gitVers = obj.common.installedFrom;
                 }
                 this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
+                await this.zbController.start();
             });
 
-            await this.zbController.start();
         } catch (error) {
             this.setState('info.connection', false, true);
             this.log.error(`Failed to start Zigbee`);
@@ -434,7 +459,7 @@ class Zigbee extends utils.Adapter {
             const configExtPanId = this.config.extPanID ? `0x${this.config.extPanID.toLowerCase()}` : '0xdddddddddddddddd';
             let networkExtPanId = (await this.zbController.herdsman.getNetworkParameters()).extendedPanID;
             let needChange = false;
-            this.log.debug(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
+            this.log.info(`Config value ${configExtPanId} : Network value ${networkExtPanId}`);
             const adapterType = this.config.adapterType || 'zstack';
             if (adapterType === 'zstack') {
                 if (configExtPanId !== networkExtPanId) {
@@ -480,16 +505,17 @@ class Zigbee extends utils.Adapter {
         }
 
         await this.setState('info.connection', true, true);
-
-        const devicesFromDB = this.zbController.getClientIterator(false);
         this.stController.CleanupRequired(false);
+        const devicesFromDB = this.zbController.getClientIterator(false);
         for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
+                // this.log.warn('sync dev states for ' + (entity.mapped ? entity.mapped.model : entity.device.modelID));
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
                 this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () =>
                     this.stController.syncDevStates(device, model));
             }
+            else (this.log.warn('resolveEntity returned no entity'));
         }
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
@@ -1023,6 +1049,7 @@ class Zigbee extends utils.Adapter {
 
     newDevice(entity) {
         this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
+        this.stController.AddModelFromHerdsman(entity.device, entity.mapped.model)
         const dev = entity.device;
         if (dev) {
             this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
