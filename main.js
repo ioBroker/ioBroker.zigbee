@@ -505,8 +505,6 @@ class Zigbee extends utils.Adapter {
         }
 
         await this.setState('info.connection', true, true);
-        // this.log.warn('enumerating devices from DB');
-
         this.stController.CleanupRequired(false);
         const devicesFromDB = this.zbController.getClientIterator(false);
         for (const device of devicesFromDB) {

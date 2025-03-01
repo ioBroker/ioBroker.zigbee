@@ -147,7 +147,9 @@ You can thank the authors by these links:
 * improved message handling for devices which report values outside their defined ranges
 * preparation for ZHC 22.x (model definition loaded on demand
 * fix legacy definition for devices
+* added action state for remotes.
 *
+
 ### 2.0.1 (2025-02-25)
 * BREAKING CHANGES
 *
