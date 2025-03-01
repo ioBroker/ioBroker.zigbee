@@ -353,10 +353,27 @@ class Zigbee extends utils.Adapter {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
             try {
-                zigbeeHerdsmanConverters.addDefinition(toAdd);
+                if (zigbeeHerdsmanConverters.hasOwnProperty('addExternalDefinition')) {
+                    zigbeeHerdsmanConverters.addExternalDefinition(toAdd);
+                    this.log.info('added external converter using addExternalDefinition')
+                }
+                else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
+                    zigbeeHerdsmanConverters.addDefinition(toAdd);
+                    this.log.info('added external converter using addDefinition')
+                }
+
+                /*
+                for (const zigbeeModel of toAdd.zigbeeModel)
+                {
+                    try {
+                        zigbeeHerdsmanConverters.addToExternalDefinitionsLookup(zigbeeModel, toAdd.toAdd);
+                    } catch (e) {
+                        this.log.error(`unable to apply external converter ${JSON.stringify(toAdd)} for device ${zigbeeModel}: ${e && e.message ? e.message : 'no error message available'}`);
+                    }
+                }
+                    */
             } catch (e) {
-                this.log.error(`unable to apply external converter ${JSON.stringify(toAdd)}`);
-                this.log.error(`${e}`);
+                this.log.error(`unable to apply external converter for ${JSON.stringify(toAdd.model)}: ${e && e.message ? e.message : 'no error message available'}`);
             }
         }
     }
