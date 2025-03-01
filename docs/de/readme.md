@@ -6,9 +6,8 @@ Für den Koordinator (siehe oben) ist eine zusätzliche Hardware erforderlich, w
 
    - Aufsteckmodul für den RaspberryPi (wird nicht mehr verwendet da veraltet und keine Zigbee 3.0 Unterstützung)<br>
    - USB-Stick ähnliche Hardware
-
-![](img/CC2531.png)
-![](img/sku_429478_2.png)
+   - Netzwerk Koordinatoren
+     
 ![](img/cc26x2r.PNG)
 ![](img/CC2591.png)
 ![](img/sonoff.png)
@@ -25,6 +24,7 @@ Zunehmend beliebt kommt der "Sonoff ZIGBEE 3.0 USB-STICK CC2652P" zum Einsatz:
 
 Die mit dem ZigBee-Netz verbundenen Geräte übermitteln dem Koordinator ihren Zustand und benachrichtigen über Ereignisse (Knopfdruck, Bewegungserkennung, Temperaturänderung, …). Diese Infos werden im Adapter unter den jeweiligen ioBroker-Objekten angezeigt und können so in ioBroker weiterverarbeitet werden. Außerdem ist es möglich Kommandos an das ZigBee-Gerät zu senden (Zustandsänderung Steckdosen und Lampen, Farb- und Helligkeitseinstellungen, …).
 
+Eine weitergehende Aufstellung der verschiedenen Hardware-optionen für den Koordinator ist m [zigbee2mqtt.io Projekt](https://www.zigbee2mqtt.io/guide/adapters/) zu finden (Dokumentation ausschliesslich auf englisch)
 
 ## Die Software
 
@@ -45,14 +45,15 @@ Die Software wird unterteilt in "Konverter" und "Adapter".
 2.	Über z.B. PuTTY mit RaspberryPi verbinden.<br>
 3.	Eventuell vorhandene ZigBee-Backupdatei löschen. Andernfalls wird der ZigBee-Adapter in ioBroker nicht grün und im ioBroker Log steht, dass der Adapter falsch konfiguriert ist.<br>
 sudo rm /opt/iobroker/iobroker-data/zigbee_0/nvbackup.json<br>
-4.	Pfad des Koordinators ermitteln:
-`ls -la /dev/serial/by-id/`
+4.	Pfad des Koordinators ermitteln. Auf Linux Systemen befindet sich dieser oft im Verzeichnis /dev/serial/by-id. Alternativ dazu werden /dev/ttyUSB*, /dev/ttyAM* (Linux), /dev/tty.usbserial-* (macOS) oder com* (windows) erwartet.<br>
+Das folgende Beispiel zeigt eine Linux-Installation auf einem Raspberry PI. Der Befehl `ls -la /dev/serial/by-id/` erzeugt die im Bild erkennbare Ausgabe.
 ![](img/Bild2.png)
-5.	ioBroker -> ZigBee-Adapter installieren, hier als Beispiel die Version 1.8.10 <br> ![](img/Bild3.png)  <br> Hiermit werden alle erforderlichen Softwareteile (Konverter und Adapter) installiert.
-6. Adapter öffnen -> ![](img/Bild4.png) -> Zuvor ermittelten Pfad des Koordinators mit dem Zusatz /dev/serial/by-id/ eintragen:![](img/Bild5.jpg) <br> Es ist zu achten, dass am Ende kein leer Zeichen mitgenommen wird
-7.	Netzwerk-ID und Pan ID vergeben zur Unterscheidung von anderen ZigBee-Netzwerken in Funkreichweite, z.B. <br>
-   ![](img/Bild6.png) ![](img/Bild7.png) <br> ![](img/Bild8.png) ![](img/Bild9.png)
-8.	Prüfen ob der Adapter in ioBroker grün wird. Sollzustand: <br> ![](img/Bild10.png) <br> Andernfalls ioBroker Log lesen und Fehlerursache suchen, im Forum stehen viele Lösungsansätze.
+6.	ioBroker -> ZigBee-Adapter installieren, hier als Beispiel die Version 1.8.10 <br> ![](img/Bild3.png)  <br> Hiermit werden alle erforderlichen Softwareteile (Konverter und Adapter) installiert.
+7. Konfiguration des Adapters öffnen. Das folgende Bild zeigt das Interface ab der Version 2.0.1.<br>![](img/Zigbee_config_de.png)<br>
+8. Port zum Koordinator eintragen. Im Fall von USB Koordinatoren ist das der zuvor ermittelte Device-Pfad. Im Fall von über das Netzwerk angesteuerten Koordinatoren muss an Stelle des Gerätepfades die Netzwerkaddresse samt port in der Form tcp://ip:port angegeben werden. Im Beispielbild ist als Port /dev/tty.usbserial-1410 eingetragen.<br> Es ist zu achten, dass am Ende kein Leerzeichen mit eingetragen wird.
+8.	Netzwerk-ID und Pan ID vergeben zur Unterscheidung von anderen ZigBee-Netzwerken in Funkreichweite, z.B. Wichtig: Sollte hier als erweiterte PanID die StandardID DDDDDDDDDDDDDDDD (Pan ID 6757) eingetragen sein so sollte diese **unbedingt** angepasst werden<br>
+9. Geeigneten Zigbee-Kanal auswählen. Dabei ist zu beachten das Zigbee und 2.4GHz WLAN sich das gleiche Frequenzband teilen. Der optimale Kanal hängt also unter anderem auch von den in der Umgebung verwendeten WLan Kanälen ab. Dabei sind die Kanalbezeichnungen von Zigbee und WLan **nicht** identisch. Weiterhin ist es Sinnvoll sich bei der Auswahl auf die Zigbee Light Link Kanäle 11,15,20 und 25 zu beschränken. Sofern der Adapter erfolgreich gestartet wurde kann über die Konfiguration auch ein Scan der Netzwerkkanäle durchgeführt werden. Dabei ist zu beachten das dieses vor dem Anlernen der Geräte geschehen sollte - nach dem Wechsel des Kanals muss der Adapter angehalten und das Backup gelöscht werden. In der folge müssen alle Geräte neu angelernt werden.
+10.	Prüfen ob der Adapter in ioBroker grün wird. Das kann bis zu 60 Sekunden dauern. Sollzustand: <br> ![](img/Bild10.png) <br> Andernfalls ist es notwendig die Meldungen im ioBroker Log zu lesen. Diese beinhalten Informationen darüber warum der Adapter nicht gestartet wurde, und können bei der Fehlersuche mit Hilfe des Forums bereits Lösungsansätze liefern.
 
 ## Pairing
 Jedes ZigBee-Gerät (Schalter, Lampe, Sensor, …) muss mit dem Koordinator gekoppelt werden (Pairing):  <br>
@@ -61,8 +62,8 @@ Jedes ZigBee-Gerät (Schalter, Lampe, Sensor, …) muss mit dem Koordinator geko
     Jedes **ZigBee-Gerät** kann nur mit genau 1 ZigBee-Netzwerk verbunden sein. Hat das ZigBee-Gerät noch Pairing-Informationen zu einem fremden Koordinator (z.B. Philips Hue Bridge) gespeichert, dann muss es von diesem ZigBee-Netzwerk zuerst entkoppelt werden. Dieses Entkoppeln vom alten ZigBee-Netzwerk erfolgt vorzugsweise über die Bedienoberfläche des alten ZigBee-Netzwerkes (z.B. Philips Hue App). Alternativ kann man das ZigBee-Gerät auf Werkseinstellungen zurücksetzen.  <br>
     Um ein ZigBee-Gerät nun in den Pairing-Mode zu versetzen, gibt es typischerweise folgende Möglichkeiten: <br>
         1.	ZigBee-Gerät von einem ZigBee-Netzwerk entkoppeln  
-        2.	Pairing-Button am ZigBee-Gerät drücken  
-        3.	Versorgungsspannung des ZigBee-Gerätes aus- und dann wieder einschalten  
+        2.	Pairing-Button am ZigBee-Gerät drücken (ggf. mehrfach) 
+        3.	Versorgungsspannung des ZigBee-Gerätes aus- und dann wieder einschalten  (ggf. mehrfach)
       
 Danach ist das ZigBee-Gerät für typischerweise 60 Sekunden im Pairing-Mode. <br>
 Ähnlich wie die Vorgehensweise zum Rücksetzen auf Werkseinstellungen ist auch das Aktivieren des Pairing-Mode abhängig vom jeweiligen Gerätetyp (ggf. Bedienungsanleitung des ZigBee-Gerätes lesen).  <br>
@@ -71,19 +72,17 @@ Danach ist das ZigBee-Gerät für typischerweise 60 Sekunden im Pairing-Mode. <b
 Grünen Knopf drücken, um den Koordinator für 60 Sekunden (oder die in den Adaptereinstellungen gewählte Zeit) in den Pairing-Mode zu versetzen. <br>
 ![](img/Bild12.png)
 
-   - Warten bis im Dialog "New device joined" erscheint: 
+   - Warten bis im Dialog `Interview Successful` erscheint:<br>
 ![](img/Bild13.png)
-
    - Pairing überprüfen:
-Das zu koppelnde Gerät muss vom ioBroker ZigBee-Adapter unterstützt werden. Im Gutfall wird im ZigBee-Adapter ein neues Gerät angezeigt (z.B. Philips Light Stripe) und entsprechende ioBroker-Objekte angelegt:
+Das zu koppelnde Gerät muss vom ioBroker ZigBee-Adapter unterstützt werden. Im Gutfall wird im ZigBee-Adapter ein neues Gerät angezeigt (z.B. Philips Light Stripe) mit dem Hinweis `"supported":true` und entsprechende ioBroker-Objekte angelegt:<br>
 ![](img/Bild14.png) ![](img/Bild15.png)
 
    - Im Schlechtfall wird das ZigBee-Gerät aktuell noch nicht unterstützt. Im nächsten Abschnitt ist beschrieben, was zu tun ist, um dieses ZigBee-Gerät dennoch nutzen zu können.
 
 ## Pairing von bisher unbekannten ZigBee-Geräten
 
-Bei bisher unbekannten ZigBee-Geräten erscheint beim Pairing der ZigBee-Name des ZigBee-Gerätes (z.B. HOMA1001) mit dem Zusatz "not described in statesMapping" <br>
-![](img/Bild28.png) <br>
+Bei bisher unbekannten ZigBee-Geräten erscheint beim Pairing der ZigBee-Name des ZigBee-Gerätes (z.B. HOMA1001) mit dem Zusatz `"supported": false` <br>
 ![](img/Bild16.png) <br>
 
 Durch Drehen dieser Kachel erhält man Detailinformationen zu dem ZigBee-Gerät: <br>
@@ -93,18 +92,12 @@ Nach einer Registrierung bei [github.com](https://github.com/ioBroker/ioBroker.z
 
 ![](img/Bild19.png) <br>
 
-• Detailinformationen der Kachel (siehe oben) in dem Issue einfügen, erstelle eine kurze Dokumentation (vorzugweise auf Englisch) und absenden. Ein Entwickler wird sich daraufhin über den Issue melden.
+Detailinformationen der Kachel (siehe oben) in dem Issue einfügen, erstelle eine kurze Dokumentation (vorzugweise auf Englisch) und absenden. Ein Entwickler wird sich daraufhin über den Issue melden.
 
-Nach Anpassung der relevanten Dateien muss der ZigBee-Adapter neu gestartet und dann das ZigBee-Gerät vom Koordinator entkoppelt werden (unpair):
-Danach kann das Pairing wiederholt werden. Sollzustand nach dem Pairing: <br>
-![](img/Bild21.png) <br>
-
-Bei manchen ZigBee-Geräten ist es erforderlich alle Softwareschnittstellen ("exposes") des neuen ZigBee-Gerätes in den ioBroker-Objekten anzuzeigen, um alle Funktionen des ZigBee-Gerätes nutzen zu können. In solchen Fällen muss das neue ZigBee-Gerät in die "Ausschliessen"-Gruppe aufgenommen werden. 
-
-![](img/Bild22.png) <br>
-
-![](img/Bild23.png) -> ![](img/Bild24.png) -> ![](img/Bild25.png) -> ZigBee-Gerät (z.B. HOMA1001) auswählen  -> ![](img/Bild26.png)    <br>
-Nach einem Neustart des ZigBee-Adapters sollte das neue ZigBee-Gerät nun uneingeschränkt funktionieren.
+Als Ergebnis kommt eine von zwei Möglichkeiten in Frage:
+- Anpassung an den Zigbee-Herdsman-Converters. Dieses erfordert eine aktualiserte Version des Zigbee-Adapters, der zunächst getestet und dann im Latest Repository zur Verfügung gestellt wird
+- Erstellung eines "externen Konverters" - einer Datei mit JS Code welche in das Datenverzeichnis des Zigbee-Adapters kopiert und in der Konfiguration des Adapters angegeben werden kann.
+In Beiden Fällen ist es hinreichend den Adapter neu zu starten - die entsprechend angepassten Datenpunkte des Adapters werden angelegt. Sofern dabei Datenpunkte nicht weiter unterstützt werden so werden diese in orange eingefärbt und der Adapter zeigt die Schaltfläche zum löschen der verwaisten Datenpunkte an.
 
 ## Symbole im ZigBee-Adapter
     
