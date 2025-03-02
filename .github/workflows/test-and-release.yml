@@ -63,7 +63,7 @@ jobs:
         run: npm ci
 
       - name: Run local tests
-        run: npm testinstalled using 'npm ci'
+        run: npm test
           # install-command: 'npm install'
 
   # TODO: To enable automatic npm releases, create a token on npmjs.org
