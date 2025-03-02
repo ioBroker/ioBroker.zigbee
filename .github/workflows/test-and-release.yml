@@ -5,26 +5,26 @@ name: Test and Release
 on:
   push:
     branches:
-      - master
+      - "main"
     tags:
       # normal versions
       - "v[0-9]+.[0-9]+.[0-9]+"
       # pre-releases
       - "v[0-9]+.[0-9]+.[0-9]+-**"
   pull_request: {}
-  
+
 # Cancel previous PR/branch runs when a new commit is pushed
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
-  
+
 jobs:
   # Performs quick checks before the expensive test runs
   check-and-lint:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
 
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: ioBroker/testing-action-check@v1
         with:
@@ -32,7 +32,8 @@ jobs:
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
           # install-command: 'npm install'
           lint: true
-           
+
+  # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
 
@@ -41,8 +42,6 @@ jobs:
       matrix:
         node-version: [18.x, 20.x, 22.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
-          # Uncomment the following line if your adapter cannot be installed using 'npm ci'
-          # install-command: 'npm install'
 
     steps:
       - uses: ioBroker/testing-action-adapter@v1
@@ -59,7 +58,6 @@ jobs:
   # Deploys the final package to NPM
   # Deploys the final package to NPM and Github Actions
   deploy:
-    
     # Trigger this step only when a commit on master is tagged with a version number
     if: |
       contains(github.event.head_commit.message, '[skip ci]') == false &&
@@ -70,7 +68,6 @@ jobs:
     needs: [adapter-tests]
 
     runs-on: ubuntu-latest
-    
     strategy:
       matrix:
         node-version: [18.x]
@@ -86,26 +83,33 @@ jobs:
 
       - name: Extract the version and commit body from the tag
         id: extract_release
-        # The body may be multiline, therefore newlines and % need to be escaped
+        # The body may be multiline, therefore we need to escape some characters
         run: |
           VERSION="${{ github.ref }}"
-          VERSION=${VERSION##*/v}         
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          VERSION=${VERSION##*/v}
+          echo "::set-output name=VERSION::$VERSION"
           BODY=$(git show -s --format=%b)
           BODY="${BODY//'%'/'%25'}"
           BODY="${BODY//$'\n'/'%0A'}"
           BODY="${BODY//$'\r'/'%0D'}"
-          echo "BODY=$BODY" >> $GITHUB_OUTPUT
-             
-#     If you like, activate automated version publish to NPM
-#     Only if commit contains a version, see : https://github.com/AlCalzone/release-script
+          echo "::set-output name=BODY::$BODY"
 
+      # If you are using TypeScript, additional build steps might be necessary
+      # Run them here, e.g.:
+      # - name: Install dependencies
+      #   run: npm ci
+      # - name: Create a clean build
+      #   run: npx gulp build
+
+      # How to release packages to npm depends on the package type.
+      # Choose one of these possibilities and or comment out the others:
+      # a) For normal packages (no monorepo):
       - name: Publish package to npm
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
           npm publish
- # b) For monorepos managed with lerna (requires lerna to be installed globally)
+      # b) For monorepos managed with lerna (requires lerna to be installed globally)
       #- name: Publish packages to npm
       #  run: |
       #    npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
@@ -121,7 +125,7 @@ jobs:
       - name: Create Github Release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.AUTO_MERGE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           release_name: Release v${{ steps.extract_release.outputs.VERSION }}
