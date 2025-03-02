@@ -25,7 +25,13 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:
+    steps:    
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: node-cache-${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          
       - uses: ioBroker/testing-action-check@v1
         with:
           node-version: "18.x"
