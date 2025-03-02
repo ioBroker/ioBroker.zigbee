@@ -137,7 +137,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.0.2 (2025-03-02)
 * fix expose generation with expose function requiring a device. (Issue #1842)
 * fix failure to configure for devices needing multiple configurations (Issue #2375)
 * fix hold/release and press/release action handling (Issue #2387)
