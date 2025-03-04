@@ -1,7 +1,7 @@
 /**
  *
  * Zigbee devices adapter
- *
+ * 
  */
 'use strict';
 
