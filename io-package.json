@@ -29,19 +29,6 @@
         "uk": "БРЕАКІНГОВІ ЗМІНИ\n\nперемикач на перетворювачі 21 змінює висадки для великої кількості пристроїв (найбільш віддалені)\nновий метод контролю кольору на основі підканалів для rgb, hs і xy\nЗа замовчуванням для всіх пристроїв. Використання старого визначення як варіант\nВимагає Node 20.x або нові\n\nФіксація Пірсинг\nзмінити пінг\nгенерація карти затримки до освіження активується, повідомлення після генерації\nвидалити вкладку в'язання з вкладки zigbee\nвкладка зворотного замовлення в конфігурації\nвидалити вкладку з конфігурації\nвидалити карту з конфігурації\nadd debug до zigbee tab\nEnglish, Українська, Français..\nЕкспози як за замовчуванням, використання застарілих параметрів пристрою, як необов'язковий\nКористувальницькі специфічні зображення (моделі на основі пристрою)\nУдосконалено редагування груп - видалення членів з групової картки",
         "zh-cn": "裂变\n\n21 更改大量设备(大多为远程设备)的曝光量\n基于 rgb、 hs 和 xy 子通道的新的颜色控制方法\n曝光为默认所有设备 。 仅将旧定义用作选项\n需要节点 20.x 或更新\n\n修复对齐\n更改键\n将映射生成延迟到刷新启动, 映射消息生成后\n从 zigbee 标签中删除绑定标签\n在配置中重新排序标签\n从配置中删除绑定标签\n从配置中删除地图\n添加调试到 zigbee 标签\n牧民 3.2.5,转换器 21.30.0\n将曝光作为默认, 将旧设备定义作为遗留选项\n用户特定图像( 基于模型、 设备)\n改进组编辑 - 从组卡中删除成员"
       },
-      "1.11.2": {
-        "en": "debug for states",
-        "de": "debug for states",
-        "ru": "debug for states",
-        "pt": "debug for states",
-        "nl": "debug for states",
-        "fr": "debug for states",
-        "it": "debug for states",
-        "es": "debug for states",
-        "pl": "debug for states",
-        "uk": "debug for states",
-        "zh-cn": "debug for states"
-      },
       "1.10.14": {
         "en": "Herdsman 2.1.9, Converters 20.58.0\nFix: Aqara T1M (CL-L02D) \ndeleteDeviceStates change to deleteObj",
         "de": "Herdsman 2.1.9, Konverter 20.58.0\nFix: Aqara T1M (CL-L02D)\nlöschen DeviceState Änderung zum Löschen Ob",
@@ -187,7 +174,7 @@
     },
     "globalDependencies": [
       {
-        "admin": ">=5.1.25"
+        "admin": ">=6.0.0"
       }
     ],
     "dependencies": [
@@ -270,27 +257,6 @@
   },
   "instanceObjects": [
     {
-      "_id": "exclude",
-      "type": "channel",
-      "common": {
-        "name": "exclude devs from devices.js"
-      },
-      "native": {}
-    },
-    {
-      "_id": "exclude.all",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": "all",
-        "type": "string",
-        "read": true,
-        "write": true,
-        "def": "[]"
-      },
-      "native": {}
-    },
-    {
       "_id": "info",
       "type": "channel",
       "common": {
@@ -343,19 +309,6 @@
       "common": {
         "role": "indicator",
         "name": "Pairing message",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.groups",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": "Groups",
         "type": "string",
         "read": true,
         "write": false,
