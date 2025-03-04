@@ -141,7 +141,7 @@ You can thank the authors by these links:
 * fix battery voltage (V -> mV)
 * enable debug interface v0.1
 * Push Zigbee-Herdsman to 3.5.7
-* Push Zigbee-Herdsman-Converters to 23.1.0
+* Push Zigbee-Herdsman-Converters to 23.1.1
 * fix configure on message
 * remove extra warning messages
 * fix Adapter-Checker notes
