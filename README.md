@@ -148,7 +148,10 @@ You can thank the authors by these links:
 * preparation for ZHC 22.x (model definition loaded on demand
 * fix legacy definition for devices
 * added action state for remotes.
-*
+* fix configured info
+* fix battery voltage (V -> mV)
+* enable debug interface
+* 
 
 ### 2.0.1 (2025-02-25)
 * BREAKING CHANGES

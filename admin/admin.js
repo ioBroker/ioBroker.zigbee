@@ -31,7 +31,9 @@ let devices = [],
     },
     cidList,
     shuffleInstance,
-    errorData = [];
+    errorData = [],
+    debugMessages = {};
+const dbgMsgfilter = new Set();
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const networkOptions = {
@@ -240,7 +242,6 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
-    console.warn('debug for ' + ieee + ' is ' + isDebug);
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
@@ -400,7 +401,7 @@ function EndPointIDfromEndPoint(ep) {
 }
 
 function editName(id, name) {
-    console.log('editName called with ' + name);
+    console.warn('editName called with ' + id + ' and ' + name);
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find('input[id=\'d_name\']').val(name);
     const groupables = [];
@@ -830,7 +831,6 @@ async function selectImageOverride(id) {
     sendTo(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
             const imagedata = msg.imageData;
-            console.warn(JSON.stringify(dev.common));
             const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
             if (dev.legacyIcon) imagedata.unshift( { file:dev.legacyIcon, name:'legacy', data:dev.legacyIcon});
             imagedata.unshift( { file:'none', name:'default', data:default_icon});
@@ -857,7 +857,6 @@ async function selectImageOverride(id) {
                 const image = $('#chooseimage').find('#images option:selected').val();
                 const global = $('#chooseimage').find('#globaloverride').prop('checked');
                 const name = $('#chooseimage').find('input[id=\'d_name\']').val();
-                console.warn(`update device image : ${id} : ${image} : ${global} : ${name} : ${dev.common.name}`);
                 const data = {};
                 if (image != 'current') data.icon= image;
                 if (name != dev.common.name) data.name = name;
@@ -868,6 +867,153 @@ async function selectImageOverride(id) {
         }
     });
 }
+
+
+function safestring(val) {
+    const t = typeof val;
+    if (t==='object') return JSON.stringify(val).replaceAll(',',', ');
+    if (t==='string') return val.replaceAll(',',', ');
+    if (t==='function') return 'function';
+    return val;
+}
+
+function fne(item) {
+    const rv = [];
+    if (item.flags) {
+        if (item.flags.includes('success')) rv.push('success');
+        else rv.concat(item.flags);
+    }
+    if (item.errors) rv.concat(item.errors);
+    return rv.join(', ');
+}
+
+function HtmlFromInDebugMessages(messages, devID, filter) {
+    const Html = [];
+    const filterSet = new Set();
+    if (dbgMsgfilter.has('hi_'+devID)) {
+        console.warn('in all filtered out')
+        Html.push('&nbsp;')
+    } else for (const item of messages) {
+        if (item.states.length > 0) {
+            const rowspan = item.states.length > 1 ? ` rowspan="${item.states.length}"` : '';
+            let idx = item.states.length;
+            const IHtml = [];
+            let fs = '';
+            for (const state of item.states) {
+                fs = fs+state.id+'.'+fne(item);
+                idx--;
+                if (idx==0) {
+                    IHtml.unshift(`<tr><td${rowspan}>${item.dataID.toString(16).slice(-4)}</td><td${rowspan}>${safestring(item.payload)}</td><td>${safestring(state.payload)}</td><td>${state.id}</td><td>${state.value}</td><td>${fne(item)}</td></tr>`);
+                }
+                else {
+                    IHtml.unshift(`<tr><td>${safestring(state.payload)}</td><td>${state.id}</td><td>${state.value}</td><td>${fne(item)}</td></tr>`);
+                }
+            }
+            if (filter)
+                if (filterSet.has(fs)) continue; else filterSet.add(fs);
+            Html.unshift(...IHtml);
+        }
+    }
+    const ifbutton = `<a id="i_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('i_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
+    const ofbutton = `<a id="hi_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('hi_'+devID) ? 'unfold_more' : 'unfold_less' }</i></a>`
+    const dataHide = dbgMsgfilter.has('hi_'+devID) ? 'Data hidden' : '&nbsp;';
+    return `<thead><tr><td>&nbsp</td><td>Incoming messages</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>State Payload</td><td>ID</td><td>value</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`;
+}
+
+
+function HtmlFromOutDebugMessages(messages, devID, filter) {
+    const Html = [];
+    const filterSet = new Set();
+    if (dbgMsgfilter.has('ho_'+devID)) {
+        console.warn('out all filtered out')
+        Html.push('&nbsp;')
+    }
+    else for (const item of messages) {
+        if (item.states.length > 0) {
+            const rowspan = item.states.length > 1 ? ` rowspan="${item.states.length}"` : '';
+            let idx = item.states.length;
+            let fs = '';
+            const IHtml = [];
+            for (const state of item.states) {
+                fs = fs+state.id+'.'+fne(item);
+                idx--;
+                if (idx==0) {
+                    IHtml.unshift(`<tr><td${rowspan}>${item.dataID.toString(16).slice(-4)}</td><td${rowspan}>${safestring(item.payload)}</td><td>${state.id}</td><td>${state.value}</td><td>${safestring(state.payload)}</td><td>${fne(item)}</td></tr>`);
+                }
+                else {
+                    IHtml.unshift(`<tr><td>${state.id}</td><td>${state.value}</td><td>${state.payload}</td><td>${fne(item)}</td></tr>`);
+                }
+            }
+            if (filter)
+                if (filterSet.has(fs)) continue; else filterSet.add(fs);
+            Html.unshift(...IHtml);
+        }
+    }
+    const ifbutton = `<a id="o_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('o_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
+    const ofbutton = `<a id="ho_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('ho_'+devID) ? 'unfold_more' : 'unfold_less'}</i></a>`
+    const dataHide = dbgMsgfilter.has('ho_'+devID) ? 'Data hidden' : '&nbsp;';
+    return `<thead><tr><td>&nbsp</td><td>Outgoing messages</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>ID</td><td>value</td><td>State Payload</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`;
+}
+
+
+function displayDebugMessages(msg) {
+    const buttonNames = [];
+    if (msg.byId) {
+        const dbgData = msg.byId;
+        const Html = [];
+        for (const devID of Object.keys(dbgData)) {
+            const dev = devices.find((d) => d._id.endsWith(devID.slice(-16)));
+            const type_url = (dev && dev.common && dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown');
+            const modelUrl = (type_url === 'unknown') ? 'unknown' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${dev.common.type}</a>`;
+            const devName = (dev && dev.common && dev.common.name) ? dev.common.name : 'unnamed';
+            const button = `<a id="e_${devID}" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">sync_problem</i></a>`
+            buttonNames.push(devID);
+            Html.push(`<li><table><thead><tr class="title"><td colspan="4">${devName} (ID: ${devID} Model: ${modelUrl})</td><td>&nbsp</td><td>${button}</td></tr></thead><tbody>`);
+            if (dbgData[devID].IN.length > 0) {
+                Html.push(`${HtmlFromInDebugMessages(dbgData[devID].IN, devID, dbgMsgfilter.has('i_'+devID))}`);
+            }
+            if (dbgData[devID].OUT.length > 0) {
+                Html.push(`${HtmlFromOutDebugMessages(dbgData[devID].OUT, devID, dbgMsgfilter.has('o_'+devID))}`);
+            }
+            Html.push('</tbody></table></li>');
+        }
+        $('#dbg_data_list').html(Html.join(''));
+    }
+    for (const b of buttonNames)
+    {
+        $(`#e_${b}`).click(function () {
+            getDebugMessages();
+        });
+        $(`#o_${b}`).click(function () {
+            if (dbgMsgfilter.has(`o_${b}`)) dbgMsgfilter.delete(`o_${b}`); else dbgMsgfilter.add(`o_${b}`);
+            console.warn('filter is ' + dbgMsgfilter.size)
+            displayDebugMessages(debugMessages);
+        });
+        $(`#i_${b}`).click(function () {
+            if (dbgMsgfilter.has(`i_${b}`)) dbgMsgfilter.delete(`i_${b}`); else dbgMsgfilter.add(`i_${b}`);
+            console.warn('filter is ' + dbgMsgfilter.size)
+            displayDebugMessages(debugMessages);
+        });
+        $(`#ho_${b}`).click(function () {
+            if (dbgMsgfilter.has(`ho_${b}`)) dbgMsgfilter.delete(`ho_${b}`); else dbgMsgfilter.add(`ho_${b}`);
+            console.warn('filter is ' + dbgMsgfilter.size)
+            displayDebugMessages(debugMessages);
+        });
+        $(`#hi_${b}`).click(function () {
+            if (dbgMsgfilter.has(`hi_${b}`)) dbgMsgfilter.delete(`hi_${b}`); else dbgMsgfilter.add(`hi_${b}`);
+            console.warn('filter is ' + dbgMsgfilter.size)
+            displayDebugMessages(debugMessages);
+        });
+    }
+}
+
+function getDebugMessages() {
+    sendTo(namespace, 'getDebugMessages', {}, function(msg) {
+        debugMessages = msg;
+        if (msg) displayDebugMessages(debugMessages)
+    })
+}
+
 
 function getDevices() {
     getCoordinatorInfo();
@@ -1009,6 +1155,7 @@ function load(settings, onChange) {
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getNamedColors();
+    getDebugMessages();
     //getMap();
     //addCard();
 
@@ -1200,8 +1347,13 @@ socket.on('stateChange', function (id, state) {
                 $('#progress_line').css('width', `${percent}%`);
             }
         } else if (id.match(/\.info\.pairingMessage$/)) {
-            messages.push(state.val);
-            showMessages();
+            if (state.val == 'NewDebugMessage') {
+                getDebugMessages();
+            }
+            else {
+                messages.push(state.val);
+                showMessages();
+            }
         } else {
             const devId = getDevId(id);
             putEventToNode(devId);
@@ -1225,6 +1377,7 @@ socket.on('stateChange', function (id, state) {
         }
     }
 });
+
 
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
@@ -1486,7 +1639,6 @@ function showNetworkMap(devices, map) {
                 const options = data.edges._data.get(id);
                 if (select) {
                     options.font.size = 15;
-                    console.warn(JSON.stringify(options.font));
                 } else {
                     options.font.size = 0;
                 }
@@ -2065,7 +2217,6 @@ function editGroup(id, name) {
                     removeMembers.push({id:member.ieee.replace('0x',''), ep:member.epid})
             }
         }
-        console.warn(`ID: ${Id} name: ${newName} removeMembers: ${JSON.stringify(removeMembers)}`)
         updateGroup(Id, newName, (removeMembers.length > 0 ? removeMembers: undefined));
         // showGroups();
         getDevices();
@@ -2625,7 +2776,7 @@ function genDevInfo(device) {
                     ${genRow('date code', dev._dateCode)}
                     ${genRow('build', dev._softwareBuildID)}
                     ${genRow('interviewed', dev._interviewCompleted)}
-                    ${genRow('configured', (dev.meta.configured === 1), true)}
+                    ${genRow('configured', (device.isConfigured), true)}
                 </ul>
             </div>
         </div>
@@ -2817,16 +2968,12 @@ function addExcludeDialog() {
     $('#excludemodaledit a.btn[name=\'save\']').unbind('click');
     $('#excludemodaledit a.btn[name=\'save\']').click(() => {
         const exclude_id = $('#excludemodaledit').find('#exclude_target option:selected').val();
-
         const ids = devices.map(el => el._id);
         const idx = ids.indexOf(exclude_id);
         const exclude_model = devices[idx];
-        console.warn('calling addExclude mit model ' + exclude_model)
-
         addExclude(exclude_model);
     });
     prepareExcludeDialog();
-    console.warn('opening dialog');
     $('#excludemodaledit').modal('open');
     Materialize.updateTextFields();
 }
@@ -2855,7 +3002,7 @@ function getExclude() {
                 excludes = msg.legacy;
                 showExclude();
             }
-        } else console.warn('getExclude without msg')
+        }
     });
 }
 

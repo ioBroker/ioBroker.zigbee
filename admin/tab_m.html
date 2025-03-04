@@ -231,15 +231,48 @@
         color: blue;
     }
     .m.react-blue div.bg_red {
-        background-color: #400000;
-        color: DimGray;
-    }
-    .m div.bg_red {
-      background-color: LightGray;
-      color: DimGray;
+            background-color: #400000;
+            color: DimGray;
     }
     .m.react-dark div.bg_red {
-      background-color: #400000;
+            background-color: #400000;
+            color: DimGray;
+    }
+    .m.react-dark thead tbody tr{
+        background-color: #373737 !important;
+        color: DimGray !important;
+    }
+    .m.react-blue thead tbody tr{
+        background-color: #436a93 !important;
+        color: DimGray !important;
+    }
+    .m thead tbody tr{
+        background-color: #436a93 !important;
+        color: DimGray !important;
+    }
+    .m.react-dark tr:nth-child(odd) {
+        background-color: #272727 !important;
+        color: rgb(48,48,48) !important;
+    }
+    .m.react-blue tr:nth-child(odd) {
+        background-color: #436a93 !important;
+        color: rgb(48,48,48) !important;
+    }
+    .m tr:nth-child(odd) {
+        background-color: #436a93 !important;
+        color: rgb(48,48,48) !important;
+    }
+    .m.react-dark tr:nth-child(even) {
+        background-color: #373737 !important;
+        color: rgb(48,48,48) !important;
+    }
+    .m.react-blue tr:nth-child(even) {
+        background-color: #436a93 !important;
+        color: rgb(48,48,48) !important;
+    }
+    .m tr:nth-child(even) {
+        background-color: #39c !important;
+        color: rgb(48,48,48) !important;
     }
     .m.react-dark i.icon-blue {
         color: rgb(100, 181, 246)!important;
@@ -910,6 +943,13 @@
                 </div>
                 <div id="exclude" class="row">
                 </div>
+            </div>
+            <div id="tab-debug" class="col s12 page">
+                <div class="row">
+                    <p class="translate">Device debug information</p>
+                </div>
+                <ul id="dbg_data_list">
+                </ul>
             </div>
         </div>
     </div>
