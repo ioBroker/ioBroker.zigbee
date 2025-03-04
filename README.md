@@ -136,6 +136,18 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* fix configured info
+* fix battery voltage (V -> mV)
+* enable debug interface v0.1
+* Push Zigbee-Herdsman to 3.5.7
+* Push Zigbee-Herdsman-Converters to 23.1.0
+* fix configure on message
+* remove extra warning messages
+* fix Adapter-Checker notes
+* 
+
+
 ### 2.0.2 (2025-03-02)
 * fix expose generation with expose function requiring a device. (Issue #1842)
 * fix failure to configure for devices needing multiple configurations (Issue #2375)
@@ -147,10 +159,7 @@ You can thank the authors by these links:
 * preparation for ZHC 22.x (model definition loaded on demand
 * fix legacy definition for devices
 * added action state for remotes.
-* fix configured info
-* fix battery voltage (V -> mV)
-* enable debug interface
-* 
+*  
 
 ### 2.0.1 (2025-02-25)
 * BREAKING CHANGES
