@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "news": {
+      "2.0.2": {
+        "en": "fix expose generation with expose function requiring a device. (Issue #1842)\nfix failure to configure for devices needing multiple configurations (Issue #2375)\nfix hold/release and press/release action handling (Issue #2387)\nfix lib/legacy requirement for external converters (Issue #2376)\nimproved external converter handling\nfix OTA bug\nimproved message handling for devices which report values outside their defined ranges\npreparation for ZHC 22.x (model definition loaded on demand\nfix legacy definition for devices\nadded action state for remotes.\n",
+        "de": "fix exponieren Erzeugung mit exponierender Funktion, die ein Gerät benötigt. (Ausgabe #1842)\nfehler beim Konfigurieren von Geräten, die mehrere Konfigurationen benötigen (Issue #2375)\nfix Hold/Release und Presse/Release-Action-Handling (Issue #2387)\nfix lib/legacy Anforderung für externe Konverter (Issue #2376)\nverbesserte externe konverterhandhabung\noTA Fehler beheben\nverbesserte nachrichtenbehandlung für geräte, die werte außerhalb ihrer definierten bereiche melden\nvorbereitung auf ZHC 22.x (Modelldefinition geladen auf Anfrage\nfix legacy definition für geräte\nden aktionszustand für remotes hinzugefügt.\n",
+        "ru": "исправить генерацию экспозиции с функцией экспозиции, требующей устройства. (Выпуск #1842)\nисправление неисправности настройки для устройств, нуждающихся в нескольких конфигурациях (выпуск No 2375)\nфиксация удержания/выпуска и обработки нажатия/выпуска (выпуск No 2387)\nтребование к фиксации lib/legacy для внешних преобразователей (выпуск No 2376)\nулучшенная внешняя обработка конвертера\nисправить ошибку OTA\nулучшенная обработка сообщений для устройств, которые сообщают значения за пределами своих определенных диапазонов\nподготовка к ZHC 22.x (определение модели, загруженное по требованию)\nисправить устаревшее определение для устройств\nдобавлено состояние действия для пультов.\n",
+        "pt": "corrigir a geração de exposição com a função de exposição que requer um dispositivo. (Issue #1842)\ncorrigir a falha de configurar para dispositivos que precisam de múltiplas configurações (Issue #2375)\ncorrigir o manuseio de ação de espera/lançamento e press/lançamento (Issue #2387)\ncorreção lib/legacy exigência para conversores externos (Issue #2376)\nmelhor desempenho do conversor externo\ncorrigir o erro OTA\nmelhor manuseio de mensagens para dispositivos que relatam valores fora de suas gamas definidas\npreparação para ZHC 22.x (definição modelo carregada sob demanda\ncorrigir a definição de legado para dispositivos\nestado de ação adicionado para controles remotos.\n",
+        "nl": "fix ontmaskering generatie met ontmaskering functie vereist een apparaat. (Issue # 1842)\nvast te stellen fout bij het configureren van apparaten die meerdere configuraties nodig hebben (Issue #2375)\nfix hold/release and pers/release action handling (Issue #2387)\nfix lib/legacy eis voor externe converters (Issue #2376)\nverbeterde externe converterbehandeling\nfix OTA bug\nverbeterde berichtverwerking voor apparaten die waarden rapporteren buiten hun gedefinieerde bereik\nvoorbereiding voor ZHC 22.x (modeldefinitie op aanvraag geladen\nfix legacy definitie voor apparaten\ntoegevoegde actiestatus voor remotes.\n",
+        "fr": "fixer la génération d'exposition avec la fonction d'exposition nécessitant un dispositif. (Numéro 1842)\ncorrection de l'échec à configurer pour les appareils nécessitant plusieurs configurations (Numéro #2375)\nfixer la tenue/la sortie et la prise en charge par la presse/la sortie (numéro d'émission 2387)\nfixer lib / légataire exigence pour les convertisseurs externes (Émission #2376)\namélioration de la manipulation du convertisseur externe\ncorrection du bug OTA\namélioration du traitement des messages pour les appareils qui déclarent des valeurs en dehors de leurs plages définies\npréparation pour ZHC 22.x (définition du modèle chargé sur demande\nfixer la définition du passé pour les appareils\nétat d'action ajouté pour les télécommandes.\n",
+        "it": "risolvere esporre la generazione con la funzione di esporre che richiede un dispositivo. (Issue #1842)\ncorretto il mancato configurazione per i dispositivi che necessitano di più configurazioni (Essue #2375)\nfix hold/release e press/release action handling (Issue #2387)\nfix lib/legacy requisito per i convertitori esterni (Issue #2376)\nmigliore gestione del convertitore esterno\ncorrezione di bug OTA\nmigliore gestione dei messaggi per dispositivi che segnalano valori al di fuori dei loro intervalli definiti\npreparazione per ZHC 22.x (definizione modello caricata su richiesta\nfissare la definizione legacy per i dispositivi\nstato di azione aggiunto per i remoti.\n",
+        "es": "fijar la generación expuesta con función expuesta que requiere un dispositivo. (Isue #1842)\nfijar el fallo de configuración para dispositivos que necesitan múltiples configuraciones (Isue #2375)\nfijación de sujeción / liberación y prensa / manejo de acción de liberación (Isue #2387)\nfijar el requisito de lib/legacy para convertidores externos (Isue #2376)\nmejor manejo del convertidor externo\ncorrección de OTA\nmejorar el manejo de mensajes para dispositivos que reportan valores fuera de sus rangos definidos\npreparación para ZHC 22.x (definición modelo cargada a la demanda\nfijar la definición heredada para los dispositivos\nestado de acción añadido para los remotos.\n",
+        "pl": "naprawić generowanie ekspozycji z funkcją odsłaniania wymagającą urządzenia. (Wydanie # 1842)\nnaprawić awarię konfiguracji dla urządzeń wymagających wielu konfiguracji (wydanie # 2375)\nfix hold / release and press / release action handling (wydanie # 2387)\nfix lib / last requirement for external konwerters (issue # 2376)\nulepszona obsługa zewnętrznego konwertera\nnaprawić błąd OTA\nulepszona obsługa wiadomości dla urządzeń, które przekazują wartości poza określonymi zakresami\nprzygotowanie do ZHC 22.x (definicja modelu załadowana na żądanie\nnaprawić dotychczasową definicję urządzeń\ndodano stan działania pilotów.\n",
+        "uk": "фіксувати генерацію висадки з функцією вистоювання, що вимагає пристрою. (Issue #1842)\nвиправлена відмова налаштовувати для пристроїв, які потребують декількох конфігурацій (Issue #2375)\nфіксувати передачу/випуск та прес/випуск дії (Issue #2387)\nфіксувати вимогу lib/legacy для зовнішніх перетворювачів (Issue #2376)\nпокращений зовнішній конвертер\nвиправлення помилок OTA\nпокращена обробка повідомлень для пристроїв, які повідомляють значення поза визначеними діапазонами\nпідготовка до ZHC 22.x (модельне визначення, завантажене на попит\nфіксувати визначення спадщини для пристроїв\nдодано стан дії для пультів.\n",
+        "zh-cn": "固定需要设备的曝光函数的曝光生成。 (问题1842)\n为需要多个配置的设备设置固定失败( 问题 # 2375)\n固定持有/释放和按压/释放处理(第2387号问题)\n固定外部转换器的 lib/ legacy 要求(问题 # 2376)\n改进外部转换器处理\n修复OTA 错误\n改进对报告超出规定范围值的设备的信息处理\nzHC 22.x(按要求装入的模型定义)\n固定设备的遗留定义\n为远程添加动作状态 .\n"
+      },
       "2.0.1": {
         "en": "BREAKING CHANGES\n\nswitch to converters 21 changes the exposes for a large numbern of devices (mostly remotes)\nnew method for controlling color based on subchannels for rgb, hs and xy\nExposes as default for ALL devices. Use of old definition as option only\nRequires Node 20.x or newer\n\nFix Pairing\nchange ping\ndelay map generation until refresh is activated, map messages after generation\nremove bindings tab from zigbee tab\nreorder tabs in configuration\nremove binding tab from configuration\nremove map from configuration\nadd debug to zigbee tab\nHerdsman 3.2.5, Converters 21.30.0\nExposes as default, use of old device definitions as legacy optional\nUser specific images (model based, device based)\nImproved group editing - remove members from group card",
         "de": "VERÄNDERUNGEN\n\nschalter auf konverter 21 ändert die belichtung für eine große anzahl von geräten (meist fernbedienungen)\nneue methode zur farbsteuerung auf basis von subkanälen für rgb, hs und xy\nExposes als Standard für ALL Geräte. Verwendung der alten Definition nur als Option\nErfordert Node 20.x oder neuer\n\nFeste Paarung\nänderung ping\nverzögerung der kartenerzeugung, bis das update aktiviert ist, kartennachrichten nach generation\nbinden tab aus zickbee tab entfernen\nreorder tabs in konfiguration\nbindelasche aus der konfiguration entfernen\nkarte aus der konfiguration entfernen\ndebug to zigbee tab hinzufügen\nHerdsman 3.2.5, Konverter 21.30.0\nExposes als Standard, Verwendung von alten Gerätedefinitionen als Vermächtnis optional\nBenutzerspezifische Bilder (modellbasierte, gerätebasierte)\nVerbesserte Gruppenbearbeitung - Mitglieder aus Gruppenkarte entfernen",
@@ -15,19 +28,6 @@
         "pl": "ZMIANY ZBIORCZE\n\nprzełączanie na konwertery 21 zmienia eksponaty dużej liczby urządzeń (głównie pilotów)\nnowa metoda kontrolowania koloru na podstawie podkanałów dla rgb, hs i xy\nWyświetla jako domyślne dla urządzeń ALL. Używanie starej definicji jako opcji\nWymaga węzła 20.x lub nowsze\n\nNapraw parowanie\nzmienić ping\nopóźnianie generowania mapy aż do uruchomienia odświeżania, wiadomości mapy po generacji\nusunąć zakładkę wiązania z zakładki zigbee\nponownie zamówić karty w konfiguracji\nusunąć zakładkę wiązania z konfiguracji\nusuń mapę z konfiguracji\ndodaj debug do karty zigbee\nHerdsman 3.2.5, Konwertery 21.30.0\nWyświetla jako domyślne, użycie starych definicji urządzenia jako dotychczasowe opcjonalne\nObrazy specyficzne dla użytkownika (oparte na modelu, na urządzeniu)\nUlepszona edycja grupowa - usunąć członków z karty grupowej",
         "uk": "БРЕАКІНГОВІ ЗМІНИ\n\nперемикач на перетворювачі 21 змінює висадки для великої кількості пристроїв (найбільш віддалені)\nновий метод контролю кольору на основі підканалів для rgb, hs і xy\nЗа замовчуванням для всіх пристроїв. Використання старого визначення як варіант\nВимагає Node 20.x або нові\n\nФіксація Пірсинг\nзмінити пінг\nгенерація карти затримки до освіження активується, повідомлення після генерації\nвидалити вкладку в'язання з вкладки zigbee\nвкладка зворотного замовлення в конфігурації\nвидалити вкладку з конфігурації\nвидалити карту з конфігурації\nadd debug до zigbee tab\nEnglish, Українська, Français..\nЕкспози як за замовчуванням, використання застарілих параметрів пристрою, як необов'язковий\nКористувальницькі специфічні зображення (моделі на основі пристрою)\nУдосконалено редагування груп - видалення членів з групової картки",
         "zh-cn": "裂变\n\n21 更改大量设备(大多为远程设备)的曝光量\n基于 rgb、 hs 和 xy 子通道的新的颜色控制方法\n曝光为默认所有设备 。 仅将旧定义用作选项\n需要节点 20.x 或更新\n\n修复对齐\n更改键\n将映射生成延迟到刷新启动, 映射消息生成后\n从 zigbee 标签中删除绑定标签\n在配置中重新排序标签\n从配置中删除绑定标签\n从配置中删除地图\n添加调试到 zigbee 标签\n牧民 3.2.5,转换器 21.30.0\n将曝光作为默认, 将旧设备定义作为遗留选项\n用户特定图像( 基于模型、 设备)\n改进组编辑 - 从组卡中删除成员"
-      },
-      "1.11.2": {
-        "en": "debug for states",
-        "de": "debug for states",
-        "ru": "debug for states",
-        "pt": "debug for states",
-        "nl": "debug for states",
-        "fr": "debug for states",
-        "it": "debug for states",
-        "es": "debug for states",
-        "pl": "debug for states",
-        "uk": "debug for states",
-        "zh-cn": "debug for states"
       },
       "1.10.14": {
         "en": "Herdsman 2.1.9, Converters 20.58.0\nFix: Aqara T1M (CL-L02D) \ndeleteDeviceStates change to deleteObj",
@@ -174,7 +174,7 @@
     },
     "globalDependencies": [
       {
-        "admin": ">=5.1.25"
+        "admin": ">=6.0.0"
       }
     ],
     "dependencies": [
@@ -235,7 +235,8 @@
           "cancel"
         ]
       }
-    ]
+    ],
+    "installedFrom": "asgothian/ioBroker.zigbee#1.11"
   },
   "native": {
     "port": "",
@@ -256,27 +257,6 @@
     "flowCTRL": false
   },
   "instanceObjects": [
-    {
-      "_id": "exclude",
-      "type": "channel",
-      "common": {
-        "name": "exclude devs from devices.js"
-      },
-      "native": {}
-    },
-    {
-      "_id": "exclude.all",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": "all",
-        "type": "string",
-        "read": true,
-        "write": true,
-        "def": "[]"
-      },
-      "native": {}
-    },
     {
       "_id": "info",
       "type": "channel",
@@ -330,19 +310,6 @@
       "common": {
         "role": "indicator",
         "name": "Pairing message",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.groups",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": "Groups",
         "type": "string",
         "read": true,
         "write": false,

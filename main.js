@@ -766,7 +766,7 @@ class Zigbee extends utils.Adapter {
                 this.log.debug(`No mapped model for ${model}`);
                 if (has_elevated_debug) {
                     this.log.error(`ELEVATED OE01: No mapped model ${deviceId} (model ${model})`)
-                    this.emit('device_debug', { ID:debugID, data: { error: '01' , IO:false }});
+                    this.emit('device_debug', { ID:debugID, data: { error: 'NOMODEL' , IO:false }});
 
                     //dbgmsg.flags.push('E1');
                     //dbgmsg.success = false;
@@ -796,7 +796,7 @@ class Zigbee extends utils.Adapter {
                         }
                     } catch (error) {
                         this.log.warn(`send_payload: ${value} does not parse as JSON Object : ${error.message}`);
-                        if (has_elevated_debug) this.emit('device_debug', { ID:debugID, data: { error: 'ex' ,states:[{id:stateDesc.id, value:value, payload:error.message}], IO:false }});
+                        if (has_elevated_debug) this.emit('device_debug', { ID:debugID, data: { error: 'EXSEND' ,states:[{id:stateDesc.id, value:value, payload:error.message}], IO:false }});
                         return;
                     }
                     return;
@@ -829,7 +829,7 @@ class Zigbee extends utils.Adapter {
                             this.query_device_block.push(deviceId);
                             if (has_elevated_debug) {
                                 this.log.warn(`ELEVATED O06: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`);
-                                this.emit('device_debug', { ID:debugID, data: { error: 'qs' ,states:[{id:stateDesc.id, value:value, payload:'none for device query'}], IO:false }});
+                                this.emit('device_debug', { ID:debugID, data: { flag: 'qs' ,states:[{id:stateDesc.id, value:value, payload:'none for device query'}], IO:false }});
                             }
                             else
                                 this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
@@ -841,7 +841,7 @@ class Zigbee extends utils.Adapter {
                                         } catch (error) {
                                             if (has_elevated_debug) {
                                                 this.log.warn(`ELEVATED OE02.1 Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`);
-                                                this.emit('device_debug', { ID:debugID, data: { error: '03' , IO:false }});
+                                                this.emit('device_debug', { ID:debugID, data: { error: 'NOTREAD' , IO:false }});
                                             }
                                             else
                                                 this.log.info(`failed to read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
@@ -921,7 +921,7 @@ class Zigbee extends utils.Adapter {
                     if (has_elevated_debug) {
                         this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
                         //dbgmsg.flags.push('E3');
-                        this.emit('device_debug', { ID:debugID, data: { error: '04',states:[{id:stateDesc.id, value:value, payload:'no converter'}] , IO:false }});
+                        this.emit('device_debug', { ID:debugID, data: { error: 'NOCONV',states:[{id:stateDesc.id, value:value, payload:'no converter'}] , IO:false }});
                         //dbgmsg.success=false;
                     }
                     else {
@@ -995,7 +995,7 @@ class Zigbee extends utils.Adapter {
                     const result = await converter.convertSet(target, key, preparedValue, meta);
                     if (has_elevated_debug) {
                         this.log.warn(`ELEVATED O05: convert result ${safeJsonStringify(result)} for device ${deviceId}`);
-                        this.emit('device_debug', { ID:debugID, data: { flag: 'success' , IO:false }});
+                        this.emit('device_debug', { ID:debugID, data: { flag: 'SUCCESS' , IO:false }});
                         //dbgmsg.payload = JSON.stringify(result);
                     }
                     else
@@ -1010,7 +1010,7 @@ class Zigbee extends utils.Adapter {
                     else {
                         if (has_elevated_debug) {
                             this.log.error(`ELEVATED OE2: Error convert result for ${key} with ${safeJsonStringify(preparedValue)} is undefined on device ${deviceId}.`);
-                            this.emit('device_debug', { ID:debugID, data: { error: '02' , IO:false }});
+                            this.emit('device_debug', { ID:debugID, data: { error: 'NOTCON' , IO:false }});
                             //dbgmsg.flags.push('E2');
                             //dbgmsg.success = false;
                         }
@@ -1018,7 +1018,7 @@ class Zigbee extends utils.Adapter {
                 } catch (error) {
                     if (has_elevated_debug) {
                         this.log.error(`ELEVATED OE3: caught error ${safeJsonStringify(error)} when setting value for device ${deviceId}.`);
-                        this.emit('device_debug', { ID:debugID, data: { error: '03' , IO:false }});
+                        this.emit('device_debug', { ID:debugID, data: { error: 'EXSET' , IO:false }});
                         //dbgmsg.flags.push('E3');
                         //dbgmsg.success = false;
                     }
@@ -1028,7 +1028,7 @@ class Zigbee extends utils.Adapter {
             });
         } catch (err) {
             this.log.error(`No entity for ${deviceId} : ${err && err.message ? err.message : 'no error message'}`);
-            this.emit('device_debug', { ID:debugID, data: { error: 'ex' , IO:false }});
+            this.emit('device_debug', { ID:debugID, data: { error: 'EXPUB' , IO:false }});
             //dbgmsg.flags.push('EX');
             //dbgmsg.success = false;
         }

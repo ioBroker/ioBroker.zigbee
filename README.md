@@ -15,7 +15,6 @@
 With the Zigbee-coordinator based on Texas Instruments SoC, deCONZ ConBee/RaspBee modules, Silicon Labs EZSP v8 or ZIGate USB-TTL it creates its own zigbee-network, into which zigbee-devices are connected.
 
 
-
 By working directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
@@ -138,6 +137,19 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
+* fix configured info
+* fix battery voltage (V -> mV)
+* enable debug interface v1.0
+* Push Zigbee-Herdsman to 3.5.7
+* Push Zigbee-Herdsman-Converters to 23.1.1
+* fix configure on message
+* remove extra warning messages
+* fix Adapter-Checker notes
+* improve base64 image detection
+* removed unused adaptert objects (info.groups, excludes) from adapter config
+*
+
+### 2.0.2 (2025-03-02)
 * fix expose generation with expose function requiring a device. (Issue #1842)
 * fix failure to configure for devices needing multiple configurations (Issue #2375)
 * fix hold/release and press/release action handling (Issue #2387)
@@ -148,10 +160,7 @@ You can thank the authors by these links:
 * preparation for ZHC 22.x (model definition loaded on demand
 * fix legacy definition for devices
 * added action state for remotes.
-* fix configured info
-* fix battery voltage (V -> mV)
-* enable debug interface
-* 
+*
 
 ### 2.0.1 (2025-02-25)
 * BREAKING CHANGES
