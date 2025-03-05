@@ -940,7 +940,6 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
             let idx = item.states.length;
             let fs = '';
             const IHtml = [];
-            const redText = (item.error && item.error.length > 0 ? ' id="dbgred"' : '');
             for (const state of item.states) {
                 fs = fs+state.id+'.'+fne(item);
                 const redText = (item.errors && item.errors.length > 0 ? ' id="dbgred"' : '');
