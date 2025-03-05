@@ -136,6 +136,19 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* fix configured info
+* fix battery voltage (V -> mV)
+* enable debug interface v1.0
+* Push Zigbee-Herdsman to 3.5.7
+* Push Zigbee-Herdsman-Converters to 23.1.1
+* fix configure on message
+* remove extra warning messages
+* fix Adapter-Checker notes
+* improve base64 image detection
+* removed unused adaptert objects (info.groups, excludes) from adapter config
+*
+
 ### 2.0.2 (2025-03-02)
 * fix expose generation with expose function requiring a device. (Issue #1842)
 * fix failure to configure for devices needing multiple configurations (Issue #2375)
