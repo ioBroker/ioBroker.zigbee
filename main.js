@@ -1,7 +1,7 @@
 /**
  *
  * Zigbee devices adapter
- * 
+ *
  */
 'use strict';
 
@@ -1009,8 +1009,8 @@ class Zigbee extends utils.Adapter {
                     }
                     else {
                         if (has_elevated_debug) {
-                            this.log.error(`ELEVATED OE2: Error convert result for ${key} with ${safeJsonStringify(preparedValue)} is undefined on device ${deviceId}.`);
-                            this.emit('device_debug', { ID:debugID, data: { error: 'NOTCON' , IO:false }});
+                            this.log.warn(`ELEVATED O06: Convert does not return a result result for ${key} with ${safeJsonStringify(preparedValue)} on device ${deviceId}.`);
+                            //this.emit('device_debug', { ID:debugID, data: { error: 'NOTCON' , IO:false }});
                             //dbgmsg.flags.push('E2');
                             //dbgmsg.success = false;
                         }
