@@ -602,7 +602,7 @@ class Zigbee extends utils.Adapter {
             for (const state of stateList) {
                 stateNames.push(state.stateDesc.id);
             }
-            const message = `Publishing to ${deviceId} of model ${model} with ${stateNames.join(', ')}`
+            const message = `Publishing to ${deviceId} of model ${model} with ${stateNames.join(', ')}`;
             this.emit('device_debug', { ID:debugID, data: { ID: deviceId, flag: '03', IO:false }, message: message});
         }
         else
@@ -646,7 +646,7 @@ class Zigbee extends utils.Adapter {
                             this.acknowledgeState(deviceId, model, stateDesc, value);
                         }
                         else {
-                            this.error('Error in SendPayload: '+result.error.message)
+                            this.error('Error in SendPayload: '+result.error.message);
                         }
                     } catch (error) {
                         const message = `send_payload: ${value} does not parse as JSON Object : ${error.message}`;
@@ -919,7 +919,7 @@ class Zigbee extends utils.Adapter {
             }
         } else if (typeof payload === 'object') {
             payloadObj = payload;
-        } else return { success: false, error: 'illegal type of payload: ' + typeof payload}
+        } else return { success: false, error: 'illegal type of payload: ' + typeof payload};
 
         if (payloadObj.hasOwnProperty('device') && payloadObj.hasOwnProperty('payload')) {
             try {
