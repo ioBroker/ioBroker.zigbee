@@ -739,11 +739,10 @@ class Zigbee extends utils.Adapter {
                             converter = c;
                             if (has_elevated_debug) {
                                 const message = `Setting converter to keyless converter for ${deviceId} of type ${model}`;
-                                this.log.warn(`ELEVATED O04.${msg_counter}: ${message}`)
                                 this.emit('device_debug', { ID:debugID, data: { flag: `s4.${msg_counter}` , IO:false }, message:message});
                             }
                             else
-                                this.log.debug(`Setting converter to keyless converter for ${deviceId} of type ${model}`)
+                                this.log.debug(`Setting converter to keyless converter for ${deviceId} of type ${model}`);
                             msg_counter++;
                         }
                         else
@@ -754,7 +753,7 @@ class Zigbee extends utils.Adapter {
                                 this.emit('device_debug', { ID:debugID, data: { flag: `i4.${msg_counter}` , IO:false} , message:message});
                             }
                             else
-                                this.log.debug(`ignoring keyless converter for ${deviceId} of type ${model}`)
+                                this.log.debug(`ignoring keyless converter for ${deviceId} of type ${model}`);
                             msg_counter++;
                         }
                         continue;
