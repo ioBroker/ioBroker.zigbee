@@ -119,6 +119,19 @@ class Zigbee extends utils.Adapter {
         }
     }
 
+    warn(message) {
+        this.log.warn(message);
+    }
+    debug(message) {
+        this.log.debug(message);
+    }
+    error(message) {
+        this.log.error(message);
+    }
+    info(message) {
+        this.log.info(message);
+    }
+
     sendError(error, message) {
         try {
             if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
@@ -193,7 +206,6 @@ class Zigbee extends utils.Adapter {
     }
 
     async onReady() {
-        this.deviceDebug.start(this.stController);
         if (this.config.debugHerdsman) {
             debug.log = this.debugLog.bind(this);
             debug.enable('zigbee-herdsman*');
@@ -218,9 +230,11 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('event', this.stController.onZigbeeEvent.bind(this.stController));
         this.zbController.on('msg', this.stController.onZigbeeEvent.bind(this.stController));
         this.zbController.on('publish', this.publishToState.bind(this));
-        // this.stController.on('device_debug', this.deviceDebug.onDebugEvent.bind(this.deviceDebug));
         this.zbController.configure(zigbeeOptions);
         await this.callPluginMethod('configure', [zigbeeOptions]);
+
+        // elevated debug handling
+        this.deviceDebug.start(this.stController, this.zbController);
 
         this.reconnectCounter = 1;
         this.doConnect();
@@ -516,7 +530,6 @@ class Zigbee extends utils.Adapter {
         for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
-                // this.log.warn('sync dev states for ' + (entity.mapped ? entity.mapped.model : entity.device.modelID));
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
                 this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () =>
                     this.stController.syncDevStates(device, model));
@@ -558,162 +571,6 @@ class Zigbee extends utils.Adapter {
             });
         });
     }
-    /* Moved to statescontroller - this exclusively deals with states and has no reason to be here.
-    async onZigbeeEvent(type, entity, message) {
-        this.log.debug(`Type ${type} device ${safeJsonStringify(entity)} incoming event: ${safeJsonStringify(message)}`);
-
-        const device = entity.device;
-        const mappedModel = entity.mapped;
-        const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
-        const cluster = message.cluster;
-        const devId = device.ieeeAddr.substr(2);
-        const meta = {device};
-
-        const has_elevated_debug = this.stController.checkDebugDevice(devId);
-        let dbgmsg = {flags:[], data:'',id:'', payload:'', success:true, endpoint:'not set', UID:Date.now()};
-
-        if (has_elevated_debug) {
-            const shortMessage = {};
-            for(const propertyName in message) {
-                shortMessage[propertyName] = message[propertyName];
-            }
-            shortMessage.device = device.ieeeAddr;
-            shortMessage.meta = undefined;
-            shortMessage.endpoint = (message.endpoint.ID ? message.endpoint.ID: -1);
-            //dbgmsg.id = device.ieeeAddr;
-            //dbgmsg.flags.push('00');
-            //dbgmsg.payload=safeJsonStringify(shortMessage);
-            //dbgmsg.data=type;
-            this.stController.pushIncomingDebugMessage(device.ieeeAddr, dbgmsg);
-            this.log.warn(`ELEVATED I00: Zigbee Event of Type ${type} from device ${safeJsonStringify(device.ieeeAddr)}, incoming event: ${//dbgmsg.rawData}`);
-        }
-        // this assigment give possibility to use iobroker logger in code of the converters, via meta.logger
-        meta.logger = this.log;
-
-        await this.checkIfModelUpdate(entity);
-
-        let _voltage = 0;
-        let _temperature = 0;
-        let _humidity = 0;
-
-        let isMessure = false;
-        let isBattKey = false;
-
-        if (mappedModel && mappedModel.meta && mappedModel.meta.battery) {
-            const isVoltage = mappedModel.meta.battery.hasOwnProperty('voltageToPercentage');
-
-            if (isVoltage) {
-                const keys = Object.keys(message.data);
-
-                for (const key of keys) {
-                    const value = message.data[key];
-
-                    if (value && value[1]) {
-                        if (key == 65282 && value[1][1]) {
-                            _voltage = value[1][1].elmVal;
-                            isBattKey = true;
-                            break;
-                        }
-                        if (key == 65281) {
-                            _voltage = value[1];
-                            isBattKey = true;
-                            _temperature = value[100];
-                            _temperature = _temperature /100;
-                            _humidity = value[101];
-                            _humidity = _humidity / 100;
-                            isMessure = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // always publish link_quality and battery
-        if (message.linkquality) { // send battery with
-            this.publishToState(devId, model, {linkquality: message.linkquality});
-            if (isBattKey) {
-                this.publishToState(devId, model, {voltage: _voltage});
-                const  battProz = zigbeeHerdsmanConvertersUtils.batteryVoltageToPercentage(_voltage,entity.mapped.meta.battery.voltageToPercentage);
-                this.publishToState(devId, model, {battery: battProz});
-            }
-            if (isMessure) {
-                this.publishToState(devId, model, {temperature: _temperature});
-                this.publishToState(devId, model, {humidity: _humidity});
-            }
-        }
-
-        // publish raw event to "from_zigbee"
-        // some cleanup
-        const msgForState = Object.assign({}, message);
-        delete msgForState['device'];
-        delete msgForState['endpoint'];
-
-        msgForState['endpoint_id'] = message.endpoint.ID;
-        this.publishToState(devId, model, {msg_from_zigbee: safeJsonStringify(msgForState)});
-
-        if (!entity.mapped) {
-            return;
-        }
-
-        let converters = mappedModel.fromZigbee.filter(c => c && c.cluster === cluster && (
-            Array.isArray(c.type) ? c.type.includes(type) : c.type === type));
-
-
-        if (!converters.length && type === 'readResponse') {
-            converters = mappedModel.fromZigbee.filter(c => c.cluster === cluster && (
-                Array.isArray(c.type) ? c.type.includes('attributeReport') : c.type === 'attributeReport'));
-        }
-
-        if (!converters.length) {
-            if (type !== 'readResponse') {
-                this.log.debug(`No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
-                if (has_elevated_debug) {
-                    this.log.warn(`ELEVATED IE00: No converter available for '${mappedModel.model}' '${devId}' with cluster '${cluster}' and type '${type}'`);
-                    //dbgmsg.flags.push('E1');
-                    //dbgmsg.success = false;
-                }
-            }
-            return;
-        }
-
-        meta.state = { state: '' };   // for tuya
-
-        this.processConverters(converters, devId, model, mappedModel, message, meta)
-            .catch((error) => {
-                //   'Error: Expected one of: 0, 1, got: 'undefined''
-                if (cluster !== '64529') {
-                    this.log.error(`Error while processing converters DEVICE_ID: '${devId}' cluster '${cluster}' type '${type}'`);
-                }
-            });
-    }
-
-    async processConverters(converters, devId, model, mappedModel, message, meta) {
-        for (const converter of converters) {
-            const publish = (payload) => {
-                if (typeof payload === 'object') {
-                    this.publishToState(devId, model, payload);
-                }
-            };
-
-            const options = await new Promise((resolve, reject) => {
-                this.stController.collectOptions(devId, model, (options) => {
-                    resolve(options);
-                });
-            });
-
-            const payload = await new Promise((resolve, reject) => {
-                const payloadConv = converter.convert(mappedModel, message, publish, options, meta);
-                if (typeof payloadConv === 'object') {
-                    resolve(payloadConv);
-                }
-            });
-
-            publish(payload);
-        }
-    }
-    */
-
 
     publishToState(devId, model, payload) {
         this.stController.publishToState(devId, model, payload);
@@ -742,14 +599,11 @@ class Zigbee extends utils.Adapter {
         if (has_elevated_debug)
         {
             const stateNames = [];
-            stateList.forEach( state => {
-                stateNames.push(state.id);
-            });
-            this.log.warn(`ELEVATED O03: Publishing to ${deviceId} of model ${model} ${stateNames.join(', ')}`);
-            this.emit('device_debug', { ID:debugID, data: { flag: '03', IO:false }});
-            //dbgmsg.flags.push('03');
-            //dbgmsg.data = stateList.map(state => state.value).join(',');
-            //dbgmsg.id = stateList.map(state => state.stateDesc.id).join(',');
+            for (const state of stateList) {
+                stateNames.push(state.stateDesc.id);
+            }
+            const message = `Publishing to ${deviceId} of model ${model} with ${stateNames.join(', ')}`;
+            this.emit('device_debug', { ID:debugID, data: { ID: deviceId, flag: '03', IO:false }, message: message});
         }
         else
             this.log.debug(`publishFromState : ${deviceId} ${model} ${safeJsonStringify(stateList)}`);
@@ -765,11 +619,8 @@ class Zigbee extends utils.Adapter {
             if (!mappedModel) {
                 this.log.debug(`No mapped model for ${model}`);
                 if (has_elevated_debug) {
-                    this.log.error(`ELEVATED OE01: No mapped model ${deviceId} (model ${model})`)
-                    this.emit('device_debug', { ID:debugID, data: { error: 'NOMODEL' , IO:false }});
-
-                    //dbgmsg.flags.push('E1');
-                    //dbgmsg.success = false;
+                    const message=`No mapped model ${deviceId} (model ${model})`;
+                    this.emit('device_debug', { ID:debugID, data: { error: 'NOMODEL' , IO:false }, message: message});
                 }
                 return;
             }
@@ -787,16 +638,20 @@ class Zigbee extends utils.Adapter {
                 if (stateDesc.id === 'send_payload') {
                     try {
                         const json_value = JSON.parse(value);
-                        const payload = {device: deviceId.replace('0x', ''), payload: json_value};
-                        if (has_elevated_debug) this.emit('device_debug', { ID:debugID, data: { flag: '04' ,states:[{id:stateDesc.id, value:value, payload:payload}], IO:false }});
+                        const payload = {device: deviceId.replace('0x', ''), payload: json_value, model:model, stateModel:stateModel};
+                        if (has_elevated_debug) this.emit('device_debug', { ID:debugID, data: { flag: '04' ,payload:value ,states:[{id:stateDesc.id, value:json_value, payload:'none'}], IO:false }});
 
                         const result = await this.sendPayload(payload);
                         if (result.hasOwnProperty('success') && result.success) {
                             this.acknowledgeState(deviceId, model, stateDesc, value);
                         }
+                        else {
+                            this.error('Error in SendPayload: '+result.error.message);
+                        }
                     } catch (error) {
-                        this.log.warn(`send_payload: ${value} does not parse as JSON Object : ${error.message}`);
-                        if (has_elevated_debug) this.emit('device_debug', { ID:debugID, data: { error: 'EXSEND' ,states:[{id:stateDesc.id, value:value, payload:error.message}], IO:false }});
+                        const message = `send_payload: ${value} does not parse as JSON Object : ${error.message}`;
+                        if (has_elevated_debug) this.emit('device_debug', { ID:debugID, data: { error: 'EXSEND' ,states:[{id:stateDesc.id, value:value, payload:error.message}], IO:false }, message:message});
+                        else this.error(message);
                         return;
                     }
                     return;
@@ -828,8 +683,9 @@ class Zigbee extends utils.Adapter {
                         if (mappedModel) {
                             this.query_device_block.push(deviceId);
                             if (has_elevated_debug) {
-                                this.log.warn(`ELEVATED O06: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`);
-                                this.emit('device_debug', { ID:debugID, data: { flag: 'qs' ,states:[{id:stateDesc.id, value:value, payload:'none for device query'}], IO:false }});
+                                const message  = `Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`;
+                                //this.log.warn(`ELEVATED O06: ${message}`);
+                                this.emit('device_debug', { ID:debugID, data: { flag: 'qs' ,states:[{id:stateDesc.id, value:value, payload:'none for device query'}], IO:false }, message:message});
                             }
                             else
                                 this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
@@ -840,8 +696,9 @@ class Zigbee extends utils.Adapter {
                                             await converter.convertGet(entity.device.endpoints[0], ckey, {});
                                         } catch (error) {
                                             if (has_elevated_debug) {
-                                                this.log.warn(`ELEVATED OE02.1 Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`);
-                                                this.emit('device_debug', { ID:debugID, data: { error: 'NOTREAD' , IO:false }});
+                                                const message = `Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`;
+                                                this.log.warn(`ELEVATED OE02.1 ${message}`);
+                                                this.emit('device_debug', { ID:debugID, data: { error: 'NOTREAD' , IO:false }, message:message });
                                             }
                                             else
                                                 this.log.info(`failed to read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
@@ -850,9 +707,9 @@ class Zigbee extends utils.Adapter {
                                 }
                             }
                             if (has_elevated_debug) {
-                                this.log.warn(`ELEVATED O07: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`);
-                                this.emit('device_debug', { ID:debugID, data: { flag: 'qe' , IO:false }});
-                                //dbgmsg.flags.push('07');
+                                const message = `ELEVATED O07: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`;
+                                //this.log.warn(`ELEVATED O07: ${message}`);
+                                this.emit('device_debug', { ID:debugID, data: { flag: 'qe' , IO:false }, message:message});
                             }
                             else
                                 this.log.info(`Device query for '${entity.device.ieeeAddr}' done`);
@@ -877,57 +734,51 @@ class Zigbee extends utils.Adapter {
                     this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
                     if (!c.hasOwnProperty('key'))
                     {
-                        if (c.hasOwnProperty('convertSet') && converter === undefined)
+                        if (converter === undefined)
                         {
                             converter = c;
                             if (has_elevated_debug) {
-                                this.log.warn(`ELEVATED O04.${msg_counter}: Setting converter to keyless converter for ${deviceId} of type ${model}`)
-                                this.emit('device_debug', { ID:debugID, data: { flag: `s4.${msg_counter}` , IO:false }});
-                                //dbgmsg.flags.push(`S4.${msg_counter}`)
+                                const message = `Setting converter to keyless converter for ${deviceId} of type ${model}`;
+                                this.emit('device_debug', { ID:debugID, data: { flag: `s4.${msg_counter}` , IO:false }, message:message});
                             }
                             else
-                                this.log.debug(`Setting converter to keyless converter for ${deviceId} of type ${model}`)
+                                this.log.debug(`Setting converter to keyless converter for ${deviceId} of type ${model}`);
                             msg_counter++;
                         }
                         else
                         {
                             if (has_elevated_debug)
                             {
-                                this.log.warn(`ELEVATED O04.${msg_counter}: ignoring keyless converter for ${deviceId} of type ${model}`)
-                                this.emit('device_debug', { ID:debugID, data: { flag: `i4.${msg_counter}` , IO:false }});
-                                //dbgmsg.flags.push(`I4.${msg_counter}`)
+                                const message = `ignoring keyless converter for ${deviceId} of type ${model}`;
+                                this.emit('device_debug', { ID:debugID, data: { flag: `i4.${msg_counter}` , IO:false} , message:message});
                             }
                             else
-                                this.log.debug(`ignoring keyless converter for ${deviceId} of type ${model}`)
+                                this.log.debug(`ignoring keyless converter for ${deviceId} of type ${model}`);
                             msg_counter++;
                         }
                         continue;
                     }
                     if (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id))
                     {
+                        const message = `${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`;
                         if (has_elevated_debug) {
-                            this.log.warn(`ELEVATED O04.${msg_counter}: ${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
-                            this.emit('device_debugug', { ID:debugID, data: { flag: `${converter===undefined ? 's' : 'o'}4.${msg_counter}` , IO:false }});
-                            //dbgmsg.flags.push(`${converter===undefined ? 'S' : 'O'}4.${msg_counter}`)
+                            this.emit('device_debugug', { ID:debugID, data: { flag: `${converter===undefined ? 's' : 'o'}4.${msg_counter}` , IO:false }, message:message});
 
                         }
                         else
-                            this.log.debug(`${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`)
+                            this.log.debug(message);
                         converter = c;
                         msg_counter++;
                     }
                 }
                 if (converter === undefined) {
+                    const message = `No converter available for '${model}' with key '${stateDesc.id}' `;
                     if (has_elevated_debug) {
-                        this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
-                        //dbgmsg.flags.push('E3');
-                        this.emit('device_debug', { ID:debugID, data: { error: 'NOCONV',states:[{id:stateDesc.id, value:value, payload:'no converter'}] , IO:false }});
-                        //dbgmsg.success=false;
+                        this.emit('device_debug', { ID:debugID, data: { error: 'NOCONV',states:[{id:stateDesc.id, value:value, payload:'no converter'}] , IO:false }, message:message});
                     }
                     else {
-                        this.log.error(`No converter available for '${model}' with key '${stateDesc.id}' `);
+                        this.log.warn(message);
                     }
-                    this.sendError(`No converter available for '${model}' with key '${stateDesc.id}' `);
                     return;
                 }
 
@@ -946,14 +797,12 @@ class Zigbee extends utils.Adapter {
 
                 const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
                 const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
+                const message = `convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)} for device ${deviceId} with Endpoint ${epName}`;
                 if (has_elevated_debug) {
-                    this.log.warn(`ELEVATED O04: convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)} for device ${deviceId} with Endpoint ${epName}`);
-                    this.emit('device_debug', { ID:debugID, data: { flag: '04', payload: {key:{value:preparedValue, options:preparedOptions}}, IO:false }});
-                    //dbgmsg.flags.push('04');
-                    //dbgmsg.endpoint=epName;
+                    this.emit('device_debug', { ID:debugID, data: { flag: '04', payload: {key:key, ep: stateDesc.epname, value:preparedValue, options:preparedOptions}, IO:false }, message:message});
                 }
                 else
-                    this.log.debug(`convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)}`);
+                    this.log.debug(message);
 
                 let target;
                 if (model === 'group') {
@@ -983,7 +832,10 @@ class Zigbee extends utils.Adapter {
                         meta.message.state = preparedValue;
                     }
                 }
-                this.emit('device_debug', { ID:debugID, data: { states:[{id:stateDesc.id, value:value, payload:preparedValue}] , IO:false }});
+                if (has_elevated_debug) {
+                    //this.log.warn('epname is ' + epName + ' or ' + stateDesc.epname);
+                    this.emit('device_debug', { ID:debugID, data: { states:[{id:stateDesc.id, value:value, payload:preparedValue, ep:stateDesc.epname}] , IO:false }});
+                }
 
                 if (preparedOptions !== undefined) {
                     if (preparedOptions.hasOwnProperty('state')) {
@@ -993,15 +845,14 @@ class Zigbee extends utils.Adapter {
 
                 try {
                     const result = await converter.convertSet(target, key, preparedValue, meta);
+                    const message = `convert result ${safeJsonStringify(result)} for device ${deviceId}`;
                     if (has_elevated_debug) {
-                        this.log.warn(`ELEVATED O05: convert result ${safeJsonStringify(result)} for device ${deviceId}`);
-                        this.emit('device_debug', { ID:debugID, data: { flag: 'SUCCESS' , IO:false }});
-                        //dbgmsg.payload = JSON.stringify(result);
+                        this.emit('device_debug', { ID:debugID, data: { flag: 'SUCCESS' , IO:false }, message:message});
                     }
                     else
-                        this.log.debug(`convert result ${safeJsonStringify(result)}`);
+                        this.log.debug(message);
                     if (result !== undefined) {
-                        if (stateModel && !isGroup) {
+                        if (stateModel && !isGroup && !stateDesc.noack) {
                             this.acknowledgeState(deviceId, model, stateDesc, value);
                         }
                         // process sync state list
@@ -1009,31 +860,37 @@ class Zigbee extends utils.Adapter {
                     }
                     else {
                         if (has_elevated_debug) {
-                            this.log.warn(`ELEVATED O06: Convert does not return a result result for ${key} with ${safeJsonStringify(preparedValue)} on device ${deviceId}.`);
-                            //this.emit('device_debug', { ID:debugID, data: { error: 'NOTCON' , IO:false }});
-                            //dbgmsg.flags.push('E2');
-                            //dbgmsg.success = false;
+                            const message = `Convert does not return a result result for ${key} with ${safeJsonStringify(preparedValue)} on device ${deviceId}.`;
+                            this.emit('device_debug', { ID:debugID, data: { flag: '06' , IO:false }, message:message});
                         }
                     }
                 } catch (error) {
                     if (has_elevated_debug) {
-                        this.log.error(`ELEVATED OE3: caught error ${safeJsonStringify(error)} when setting value for device ${deviceId}.`);
-                        this.emit('device_debug', { ID:debugID, data: { error: 'EXSET' , IO:false }});
-                        //dbgmsg.flags.push('E3');
-                        //dbgmsg.success = false;
+                        const message = `caught error ${safeJsonStringify(error)} when setting value for device ${deviceId}.`;
+                        this.emit('device_debug', { ID:debugID, data: { error: 'EXSET' , IO:false },message:message});
                     }
                     this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
                         ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
                 }
             });
         } catch (err) {
-            this.log.error(`No entity for ${deviceId} : ${err && err.message ? err.message : 'no error message'}`);
-            this.emit('device_debug', { ID:debugID, data: { error: 'EXPUB' , IO:false }});
-            //dbgmsg.flags.push('EX');
-            //dbgmsg.success = false;
+            const message = `No entity for ${deviceId} : ${err && err.message ? err.message : 'no error message'}`;
+            this.emit('device_debug', { ID:debugID, data: { error: 'EXPUB' , IO:false }, message:message});
         }
     }
 
+
+    extractEP(key, endpoints) {
+        try {
+            if (endpoints) for (const ep of Object.keys(endpoints)) {
+                if (key.endsWith('_'+ep)) return { setattr: key.replace('_'+ep, ''), epname:ep }
+            }
+        }
+        catch {
+            return {};
+        }
+        return {};
+    }
     // This function is introduced to explicitly allow user level scripts to send Commands
     // directly to the zigbee device. It utilizes the zigbee-herdsman-converters to generate
     // the exact zigbee message to be sent and can be used to set device options which are
@@ -1047,7 +904,6 @@ class Zigbee extends utils.Adapter {
     // endpoint: optional: the endpoint to send the data to, if supported.
     //
     async sendPayload(payload) {
-        this.log.debug(`publishToDevice called with ${safeJsonStringify(payload)}`);
         let payloadObj = {};
         if (typeof payload === 'string') {
             try {
@@ -1062,7 +918,7 @@ class Zigbee extends utils.Adapter {
             }
         } else if (typeof payload === 'object') {
             payloadObj = payload;
-        }
+        } else return { success: false, error: 'illegal type of payload: ' + typeof payload};
 
         if (payloadObj.hasOwnProperty('device') && payloadObj.hasOwnProperty('payload')) {
             try {
@@ -1087,16 +943,24 @@ class Zigbee extends utils.Adapter {
                     this.sendError(`Illegal payload type for ${safeJsonStringify(payloadObj.device)}`);
                     return {success: false, error: `Illegal payload type for ${safeJsonStringify(payloadObj.device)}`};
                 }
+                const endpoints = mappedModel && mappedModel.endpoint ? mappedModel.endpoint(entity.device) : null;
                 for (const key in payloadObj.payload) {
                     if (payloadObj.payload[key] != undefined) {
                         const datatype = typeof payloadObj.payload[key];
+                        const epobj = this.extractEP(key, endpoints);
+                        if (payloadObj.endpoint) {
+                            epobj.epname = payloadObj.endpoint;
+                            delete epobj.setattr;
+                        }
                         stateList.push({
                             stateDesc: {
                                 id: key,
                                 prop: key,
                                 role: 'state',
                                 type: datatype,
-                                epname: payloadObj.endpoint,
+                                noack:true,
+                                epname: epobj.epname,
+                                setattr: epobj.setattr,
                             },
                             value: payloadObj.payload[key],
                             index: 0,
@@ -1105,8 +969,7 @@ class Zigbee extends utils.Adapter {
                     }
                 }
                 try {
-                    this.log.debug(`Calling publish to state for ${safeJsonStringify(payloadObj.device)} with ${safeJsonStringify(stateList)}`);
-                    await this.publishFromState(`0x${payload.device}`, '', undefined, stateList, payload.options);
+                    await this.publishFromState(`0x${payload.device}`, payload.model, payload.stateModel, stateList, payload.options, Date.now());
                     return {success: true};
                 } catch (error) {
                     this.log.error(`Error ${error.code} on send command to ${payload.device}.` + ` Error: ${error.stack} ` + `Send command to ${payload.device} failed with ` + error);

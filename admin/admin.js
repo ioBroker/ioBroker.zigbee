@@ -910,7 +910,7 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
                 const LHtml = [(`<tr id="${isodd ? 'dbgrowodd' : 'dbgroweven'}">`)];
                 if (idx==0)
                     LHtml.push(`<td${rowspan}>${item.dataID.toString(16).slice(-4)}</td><td${rowspan}>${safestring(item.payload)}</td>`);
-                LHtml.push(`<td${redText}>${safestring(state.payload)}</td><td${redText}>${state.id}</td><td${redText}>${state.value}</td><td${redText}>${fne(item)}</td></tr>`);
+                LHtml.push(`<td></td><td${redText}>${safestring(state.payload)}</td><td${redText}>${state.id}</td><td${redText}>${state.value}</td><td${redText}>${fne(item)}</td></tr>`);
                 IHtml.unshift(...LHtml)
             }
             if (filter)
@@ -922,7 +922,7 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
     const ifbutton = `<a id="i_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('i_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
     const ofbutton = `<a id="hi_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.has('i_'+devID) ? 'unfold_more' : 'unfold_less' }</i></a>`
     const dataHide = dbgMsgfilter.has('hi_'+devID) ? 'Data hidden' : '&nbsp;';
-    return `<thead id="dbgtable"><tr><td>&nbsp</td><td>Incoming messages</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>State Payload</td><td>ID</td><td>value</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`;
+    return `<thead id="dbgtable"><tr><td>&nbsp</td><td>Incoming messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>&nbsp;</td><td>State Payload</td><td>ID</td><td>value</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`;
 }
 
 
@@ -947,7 +947,7 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
                 idx--;
                 if (idx==0)
                     LHtml.push(`<td${rowspan}>${item.dataID.toString(16).slice(-4)}</td><td${rowspan}>${safestring(item.payload)}</td>`);
-                LHtml.push(`<td${redText}>${state.id}</td><td${redText}>${state.value}</td><td${redText}>${state.payload}</td><td${redText}>${fne(item)}</td></tr>`);
+                LHtml.push(`<td${redText}>${state.ep ? state.ep : ''}</td><td${redText}>${state.id}</td><td${redText}>${safestring(state.value)}</td><td${redText}>${safestring(state.payload)}</td><td${redText}>${fne(item)}</td></tr>`);
                 IHtml.unshift(...LHtml);
 
             }
@@ -960,7 +960,7 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
     const ifbutton = `<a id="o_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('o_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
     const ofbutton = `<a id="ho_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.has('o_'+devID) ? 'unfold_more' : 'unfold_less'}</i></a>`
     const dataHide = dbgMsgfilter.has('ho_'+devID) ? 'Data hidden' : '&nbsp;';
-    return `<thead id="dbgtable"><tr><td>&nbsp</td><td>Outgoing messages</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>ID</td><td>value</td><td>State Payload</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`;
+    return `<thead id="dbgtable"><tr><td>&nbsp</td><td>Outgoing messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>EP</td><td>ID</td><td>value</td><td>State Payload</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`;
 }
 
 
@@ -976,7 +976,7 @@ function displayDebugMessages(msg) {
         const hbutton = `<a id="h_all" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.size != 0 ? 'unfold_more' : 'unfold_less'}</i></a>`;
         Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">Debug information by device</td><td>${fbutton}</td><td>${hbutton}</td><td>${button}</td></tr></thead><tbody>`);
         if (!keylength) {
-            Html.push('<tr><td></td><td>No debug data loaded - press reload to refresh</td><td></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></li>')
+            Html.push('<tr><td></td><td>No debug data loaded - press reload to refresh</td><td></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></li>')
             $('#dbg_data_list').html(Html.join(''));
         }
         else {
@@ -989,7 +989,7 @@ function displayDebugMessages(msg) {
                 const devName = (dev && dev.common && dev.common.name) ? dev.common.name : 'unnamed';
                 const button = `<a id="e_${devID}" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">sync_problem</i></a>`
                 buttonNames.push(devID);
-                Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">${devName} (ID: ${devID} Model: ${dev && dev.common ? dev.common.name : 'unknown'})</td><td>${modelUrl}</td><td>${button}</td></tr></thead><tbody>`);
+                Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">${devName} (ID: ${devID} Model: ${dev && dev.common ? dev.common.name : 'unknown'})</td><td>${modelUrl}</td><td>&nbsp;</td><td>${button}</td></tr></thead><tbody>`);
                 if (dbgData[devID].IN.length > 0) {
                     Html.push(`${HtmlFromInDebugMessages(dbgData[devID].IN, devID, dbgMsgfilter.has('i_'+devID))}`);
                 }
