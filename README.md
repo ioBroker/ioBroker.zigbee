@@ -32,7 +32,6 @@ Current firmware files for these devices can be found [on GitHub](https://github
 <span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
 <span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/cc26x2r.PNG" width="100"></span>
 
-tutorial/zigbee.png
 ### Dresden Elektronik SoC
 <span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/en/img/deconz.png" width="180"></span>
 
@@ -68,6 +67,8 @@ At first start, it is vital to set up the adapter settings. These include:
 - the required firmware-Type
 - the network parameters PanID (a number between 0 and 65565) and extended PanID (a 16 digit HEX number) **important: Do not run the adapter without changing the values for PanID (6754) and Extended PanID (DDDDDDDDDDDDDDDD) to unique values for your Zigbee Installation.**
 
+
+![](docs/de/img/Zigbee_config_de.png)
 Please refer to the [in depth documentation](docs/en/readme.md) ([german version](docs/de/readme.md), [russian version](docs/ru/readme.md)) for a detailed explanation on how to configure the adapter.
 
 Once the adapter is up and running, the desired devices need to be integrated into the network. This requires for both the adapter and the device to be in pairing mode. Most new devices will be in pairing-mode when they are powered up for the first time, but some will require a special procedure for this. Please refer to the device manual for information on this.
