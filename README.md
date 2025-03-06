@@ -65,7 +65,7 @@ The adapter should **always** be installed from within the ioBroker Admin. Direc
 At first start, it is vital to set up the adapter settings. These include:
 - the communication to the zigbee Coordinator (COM Port). This can be a device identifier or a network address for Network-based coordinators
 - the required firmware-Type
-- the network parameters PanID (a number between 0 and 65565) and extended PanID (a 16 digit HEX number) **important: Do not run the adapter without changing the values for PanID (6754) and Extended PanID (DDDDDDDDDDDDDDDD) to unique values for your Zigbee Installation.**
+- the network parameters PanID (a number between 0 and 65565), extended PanID (a 16 digit HEX number) and the zigbee Channel **important: Do not run the adapter without changing the values for PanID (6754) and Extended PanID (DDDDDDDDDDDDDDDD) to unique values for your Zigbee Installation.**
 
 
 ![](docs/de/img/Zigbee_config_de.png)
@@ -86,18 +86,40 @@ The adapter allows for the creation of groups via the 'add group' button. Once a
 Groups have the advantage that a single command is sent to control all group members. This is especially helpful when changing the groups brightness and/or color settings.
 Note that not all devices may be added to groups - the device itself needs to support this feature.
 
+Group configuration is available from the device grid.
+
 ### Bindings
 
 Bindings can be used to link a remote control directly to a device, like it is e.g. done for the ikea devices. This binding has the advantage that bound devices will continue to work together even if the Zigbee Coordinator is unavailable.
 Note that not all devices may be part of a binding - the devices themselves need to support this feature.
 
+The binding configuration is only available from the zigbee tab
+
 ### Network Map
 
 The adapter has the ability to generate a map of the mesh network. This usually takes a few minutes and provides a momentary glimpse into how the devices are meshed with each other.
 
-### Developer Tab
+The network map is only available the zigbee tab.
 
-The developer tab offers the ability to communicate with any paired device solely based on the details of the Zigbee communication rules. Use of this requires an insight into Zigbee Clusters, Attributes and messaging structure. It can be used to control devices which are not currently supported. An in depth desctiption of the developer Tab is available in the documentation.
+### Debug information
+
+The Adapter offers to collect debug information for specific devices in order to identify problems in device operation and integration. This needs to be enabled on the desired devices from the device grid.
+
+The debug information is only available from the zigbee tab.
+
+### Local overrides
+
+Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 2.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.
+
+The local overrides are only available from the instance configuration
+
+### Developer Mode
+
+The developer mode offers the ability to communicate with any paired device solely based on the details of the Zigbee communication rules. Use of this requires an insight into Zigbee Clusters, Attributes and messaging structure. It can be used to control devices which are not currently supported. An in depth desctiption of the developer Tab is available in the documentation.
+
+The developer tab is only available from the instance configuration
+
+
 
 ## Additional info
 
