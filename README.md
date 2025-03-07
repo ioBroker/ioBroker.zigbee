@@ -152,7 +152,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.0.3 (2025-03-07)
 * fix configured info
 * fix battery voltage (V -> mV)
 * enable debug interface v1.0
