@@ -129,8 +129,7 @@ jobs:
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
-          npm publish
-          npm publish ${{ steps.extract_release.outputs.TAG }}
+          npm publish     
       # b) For monorepos managed with lerna (requires lerna to be installed globally)
       #- name: Publish packages to npm
       #  run: |
