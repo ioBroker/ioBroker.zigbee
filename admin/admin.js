@@ -31,7 +31,8 @@ let devices = [],
     cidList,
     shuffleInstance,
     errorData = [],
-    debugMessages = {};
+    debugMessages = {},
+    debugInLog = true;
 const dbgMsgfilter = new Set();
 const dbgMsghide = new Set();
 const updateCardInterval = setInterval(updateCardTimer, 6000);
@@ -974,7 +975,8 @@ function displayDebugMessages(msg) {
         const button = `<a id="e_all" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">sync_problem</i></a>`;
         const fbutton = `<a id="f_all" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.size != 0 ? 'filter_list' : 'format_align_justify' }</i></a>`;
         const hbutton = `<a id="h_all" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.size != 0 ? 'unfold_more' : 'unfold_less'}</i></a>`;
-        Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">Debug information by device</td><td>${fbutton}</td><td>${hbutton}</td><td>${button}</td></tr></thead><tbody>`);
+        const logbutton = `<a id="l_all" class="btn-floating waves-effect waves-light ${debugInLog ? 'green' : 'red'} tooltipped center-align hoverable translateT" title="Log messages"><i class="material-icons large">${debugInLog ? 'speaker_notes' : 'speaker_notes_off'}</i></a>`;
+        Html.push(`<li><table><thead id="dbgtable"><tr><td>${logbutton}</td><td colspan="3">Debug information by device</td><td>${fbutton}</td><td>${hbutton}</td><td>${button}</td></tr></thead><tbody>`);
         if (!keylength) {
             Html.push('<tr><td></td><td>No debug data loaded - press reload to refresh</td><td></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></li>')
             $('#dbg_data_list').html(Html.join(''));
@@ -1001,6 +1003,10 @@ function displayDebugMessages(msg) {
             $('#dbg_data_list').html(Html.join(''));
         }
         $(`#e_all`).click(function () {
+            getDebugMessages();
+        });
+        $(`#l_all`).click(function () {
+            debugInLog = !debugInLog;
             getDebugMessages();
         });
         $(`#f_all`).click(function () {
@@ -1052,7 +1058,7 @@ function displayDebugMessages(msg) {
 }
 
 function getDebugMessages() {
-    sendTo(namespace, 'getDebugMessages', {}, function(msg) {
+    sendTo(namespace, 'getDebugMessages', { inlog: debugInLog }, function(msg) {
         debugMessages = msg;
         if (msg) displayDebugMessages(debugMessages)
     })
