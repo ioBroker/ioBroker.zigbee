@@ -307,7 +307,7 @@ class Zigbee extends utils.Adapter {
                 require,
                 module: {},
             };
-            const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('.', '_'));
+            const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('zigbee.', 'zigbee_'));
             if (!fs.existsSync(mN)) {
                 this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
             }
@@ -1061,7 +1061,7 @@ class Zigbee extends utils.Adapter {
     getZigbeeOptions() {
         // file path for db
         let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), '');
-        dbDir = dbDir.replace('.', '_');
+        dbDir = dbDir.replace('zigbee.', 'zigbee_');
 
         if (this.systemConfig && !fs.existsSync(dbDir)) {
             try {
