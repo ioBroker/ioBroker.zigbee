@@ -412,7 +412,8 @@ class Zigbee extends utils.Adapter {
             }
         }
         else try {
-            this.zbController.stopHerdsman();
+            await this.zbController.stopHerdsman();
+            this.logToPairing('herdsman stopped !');
             this.sendTo(from, command, { status:true }, callback);
         } catch (error) {
             this.sendTo(from, command, { status:false }, callback);
@@ -532,13 +533,15 @@ class Zigbee extends utils.Adapter {
                         );
                         const nwExtPanId = `0x${result.payload.value.reverse().toString('hex')}`;
                         this.log.debug(`Config value ${configExtPanId} : nw value ${nwExtPanId}`);
+                        this.logToPairing(`Config value ${configExtPanId} : nw value ${nwExtPanId}`)
                         if (configExtPanId !== nwExtPanId) {
                             networkExtPanId = nwExtPanId;
                             needChange = true;
                         }
                     } catch (e) {
-                        this.log.error(`Unable to apply ExtPanID changes: ${e}`);
-                        this.sendError(e, `Unable to apply ExtPanID changes`);
+                        const msg = `Unable to apply ExtPanID changes: ${e}`;
+                        this.log.error(msg);
+                        this.logToPairing(msg)
                         needChange = false;
                     }
                 } else {
