@@ -446,8 +446,8 @@ class Zigbee extends utils.Adapter {
                     this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
                     await this.zbController.start(noReconnect);
                 } catch (error) {
-                    this.logToPairing(error.message);
-                    this.error(error.message);
+                    this.logToPairing(error && error.message ? error.message : error);
+                    this.error(error && error.message ? error.message : error);
                 }
                 return false;
             });
