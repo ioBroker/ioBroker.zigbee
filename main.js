@@ -237,7 +237,7 @@ class Zigbee extends utils.Adapter {
         this.deviceDebug.start(this.stController, this.zbController);
 
         this.reconnectCounter = 1;
-        this.doConnect();
+        if (this.config.autostart) this.doConnect();
     }
 
     sandboxAdd(sandbox, item, module) {
@@ -398,7 +398,28 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    async doConnect() {
+    async testConnect(from, command, message, callback) {
+        const response = {};
+        if (message.start) {
+            try {
+                this.zbController.configure(this.getZigbeeOptions(message.zigbeeOptions));
+                this.logToPairing(`overriding zigbee options with ${JSON.stringify(message.zigbeeOptions)}`);
+                response.status = await this.doConnect(true);
+                this.sendTo(from, command, response, callback);
+            }
+            catch (error) {
+                this.sendTo(from, command, { status:false }, callback);
+            }
+        }
+        else try {
+            this.zbController.stopHerdsman();
+            this.sendTo(from, command, { status:true }, callback);
+        } catch (error) {
+            this.sendTo(from, command, { status:false }, callback);
+        }
+    }
+
+    async doConnect(noReconnect) {
         let debugversion = '';
         try {
             const DebugIdentify = require('./debugidentify');
@@ -410,33 +431,44 @@ class Zigbee extends utils.Adapter {
         // installed version
         let gitVers = '';
         try {
+            if (noReconnect) this.logToPairing(`Starting Adapter ${debugversion}`);
             this.log.info(`Starting Adapter ${debugversion}`);
 
             this.getForeignObject(`system.adapter.${this.namespace}`,async (err, obj) => {
-                if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
-                    const instFrom = obj.common.installedFrom;
-                    gitVers = gitVers + instFrom.replace('tarball', 'commit');
-                } else {
-                    gitVers = obj.common.installedFrom;
+                try {
+                    if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
+                        const instFrom = obj.common.installedFrom;
+                        gitVers = gitVers + instFrom.replace('tarball', 'commit');
+                    } else {
+                        gitVers = obj.common.installedFrom;
+                    }
+                    if (noReconnect) this.logToPairing(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
+                    this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
+                    await this.zbController.start(noReconnect);
+                } catch (error) {
+                    this.logToPairing(error.message);
+                    this.error(error.message);
                 }
-                this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
-                await this.zbController.start();
+                return false;
             });
-
         } catch (error) {
             this.setState('info.connection', false, true);
-            this.log.error(`Failed to start Zigbee`);
-            if (error.stack) {
+            this.logToPairing(`Failed to start Zigbee: ${error && error.message ? error.message : 'no message given'}`)
+            this.log.error(`Failed to start Zigbee: ${error && error.message ? error.message : 'no message given'}`);
+            /* if (error.stack) {
                 this.log.error(error.stack);
             } else {
                 this.log.error(error);
             }
+            */
             this.sendError(error, `Failed to start Zigbee`);
+            if (noReconnect) return false;
 
             if (this.reconnectCounter > 0) {
                 this.tryToReconnect();
             }
         }
+        return true;
     }
 
     UploadRequired(status) {
@@ -1058,7 +1090,8 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    getZigbeeOptions() {
+    getZigbeeOptions(_overrideOptions) {
+        const override = (_overrideOptions ? _overrideOptions:{});
         // file path for db
         let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), '');
         dbDir = dbDir.replace('zigbee.', 'zigbee_');
@@ -1076,16 +1109,16 @@ class Zigbee extends utils.Adapter {
             this.log.error('Serial port not selected! Go to settings page.');
             this.sendError('Serial port not selected! Go to settings page.');
         }
-        const panID = parseInt(this.config.panID ? this.config.panID : 0x1a62);
-        const channel = parseInt(this.config.channel ? this.config.channel : 11);
-        const precfgkey = createByteArray(this.config.precfgkey ? this.config.precfgkey : '01030507090B0D0F00020406080A0C0D');
-        const extPanId = createByteArray(this.config.extPanID ? this.config.extPanID : 'DDDDDDDDDDDDDDDD').reverse();
-        const adapterType = this.config.adapterType || 'zstack';
+        const panID = parseInt(override.panID ? override.panID : this.config.panID ? this.config.panID : 0x1a62);
+        const channel = parseInt(override.channel ? override.channel : this.config.channel ? this.config.channel : 11);
+        const precfgkey = createByteArray(override.precfgkey ? override.precfgkey : this.config.precfgkey ? this.config.precfgkey : '01030507090B0D0F00020406080A0C0D');
+        const extPanId = createByteArray(override.extPanID ? override.extPanID : this.config.extPanID ? this.config.extPanID : 'DDDDDDDDDDDDDDDD').reverse();
+        const adapterType = override.adapterType ? override.adapterType : this.config.adapterType || 'zstack';
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
-        const baudRate = parseInt(this.config.baudRate ? this.config.baudRate : 115200);
+        const baudRate = parseInt(override.baudRate ? override.baudRate : this.config.baudRate ? this.config.baudRate : 115200);
 
-        const setRtscts = this.config.flowCTRL ? this.config.flowCTRL : false;
+        const setRtscts = override.flowCTRL ? override.flowCTRL : this.config.flowCTRL ? this.config.flowCTRL : false;
 
         return {
             net: {
@@ -1108,7 +1141,7 @@ class Zigbee extends utils.Adapter {
             transmitPower: this.config.transmitPower,
             disableBackup: this.config.disableBackup,
             extPanIdFix: extPanIdFix,
-            startWithInconsistent: this.config.startWithInconsistent || false,
+            startWithInconsistent: override.startWithInconsistent ? override.startWithInconsistent: this.config.startWithInconsistent || false,
         };
     }
 
@@ -1143,7 +1176,8 @@ class Zigbee extends utils.Adapter {
                     logger = this.log.error;
                     if (data)
                         data = data.toString();
-                    this.logToPairing(`Error: ${msg}. ${data}`, true);
+                    if (this.ErrorMessagesToPairing)
+                        this.logToPairing(`Error: ${msg}. ${data}`, true);
                     this.sendError(`Error: ${msg}. ${data}`);
                     break;
                 case 'debug':

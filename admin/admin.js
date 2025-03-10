@@ -55,7 +55,8 @@ const networkOptions = {
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent', 'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL'
+    'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent',
+    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart'
 ];
 
 function getDeviceByID(ID) {
@@ -1149,14 +1150,22 @@ function getRandomExtPanID()
     return bytes.join('');
 }
 
+function getRandomChannel()
+{
+    const channels = [11,15,20,25]
+    return channels[Math.floor(Math.random() * 4)];
+}
 
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
-    if (settings.panID === undefined) {
+    if (settings.extPanID === undefined || settings.extPanID == '') {
+        settings.channel = getRandomChannel();
+    }
+    if (settings.panID === undefined || settings.panID == 0) {
         settings.panID = Math.floor(Math.random() * 10000);
     }
-    if (settings.extPanID === undefined) {
+    if (settings.extPanID === undefined || settings.extPanID == '') {
         settings.extPanID = getRandomExtPanID();
     }
     // fix for previous wrong value
@@ -1167,9 +1176,6 @@ function load(settings, onChange) {
     if (settings.precfgkey === undefined) {
         settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
     }
-    if (settings.channel === undefined) {
-        settings.channel = 11;
-    }
     if (settings.disablePing === undefined) {
         settings.disablePing = false;
     }
@@ -1179,6 +1185,7 @@ function load(settings, onChange) {
     if (settings.baudRate === undefined) {
         settings.baudRate = 115200;
     }
+    if (settings.autostart === undefined) settings.autostart = false;
 
     // example: select elements with id=key and class=value and insert value
     for (const key in settings) {
@@ -1212,6 +1219,28 @@ function load(settings, onChange) {
 
     // Signal to admin, that no changes yet
     onChange(false);
+
+    // test start commands
+    $('#testStartStart').click(function () {
+        doTestStart(true);
+    });
+    $('#testStartStop').click(function () {
+        doTestStart(false);
+    });
+    $('#show_test_run').click(function () {
+        $('#extPanID_t.value').val($('#extPanID.value').val());
+        $('#PanID_t.value').val($('#PanID.value').val());
+        $('#channel_t.value').val($('#channel.value').val());
+        $('#stdout_t').text('Testing');
+        showTestStart();
+    });
+    $('#testStartTransfer').click(function () {
+        console.warn('testStartConfig clicked')
+        $('#extPanID.value').val($('#extPanID_t.value').val());
+        $('#PanID.value').val($('#PanID_t.value').val());
+        $('#channel.value').val($('#channel_t.value').val());
+        onChange(true);
+    });
 
     $('#state_cleanup_btn').click(function () {
         cleanConfirmation();
@@ -1331,6 +1360,7 @@ function showMessages() {
         data = mess + '\n' + data;
     }
     $('#stdout').text(data);
+    $('#stdout_t').text(data);
 }
 
 function showPairingProcess() {
@@ -1342,6 +1372,48 @@ function showPairingProcess() {
 
     $('#modalpairing').modal('open');
     Materialize.updateTextFields();
+}
+
+
+function showTestStart() {
+    $('#modaltestherdsman').modal({
+        startingTop: '4%',
+        endingTop: '10%',
+        dismissible: false
+    });
+
+    $('#modaltestherdsman').modal('open');
+    Materialize.updateTextFields();
+}
+
+function transferDataToConfig() {
+}
+
+function doTestStart(start) {
+    if (start) {
+        const ovr = { extPanID:$('#extPanID_t.value').val(),
+            panID: $('#PanID_t.value').val(),
+            channel: $('#channel_t.value').val() };
+        // $('#testStartStart').addClass('disabled');
+        sendTo(namespace, 'testConnect', { start:true, zigbeeOptions:ovr }, function(msg) {
+            if (msg) {
+                if (msg.status)
+                    $('#testStartStop').removeClass('disabled');
+                else
+                    $('#testStartStart').removeClass('disabled');
+            }
+        })
+    }
+    else {
+        //$('#testStartStop').addClass('disabled');
+        sendTo(namespace, 'testConnect', { start:false }, function(msg) {
+            if (msg) {
+                if (msg.status) $('#testStartStart').removeClass('disabled');
+                else $('#testStartStop').removeClass('disabled');
+            }
+        })
+
+    }
 }
 
 // ... and the function save has to exist.
