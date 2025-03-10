@@ -9,19 +9,15 @@
 [![Translation status](https://weblate.iobroker.net/widgets/adapters/-/zigbee/svg-badge.svg)](https://weblate.iobroker.net/engage/adapters/?utm_source=widget)
 [![Downloads](https://img.shields.io/npm/dm/iobroker.zigbee.svg)](https://www.npmjs.com/package/iobroker.zigbee)
 
-## ioBroker adapter for Zigbee devices via TI cc26x2r/cc2538/cc26x2px and deCONZ ConBee/RaspBee.
-### cc2531/cc2530 are obsolet
+## ioBroker adapter for Zigbee devices via Zigbee coordinator hardware.
 
-With the Zigbee-coordinator based on Texas Instruments SoC, deCONZ ConBee/RaspBee modules, Silicon Labs EZSP v8 or ZIGate USB-TTL it creates its own zigbee-network, into which zigbee-devices are connected.
+Using specialized Zigbee-coordinator hardware, the adapter creates and manages a Zigbee Network which can control and connect a large number of Zigbee Devices. The list of compatible devices inlcudes > 4000 devices from > 450 different vendors. The number of devices in the network depends on the available coordinator hardware. Common coordinator hardware are USB sticks with Texas Instruments CC26xx, Silicon Labs EZSP or ZIGate chipsetz. Some branded USB devices (Sonoff ZB-Dongle, Dresden Electronic Conbee) can also be used. There are also network-based hubs from various manufacturers.
 
-
-
-By working directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). About the device Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
+By working directly with the coordinator, the driver allows you to manage devices without additional application / gateways / bridge from device manufacturers (Xiaomi / TRADFRI / Hue / Tuya). More information about the  Zigbee-network can be read [here (in English)](https://www.zigbee2mqtt.io/information/zigbee_network.html).
 
 ## Hardware
 
-
-One coordinator device is required for each zigbee Adapter instance. The device must be flashed with the respective coordinator firmware. A list of supported coordinators, the necessary equipment for the firmware and the device preparation process for different coordinator devices are described [here in English](https://www.zigbee2mqtt.io/guide/adapters/) or [smarthomescene.com ](https://smarthomescene.com/blog/best-zigbee-dongles-for-home-assistant-2023/) or [here in Russian](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
+One coordinator device is required for each Zigbee Adapter instance. The device must be flashed with the respective coordinator firmware. A list of supported coordinators, the necessary equipment for the firmware and the device preparation process for different coordinator devices are described [here in English](https://www.zigbee2mqtt.io/guide/adapters/) or [smarthomescene.com ](https://smarthomescene.com/blog/best-zigbee-dongles-for-home-assistant-2023/) or [here in Russian](https://myzigbee.ru/books/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B8/page/%D0%BF%D1%80%D0%BE%D1%88%D0%B8%D0%B2%D0%BA%D0%B0-cc2531cc2530)
 
 
 ### Texas Instruments SoC
@@ -36,7 +32,6 @@ Current firmware files for these devices can be found [on GitHub](https://github
 <span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/CC2538_CC2592_PA.PNG" width="100"></span>
 <span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/de/img/cc26x2r.PNG" width="100"></span>
 
-tutorial/zigbee.png
 ### Dresden Elektronik SoC
 <span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/en/img/deconz.png" width="180"></span>
 
@@ -63,62 +58,82 @@ Support for [Silicon Lab Zigbee](https://www.silabs.com/wireless/zigbee) based a
 Support for [ZiGate](https://zigate.fr) based adapters is experimental. The initial support for ZiGate is still not yet considered stable, and the project is in need of more developers volunteering to help with this integration. Please refer to the respective documentation on [this page](https://www.zigbee2mqtt.io/guide/adapters/) and [ongoing development discussion](https://github.com/Koenkk/zigbee-herdsman/issues/242) with regards to the state of ZiGate adapter implementation into the zigbee-herdsman and zigbee-herdsman-converters libraries which it depends on.
 
 
-## Work with adapter
+## Getting started
 
-![](docs/tutorial/zigbee.png)
+The adapter should **always** be installed from within the ioBroker Admin. Direct npm and GitHub installations are **not recommended**.
 
-To start the driver, you must specify the name of the port on which the Zigbee module (stick) is connected. Usually this is the port `/dev/ttyACM0` or `/dev/ttyUSB0` for the UART-connection. Or you can find with `ls -l /dev/serial/by-id` the device direct.
-
-open the settings and change port
-![](docs/tutorial/settings.png)
-
-
-For Windows, this will be the COM port number.
-
-Starting from version 1.0.0, you can also use *tcp connection* for cases using esp8266 (or other microcontrollers) as serial-bridge. For example `tcp://192.168.1.46:8880`. Read more info here https://www.zigbee2mqtt.io/information/connecting_cc2530#via-an-esp8266
-
-To connect devices, you need to switch the Zigbee coordinator to pairing mode by pressing the green button. The countdown will begin (60 seconds) until the device connectivity is available.
-To connect Zigbee devices in most cases, just press the pairing button on the device itself. But there are features for some devices. More information about pairing with devices can be found [here (in English)](https://www.zigbee2mqtt.io/getting_started/pairing_devices.html)
-
-After successful pairing, the device appears in the configuration panel. If the device appears in the configuration panel but has the type "undefined", then this is an unknown device and cannot be worked with it. If the device is in the list of available devices, but added as "undefined", then try to remove the device and add it again.
-
-The devices connected to the Zigbee-network and inform the coordinator of their status and events (button presses, motion detection, temperature change). This information is reflected in the ioBroker object-states. Some ioBroker states have feedback and send commands to the zigbee-device when the value changes (switching the state of the outlet or lamp, changing the scene or the brightness of the lamp).
-
-### Device Groups
-You may create groups of devices.
-
-![](docs/tutorial/groups-1.png)
-
-It is a Zigbee feature, intended for example to switch bulbs synchronized. Assign groups via device tabs edit button. A group will show as own "device" in Objects.
-
-![](docs/tutorial/groups-2.png)
-
-Note: Not all devices support groups (not supported by end devices like sensors).
+At first start, it is vital to set up the adapter settings. These include:
+- the communication to the zigbee Coordinator (COM Port). This can be a device identifier or a network address for Network-based coordinators
+- the required firmware-Type
+- the network parameters PanID (a number between 0 and 65565), extended PanID (a 16 digit HEX number) and the zigbee Channel **important: Do not run the adapter without changing the values for PanID (6754) and Extended PanID (DDDDDDDDDDDDDDDD) to unique values for your Zigbee Installation.**
 
 
-### Binding
+![](docs/de/img/Zigbee_config_de.png)
+Please refer to the [in depth documentation](docs/en/readme.md) ([german version](docs/de/readme.md), [russian version](docs/ru/readme.md)) for a detailed explanation on how to configure the adapter.
 
-https://www.zigbee2mqtt.io/information/binding
+Once the adapter is up and running, the desired devices need to be integrated into the network. This requires for both the adapter and the device to be in pairing mode. Most new devices will be in pairing-mode when they are powered up for the first time, but some will require a special procedure for this. Please refer to the device manual for information on this.
 
-### Developer Tab
+The adapter is placed in pairing mode by pressing the pairing button:
+![](docs/de/img/Bild12.png)
 
-This is a tool for advanced users to test currently unsupported devices or enhance this adapter's functionality. More instructions can be found on the tab.
-![](docs/tutorial/tab-dev-1.png)
+A dialog showing a pairing countdown appears. When a new device is discovered, interviewed and paired with the network, messages will be shown in this dialog, and the device will show up in the grid of active devices. Any known device should show up with an image and the correct device name, as well as a number of changable settings. Any unknown device will show up with a device name and a ? as icon, while devices which failed the pairing will show up as 'unknown' with the same ? icon. These should be removed from the network to be paired again. Please refer to the documentation linked above for more details.
+
+## Advanced options
+
+### Groups
+
+The adapter allows for the creation of groups via the 'add group' button. Once a group has been formed, devices can be added to and removed from the group from the device card. Removal is also possible from the group card.
+Groups have the advantage that a single command is sent to control all group members. This is especially helpful when changing the groups brightness and/or color settings.
+Note that not all devices may be added to groups - the device itself needs to support this feature.
+
+Group configuration is available from the device grid.
+
+### Bindings
+
+Bindings can be used to link a remote control directly to a device, like it is e.g. done for the ikea devices. This binding has the advantage that bound devices will continue to work together even if the Zigbee Coordinator is unavailable.
+Note that not all devices may be part of a binding - the devices themselves need to support this feature.
+
+The binding configuration is only available from the zigbee tab
+
+### Network Map
+
+The adapter has the ability to generate a map of the mesh network. This usually takes a few minutes and provides a momentary glimpse into how the devices are meshed with each other.
+
+The network map is only available the zigbee tab.
+
+### Debug information
+
+The Adapter offers to collect debug information for specific devices in order to identify problems in device operation and integration. This needs to be enabled on the desired devices from the device grid.
+
+The debug information is only available from the zigbee tab.
+
+### Local overrides
+
+Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 2.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.
+
+The local overrides are only available from the instance configuration
+
+### Developer Mode
+
+The developer mode offers the ability to communicate with any paired device solely based on the details of the Zigbee communication rules. Use of this requires an insight into Zigbee Clusters, Attributes and messaging structure. It can be used to control devices which are not currently supported. An in depth desctiption of the developer Tab is available in the documentation.
+
+The developer tab is only available from the instance configuration
+
+
 
 ## Additional info
 
-There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality on the same technologies, where you can work with the same devices using the MQTT protocol. Therefore, if any improvements or support for new zigbee-devices occur in the Zigbee2MQTT project, we can transfer and add the same functionality to this adapter. If you notice this, then write the issue - we'll postpone it.
+There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality which is based on the same technology. It uses the same base libraries for hardware communication and device integration. Any device listed as compatible in this project is likely to be compatible with the ioBroker.zigbee Adapter. Note that there is a delay between device integration into zigbee2mqtt.io and the Zigbee-Adapter, as compatibility with the hardware libraries requires verification before the adapter can move to the latest version.
 
 There are knowledge bases that can be useful for working with Zigbee-devices and equipment:
-* in English https://www.zigbee2mqtt.io/
+* in English https://www.zigbee2mqtt.io/ or https://zigbee.blakadder.com
 * in Russian https://myzigbee.ru/
 
 ## Supported devices
 
-[Works with devices from this list](https://github.com/ioBroker/ioBroker.zigbee/wiki/Supported-devices)
+Pleae refer to [this list](https://www.zigbee2mqtt.io/supported-devices/) to check compatibility. Once a device is listed as compatible there, it is either already compatible with the Zigbee Adapter or can be made compatible using an external converter.
 
-
-## More Information
+## In Depth Documentation
 
 [in Deutsch](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/readme.md)
 
@@ -137,7 +152,33 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.0.3 (2025-03-07)
+* fix configured info
+* fix battery voltage (V -> mV)
+* enable debug interface v1.0
+* Push Zigbee-Herdsman to 3.5.7
+* Push Zigbee-Herdsman-Converters to 23.1.1
+* fix configure on message
+* remove extra warning messages
+* fix Adapter-Checker notes
+* improve base64 image detection
+* removed unused adaptert objects (info.groups, excludes) from adapter config
+*
+
+### 2.0.2 (2025-03-02)
+* fix expose generation with expose function requiring a device. (Issue #1842)
+* fix failure to configure for devices needing multiple configurations (Issue #2375)
+* fix hold/release and press/release action handling (Issue #2387)
+* fix lib/legacy requirement for external converters (Issue #2376)
+* improved external converter handling
+* fix OTA bug
+* improved message handling for devices which report values outside their defined ranges
+* preparation for ZHC 22.x (model definition loaded on demand
+* fix legacy definition for devices
+* added action state for remotes.
+*
+
+### 2.0.1 (2025-02-25)
 * BREAKING CHANGES
 *
 * switch to converters 21 changes the exposes for a large numbern of devices (mostly remotes)
