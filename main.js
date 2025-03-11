@@ -376,10 +376,12 @@ class Zigbee extends utils.Adapter {
                 if (zigbeeHerdsmanConverters.hasOwnProperty('addExternalDefinition')) {
                     zigbeeHerdsmanConverters.addExternalDefinition(toAdd);
                     this.log.info('added external converter using addExternalDefinition')
+                    this.log.warn(`ZHC01,${Date.now()},${toAdd.model}`);
                 }
                 else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
                     zigbeeHerdsmanConverters.addDefinition(toAdd);
                     this.log.info('added external converter using addDefinition')
+                    this.log.warn(`ZHC01,${Date.now()},${toAdd.model}`);
                 }
 
                 /*
