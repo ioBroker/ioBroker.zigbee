@@ -377,12 +377,12 @@ class Zigbee extends utils.Adapter {
                     const t = Date.now();
                     zigbeeHerdsmanConverters.addExternalDefinition(toAdd);
                     this.log.info('added external converter using addExternalDefinition')
-                    this.log.warn(`ZHC01,${Date.now()},${Date.now()-t},${toAdd.model}`);
+                    //this.log.warn(`ZHC01,${Date.now()},${Date.now()-t},${toAdd.model}`);
                 }
                 else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
                     zigbeeHerdsmanConverters.addDefinition(toAdd);
                     this.log.info('added external converter using addDefinition')
-                    this.log.warn(`ZHC01,${Date.now()},${Date.now()-t},${toAdd.model}`);
+                    //this.log.warn(`ZHC01,${Date.now()},${Date.now()-t},${toAdd.model}`);
                 }
 
                 /*
