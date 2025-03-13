@@ -380,8 +380,8 @@ class Zigbee extends utils.Adapter {
                 }
                 else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
                     zigbeeHerdsmanConverters.addDefinition(toAdd);
-                    this.log.info(`added external converter using addDefinition (${Date.now()-t} ms)`)
-                })
+                    this.log.info(`added external converter using addDefinition (${Date.now()-t} ms)`);
+                }
             } catch (e) {
                 this.log.error(`unable to apply external converter for ${JSON.stringify(toAdd.model)}: ${e && e.message ? e.message : 'no error message available'}`);
             }
