@@ -1,4 +1,5 @@
 /*global $, M, _, sendTo, systemLang, translateWord, translateAll, showMessage, socket, document, instance, vis, Option*/
+
 /*
  * you must run 'iobroker upload zigbee' if you edited this file to make changes visible
  */
@@ -30,11 +31,14 @@ let devices = [],
     },
     cidList,
     shuffleInstance,
+
     errorData = [],
     debugMessages = {},
     debugInLog = true;
+
 const dbgMsgfilter = new Set();
 const dbgMsghide = new Set();
+
 const updateCardInterval = setInterval(updateCardTimer, 6000);
 
 const networkOptions = {
@@ -243,6 +247,7 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
+    console.warn('debug for ' + ieee + ' is ' + isDebug);
     const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
@@ -402,7 +407,7 @@ function EndPointIDfromEndPoint(ep) {
 }
 
 function editName(id, name) {
-    console.warn('editName called with ' + id + ' and ' + name);
+    console.log('editName called with ' + name);
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find('input[id=\'d_name\']').val(name);
     const groupables = [];
@@ -832,6 +837,7 @@ async function selectImageOverride(id) {
     sendTo(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
             const imagedata = msg.imageData;
+            console.warn(JSON.stringify(dev.common));
             const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
             if (dev.legacyIcon) imagedata.unshift( { file:dev.legacyIcon, name:'legacy', data:dev.legacyIcon});
             imagedata.unshift( { file:'none', name:'default', data:default_icon});
@@ -845,10 +851,10 @@ async function selectImageOverride(id) {
                     return image.file;
                 },
                 function (key, image) {
-                    if (image.isBase64) {
-                        return `data-icon="data:image/png; base64, ${image.data}"`;
-                    } else {
+                    if (image.file.length < 50) {
                         return `data-icon="${image.data}"`;
+                    } else {
+                        return `data-icon="data:image/png; base64, ${image.data}"`;
                     }
                 },
             );
@@ -858,6 +864,7 @@ async function selectImageOverride(id) {
                 const image = $('#chooseimage').find('#images option:selected').val();
                 const global = $('#chooseimage').find('#globaloverride').prop('checked');
                 const name = $('#chooseimage').find('input[id=\'d_name\']').val();
+                console.warn(`update device image : ${id} : ${image} : ${global} : ${name} : ${dev.common.name}`);
                 const data = {};
                 if (image != 'current') data.icon= image;
                 if (name != dev.common.name) data.name = name;
@@ -1095,7 +1102,6 @@ function getDevices() {
             } else {
                 devices = msg;
                 showDevices();
-                getDebugMessages();
                 getExclude();
                 getBinding();
             }
@@ -1206,7 +1212,6 @@ function load(settings, onChange) {
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getNamedColors();
-    //getDebugMessages();
     //getMap();
     //addCard();
 
@@ -1398,13 +1403,8 @@ socket.on('stateChange', function (id, state) {
                 $('#progress_line').css('width', `${percent}%`);
             }
         } else if (id.match(/\.info\.pairingMessage$/)) {
-            if (state.val == 'NewDebugMessage') {
-                getDebugMessages();
-            }
-            else {
-                messages.push(state.val);
-                showMessages();
-            }
+            messages.push(state.val);
+            showMessages();
         } else {
             const devId = getDevId(id);
             putEventToNode(devId);
@@ -1428,7 +1428,6 @@ socket.on('stateChange', function (id, state) {
         }
     }
 });
-
 
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
@@ -1690,6 +1689,7 @@ function showNetworkMap(devices, map) {
                 const options = data.edges._data.get(id);
                 if (select) {
                     options.font.size = 15;
+                    console.warn(JSON.stringify(options.font));
                 } else {
                     options.font.size = 0;
                 }
@@ -2268,6 +2268,7 @@ function editGroup(id, name) {
                     removeMembers.push({id:member.ieee.replace('0x',''), ep:member.epid})
             }
         }
+        console.warn(`ID: ${Id} name: ${newName} removeMembers: ${JSON.stringify(removeMembers)}`)
         updateGroup(Id, newName, (removeMembers.length > 0 ? removeMembers: undefined));
         // showGroups();
         getDevices();
@@ -2827,7 +2828,7 @@ function genDevInfo(device) {
                     ${genRow('date code', dev._dateCode)}
                     ${genRow('build', dev._softwareBuildID)}
                     ${genRow('interviewed', dev._interviewCompleted)}
-                    ${genRow('configured', (device.isConfigured), true)}
+                    ${genRow('configured', (dev.meta.configured === 1), true)}
                 </ul>
             </div>
         </div>
@@ -3019,12 +3020,16 @@ function addExcludeDialog() {
     $('#excludemodaledit a.btn[name=\'save\']').unbind('click');
     $('#excludemodaledit a.btn[name=\'save\']').click(() => {
         const exclude_id = $('#excludemodaledit').find('#exclude_target option:selected').val();
+
         const ids = devices.map(el => el._id);
         const idx = ids.indexOf(exclude_id);
         const exclude_model = devices[idx];
+        console.warn('calling addExclude mit model ' + exclude_model)
+
         addExclude(exclude_model);
     });
     prepareExcludeDialog();
+    console.warn('opening dialog');
     $('#excludemodaledit').modal('open');
     Materialize.updateTextFields();
 }
@@ -3053,7 +3058,7 @@ function getExclude() {
                 excludes = msg.legacy;
                 showExclude();
             }
-        }
+        } else console.warn('getExclude without msg')
     });
 }
 
