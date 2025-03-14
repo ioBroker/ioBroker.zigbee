@@ -28,8 +28,10 @@
     "ajv": "^8.17.1",
     "uri-js": "^4.4.1",
     "typescript": "^5.6.3",
-    "zigbee-herdsman": "3.2.7",
-    "zigbee-herdsman-converters": "21.38.0"
+
+    "zigbee-herdsman": "^3.3.0",
+    "zigbee-herdsman-converters": "23.6.0"
+
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -47,7 +49,8 @@
     "gulp-jsdoc3": "^3.0.0",
     "gulp-replace": "^1.1.4",
     "mixin-deep": "^2.0.1",
-    "mocha": "^11.1.0"
+    "mocha": "^11.1.0",
+    "@iobroker/dev-server":"^0.7.8"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
@@ -85,7 +88,6 @@
     "test:package": "mocha test/package --exit",
     "test:unit": "mocha test/unit --exit",
     "test:integration": "mocha test/integration --exit",
-    "watch:parcel": "parcel admin/src/index.tsx -d admin/build --hmr-port 1235",
     "test:js": "mocha --opts test/mocha.custom.opts",
     "lint": "eslint .",
     "release": "release-script",

@@ -136,6 +136,14 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+
+### **WORK IN PROGRESS**
+* ZHC 23.6.0
+* ZH 3.3.x
+* removed extra logging
+* fixed memory issue.
+* Configure on Message - 5 attempts.
+
 ### 2.0.4 (2025-03-09)
 * back to 2.0.2
 
@@ -143,7 +151,7 @@ You can thank the authors by these links:
 * fix configured info
 * fix battery voltage (V -> mV)
 * enable debug interface v1.0
-* Push Zigbee-Herdsman to 3.5.7
+* Push Zigbee-Herdsman to 2.5.7
 * Push Zigbee-Herdsman-Converters to 23.1.1
 * fix configure on message
 * remove extra warning messages

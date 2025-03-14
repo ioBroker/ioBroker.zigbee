@@ -287,7 +287,7 @@ class Zigbee extends utils.Adapter {
                 require,
                 module: {},
             };
-            const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('.', '_'));
+            const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName).replace('zigbee.', 'zigbee_'));
             if (!fs.existsSync(mN)) {
                 this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
             }
@@ -353,25 +353,15 @@ class Zigbee extends utils.Adapter {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
             try {
+                const t = Date.now();
                 if (zigbeeHerdsmanConverters.hasOwnProperty('addExternalDefinition')) {
                     zigbeeHerdsmanConverters.addExternalDefinition(toAdd);
-                    this.log.info('added external converter using addExternalDefinition')
+                    this.log.info(`added external converter using addExternalDefinition (${Date.now()-t} ms)`)
                 }
                 else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
                     zigbeeHerdsmanConverters.addDefinition(toAdd);
-                    this.log.info('added external converter using addDefinition')
+                    this.log.info(`added external converter using addDefinition (${Date.now()-t} ms)`);
                 }
-
-                /*
-                for (const zigbeeModel of toAdd.zigbeeModel)
-                {
-                    try {
-                        zigbeeHerdsmanConverters.addToExternalDefinitionsLookup(zigbeeModel, toAdd.toAdd);
-                    } catch (e) {
-                        this.log.error(`unable to apply external converter ${JSON.stringify(toAdd)} for device ${zigbeeModel}: ${e && e.message ? e.message : 'no error message available'}`);
-                    }
-                }
-                    */
             } catch (e) {
                 this.log.error(`unable to apply external converter for ${JSON.stringify(toAdd.model)}: ${e && e.message ? e.message : 'no error message available'}`);
             }
@@ -775,49 +765,7 @@ class Zigbee extends utils.Adapter {
 
                 if (stateDesc.isOption || stateDesc.compositeState) {
                     // acknowledge state with given value
-                    if (has_elevated_debug)
-                        this.log.warn('ELEVATED OC: changed state: ' + JSON.stringify(changedState));
-                    else
-                        this.log.debug('changed composite state: ' + JSON.stringify(changedState));
 
-                    this.acknowledgeState(deviceId, model, stateDesc, value);
-                    if (stateDesc.compositeState && stateDesc.compositeTimeout) {
-                        this.stController.triggerComposite(deviceId, model, stateDesc, changedState.source.includes('.admin.'));
-                    }
-                    // process sync state list
-                    //this.processSyncStatesList(deviceId, modelId, syncStateList);
-                    // if this is the device query state => trigger the device query
-
-                    // on activation of the 'device_query' state trigger hardware query where possible
-                    if (stateDesc.id === 'device_query') {
-                        if (this.query_device_block.indexOf(deviceId) > -1) {
-                            this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
-                            return;
-                        }
-                        if (mappedModel) {
-                            this.query_device_block.push(deviceId);
-                            if (has_elevated_debug)
-                                this.log.warn(`ELEVATED O06: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`);
-                            else
-                                this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
-                            for (const converter of mappedModel.toZigbee) {
-                                if (converter.hasOwnProperty('convertGet')) {
-                                    for (const ckey of converter.key) {
-                                        try {
-                                            await converter.convertGet(entity.device.endpoints[0], ckey, {});
-                                        } catch (error) {
-                                            if (has_elevated_debug) {
-                                                this.log.warn(`ELEVATED OE02.1 Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`);
-                                            }
-                                            else
-                                                this.log.info(`failed to read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
-                                        }
-                                    }
-                                }
-                            }
-                            if (has_elevated_debug)
-                                this.log.warn(`ELEVATED O07: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`);
-                            else
                                 this.log.info(`Device query for '${entity.device.ieeeAddr}' done`);
                             const idToRemove = deviceId;
                             setTimeout(() => {
@@ -922,15 +870,7 @@ class Zigbee extends utils.Adapter {
                     } else {
                         meta.message.state = preparedValue;
                     }
-                }
-
-                if (preparedOptions !== undefined) {
-                    if (preparedOptions.hasOwnProperty('state')) {
-                        meta.state = preparedOptions.state;
-                    }
-                }
-
-                try {
+  
                     const result = await converter.convertSet(target, key, preparedValue, meta);
                     if (has_elevated_debug)
                         this.log.warn(`ELEVATED O05: convert result ${safeJsonStringify(result)} for device ${deviceId}`);
@@ -1123,7 +1063,7 @@ class Zigbee extends utils.Adapter {
     getZigbeeOptions() {
         // file path for db
         let dbDir = path.join(utils.getAbsoluteInstanceDataDir(this), '');
-        dbDir = dbDir.replace('.', '_');
+        dbDir = dbDir.replace('zigbee.', 'zigbee_');
 
         if (this.systemConfig && !fs.existsSync(dbDir)) {
             try {
