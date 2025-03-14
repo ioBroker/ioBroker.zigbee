@@ -402,8 +402,11 @@ class Zigbee extends utils.Adapter {
         const response = {};
         if (message.start) {
             try {
+                this.logToPairing(`overriding zigbee options with:`);
+                for (const k of Object.keys(message.zigbeeOptions)) {
+                    this.logToPairing(`${k} : ${message.zigbeeOptions[k]}`)
+                }
                 this.zbController.configure(this.getZigbeeOptions(message.zigbeeOptions));
-                this.logToPairing(`overriding zigbee options with ${JSON.stringify(message.zigbeeOptions)}`);
                 response.status = await this.doConnect(true);
                 this.sendTo(from, command, response, callback);
             }
@@ -1107,7 +1110,7 @@ class Zigbee extends utils.Adapter {
                 this.sendError(`Cannot create directory ${dbDir}: ${e}`);
             }
         }
-        const port = this.config.port;
+        const port = override.port ? override.port : this.config.port;
         if (!port) {
             this.log.error('Serial port not selected! Go to settings page.');
             this.sendError('Serial port not selected! Go to settings page.');
@@ -1136,6 +1139,7 @@ class Zigbee extends utils.Adapter {
                 rtscts: setRtscts,
                 adapter: adapterType,
             },
+            transmitpower: this.transmitPower,
             dbDir: dbDir,
             dbPath: 'shepherd.db',
             backupPath: 'nvbackup.json',

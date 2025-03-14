@@ -32,7 +32,8 @@ let devices = [],
     shuffleInstance,
     errorData = [],
     debugMessages = {},
-    debugInLog = true;
+    debugInLog = true,
+    isHerdsmanRunning = false;
 const dbgMsgfilter = new Set();
 const dbgMsghide = new Set();
 const updateCardInterval = setInterval(updateCardTimer, 6000);
@@ -60,7 +61,7 @@ const savedSettings = [
 ];
 
 function getDeviceByID(ID) {
-    return devices.find((devInfo) => {
+    if (devices) return devices.find((devInfo) => {
         try {
             return devInfo._id == ID;
         } catch (e) {
@@ -783,15 +784,20 @@ function getCoordinatorInfo() {
     sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'));
+                errorData.push(msg.error);
+                isHerdsmanRunning = false;
+                updateStartButton();
             } else {
                 coordinatorinfo = msg;
+                isHerdsmanRunning = true;
+                updateStartButton()
             }
         }
     });
 }
+
 function checkDebugDevice(id) {
-    if (debugDevices.indexOf(id) > -1) return 0
+    if (!debugDevices || debugDevices.indexOf(id) > -1) return 0
     for (const addressPart of debugDevices) {
         if (typeof id === 'string' && id.includes(addressPart)) {
             return debugDevices.indexOf(addressPart)+1;
@@ -1068,8 +1074,10 @@ function getDebugMessages() {
 
 function getDevices() {
     getCoordinatorInfo();
-    sendTo(namespace, 'getDeviceCleanupRequired', {}, function(msg) {
+    sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
+            devices = msg.devices ? msg.devices : [];
+            // check if stashed error messages are sent alongside
             if (msg.clean)
                 $('#state_cleanup_btn').removeClass('hide');
             else
@@ -1078,23 +1086,27 @@ function getDevices() {
                 $('#show_errors_btn').removeClass('hide');
                 errorData = msg.errors;
             }
-            else
+            else {
                 $('#show_errors_btn').addClass('hide');
-        }
-    })
-    sendTo(namespace, 'getDebugDevices', {}, function(msg) {
-        if (msg && typeof (msg.debugDevices == 'array')) {
-            debugDevices = msg.debugDevices;
-        }
-        else
-            debugDevices = [];
-    });
-    sendTo(namespace, 'getDevices', {}, function (msg) {
-        if (msg) {
+            }
+
+            //check if debug messages are sent alongside
+            if (msg && typeof (msg.debugDevices == 'array')) {
+                debugDevices = msg.debugDevices;
+            }
+            else
+                debugDevices = [];
+            if (debugMessages.byId) {
+                debugMessages.byId = msg;
+                if (msg) displayDebugMessages(debugMessages)
+            }
             if (msg.error) {
-                showMessage(msg.error, _('Error'));
+                errorData.push(msg.error);
+                isHerdsmanRunning = false;
+                updateStartButton();
             } else {
-                devices = msg;
+                isHerdsmanRunning = true;
+                updateStartButton();
                 showDevices();
                 getDebugMessages();
                 getExclude();
@@ -1129,8 +1141,12 @@ function getMap() {
         $('#refresh').removeClass('disabled');
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'));
+                errorData.push(msg.error);
+                isHerdsmanRunning = false;
+                updateStartButton();
             } else {
+                isHerdsmanRunning = true;
+                updateStartButton();
                 if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
                     showMessage(msg.errors.join('<p>'), 'Map generation messages');
                 }
@@ -1221,25 +1237,9 @@ function load(settings, onChange) {
     onChange(false);
 
     // test start commands
-    $('#testStartStart').click(function () {
-        doTestStart(true);
-    });
-    $('#testStartStop').click(function () {
-        doTestStart(false);
-    });
     $('#show_test_run').click(function () {
-        $('#extPanID_t.value').val($('#extPanID.value').val());
-        $('#PanID_t.value').val($('#PanID.value').val());
-        $('#channel_t.value').val($('#channel.value').val());
-        $('#stdout_t').text('Testing');
-        showTestStart();
-    });
-    $('#testStartTransfer').click(function () {
-        console.warn('testStartConfig clicked')
-        $('#extPanID.value').val($('#extPanID_t.value').val());
-        $('#PanID.value').val($('#PanID_t.value').val());
-        $('#channel.value').val($('#channel_t.value').val());
-        onChange(true);
+        console.warn(`isHerdsmanRunning: ${isHerdsmanRunning}`)
+        doTestStart(!isHerdsmanRunning);
     });
 
     $('#state_cleanup_btn').click(function () {
@@ -1275,6 +1275,9 @@ function load(settings, onChange) {
     });
 
     $('#scan').click(function () {
+        showChannels();
+    });
+    $('#scan_t').click(function () {
         showChannels();
     });
 
@@ -1360,7 +1363,7 @@ function showMessages() {
         data = mess + '\n' + data;
     }
     $('#stdout').text(data);
-    $('#stdout_t').text(data);
+    $('#stdout_t').text(messages.join('\n'));
 }
 
 function showPairingProcess() {
@@ -1390,11 +1393,19 @@ function transferDataToConfig() {
 }
 
 function doTestStart(start) {
+    updateStartButton(true);
     if (start) {
-        const ovr = { extPanID:$('#extPanID_t.value').val(),
-            panID: $('#PanID_t.value').val(),
-            channel: $('#channel_t.value').val() };
+        const ovr = { extPanID:$('#extPanID.value').val(),
+            panID: $('#PanID.value').val(),
+            channel: $('#channel.value').val(),
+            port: $('#port.value').val(),
+            adapterType: $('#adapterType.value').val(),
+            baudRate: $('#baudRate.value').val(),
+            precfgkey: $('#precfgkey.value').val(),
+            flowCTRL: $('#flowCTRL.value').val()
+        };
         // $('#testStartStart').addClass('disabled');
+        messages = [];
         sendTo(namespace, 'testConnect', { start:true, zigbeeOptions:ovr }, function(msg) {
             if (msg) {
                 if (msg.status)
@@ -1442,6 +1453,30 @@ function getDevId(adapterDevId) {
     return adapterDevId.split('.').slice(0, 3).join('.');
 }
 
+
+function updateStartButton(block) {
+    if (block) {
+        $('#show_test_run').addClass('disabled');
+        $('#ErrorNotificationBtn').removeClass('hide')
+        $('#ErrorNotificationBtn').removeClass('blinking')
+        $('#ErrorNotificationIcon').removeClass('icon-red')
+        $('#ErrorNotificationIcon').addClass('icon-orange')
+        return;
+    }
+    if (isHerdsmanRunning)
+    {
+        $('#ErrorNotificationBtn').addClass('hide')
+        $('#ErrorNotificationBtn').removeClass('blinking');
+        $('#show_test_run').removeClass('disabled');
+    }
+    else {
+        $('#ErrorNotificationIcon').addClass('icon-red')
+        $('#ErrorNotificationIcon').removeClass('icon-orange')
+        $('#ErrorNotificationBtn').removeClass('hide')
+        $('#ErrorNotificationBtn').addClass('blinking');
+        $('#show_test_run').removeClass('disabled');
+    }
+}
 // subscribe to changes
 socket.emit('subscribe', namespace + '.*');
 socket.emit('subscribeObjects', namespace + '.*');
@@ -1476,6 +1511,14 @@ socket.on('stateChange', function (id, state) {
             else {
                 messages.push(state.val);
                 showMessages();
+                if (state.val.startsWith('Zigbee-Herdsman started successfully')) {
+                    isHerdsmanRunning = true;
+                    updateStartButton();
+                }
+                if (state.val.startsWith('herdsman stopped') || state.val.startsWith('Error herdsman')) {
+                    isHerdsmanRunning = false;
+                    updateStartButton();
+                }
             }
         } else {
             const devId = getDevId(id);
@@ -3426,14 +3469,17 @@ function updateCardTimer() {
 }
 
 function updateDevice(id) {
-    sendTo(namespace, 'getDevice', {id: id}, function (devs) {
-        if (devs) {
-            if (devs.error) {
-                showMessage(devs.error, _('Error'));
-            } else {
-                removeDevice(id);
-                devs.forEach(dev => devices.push(dev));
-                showDevices();
+    sendTo(namespace, 'getDevice', {id: id}, function (msg) {
+        if (msg) {
+            const devs = msg.devices;
+            if (devs) {
+                if (devs.error) {
+                    showMessage(devs.error, _('Error'));
+                } else {
+                    removeDevice(id);
+                    devs.forEach(dev => devices.push(dev));
+                    showDevices();
+                }
             }
         }
     });

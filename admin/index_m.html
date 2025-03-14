@@ -398,6 +398,10 @@
             height: 12px;
         }
 
+        .monospaced {
+            font-family: monospace !important;
+        }
+
         .m .dash input[type="checkbox"] + span:not(.lever) {
             width: 10px;
             height: 12px;
@@ -474,6 +478,17 @@
 
         .m .navbar-fixed {
             z-index: unset;
+        }
+
+        @keyframes blinking-icon {
+          0%    { opacity: 0; }
+          25%   { opacity: 1; }
+          50%   { opacity: 0; }
+          75%   { opacity: 1; }
+          100%  { opacity: 0; }
+        }
+        .blinking {
+            animation: bliking-icon 4s infinite;
         }
 
         /* Style for medium Screens */
@@ -651,6 +666,10 @@
                     </div>
                     <ul id="nav-mobile" class="right">
                     <li>
+                        <a id="ErrorNotificationBtn" class="btn-floating waves-effect waves-light black tooltipped center-align hoverable translateT hide" title="Zigbee not running">
+                        <i id="ErrorNotificationIcon" class="material-icons large icon-red">error</i></a>
+                        </li>
+                    <li>
                         <a id="state_cleanup_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="State Cleanup">
                         <i class="material-icons large icon-blue">delete_sweep</i></a>
                     </li>
@@ -693,6 +712,7 @@
             <div class="nav-content">
                 <ul class="tabs tabs-transparent">
                     <li class="tab col s2"><a href="#tab-sett" id="settings" class="translate tooltipped">Settings</a></li>
+                    <li class="tab col s2"><a href="#tab-herdsman" id="hardware" class="translate tooltipped">Hardware</a></li>
                     <!--<li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a></li> -->
                     <!--<li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li> -->
                     <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>
@@ -774,11 +794,50 @@
         </div>
         <div id="tab-sett" class="col s12 page">
             <div class="row">
+                <h6>Adapter</h6>
+                <div class="input-field col s12 m6 l4 col-disableLed">
+                    <input id="disableLed" type="checkbox" class="value"/>
+                    <label class="translate" for="disableLed">Disable LED for cc2531</label>
+                </div>
+                <div class="input-field col s12 m6 l4 col-disablePing">
+                    <input id="disablePing" type="checkbox" class="value"/>
+                    <label class="translate" for="disablePing">Disable active availability check</label>
+                </div>
+                <div class="input-field col s12 m6 l4 col-debugHerdsman">
+                    <input id="debugHerdsman" type="checkbox" class="value"/>
+                    <label class="translate" for="debugHerdsman">Zigbee-herdsman debug info</label>
+                </div>
+                <div class="input-field col s12 m6 l4 col-warnOnDeviceAnnouncement">
+                    <input id="warnOnDeviceAnnouncement" type="checkbox" class="value"/>
+                    <label class="translate" for="warnOnDeviceAnnouncement">Log warning on Zigbee device announcement</label>
+                </div>
+                <div class="input-field col s12 m6 l4 col-disableBackup">
+                    <input id="disableBackup" type="checkbox" class="value"/>
+                    <label class="translate" for="disableBackup">disable internal Backup</label>
+                </div>
+            </div>
+            <div class="row">
+                <h6 class="translate">External converters</h6>
+                <div class="input-field col s12 m6 l4">
+                    <input id="external" type="text" class="value"/>
+                    <label class="translate" for="external">Paths to files, semicolon (;) splitted</label>
+                </div>
+            </div>
+            <div class="input-field col s12 m12 l12 col-startWithInconsistent">
+                <input id="startWithInconsistent" type="checkbox" class="value"/>
+                <label class="translate" for="startWithInconsistent">SettingsExclude</label>
+            </div>
+        </div>
+        <div id="tab-herdsman" class="col s12 page">
+            <div class="row">
                 <h6>Main</h6>
             </div>
             <div class="row">
                 <div class="input-field col s12 m6 l4">
-                    <a id="show_test_run" class="waves-effect waves-light white-text btn-large translate">Test Herdsman start</a>
+                    <a id="show_test_run" class="waves-effect waves-light white-text btn-large translate">Start / Stop</a>
+                </div>
+                <div class="input-field col s12 m6 l4">
+                    <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
                 </div>
                 <div class="input-field col s6 m3 l2">
                     <input id="autostart" type="checkbox" class="value"/>
@@ -822,107 +881,59 @@
                 </div>
             </div>
             <div class="row">
-                <h6>Network</h6>
-                <div class="row">
-                    <div class="input-field col s12 m6 l4">
-                        <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16"
-                                class="validate value"/>
-                        <label class="translate" for="extPanID">ExtPanID</label>
-                    </div>
-                    <div class="input-field col s12 m6 l8">
-                        <p class="translate">ExtPanIDText</p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s12 m6 l4">
-                        <input id="panID" type="number" min="1" max="65565" class="value"/>
-                        <label class="translate" for="panID">PanID</label>
-                    </div>
-                    <div class="input-field col s12 m6 l8">
-                        <p class="translate">PanIDText</p>
-                    </div>
-
-                </div>
-                <div class="row">
-                    <div class="input-field suffix col s12 m6 l4">
-                        <select id="channel" class="value">
-                            <option value="" disabled selected class="translate">Choose channel</option>
-                            <option value="11">11</option>
-                            <option value="12">12</option>
-                            <option value="13">13</option>
-                            <option value="14">14</option>
-                            <option value="15">15</option>
-                            <option value="16">16</option>
-                            <option value="17">17</option>
-                            <option value="18">18</option>
-                            <option value="19">19</option>
-                            <option value="20">20</option>
-                            <option value="21">21</option>
-                            <option value="22">22</option>
-                            <option value="23">23</option>
-                            <option value="24">24</option>
-                            <option value="25">25</option>
-                            <option value="26">26</option>
-                        </select>
-                        <label class="translate">Channel</label>
-                        <a id="scan" class='btn' data-target='channel'><i class="material-icons">graphic_eq</i></a>
-                    </div>
-                    <div class="input-field col s12 m6 l8">
-                        <p class="translate">ChannelChangeText</p>
-                    </div>
-                </div>
                 <div class="input-field col s12 m6 l4">
-                    <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value"/>
-                    <label class="translate" for="precfgkey">Transport Key</label>
+                    <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16"
+                            class="validate value"/>
+                    <label class="translate" for="extPanID">ExtPanID</label>
                 </div>
-                <div class="input-field col s12 m6 l4 col-transmitPower">
-                    <select id="transmitPower" class="value">
-                        <option value="" disabled selected class="translate">transmitPower</option>
-                        <option value="-22">low</option>
-                        <option value="0">norm</option>
-                        <option value="19">high</option>
-                        <option value="20">high+</option>
+                <div class="input-field col s12 m6 l8">
+                    <p class="translate">ExtPanIDText</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12 m6 l4">
+                    <input id="panID" type="number" min="1" max="65565" class="value"/>
+                    <label class="translate" for="panID">PanID</label>
+                </div>
+                <div class="input-field col s12 m6 l8">
+                    <p class="translate">PanIDText</p>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="input-field suffix col s12 m6 l4">
+                    <select id="channel" class="value">
+                        <option value="" disabled selected class="translate">Choose channel</option>
+                        <option value="11">11 (ZLL)</option>
+                        <option value="15">15 (ZLL)</option>
+                        <option value="20">20 (ZLL)</option>
+                        <option value="25">25 (ZLL)</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="26">26</option>
                     </select>
-                    <label class="translate" for="transmitPower">transmitPower</label>
+                    <label class="translate">Channel</label>
+                    <a id="scan" class='btn' data-target='channel_a'><i class="material-icons">graphic_eq</i></a>
+                </div>
+                <div class="input-field col s12 m6 l8">
+                    <p class="translate">ChannelChangeText</p>
                 </div>
             </div>
-
-            <div class="row">
-                <h6 class="translate">Others</h6>
-                <div class="input-field col s12 m6 l4 col-disableLed">
-                    <input id="disableLed" type="checkbox" class="value"/>
-                    <label class="translate" for="disableLed">Disable LED for cc2531</label>
-                </div>
-                <div class="input-field col s12 m6 l4 col-disablePing">
-                    <input id="disablePing" type="checkbox" class="value"/>
-                    <label class="translate" for="disablePing">Disable active availability check</label>
-                </div>
-                <div class="input-field col s12 m6 l4 col-debugHerdsman">
-                    <input id="debugHerdsman" type="checkbox" class="value"/>
-                    <label class="translate" for="debugHerdsman">Zigbee-herdsman debug info</label>
-                </div>
-                <div class="input-field col s12 m6 l4 col-warnOnDeviceAnnouncement">
-                    <input id="warnOnDeviceAnnouncement" type="checkbox" class="value"/>
-                    <label class="translate" for="warnOnDeviceAnnouncement">Log warning on Zigbee device announcement</label>
-                </div>
-                <div class="input-field col s12 m6 l4">
-                    <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
-                </div>
-                <div class="input-field col s12 m6 l4 col-disableBackup">
-                    <input id="disableBackup" type="checkbox" class="value"/>
-                    <label class="translate" for="disableBackup">disable internal Backup</label>
-                </div>
+            <div class="input-field col s12 m6 l4">
+                <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value disabled"/>
+                <label class="translate" for="precfgkey">Transport Key</label>
             </div>
-            <div class="row">
-                <h6 class="translate">External converters</h6>
-                <div class="input-field col s12 m6 l4">
-                    <input id="external" type="text" class="value"/>
-                    <label class="translate" for="external">Paths to files, semicolon (;) splitted</label>
-                </div>
-            </div>
-            <div class="input-field col s12 m12 l12 col-startWithInconsistent">
-                <input id="startWithInconsistent" type="checkbox" class="value"/>
-                <label class="translate" for="startWithInconsistent">SettingsExclude</label>
+            <div class="row textarea">
+                <textarea class="monospaced" id="stdout_t" disabled="disabled" cols="120" rows="20" style="height: calc(100% - 115px)"></textarea>
             </div>
         </div>
         <div id="tab-expos" class="col s12 page">
@@ -1462,56 +1473,6 @@
             <a name="hidepairing" id="hidepairing" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
         </div>
     </div>
-
-    <div id="modaltestherdsman" class="modal modal-fixed-footer">
-        <div class="modal-content">
-            <h3 class="translate">Testing Zigbee-Herdsman-Start</h3>
-            <div class="row">
-                <div class="input-field col s12 m6 l4">
-                    <input id="extPanID_t" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16"
-                            class="validate value"/>
-                    <label class="translate" for="extPanID">ExtPanID</label>
-                </div>
-                <div class="input-field col s12 m6 l4">
-                    <input id="panID_t" type="number" min="1" max="65565" class="value" />
-                    <label class="translate" for="panID">PanID</label>
-                </div>
-            </div>
-            <div class="input-field suffix col s12 m6 l4">
-                <select id="channel_t" class="value">
-                    <option value="" disabled selected class="translate">Choose channel</option>
-                    <option value="11">11</option>
-                    <option value="15">15</option>
-                    <option value="20">20</option>
-                    <option value="25">25</option>
-                    <option value="26">26</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="21">21</option>
-                    <option value="22">22</option>
-                    <option value="23">23</option>
-                    <option value="24">24</option>
-                </select>
-                <label class="translate">Channel</label>
-                <a id="scan" class='btn' data-target='channel_t'><i class="material-icons">graphic_eq</i></a>
-            </div>
-            <div class="row textarea">
-                <textarea id="stdout_t" disabled="disabled" cols="120" rows="30" style="height: calc(100% - 115px)"></textarea>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <a name="testStartClose" id="testStartClose" href="#!" class="modal-action modal-close waves-effect waves-green btn blue translate">Close</a>
-            <a name="testStartTransfer" id="testStartTransfer" href="#!" class="modal-action waves-effect waves-green btn blue translate">Transfer</a>
-            <a name="testStartStart" id="testStartStart" href="#!" class="modal-action waves-effect waves-green btn green translate">Start</a>
-            <a name="testStartStop" id="testStartStop" href="#!" class="modal-action waves-effect waves-green btn red translate">Stop</a>
-        </div>
-    </div>
-
 
     <div id="modalreset" class="modal">
         <div class="modal-content">
