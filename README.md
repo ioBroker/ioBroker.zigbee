@@ -153,39 +153,40 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
-* ZHC 23.6.0
-* ZH 3.3.x
-* removed extra logging
-* fixed memory issue.
-* Configure on Message - 5 attempts.
+* (asgothian) ZHC 23.6.0
+* (asgothian) ZH 3.3.x
+* (asgothian) removed extra logging
+* (asgothian) fixed memory issue.
+* (asgothian) Configure on Message - 5 attempts.
+* (arteck) update transmitPower 
 
 ### 2.0.4 (2025-03-09)
-* back to 2.0.2
+* (arteck) back to 2.0.2
 
 ### 2.0.3 (2025-03-07)
-* fix configured info
-* fix battery voltage (V -> mV)
-* enable debug interface v1.0
-* Push Zigbee-Herdsman to 2.5.7
-* Push Zigbee-Herdsman-Converters to 23.1.1
-* fix configure on message
-* remove extra warning messages
-* fix Adapter-Checker notes
-* improve base64 image detection
-* removed unused adaptert objects (info.groups, excludes) from adapter config
+* (asgothian) fix configured info
+* (asgothian) fix battery voltage (V -> mV)
+* (asgothian) enable debug interface v1.0
+* (asgothian) Push Zigbee-Herdsman to 2.5.7
+* (asgothian) Push Zigbee-Herdsman-Converters to 23.1.1
+* (asgothian) fix configure on message
+* (asgothian) remove extra warning messages
+* (asgothian) fix Adapter-Checker notes
+* (asgothian) improve base64 image detection
+* (asgothian) removed unused adaptert objects (info.groups, excludes) from adapter config
 *
 
 ### 2.0.2 (2025-03-02)
-* fix expose generation with expose function requiring a device. (Issue #1842)
-* fix failure to configure for devices needing multiple configurations (Issue #2375)
-* fix hold/release and press/release action handling (Issue #2387)
-* fix lib/legacy requirement for external converters (Issue #2376)
-* improved external converter handling
-* fix OTA bug
-* improved message handling for devices which report values outside their defined ranges
-* preparation for ZHC 22.x (model definition loaded on demand
-* fix legacy definition for devices
-* added action state for remotes.
+* (asgothian)  expose generation with expose function requiring a device. (Issue #1842)
+* (asgothian) fix failure to configure for devices needing multiple configurations (Issue #2375)
+* (asgothian) fix hold/release and press/release action handling (Issue #2387)
+* (asgothian) fix lib/legacy requirement for external converters (Issue #2376)
+* (asgothian) improved external converter handling
+* (asgothian) fix OTA bug
+* (asgothian) improved message handling for devices which report values outside their defined ranges
+* (asgothian) preparation for ZHC 22.x (model definition loaded on demand
+* (asgothian) fix legacy definition for devices
+* (asgothian) added action state for remotes.
 *
 
 ### 2.0.1 (2025-02-25)
