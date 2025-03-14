@@ -796,6 +796,16 @@
         <div id="tab-sett" class="col s12 page">
             <div class="row">
                 <h6>Adapter</h6>
+                <div class="input-field col s12 m6 l8 col-transmitPower">
+                    <select id="transmitPower" class="value" >
+                        <option value="" disabled selected class="translate">transmitPower</option>
+                        <option value="-22">low</option>
+                        <option value="0">norm</option>
+                        <option value="19">high</option>
+                        <option value="20">high+</option>
+                    </select>
+                    <label class="translate" for="transmitPower">transmitPower</label>
+                </div>
                 <div class="input-field col s12 m6 l4 col-disableLed">
                     <input id="disableLed" type="checkbox" class="value"/>
                     <label class="translate" for="disableLed">Disable LED for cc2531</label>
@@ -836,6 +846,9 @@
             <div class="row">
                 <div class="input-field col s12 m6 l4">
                     <a id="show_test_run" class="waves-effect waves-light white-text btn-large translate">Start / Stop</a>
+                </div>
+                <div class="input-field col s12 m6 l4">
+                    <a id="deleteNVRam-btn" class="waves-effect waves-light white-text btn-large translate">remove NVBackup</a>
                 </div>
                 <div class="input-field col s12 m6 l4">
                     <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
@@ -929,7 +942,7 @@
                     <p class="translate">ChannelChangeText</p>
                 </div>
             </div>
-            <div class="input-field col s12 m6 l4">
+            <div class="input-field col s12 m6 l4 disabled">
                 <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value disabled"/>
                 <label class="translate" for="precfgkey">Transport Key</label>
             </div>
@@ -1481,7 +1494,6 @@
             <p class="translate">Reset Info</p>
             <a id="soft" data-mode="soft" class="modal-action modal-close waves-effect waves-red btn translate">Soft-Reset</a>
             <a id="hard" data-mode="hard" class="modal-action modal-close waves-effect waves-red btn translate">Hard-Reset</a>
-            <a id="delNvbackup" data-mode="delNvbackup" class="modal-action modal-close waves-effect waves-red btn translate">delete NVBackup.json</a>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat translate">Cancel</a>

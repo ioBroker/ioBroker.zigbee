@@ -416,7 +416,7 @@ class Zigbee extends utils.Adapter {
         }
         else try {
             await this.zbController.stopHerdsman();
-            this.logToPairing('herdsman stopped !');
+            //this.logToPairing('herdsman stopped !');
             this.sendTo(from, command, { status:true }, callback);
         } catch (error) {
             this.sendTo(from, command, { status:false }, callback);

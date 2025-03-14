@@ -382,6 +382,31 @@ function deleteConfirmation(id, name) {
     Materialize.updateTextFields();
 }
 
+function deleteNvBackupConfirmation() {
+    const text = translateWord('Do you really want to the NV Backup data ?');
+    $('#modaldelete').find('p').text(text);
+    $('#force').prop('checked', false);
+    $('#forcediv').addClass('hide');
+    $('#modaldelete a.btn[name=\'yes\']').unbind('click');
+    $('#modaldelete a.btn[name=\'yes\']').click(() => {
+        //const force = $('#force').prop('checked');
+        showWaitingDialog('Attempting to delete nvBackup.json', 60000);
+        sendTo(namespace, 'deleteNVBackup', {}, function (msg) {
+            closeWaitingDialog();
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'));
+                } else {
+                    getDevices();
+                }
+            }
+        });
+    });
+    $('#modaldelete').modal('open');
+    Materialize.updateTextFields();
+}
+
+
 function cleanConfirmation() {
     const text = translateWord('Do you really want to remove orphaned states?');
     $('#modalclean').find('p').text(text);
@@ -1270,6 +1295,10 @@ function load(settings, onChange) {
         resetConfirmation();
     });
 
+    $('#deleteNVRam-btn').click(function () {
+        deleteNvBackupConfirmation();
+    });
+
     $('#viewconfig').click(function () {
         showViewConfig();
     });
@@ -1457,6 +1486,8 @@ function getDevId(adapterDevId) {
 function updateStartButton(block) {
     if (block) {
         $('#show_test_run').addClass('disabled');
+        $('#reset-btn').addClass('disabled');
+        $('#deleteNVRam-btn').addClass('disabled');
         $('#ErrorNotificationBtn').removeClass('hide')
         $('#ErrorNotificationBtn').removeClass('blinking')
         $('#ErrorNotificationIcon').removeClass('icon-red')
@@ -1468,6 +1499,8 @@ function updateStartButton(block) {
         $('#ErrorNotificationBtn').addClass('hide')
         $('#ErrorNotificationBtn').removeClass('blinking');
         $('#show_test_run').removeClass('disabled');
+        $('#deleteNVRam-btn').removeClass('disabled');
+        $('#reset-btn').removeClass('disabled');
     }
     else {
         $('#ErrorNotificationIcon').addClass('icon-red')
@@ -1475,6 +1508,8 @@ function updateStartButton(block) {
         $('#ErrorNotificationBtn').removeClass('hide')
         $('#ErrorNotificationBtn').addClass('blinking');
         $('#show_test_run').removeClass('disabled');
+        $('#deleteNVRam-btn').removeClass('disabled');
+        $('#reset-btn').addClass('disabled');
     }
 }
 // subscribe to changes
