@@ -55,19 +55,6 @@
         "uk": "БРЕАКІНГОВІ ЗМІНИ\n\nперемикач на перетворювачі 21 змінює висадки для великої кількості пристроїв (найбільш віддалені)\nновий метод контролю кольору на основі підканалів для rgb, hs і xy\nЗа замовчуванням для всіх пристроїв. Використання старого визначення як варіант\nВимагає Node 20.x або нові\n\nФіксація Пірсинг\nзмінити пінг\nгенерація карти затримки до освіження активується, повідомлення після генерації\nвидалити вкладку в'язання з вкладки zigbee\nвкладка зворотного замовлення в конфігурації\nвидалити вкладку з конфігурації\nвидалити карту з конфігурації\nadd debug до zigbee tab\nEnglish, Українська, Français..\nЕкспози як за замовчуванням, використання застарілих параметрів пристрою, як необов'язковий\nКористувальницькі специфічні зображення (моделі на основі пристрою)\nУдосконалено редагування груп - видалення членів з групової картки",
         "zh-cn": "裂变\n\n21 更改大量设备(大多为远程设备)的曝光量\n基于 rgb、 hs 和 xy 子通道的新的颜色控制方法\n曝光为默认所有设备 。 仅将旧定义用作选项\n需要节点 20.x 或更新\n\n修复对齐\n更改键\n将映射生成延迟到刷新启动, 映射消息生成后\n从 zigbee 标签中删除绑定标签\n在配置中重新排序标签\n从配置中删除绑定标签\n从配置中删除地图\n添加调试到 zigbee 标签\n牧民 3.2.5,转换器 21.30.0\n将曝光作为默认, 将旧设备定义作为遗留选项\n用户特定图像( 基于模型、 设备)\n改进组编辑 - 从组卡中删除成员"
       },
-      "1.11.2": {
-        "en": "debug for states",
-        "de": "debug for states",
-        "ru": "debug for states",
-        "pt": "debug for states",
-        "nl": "debug for states",
-        "fr": "debug for states",
-        "it": "debug for states",
-        "es": "debug for states",
-        "pl": "debug for states",
-        "uk": "debug for states",
-        "zh-cn": "debug for states"
-      },
       "1.10.14": {
         "en": "Herdsman 2.1.9, Converters 20.58.0\nFix: Aqara T1M (CL-L02D) \ndeleteDeviceStates change to deleteObj",
         "de": "Herdsman 2.1.9, Konverter 20.58.0\nFix: Aqara T1M (CL-L02D)\nlöschen DeviceState Änderung zum Löschen Ob",
@@ -93,6 +80,32 @@
         "pl": "corr ikona pobierz błąd (axios)",
         "uk": "корр іконки завантажити помилку (axios)",
         "zh-cn": "corr 图标下载错误( axios)"
+      },
+      "1.10.12": {
+        "en": "corr Channel Scan",
+        "de": "corr Channel Scan",
+        "ru": "корректор канала",
+        "pt": "escaneamento do canal de cortiça",
+        "nl": "corr kanaalscan",
+        "fr": "balayage du canal corr",
+        "it": "corr Channel Scansione",
+        "es": "corr Channel Scan",
+        "pl": "corr Channel Scan",
+        "uk": "сканування каналу",
+        "zh-cn": "频道扫描"
+      },
+      "1.10.11": {
+        "en": "BREAKING CHANGE\n\nbugs : ChannelScan is currently not available\n\n\nfix linter errors\ndisable map display for deactivated devices\nnew option on map: disable physics interaction\nnew zigbee-herdsman-converters 20.28.0\nnew zigbee-herdsman 2.1.1\nAllow use of keyless converters (used for TuYa and compatible devices in zigbee-herdsman-converters\nswap from request to axios\ndelete groups works again",
+        "de": "VERWENDUNGSBEREICH\n\nbugs : ChannelScan ist derzeit nicht verfügbar\n\n\nlinterfehler beheben\nkartenanzeige für deaktivierte geräte deaktivieren\nneue option auf der karte: physik-interaktion deaktivieren\nneue zickbee-herdsman-konverter 20.28.0\nneuer zickbee-herdsman 2.1.1\nVerwenden von schlüssellosen Wandlern (für TuYa und kompatible Geräte in Zickbee-herdsman-Konverter verwendet)\nswap von anfrage an axios\nlöschen von gruppen funktioniert wieder",
+        "ru": "ОБМЕН\n\nжуки: ChannelScan в настоящее время не доступен\n\n\nисправление ошибок\nотключить отображение карты для деактивированных устройств\nновый вариант на карте: отключить взаимодействие физики\n20.28.0\n2.1.1\nПозволить использовать бесключевые конвертеры (используемые для TuYa и совместимые устройства в zigbee-herdsman-конвертерах\nсвопа от запроса к axios\nудалить группы снова",
+        "pt": "ALTERAÇÕES DE TRABALHO\n\nbugs : ChannelScan não está disponível\n\n\ncorrigir erros do linter\ndesativar a exibição do mapa para dispositivos desativados\nnova opção no mapa: desativar a interação física\nnovos conversores de zigbee-herdsman 20.28.0\nnovo zigbee-herdsman 2.1.1\nPermitir o uso de conversores sem chave (usado para TuYa e dispositivos compatíveis em conversores de zigbee-herdsman\nswap de pedido para axios\nexcluir grupos funciona novamente",
+        "nl": "BREAKING VERANDERING\n\nbugs: ChannelScan is momenteel niet beschikbaar\n\n\nrepareren linter fouten\nkaartweergave voor gedeactiveerde apparaten uitschakelen\nnieuwe optie op de kaart: interactie natuurkunde uitschakelen\nnieuwe zigbee-herdsman-converters 20.28.0\nnieuwe zigbee-herdsman 2.1.1\nGebruik van sleutelloze converters toestaan (gebruikt voor TuYa en compatibele apparaten in zigbee-herdsman-converters\nruil van verzoek naar axios\ngroepen opnieuw verwijderen",
+        "fr": "CHANGEMENT DE BREAING\n\nbugs : ChannelScan n'est actuellement pas disponible\n\n\ncorrection des erreurs linter\ndésactiver l'affichage de la carte pour les appareils désactivés\nnouvelle option sur la carte: désactiver l'interaction physique\nnouveaux convertisseurs zigbee-herdsman 20.28.0\nnouveau zigbee-herdsman 2.1.1\nPermettre l'utilisation de convertisseurs sans clé (utilisés pour TuYa et appareils compatibles dans les convertisseurs zigbee-herdsman-converters\néchange de la demande à l'axios\nsupprimer les groupes fonctionne à nouveau",
+        "it": "CAPITOLO DI RICERCA\n\nbugs: ChannelScan non è attualmente disponibile\n\n\ncorreggere gli errori di linter\ndisabilitare la visualizzazione della mappa per i dispositivi disattivati\nnuova opzione sulla mappa: disabilitare l'interazione fisica\nnuovo zigbee-herdsman-converters 20.28.0\nnuovo zigbee-herdsman 2.1.1\nConsentire l'uso di convertitori senza chiave (utilizzati per TuYa e dispositivi compatibili in zigbee-herdsman-converter\nswap da richiesta a assios\ncancellare i gruppi funziona di nuovo",
+        "es": "BREAKING CHANGE\n\nbugs : ChannelScan actualmente no está disponible\n\n\ncorrige errores de invierno\npantalla de mapa deshabilitado para dispositivos desactivados\nnueva opción en el mapa: la interacción física deshabilitada\nnuevos zigbee-herdsman-converters 20.28.0\nnuevo zigbee-herdsman 2.1.1\nPermitir el uso de convertidores sin llave (utilizados para TuYa y dispositivos compatibles en zigbee-herdsman-converters\nswap from request to axios\neliminar grupos funciona de nuevo",
+        "pl": "ZMIANA ZBIORCZA\n\nbłędy: ChannelScan jest obecnie niedostępny\n\n\nnaprawić błędy lintera\nwyłączyć wyświetlacz mapy dla wyłączonych urządzeń\nnowa opcja na mapie: wyłączenie interakcji fizyki\nnowe konwertery zigbee- herdsman- 20.28.0\nnowy zigbee-herdsman 2.1.1\nZezwalaj na stosowanie konwerterów bezklawiszowych (używanych dla TuYa i kompatybilnych urządzeń w konwerterach zigbee- herdsman-\nzamiana z wniosku na aksjos\nusuń grupy działa ponownie",
+        "uk": "БРЕАКІНГ ЗМІН\n\nпомилки : CanalScan наразі немає\n\n\nвиправлено помилки linter\nвідключення відображення карти для деактивованих пристроїв\nновий варіант на карті: відключена фізика взаємодія\nнові zigbee-herdsman-converters 20.28.0\nновий zigbee-herdsman 2.1.1\nДозволити використання без ключів конвертерів (використовується для TuYa та сумісних пристроїв в zigbee-herdsman-converters\nковтання від запиту в осях\nвидалити групи знову",
+        "zh-cn": "破坏变化\n\n错误 : 频道扫描目前不可用\n\n\n修正线性错误\n禁用已停用设备的地图显示\n地图上的新选项: 禁用物理交互\n新齐格比-牧民-转换器 20.28.0\n新齐格比牧民 2.1.1\n允许使用无密钥转换器( 用于 TuYa 和 Zigbee- herdsman- 转换器中的兼容设备)\n从请求转换为轴\n再次删除组工作"
       }
     },
     "titleLang": {
@@ -187,7 +200,7 @@
     },
     "globalDependencies": [
       {
-        "admin": ">=5.1.25"
+        "admin": ">=6.0.0"
       }
     ],
     "dependencies": [
@@ -271,27 +284,6 @@
   },
   "instanceObjects": [
     {
-      "_id": "exclude",
-      "type": "channel",
-      "common": {
-        "name": "exclude devs from devices.js"
-      },
-      "native": {}
-    },
-    {
-      "_id": "exclude.all",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": "all",
-        "type": "string",
-        "read": true,
-        "write": true,
-        "def": "[]"
-      },
-      "native": {}
-    },
-    {
       "_id": "info",
       "type": "channel",
       "common": {
@@ -344,19 +336,6 @@
       "common": {
         "role": "indicator",
         "name": "Pairing message",
-        "type": "string",
-        "read": true,
-        "write": false,
-        "def": ""
-      },
-      "native": {}
-    },
-    {
-      "_id": "info.groups",
-      "type": "state",
-      "common": {
-        "role": "state",
-        "name": "Groups",
         "type": "string",
         "read": true,
         "write": false,
