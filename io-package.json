@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "2.0.3",
+    "version": "2.0.4",
     "news": {
+      "2.0.4": {
+        "en": "back to 2.0.2",
+        "de": "zurück zu 2.0.2",
+        "ru": "вернуться в 2.0.2",
+        "pt": "voltar para 2.0.2",
+        "nl": "terug naar 2.0.2",
+        "fr": "retour à 2.0.2",
+        "it": "torna a 2.0.2",
+        "es": "volver a 2.0.2",
+        "pl": "powrót do 2.0.2",
+        "uk": "до 2.0.2",
+        "zh-cn": "返回到2.0.2"
+      },
       "2.0.3": {
         "en": "fix configured info\nfix battery voltage (V -> mV)\nenable debug interface v1.0\nPush Zigbee-Herdsman to 3.5.7\nPush Zigbee-Herdsman-Converters to 23.1.1\nfix configure on message\nremove extra warning messages\nfix Adapter-Checker notes\nimprove base64 image detection\nremoved unused adaptert objects (info.groups, excludes) from adapter config\n",
         "de": "die konfigurierten informationen\nbatteriespannung fixieren (V -> mV)\ndebug interface v1.0\nPush Zigbee-Herdsman auf 3.5.7\nPush Zigbee-Herdsman-Konverter auf 23.1.1\nkonfigurieren der nachricht\nzusätzliche warnmeldungen entfernen\nfix Adapter-Checker-Noten\nverbesserung der bilderkennung von base64\nentfernte ungenutzte adapterobjekte (info.groups, ausgenommen) von adapter config\n",

@@ -373,25 +373,15 @@ class Zigbee extends utils.Adapter {
             const toAdd = {...definition};
             delete toAdd['homeassistant'];
             try {
+                const t = Date.now();
                 if (zigbeeHerdsmanConverters.hasOwnProperty('addExternalDefinition')) {
                     zigbeeHerdsmanConverters.addExternalDefinition(toAdd);
-                    this.log.info('added external converter using addExternalDefinition')
+                    this.log.info(`added external converter using addExternalDefinition (${Date.now()-t} ms)`)
                 }
                 else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
                     zigbeeHerdsmanConverters.addDefinition(toAdd);
-                    this.log.info('added external converter using addDefinition')
+                    this.log.info(`added external converter using addDefinition (${Date.now()-t} ms)`);
                 }
-
-                /*
-                for (const zigbeeModel of toAdd.zigbeeModel)
-                {
-                    try {
-                        zigbeeHerdsmanConverters.addToExternalDefinitionsLookup(zigbeeModel, toAdd.toAdd);
-                    } catch (e) {
-                        this.log.error(`unable to apply external converter ${JSON.stringify(toAdd)} for device ${zigbeeModel}: ${e && e.message ? e.message : 'no error message available'}`);
-                    }
-                }
-                    */
             } catch (e) {
                 this.log.error(`unable to apply external converter for ${JSON.stringify(toAdd.model)}: ${e && e.message ? e.message : 'no error message available'}`);
             }
@@ -698,8 +688,8 @@ class Zigbee extends utils.Adapter {
                 if (stateDesc.isOption || stateDesc.compositeState) {
                     // acknowledge state with given value
                     if (has_elevated_debug) {
-                        this.log.warn('ELEVATED OC: changed state: ' + JSON.stringify(changedState));
-                        this.emit('device_debug', { ID:debugID, data: { flag: 'cc', states:[{id:stateDesc.id, value:value, payload:'none (OC State)'}] , IO:false }});
+                        const message = 'changed state: ' + JSON.stringify(changedState);
+                        this.emit('device_debug', { ID:debugID, data: { flag: 'cc', states:[{id:stateDesc.id, value:value, payload:'none (OC State)'}] , IO:false }, message:message});
                     }
                     else
                         this.log.debug('changed composite state: ' + JSON.stringify(changedState));
@@ -708,21 +698,16 @@ class Zigbee extends utils.Adapter {
                     if (stateDesc.compositeState && stateDesc.compositeTimeout) {
                         this.stController.triggerComposite(deviceId, model, stateDesc, changedState.source.includes('.admin.'));
                     }
-                    // process sync state list
-                    //this.processSyncStatesList(deviceId, modelId, syncStateList);
-                    // if this is the device query state => trigger the device query
-
                     // on activation of the 'device_query' state trigger hardware query where possible
                     if (stateDesc.id === 'device_query') {
                         if (this.query_device_block.indexOf(deviceId) > -1) {
-                            this.log.warn(`Device query for '${entity.device.ieeeAddr}' blocked`);
+                            this.log.info(`Device query for '${entity.device.ieeeAddr}' blocked`);
                             return;
                         }
                         if (mappedModel) {
                             this.query_device_block.push(deviceId);
                             if (has_elevated_debug) {
                                 const message  = `Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`;
-                                //this.log.warn(`ELEVATED O06: ${message}`);
                                 this.emit('device_debug', { ID:debugID, data: { flag: 'qs' ,states:[{id:stateDesc.id, value:value, payload:'none for device query'}], IO:false }, message:message});
                             }
                             else
@@ -746,7 +731,6 @@ class Zigbee extends utils.Adapter {
                             }
                             if (has_elevated_debug) {
                                 const message = `ELEVATED O07: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`;
-                                //this.log.warn(`ELEVATED O07: ${message}`);
                                 this.emit('device_debug', { ID:debugID, data: { flag: 'qe' , IO:false }, message:message});
                             }
                             else
@@ -871,7 +855,6 @@ class Zigbee extends utils.Adapter {
                     }
                 }
                 if (has_elevated_debug) {
-                    //this.log.warn('epname is ' + epName + ' or ' + stateDesc.epname);
                     this.emit('device_debug', { ID:debugID, data: { states:[{id:stateDesc.id, value:value, payload:preparedValue, ep:stateDesc.epname}] , IO:false }});
                 }
 
