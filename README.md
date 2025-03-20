@@ -158,7 +158,9 @@ You can thank the authors by these links:
 * (asgothian) removed extra logging
 * (asgothian) fixed memory issue.
 * (asgothian) Configure on Message - 5 attempts.
-* (arteck) update transmitPower 
+* (arteck) update transmitPower
+* (asgothian) fix crash in ZigbeeController.ByteArrayToString
+* 
 
 ### 2.0.4 (2025-03-09)
 * (arteck) back to 2.0.2
