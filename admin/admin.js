@@ -1261,6 +1261,50 @@ function load(settings, onChange) {
     // Signal to admin, that no changes yet
     onChange(false);
 
+    $('#test-btn').click(function () {
+        console.warn(`isHerdsmanRunning: ${isHerdsmanRunning}`)
+        if (!isHerdsmanRunning) {
+            const port = $('#port.value').val();
+            console.warn(`port is ${port}`)
+            showWaitingDialog(`Trying to connect to ${port}`, 300);
+            sendTo(namespace, 'testConnection', { address:port }, function(msg) {
+                console.warn(`send to returned with ${JSON.stringify(msg)}`);
+                closeWaitingDialog();
+                if (msg) {
+                    if (msg.error) {
+                        showMessage(msg.error, _('Error'));
+                    }
+                }
+            })
+        }
+        else {
+            showMessage('function unavailable while herdsman is running', _('Error'))
+        }
+    });
+
+    $('#readNVRam-btn').click(function() {
+        console.warn('read nvRam')
+        sendTo(namespace, 'readNVRam', {}, function(msg) {
+            if (msg) {
+                if (msg.error) {
+                    showMessages(msg.error, _('Error'));
+                }
+                for (const key in msg) {
+                    if (savedSettings.indexOf(key) === -1) {
+                        continue;
+                    }
+                    const value = $('#' + key + '.value');
+                    if (value.attr('type') === 'checkbox') {
+                        value.prop('checked', msg[key]);
+                    } else {
+                        value.val(msg[key])
+                    }
+                }
+            }
+            else showMessage('No response when trying to read the NVRam', _('Error'));
+        });
+
+    })
     // test start commands
     $('#show_test_run').click(function () {
         console.warn(`isHerdsmanRunning: ${isHerdsmanRunning}`)
@@ -1431,7 +1475,7 @@ function doTestStart(start) {
             adapterType: $('#adapterType.value').val(),
             baudRate: $('#baudRate.value').val(),
             precfgkey: $('#precfgkey.value').val(),
-            flowCTRL: $('#flowCTRL.value').val()
+            flowCTRL: $('#flowCTRL.value').prop('checked')
         };
         // $('#testStartStart').addClass('disabled');
         messages = [];

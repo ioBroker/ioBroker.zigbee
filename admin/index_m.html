@@ -841,25 +841,10 @@
         </div>
         <div id="tab-herdsman" class="col s12 page">
             <div class="row">
-                <h6>Main</h6>
+                <h6>Zigbee hardware and network settings</h6>
             </div>
-            <div class="row">
-                <div class="input-field col s12 m6 l4">
-                    <a id="show_test_run" class="waves-effect waves-light white-text btn-large translate">Start / Stop</a>
-                </div>
-                <div class="input-field col s12 m6 l4">
-                    <a id="deleteNVRam-btn" class="waves-effect waves-light white-text btn-large translate">remove NVBackup</a>
-                </div>
-                <div class="input-field col s12 m6 l4">
-                    <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
-                </div>
-                <div class="input-field col s6 m3 l2">
-                    <input id="autostart" type="checkbox" class="value"/>
-                    <label class="translate" for="flowCTRL">start the Network automatically</label>
-                </div>
-            </div>
-            <div id="sett" class="row">
-                <div class="input-field input-group col s12 m6 l4">
+            <div id="port-row" class="row">
+                <div class="input-field input-group col">
                     <input id="port" type="text" class="value validate"/>
                     <label for="port" class="translate">COM port name</label>
                     <span class="suffix">
@@ -870,7 +855,9 @@
                             </ul>
                     </span>
                 </div>
-                <div class="input-field col s12 m6 l2">
+            </div>
+            <div id="sett" class="row">
+                    <div class="input-field col s12 m6 l2">
                     <select id="adapterType" class="value">
                         <option value="" disabled selected class="translate">Choose type</option>
                         <option value="zstack">TI Z-Stack/CCxxxx</option>
@@ -942,9 +929,35 @@
                     <p class="translate">ChannelChangeText</p>
                 </div>
             </div>
-            <div class="input-field col s12 m6 l4 disabled">
-                <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value disabled"/>
-                <label class="translate" for="precfgkey">Transport Key</label>
+            <div class="row">
+                <div class="input-field col s12 m6 l4 disabled">
+                    <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value disabled"/>
+                    <label class="translate" for="precfgkey">Transport Key</label>
+                </div>
+                <div class="input-field col s9 m4 l3">
+                    <input id="autostart" type="checkbox" class="value"/>
+                    <label class="translate" for="flowCTRL">start the Zigbee network automatically</label>
+                </div>
+            </div>
+            <div class="row">
+                <h6>Verification</h6>
+            </div>
+            <div class="row">
+                <div class="input-field col s9 m4 l3">
+                    <a id="test-btn" class="waves-effect waves-light white-text btn-large translate">Test Port</a>
+                </div>
+                <div class="input-field col s9 m4 l3">
+                    <a id="show_test_run" class="waves-effect waves-light white-text btn-large translate">Start / Stop</a>
+                </div>
+                <div class="input-field col s9 m4 l3">
+                    <a id="readNVRam-btn" class="waves-effect waves-light white-text btn-large translate">Read NVBackup</a>
+                </div>
+                <div class="input-field col s9 m4 l3">
+                    <a id="deleteNVRam-btn" class="waves-effect waves-light white-text btn-large translate">remove NVBackup</a>
+                </div>
+                <div class="input-field col s9 m4 l3">
+                    <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
+                </div>
             </div>
             <div class="row textarea">
                 <textarea class="monospaced" id="stdout_t" disabled="disabled" cols="120" rows="20" style="height: calc(50% - 115px)"></textarea>
