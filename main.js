@@ -969,13 +969,17 @@ class Zigbee extends utils.Adapter {
 
 
     newDevice(entity) {
-        const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
-        this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
-        this.stController.AddModelFromHerdsman(entity.device, model)
         const dev = entity.device;
+        this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
+        if (!entity.mapped) {
+            this.log.warn(`New device: '${dev.ieeeAddr}' does not have a known model. please provide an external converter for '${device.modelID}'.`);
+            return;
+        }
+        this.stController.AddModelFromHerdsman(entity.device, entity.mapped.model)
         if (dev) {
             this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
                 if (!obj) {
+                    const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
                     this.log.debug(`new device ${dev.ieeeAddr} ${dev.networkAddress} ${model} `);
                     this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${model}`, true);
                     this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () =>
