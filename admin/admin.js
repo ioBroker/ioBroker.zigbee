@@ -33,6 +33,7 @@ let devices = [],
     errorData = [],
     debugMessages = {},
     debugInLog = true,
+    nvRamBackup = {},
     isHerdsmanRunning = false;
 const dbgMsgfilter = new Set();
 const dbgMsghide = new Set();
@@ -1237,10 +1238,12 @@ function load(settings, onChange) {
         const value = $('#' + key + '.value');
         if (value.attr('type') === 'checkbox') {
             value.prop('checked', settings[key]).change(function () {
+                validateNVRamBackup(false, key);
                 onChange();
             });
         } else {
             value.val(settings[key]).change(function () {
+                validateNVRamBackup(false, key);
                 onChange();
             }).keyup(function () {
                 $(this).trigger('change');
@@ -1254,6 +1257,7 @@ function load(settings, onChange) {
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getNamedColors();
+    readNVRamBackup(false);
     //getDebugMessages();
     //getMap();
     //addCard();
@@ -1283,27 +1287,7 @@ function load(settings, onChange) {
     });
 
     $('#readNVRam-btn').click(function() {
-        console.warn('read nvRam')
-        sendTo(namespace, 'readNVRam', {}, function(msg) {
-            if (msg) {
-                if (msg.error) {
-                    showMessages(msg.error, _('Error'));
-                }
-                for (const key in msg) {
-                    if (savedSettings.indexOf(key) === -1) {
-                        continue;
-                    }
-                    const value = $('#' + key + '.value');
-                    if (value.attr('type') === 'checkbox') {
-                        value.prop('checked', msg[key]);
-                    } else {
-                        value.val(msg[key])
-                    }
-                }
-            }
-            else showMessage('No response when trying to read the NVRam', _('Error'));
-        });
-
+        readNVRamBackup(true);
     })
     // test start commands
     $('#show_test_run').click(function () {
@@ -1450,21 +1434,6 @@ function showPairingProcess() {
     Materialize.updateTextFields();
 }
 
-
-function showTestStart() {
-    $('#modaltestherdsman').modal({
-        startingTop: '4%',
-        endingTop: '10%',
-        dismissible: false
-    });
-
-    $('#modaltestherdsman').modal('open');
-    Materialize.updateTextFields();
-}
-
-function transferDataToConfig() {
-}
-
 function doTestStart(start) {
     updateStartButton(true);
     if (start) {
@@ -1518,6 +1487,7 @@ function save(callback) {
             obj[$this.attr('id')] = $this.val();
         }
     });
+    readNVRamBackup(false);
     callback(obj);
 }
 
@@ -3605,4 +3575,61 @@ function reconfigureDevice(id) {
         }
     });
     showWaitingDialog('Device is being reconfigure', 30);
+}
+
+function validateNVRamBackup(update, src) {
+    const validatedKeys = src ? [src] : ['channel', 'precfgkey', 'extPanID', 'panID'];
+    const warnLevel = {
+        extPanID : function(v) { return !(v && v.toLowerCase().trim()!='dddddddddddddddd')},
+        channel: function(v) { const num = parseInt(v); return !(num==11 || num==15 || num==20 || num==25)},
+    }
+    for (const key of validatedKeys) {
+        const value = $('#' + key + '.value');
+        if (nvRamBackup[key] && update) {
+            if (value.attr('type') === 'checkbox') {
+                value.prop('checked', nvRamBackup[key]);
+            } else {
+                value.val(nvRamBackup[key])
+            }
+        }
+        const val = value.val();
+        if (warnLevel[key]) {
+            if (warnLevel[key](value.val())) {
+                console.warn('warnlevel')
+                $(`#${key}_ALERT`).removeClass('hide')
+            } else $(`#${key}_ALERT`).addClass('hide')
+        }
+        if (nvRamBackup[key]) {
+            if (value.val() == nvRamBackup[key])
+            {
+                $(`#${key}_OK`).removeClass('hide')
+                $(`#${key}_NOK`).addClass('hide')
+            }
+            else
+            {
+                $(`#${key}_OK`).addClass('hide')
+                $(`#${key}_NOK`).removeClass('hide')
+            }
+        }
+        else {
+            $(`#${key}_OK`).addClass('hide')
+            $(`#${key}_NOK`).addClass('hide')
+        }
+    }
+}
+
+
+function readNVRamBackup(update) {
+    console.warn('read nvRam')
+    sendTo(namespace, 'readNVRam', {}, function(msg) {
+        if (msg) {
+            if (msg.error && update) {
+                showMessages(msg.error, _('Error'));
+                delete msg.error;
+            }
+            nvRamBackup = msg;
+            validateNVRamBackup(update)
+        }
+    });
+
 }

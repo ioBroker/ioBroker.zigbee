@@ -806,6 +806,10 @@
                     </select>
                     <label class="translate" for="transmitPower">transmitPower</label>
                 </div>
+                <div class="input-field col s12 m6 l2">
+                    <input id="countDown" type="number" min="10" max="240" class="value"/>
+                    <label class="translate" for="countDown">Countdown</label>
+                </div>
                 <div class="input-field col s12 m6 l4 col-disableLed">
                     <input id="disableLed" type="checkbox" class="value"/>
                     <label class="translate" for="disableLed">Disable LED for cc2531</label>
@@ -869,32 +873,36 @@
                     <label class="translate">Type</label>
                 </div>
                 <div class="input-field col s6 m3 l2">
-                    <input id="flowCTRL" type="checkbox" class="value"/>
-                    <label class="translate" for="flowCTRL">flow control</label>
-                </div>
-                <div class="input-field col s6 m3 l2">
                     <input id="baudRate" type="number" min="38400" max="115200" class="value"/>
                     <label class="translate" for="baudRate">Baudate Deconz/Conbee</label>
                 </div>
                 <div class="input-field col s6 m3 l2">
-                    <input id="countDown" type="number" min="10" max="240" class="value"/>
-                    <label class="translate" for="countDown">Countdown</label>
+                    <input id="flowCTRL" type="checkbox" class="value"/>
+                    <label class="translate" for="flowCTRL">flow control</label>
                 </div>
             </div>
             <div class="row">
-                <div class="input-field col s12 m6 l4">
+                <div class="input-field col s9 m4 l3">
                     <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16"
                             class="validate value"/>
-                    <label class="translate" for="extPanID">ExtPanID</label>
+                    <label class="translate" for="extPanID">ExtPanID
+                        <i id="extPanID_OK" class="material-icons tiny icon-green">check</i>
+                        <i id="extPanID_NOK" class="material-icons tiny icon-red">clear</i>
+                        <i id="extPanID_ALERT" class="material-icons tiny icon-orange hide">report_problem</i>
+                    </label>
                 </div>
                 <div class="input-field col s12 m6 l8">
                     <p class="translate">ExtPanIDText</p>
                 </div>
             </div>
             <div class="row">
-                <div class="input-field col s12 m6 l4">
+                <div class="input-field col s9 m4 l3">
                     <input id="panID" type="number" min="1" max="65565" class="value"/>
-                    <label class="translate" for="panID">PanID</label>
+                    <label class="translate" for="panID">PanID
+                        <i id="panID_OK" class="material-icons tiny icon-green">check</i>
+                        <i id="panID_NOK" class="material-icons tiny icon-red">clear</i>
+                        <i id="panID_ALERT" class="material-icons tiny icon-orange hide">report_problem</i>
+                    </label>
                 </div>
                 <div class="input-field col s12 m6 l8">
                     <p class="translate">PanIDText</p>
@@ -902,7 +910,7 @@
 
             </div>
             <div class="row">
-                <div class="input-field suffix col s12 m6 l4">
+                <div class="input-field suffix col s9 m4 l3">
                     <select id="channel" class="value">
                         <option value="" disabled selected class="translate">Choose channel</option>
                         <option value="11">11 (ZLL)</option>
@@ -922,7 +930,11 @@
                         <option value="24">24</option>
                         <option value="26">26</option>
                     </select>
-                    <label class="translate">Channel</label>
+                    <label class="translate">Channel
+                        <i id="channel_OK" class="material-icons tiny icon-green">check</i>
+                        <i id="channel_NOK" class="material-icons tiny icon-red">clear</i>
+                        <i id="channel_ALERT" class="material-icons tiny icon-orange">report_problem</i>
+                    </label>
                     <a id="scan" class='btn' data-target='channel_a'><i class="material-icons">graphic_eq</i></a>
                 </div>
                 <div class="input-field col s12 m6 l8">
@@ -930,11 +942,14 @@
                 </div>
             </div>
             <div class="row">
-                <div class="input-field col s12 m6 l4 disabled">
+                <div class="input-field col s9 m4 l3 disabled">
                     <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value disabled"/>
-                    <label class="translate" for="precfgkey">Transport Key</label>
+                    <label class="translate" for="precfgkey">Transport Key
+                        <i id="precfgkey_OK" class="material-icons tiny icon-green">check</i>
+                        <i id="precfgkey_NOK" class="material-icons tiny icon-red">clear</i>
+                    </label>
                 </div>
-                <div class="input-field col s9 m4 l3">
+                <div class="input-field col s9 m4 l2">
                     <input id="autostart" type="checkbox" class="value"/>
                     <label class="translate" for="flowCTRL">start the Zigbee network automatically</label>
                 </div>
