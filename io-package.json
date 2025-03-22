@@ -280,7 +280,8 @@
     "startWithInconsistent": false,
     "warnOnDeviceAnnouncement": true,
     "baudRate": 115200,
-    "flowCTRL": false
+    "flowCTRL": false,
+    "autostart": false
   },
   "instanceObjects": [
     {
