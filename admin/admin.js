@@ -823,10 +823,14 @@ function getCoordinatorInfo() {
 }
 
 function checkDebugDevice(id) {
-    if (!debugDevices || debugDevices.indexOf(id) > -1) return 0
+    // returns: -1: debug not set
+    // 0: debug set explicitly
+    // > 0: debug set by pattern.
+    if (!debugDevices) return -1;
+    if (debugDevices.indexOf(id) > -1) return 0 // debug set
     for (const addressPart of debugDevices) {
         if (typeof id === 'string' && id.includes(addressPart)) {
-            return debugDevices.indexOf(addressPart)+1;
+            return debugDevices.indexOf(addressPart)+1; // debug set by pattern (>0)
         }
     }
     return -1;
@@ -1119,6 +1123,7 @@ function getDevices() {
             //check if debug messages are sent alongside
             if (msg && typeof (msg.debugDevices == 'array')) {
                 debugDevices = msg.debugDevices;
+                console.warn('debug devices is sent')
             }
             else
                 debugDevices = [];
@@ -1198,6 +1203,8 @@ function getRandomChannel()
     return channels[Math.floor(Math.random() * 4)];
 }
 
+
+
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
@@ -1238,13 +1245,13 @@ function load(settings, onChange) {
         const value = $('#' + key + '.value');
         if (value.attr('type') === 'checkbox') {
             value.prop('checked', settings[key]).change(function () {
-                validateNVRamBackup(false, key);
                 onChange();
+                validateNVRamBackup(false, key)
             });
         } else {
             value.val(settings[key]).change(function () {
-                validateNVRamBackup(false, key);
                 onChange();
+                validateNVRamBackup(false, key)
             }).keyup(function () {
                 $(this).trigger('change');
             });
@@ -1361,6 +1368,10 @@ function load(settings, onChange) {
             });
             $('#codeentry').modal('open');
         }
+    });
+
+    $('#hardware').click(function() {
+        validateNVRamBackup(false);
     });
 
     $(document).ready(function () {
@@ -1487,7 +1498,6 @@ function save(callback) {
             obj[$this.attr('id')] = $this.val();
         }
     });
-    readNVRamBackup(false);
     callback(obj);
 }
 
@@ -2379,31 +2389,6 @@ function list2select(selector, list, selected, getText, getKey, getData) {
     element.select();
 }
 
-/*
-function showGroups() {
-    $('#groups_table').find('.group').remove();
-    if (!groups) return;
-    const element = $('#groups_table');
-    for (const j in groups) {
-        if (groups.hasOwnProperty(j)) {
-            element.append(`<tr id="group_${j}" class="group"><td>${j}</td><td><div>${groups[j]}<span class="right">` +
-                `<a id="${j}" name="groupedit" class="waves-effect green btn-floating"><i class="material-icons">edit</i></a>` +
-                `<a id="${j}" name="groupdelete" class="waves-effect red btn-floating"><i class="material-icons">delete</i></a></span></div></td></tr>`);
-        }
-    }
-    $('a.btn-floating[name=\'groupedit\']').click(function () {
-        const index = $(this).attr('id'),
-            name = groups[index];
-        editGroupName(index, name, false);
-    });
-    $('a.btn-floating[name=\'groupdelete\']').click(function () {
-        const index = $(this).attr('id'),
-            name = groups[index];
-        deleteGroupConfirmation(index, name);
-    });
-}
-*/
-
 function editGroup(id, name) {
     const grp = devGroups[id];
     let info = '';
@@ -3007,48 +2992,6 @@ function showDevInfo(id) {
     $('#modaldevinfo').modal('open');
 }
 
-/*
-function showGroupList(show) {
-    const htmlsections = [];
-    for (const groupid in devGroups) {
-        const dev = devGroups[groupid];
-        const grpname = (dev.common && dev.common.name ? dev.common.name : 'Group ' + groupid);
-        const selectables = [];
-        const members = [];
-        if (dev && dev.memberinfo) {
-            selectables.push(`<select id="members_${groupid}" multiple>`);
-            for (let m = 0; m < dev.memberinfo.length; m++) {
-                members.push(`${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (${dev.memberinfo[m].ieee})`);
-                selectables.push(`<option value="${m}">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (...${dev.memberinfo[m].ieee.slice(-4)})</option>`);
-            }
-            selectables.push('</select>');
-        }
-        htmlsections.push(`
-        <div class="row">
-          <div class="col s4 m4 l4">
-              <h5>${grpname}<h5>
-          </div>
-          <div class=col s7 m7 l7">
-          ${members.join('<br>')}
-          </div>
-        </div>
-        `);
-    }
-
-    $('#grouplist').html(htmlsections.join(''));
-    $('#add').click(function () {
-        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
-        addGroup(maxind + 1, 'Group ' + maxind + 1, true);
-        showGroupList(false);
-    });
-
-    $('#modalgrouplist a.btn[name=\'save\']').unbind('click');
-    $('#modalgrouplist a.btn[name=\'save\']').click(() => {
-    });
-    if (show) $('#modalgrouplist').modal('open');
-}
-*/
-
 let waitingTimeout, waitingInt;
 
 function showWaitingDialog(text, timeout) {
@@ -3577,12 +3520,46 @@ function reconfigureDevice(id) {
     showWaitingDialog('Device is being reconfigure', 30);
 }
 
-function validateNVRamBackup(update, src) {
-    const validatedKeys = src ? [src] : ['channel', 'precfgkey', 'extPanID', 'panID'];
-    const warnLevel = {
-        extPanID : function(v) { return !(v && v.toLowerCase().trim()!='dddddddddddddddd')},
-        channel: function(v) { const num = parseInt(v); return !(num==11 || num==15 || num==20 || num==25)},
+const warnLevel = {
+    extPanID : function(v) { return !(v && v.toLowerCase().trim()!='dddddddddddddddd')},
+    channel: function(v) { const num = parseInt(v); return !(num==11 || num==15 || num==20 || num==25)},
+}
+const validatableKeys = ['channel', 'precfgkey', 'extPanID', 'panID'];
+
+function validateConfigData(key, val) {
+    if (validatableKeys.indexOf(key) < 0 || !val) return;
+    if (warnLevel[key]) {
+        if (warnLevel[key](val)) {
+            console.warn(`warning set for ${key} (${val})`)
+            $(`#${key}_ALERT`).removeClass('hide')
+        } else $(`#${key}_ALERT`).addClass('hide')
     }
+    if (nvRamBackup[key]) {
+        console.warn(`value of ${key} is ${val} (${nvRamBackup[key]})`);
+        if (val == nvRamBackup[key])
+        {
+            console.warn(`ok set for ${key} (${val})`)
+            $(`#${key}_OK`).removeClass('hide')
+            $(`#${key}_NOK`).addClass('hide')
+        }
+        else
+        {
+            console.warn(`nok set for ${key} (${val})`)
+            $(`#${key}_OK`).addClass('hide')
+            $(`#${key}_NOK`).removeClass('hide')
+        }
+    }
+    else {
+        console.warn(`noval set for ${key} (${val})`)
+        $(`#${key}_OK`).addClass('hide')
+        $(`#${key}_NOK`).addClass('hide')
+    }
+}
+
+function validateNVRamBackup(update, src) {
+    console.warn('validateNVRam');
+    const validatedKeys = src ? [src] : validatableKeys;
+    const validator = {};
     for (const key of validatedKeys) {
         const value = $('#' + key + '.value');
         if (nvRamBackup[key] && update) {
@@ -3592,29 +3569,7 @@ function validateNVRamBackup(update, src) {
                 value.val(nvRamBackup[key])
             }
         }
-        const val = value.val();
-        if (warnLevel[key]) {
-            if (warnLevel[key](value.val())) {
-                console.warn('warnlevel')
-                $(`#${key}_ALERT`).removeClass('hide')
-            } else $(`#${key}_ALERT`).addClass('hide')
-        }
-        if (nvRamBackup[key]) {
-            if (value.val() == nvRamBackup[key])
-            {
-                $(`#${key}_OK`).removeClass('hide')
-                $(`#${key}_NOK`).addClass('hide')
-            }
-            else
-            {
-                $(`#${key}_OK`).addClass('hide')
-                $(`#${key}_NOK`).removeClass('hide')
-            }
-        }
-        else {
-            $(`#${key}_OK`).addClass('hide')
-            $(`#${key}_NOK`).addClass('hide')
-        }
+        validateConfigData(key, value.val());
     }
 }
 
