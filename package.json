@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -48,7 +48,7 @@
     "gulp-replace": "^1.1.4",
     "mixin-deep": "^2.0.1",
     "mocha": "^11.1.0",
-    "@iobroker/dev-server":"^0.7.8"
+    "@iobroker/dev-server": "^0.7.8"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [

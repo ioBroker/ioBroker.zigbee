@@ -152,7 +152,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 2.0.5 (2025-03-25)
 * (asgothian) ZHC 23.6.0
 * (asgothian) ZH 3.3.x
 * (asgothian) removed extra logging
@@ -161,7 +161,7 @@ You can thank the authors by these links:
 * (arteck) update transmitPower
 * (asgothian) fix crash in ZigbeeController.ByteArrayToString
 * (AlexHaxe) device designation for  devices without mapped model (allows use in groups and bindings)
-* 
+*
 
 ### 2.0.4 (2025-03-09)
 * (arteck) back to 2.0.2
