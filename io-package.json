@@ -248,8 +248,7 @@
           "cancel"
         ]
       }
-    ],
-    "installedFrom": "asgothian/ioBroker.zigbee#1.11"
+    ]
   },
   "native": {
     "port": "",
