@@ -167,7 +167,7 @@ You can thank the authors by these links:
 * (asgothian) Configure on Message - 5 attempts.
 * (arteck) update transmitPower
 * (asgothian) fix crash in ZigbeeController.ByteArrayToString
-* (AlexHaxe) device designation for devices without mapped model (allows use in groups and bindings)
+* (AlexHaxe) device designation for  devices without mapped model (allows use in groups and bindings)
 *
 
 ### 2.0.4 (2025-03-09)
