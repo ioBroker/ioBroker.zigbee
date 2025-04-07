@@ -719,6 +719,7 @@
                     <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>
                     <li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>
                     <li class="tab col s2"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
+                    <li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>
                     </li>
                 </ul>
             </div>
@@ -911,33 +912,15 @@
             </div>
             <div class="row">
                 <div class="input-field suffix col s9 m4 l3">
-                    <select id="channel" class="value">
-                        <option value="" disabled selected class="translate">Choose channel</option>
-                        <option value="11">11 (ZLL)</option>
-                        <option value="15">15 (ZLL)</option>
-                        <option value="20">20 (ZLL)</option>
-                        <option value="25">25 (ZLL)</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="26">26</option>
-                    </select>
+                    <input id="channel" type="number" min="11" max=" 26" class="value"/>
                     <label class="translate">Channel
                         <i id="channel_OK" class="material-icons tiny icon-green">check</i>
                         <i id="channel_NOK" class="material-icons tiny icon-red">clear</i>
                         <i id="channel_ALERT" class="material-icons tiny icon-orange">report_problem</i>
                     </label>
-                    <a id="scan" class='btn' data-target='channel_a'><i class="material-icons">graphic_eq</i></a>
                 </div>
                 <div class="input-field col s12 m6 l8">
+                    <a id="scan" class='btn' data-target='channel_a'><i class="material-icons">graphic_eq</i></a>
                     <p class="translate">ChannelChangeText</p>
                 </div>
             </div>
@@ -1229,6 +1212,10 @@
             </div>
             <div id="exclude" class="row">
             </div>
+        </div>
+        <div id="tab-debug" class="col s12 page">
+            <ul id="dbg_data_list">
+            </ul>
         </div>
     </div>
 </div>

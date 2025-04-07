@@ -264,18 +264,18 @@ class Zigbee extends utils.Adapter {
 
             let zhcm1 = modulePath.match(/^zigbee-herdsman-converters\//);
             if (zhcm1) {
-                const i2 = modulePath.replace(/^zigbee-herdsman-converters\//, `../zigbee-herdsman-converters/`);
                 try {
+                    const i2 = modulePath.replace(/^zigbee-herdsman-converters\//, `../${sandbox.zhclibBase}/`);
                     this.sandboxAdd(sandbox, item[1], i2);
                 }
                 catch (error) {
-                    this.log.error(`Sandbox error: ${(error && error.message ? error.message : 'no error message given')}`);
+                    this.log.error(`Sandbox error: ${(error && error.message ? error.message : 'no error message given')}`)
                 }
                 continue;
             }
             zhcm1 = modulePath.match(/^..\//);
             if (zhcm1) {
-                const i2 = modulePath.replace(/^..\//, `../zigbee-herdsman-converters/`);
+                const i2 = modulePath.replace(/^..\//, `../${sandbox.zhclibBase}/`);
                 try {
                     this.sandboxAdd(sandbox, item[1], i2);
                 }
@@ -305,10 +305,13 @@ class Zigbee extends utils.Adapter {
         const extfiles = this.config.external.split(';');
         for (const moduleName of extfiles) {
             if (!moduleName) continue;
+            const ZHCP = zigbeeHerdsmanConvertersPackage;
             const sandbox = {
                 require,
                 module: {},
+                zhclibBase : path.join('zigbee-herdsman-converters',(ZHCP && ZHCP.exports && ZHCP.exports['.'] ? path.dirname(ZHCP.exports['.']) : ''))
             };
+
             const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName));
             if (!fs.existsSync(mN)) {
                 this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
@@ -335,12 +338,17 @@ class Zigbee extends utils.Adapter {
                 //fs.writeFileSync(mN+'.tmp5', modifiedCode)
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+(\S+)\s+=\s+require\((.+)\)/gm)]);
                 modifiedCode = modifiedCode.replace(/const\s+\S+\s+=\s+require\(.+\)/gm, '');
-                //fs.writeFileSync(mN+'.tmp6', modifiedCode)
+                //mfs.writeFileSync(mN+'.tmp', modifiedCode)
 
                 for(const component of modifiedCode.matchAll(/const (.+):(.+)=/gm)) {
                     modifiedCode = modifiedCode.replace(component[0], `const ${component[1]} = `);
                 }
                 modifiedCode = modifiedCode.replace(/export .+;/gm, '');
+
+                if (modifiedCode.indexOf('module.exports') < 0) {
+                    converterLoaded = false;
+                    this.log.error(`converter does not export any converter array, please add 'module.exports' statement to ${mN}`);
+                }
 
                 fs.writeFileSync(mN+'.tmp', modifiedCode)
 

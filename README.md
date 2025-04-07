@@ -153,6 +153,13 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
+* (asgothian) Breaking change: Start of zigbee subsystem requires configuration entry !!!
+* (asgothian) Hardware configuration panel
+* (asgothian) Update for external converter - detect /dist/ subfolder
+* (asgothian) Update device image: use of icons defined in external converter (beta)
+*
+
+### 2.0.5 (2025-03-25)
 * (asgothian) ZHC 23.6.0
 * (asgothian) ZH 3.3.x
 * (asgothian) removed extra logging
@@ -160,8 +167,8 @@ You can thank the authors by these links:
 * (asgothian) Configure on Message - 5 attempts.
 * (arteck) update transmitPower
 * (asgothian) fix crash in ZigbeeController.ByteArrayToString
-* (AlexHaxe) device designation for  devices without mapped model (allows use in groups and bindings)
-* 
+* (AlexHaxe) device designation for devices without mapped model (allows use in groups and bindings)
+*
 
 ### 2.0.4 (2025-03-09)
 * (arteck) back to 2.0.2
@@ -177,7 +184,6 @@ You can thank the authors by these links:
 * (asgothian) fix Adapter-Checker notes
 * (asgothian) improve base64 image detection
 * (asgothian) removed unused adaptert objects (info.groups, excludes) from adapter config
-*
 
 ### 2.0.2 (2025-03-02)
 * (asgothian)  expose generation with expose function requiring a device. (Issue #1842)
