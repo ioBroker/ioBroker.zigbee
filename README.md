@@ -152,6 +152,13 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (asgothian) Breaking change: Start of zigbee subsystem requires configuration entry !!!
+* (asgothian) Hardware configuration panel
+* (asgothian) Update for external converter - detect /dist/ subfolder
+* (asgothian) Update device image: use of icons defined in external converter (beta)
+*
+
 ### 2.0.5 (2025-03-25)
 * (asgothian) ZHC 23.6.0
 * (asgothian) ZH 3.3.x
@@ -177,7 +184,6 @@ You can thank the authors by these links:
 * (asgothian) fix Adapter-Checker notes
 * (asgothian) improve base64 image detection
 * (asgothian) removed unused adaptert objects (info.groups, excludes) from adapter config
-*
 
 ### 2.0.2 (2025-03-02)
 * (asgothian)  expose generation with expose function requiring a device. (Issue #1842)

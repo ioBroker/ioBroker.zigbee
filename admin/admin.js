@@ -32,7 +32,9 @@ let devices = [],
     shuffleInstance,
     errorData = [],
     debugMessages = {},
-    debugInLog = true;
+    debugInLog = true,
+    nvRamBackup = {},
+    isHerdsmanRunning = false;
 const dbgMsgfilter = new Set();
 const dbgMsghide = new Set();
 const updateCardInterval = setInterval(updateCardTimer, 6000);
@@ -55,11 +57,12 @@ const networkOptions = {
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent', 'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL'
+    'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent',
+    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart'
 ];
 
 function getDeviceByID(ID) {
-    return devices.find((devInfo) => {
+    if (devices) return devices.find((devInfo) => {
         try {
             return devInfo._id == ID;
         } catch (e) {
@@ -379,6 +382,31 @@ function deleteConfirmation(id, name) {
     $('#modaldelete').modal('open');
     Materialize.updateTextFields();
 }
+
+function deleteNvBackupConfirmation() {
+    const text = translateWord('Do you really want to the NV Backup data ?');
+    $('#modaldelete').find('p').text(text);
+    $('#force').prop('checked', false);
+    $('#forcediv').addClass('hide');
+    $('#modaldelete a.btn[name=\'yes\']').unbind('click');
+    $('#modaldelete a.btn[name=\'yes\']').click(() => {
+        //const force = $('#force').prop('checked');
+        showWaitingDialog('Attempting to delete nvBackup.json', 60000);
+        sendTo(namespace, 'deleteNVBackup', {}, function (msg) {
+            closeWaitingDialog();
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'));
+                } else {
+                    getDevices();
+                }
+            }
+        });
+    });
+    $('#modaldelete').modal('open');
+    Materialize.updateTextFields();
+}
+
 
 function cleanConfirmation() {
     const text = translateWord('Do you really want to remove orphaned states?');
@@ -782,18 +810,27 @@ function getCoordinatorInfo() {
     sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'));
+                errorData.push(msg.error);
+                isHerdsmanRunning = false;
+                updateStartButton();
             } else {
                 coordinatorinfo = msg;
+                isHerdsmanRunning = true;
+                updateStartButton()
             }
         }
     });
 }
+
 function checkDebugDevice(id) {
-    if (debugDevices.indexOf(id) > -1) return 0
+    // returns: -1: debug not set
+    // 0: debug set explicitly
+    // > 0: debug set by pattern.
+    if (!debugDevices) return -1;
+    if (debugDevices.indexOf(id) > -1) return 0 // debug set
     for (const addressPart of debugDevices) {
         if (typeof id === 'string' && id.includes(addressPart)) {
-            return debugDevices.indexOf(addressPart)+1;
+            return debugDevices.indexOf(addressPart)+1; // debug set by pattern (>0)
         }
     }
     return -1;
@@ -1067,8 +1104,10 @@ function getDebugMessages() {
 
 function getDevices() {
     getCoordinatorInfo();
-    sendTo(namespace, 'getDeviceCleanupRequired', {}, function(msg) {
+    sendTo(namespace, 'getDevices', {}, function (msg) {
         if (msg) {
+            devices = msg.devices ? msg.devices : [];
+            // check if stashed error messages are sent alongside
             if (msg.clean)
                 $('#state_cleanup_btn').removeClass('hide');
             else
@@ -1077,23 +1116,28 @@ function getDevices() {
                 $('#show_errors_btn').removeClass('hide');
                 errorData = msg.errors;
             }
-            else
+            else {
                 $('#show_errors_btn').addClass('hide');
-        }
-    })
-    sendTo(namespace, 'getDebugDevices', {}, function(msg) {
-        if (msg && typeof (msg.debugDevices == 'array')) {
-            debugDevices = msg.debugDevices;
-        }
-        else
-            debugDevices = [];
-    });
-    sendTo(namespace, 'getDevices', {}, function (msg) {
-        if (msg) {
+            }
+
+            //check if debug messages are sent alongside
+            if (msg && typeof (msg.debugDevices == 'array')) {
+                debugDevices = msg.debugDevices;
+                console.warn('debug devices is sent')
+            }
+            else
+                debugDevices = [];
+            if (debugMessages.byId) {
+                debugMessages.byId = msg;
+                if (msg) displayDebugMessages(debugMessages)
+            }
             if (msg.error) {
-                showMessage(msg.error, _('Error'));
+                errorData.push(msg.error);
+                isHerdsmanRunning = false;
+                updateStartButton();
             } else {
-                devices = msg;
+                isHerdsmanRunning = true;
+                updateStartButton();
                 showDevices();
                 getDebugMessages();
                 getExclude();
@@ -1128,8 +1172,12 @@ function getMap() {
         $('#refresh').removeClass('disabled');
         if (msg) {
             if (msg.error) {
-                showMessage(msg.error, _('Error'));
+                errorData.push(msg.error);
+                isHerdsmanRunning = false;
+                updateStartButton();
             } else {
+                isHerdsmanRunning = true;
+                updateStartButton();
                 if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
                     showMessage(msg.errors.join('<p>'), 'Map generation messages');
                 }
@@ -1149,14 +1197,24 @@ function getRandomExtPanID()
     return bytes.join('');
 }
 
+function getRandomChannel()
+{
+    const channels = [11,15,20,25]
+    return channels[Math.floor(Math.random() * 4)];
+}
+
+
 
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
-    if (settings.panID === undefined) {
+    if (settings.extPanID === undefined || settings.extPanID == '') {
+        settings.channel = getRandomChannel();
+    }
+    if (settings.panID === undefined || settings.panID == 0) {
         settings.panID = Math.floor(Math.random() * 10000);
     }
-    if (settings.extPanID === undefined) {
+    if (settings.extPanID === undefined || settings.extPanID == '') {
         settings.extPanID = getRandomExtPanID();
     }
     // fix for previous wrong value
@@ -1167,9 +1225,6 @@ function load(settings, onChange) {
     if (settings.precfgkey === undefined) {
         settings.precfgkey = '01030507090B0D0F00020406080A0C0D';
     }
-    if (settings.channel === undefined) {
-        settings.channel = 11;
-    }
     if (settings.disablePing === undefined) {
         settings.disablePing = false;
     }
@@ -1179,6 +1234,7 @@ function load(settings, onChange) {
     if (settings.baudRate === undefined) {
         settings.baudRate = 115200;
     }
+    if (settings.autostart === undefined) settings.autostart = false;
 
     // example: select elements with id=key and class=value and insert value
     for (const key in settings) {
@@ -1190,10 +1246,12 @@ function load(settings, onChange) {
         if (value.attr('type') === 'checkbox') {
             value.prop('checked', settings[key]).change(function () {
                 onChange();
+                validateNVRamBackup(false, key)
             });
         } else {
             value.val(settings[key]).change(function () {
                 onChange();
+                validateNVRamBackup(false, key)
             }).keyup(function () {
                 $(this).trigger('change');
             });
@@ -1206,12 +1264,43 @@ function load(settings, onChange) {
     //dialog = new MatDialog({EndingTop: '50%'});
     getDevices();
     getNamedColors();
+    readNVRamBackup(false);
     //getDebugMessages();
     //getMap();
     //addCard();
 
     // Signal to admin, that no changes yet
     onChange(false);
+
+    $('#test-btn').click(function () {
+        console.warn(`isHerdsmanRunning: ${isHerdsmanRunning}`)
+        if (!isHerdsmanRunning) {
+            const port = $('#port.value').val();
+            console.warn(`port is ${port}`)
+            showWaitingDialog(`Trying to connect to ${port}`, 300);
+            sendTo(namespace, 'testConnection', { address:port }, function(msg) {
+                console.warn(`send to returned with ${JSON.stringify(msg)}`);
+                closeWaitingDialog();
+                if (msg) {
+                    if (msg.error) {
+                        showMessage(msg.error, _('Error'));
+                    }
+                }
+            })
+        }
+        else {
+            showMessage('function unavailable while herdsman is running', _('Error'))
+        }
+    });
+
+    $('#readNVRam-btn').click(function() {
+        readNVRamBackup(true);
+    })
+    // test start commands
+    $('#show_test_run').click(function () {
+        console.warn(`isHerdsmanRunning: ${isHerdsmanRunning}`)
+        doTestStart(!isHerdsmanRunning);
+    });
 
     $('#state_cleanup_btn').click(function () {
         cleanConfirmation();
@@ -1241,11 +1330,18 @@ function load(settings, onChange) {
         resetConfirmation();
     });
 
+    $('#deleteNVRam-btn').click(function () {
+        deleteNvBackupConfirmation();
+    });
+
     $('#viewconfig').click(function () {
         showViewConfig();
     });
 
     $('#scan').click(function () {
+        showChannels();
+    });
+    $('#scan_t').click(function () {
         showChannels();
     });
 
@@ -1272,6 +1368,10 @@ function load(settings, onChange) {
             });
             $('#codeentry').modal('open');
         }
+    });
+
+    $('#hardware').click(function() {
+        validateNVRamBackup(false);
     });
 
     $(document).ready(function () {
@@ -1331,6 +1431,7 @@ function showMessages() {
         data = mess + '\n' + data;
     }
     $('#stdout').text(data);
+    $('#stdout_t').text(messages.join('\n'));
 }
 
 function showPairingProcess() {
@@ -1342,6 +1443,41 @@ function showPairingProcess() {
 
     $('#modalpairing').modal('open');
     Materialize.updateTextFields();
+}
+
+function doTestStart(start) {
+    updateStartButton(true);
+    if (start) {
+        const ovr = { extPanID:$('#extPanID.value').val(),
+            panID: $('#PanID.value').val(),
+            channel: $('#channel.value').val(),
+            port: $('#port.value').val(),
+            adapterType: $('#adapterType.value').val(),
+            baudRate: $('#baudRate.value').val(),
+            precfgkey: $('#precfgkey.value').val(),
+            flowCTRL: $('#flowCTRL.value').prop('checked')
+        };
+        // $('#testStartStart').addClass('disabled');
+        messages = [];
+        sendTo(namespace, 'testConnect', { start:true, zigbeeOptions:ovr }, function(msg) {
+            if (msg) {
+                if (msg.status)
+                    $('#testStartStop').removeClass('disabled');
+                else
+                    $('#testStartStart').removeClass('disabled');
+            }
+        })
+    }
+    else {
+        //$('#testStartStop').addClass('disabled');
+        sendTo(namespace, 'testConnect', { start:false }, function(msg) {
+            if (msg) {
+                if (msg.status) $('#testStartStart').removeClass('disabled');
+                else $('#testStartStop').removeClass('disabled');
+            }
+        })
+
+    }
 }
 
 // ... and the function save has to exist.
@@ -1370,6 +1506,36 @@ function getDevId(adapterDevId) {
     return adapterDevId.split('.').slice(0, 3).join('.');
 }
 
+
+function updateStartButton(block) {
+    if (block) {
+        $('#show_test_run').addClass('disabled');
+        $('#reset-btn').addClass('disabled');
+        $('#deleteNVRam-btn').addClass('disabled');
+        $('#ErrorNotificationBtn').removeClass('hide')
+        $('#ErrorNotificationBtn').removeClass('blinking')
+        $('#ErrorNotificationIcon').removeClass('icon-red')
+        $('#ErrorNotificationIcon').addClass('icon-orange')
+        return;
+    }
+    if (isHerdsmanRunning)
+    {
+        $('#ErrorNotificationBtn').addClass('hide')
+        $('#ErrorNotificationBtn').removeClass('blinking');
+        $('#show_test_run').removeClass('disabled');
+        $('#deleteNVRam-btn').removeClass('disabled');
+        $('#reset-btn').removeClass('disabled');
+    }
+    else {
+        $('#ErrorNotificationIcon').addClass('icon-red')
+        $('#ErrorNotificationIcon').removeClass('icon-orange')
+        $('#ErrorNotificationBtn').removeClass('hide')
+        $('#ErrorNotificationBtn').addClass('blinking');
+        $('#show_test_run').removeClass('disabled');
+        $('#deleteNVRam-btn').removeClass('disabled');
+        $('#reset-btn').addClass('disabled');
+    }
+}
 // subscribe to changes
 socket.emit('subscribe', namespace + '.*');
 socket.emit('subscribeObjects', namespace + '.*');
@@ -1404,6 +1570,14 @@ socket.on('stateChange', function (id, state) {
             else {
                 messages.push(state.val);
                 showMessages();
+                if (state.val.startsWith('Zigbee-Herdsman started successfully')) {
+                    isHerdsmanRunning = true;
+                    updateStartButton();
+                }
+                if (state.val.startsWith('herdsman stopped') || state.val.startsWith('Error herdsman')) {
+                    isHerdsmanRunning = false;
+                    updateStartButton();
+                }
             }
         } else {
             const devId = getDevId(id);
@@ -2215,31 +2389,6 @@ function list2select(selector, list, selected, getText, getKey, getData) {
     element.select();
 }
 
-/*
-function showGroups() {
-    $('#groups_table').find('.group').remove();
-    if (!groups) return;
-    const element = $('#groups_table');
-    for (const j in groups) {
-        if (groups.hasOwnProperty(j)) {
-            element.append(`<tr id="group_${j}" class="group"><td>${j}</td><td><div>${groups[j]}<span class="right">` +
-                `<a id="${j}" name="groupedit" class="waves-effect green btn-floating"><i class="material-icons">edit</i></a>` +
-                `<a id="${j}" name="groupdelete" class="waves-effect red btn-floating"><i class="material-icons">delete</i></a></span></div></td></tr>`);
-        }
-    }
-    $('a.btn-floating[name=\'groupedit\']').click(function () {
-        const index = $(this).attr('id'),
-            name = groups[index];
-        editGroupName(index, name, false);
-    });
-    $('a.btn-floating[name=\'groupdelete\']').click(function () {
-        const index = $(this).attr('id'),
-            name = groups[index];
-        deleteGroupConfirmation(index, name);
-    });
-}
-*/
-
 function editGroup(id, name) {
     const grp = devGroups[id];
     let info = '';
@@ -2843,48 +2992,6 @@ function showDevInfo(id) {
     $('#modaldevinfo').modal('open');
 }
 
-/*
-function showGroupList(show) {
-    const htmlsections = [];
-    for (const groupid in devGroups) {
-        const dev = devGroups[groupid];
-        const grpname = (dev.common && dev.common.name ? dev.common.name : 'Group ' + groupid);
-        const selectables = [];
-        const members = [];
-        if (dev && dev.memberinfo) {
-            selectables.push(`<select id="members_${groupid}" multiple>`);
-            for (let m = 0; m < dev.memberinfo.length; m++) {
-                members.push(`${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (${dev.memberinfo[m].ieee})`);
-                selectables.push(`<option value="${m}">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid} (...${dev.memberinfo[m].ieee.slice(-4)})</option>`);
-            }
-            selectables.push('</select>');
-        }
-        htmlsections.push(`
-        <div class="row">
-          <div class="col s4 m4 l4">
-              <h5>${grpname}<h5>
-          </div>
-          <div class=col s7 m7 l7">
-          ${members.join('<br>')}
-          </div>
-        </div>
-        `);
-    }
-
-    $('#grouplist').html(htmlsections.join(''));
-    $('#add').click(function () {
-        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
-        addGroup(maxind + 1, 'Group ' + maxind + 1, true);
-        showGroupList(false);
-    });
-
-    $('#modalgrouplist a.btn[name=\'save\']').unbind('click');
-    $('#modalgrouplist a.btn[name=\'save\']').click(() => {
-    });
-    if (show) $('#modalgrouplist').modal('open');
-}
-*/
-
 let waitingTimeout, waitingInt;
 
 function showWaitingDialog(text, timeout) {
@@ -3354,14 +3461,17 @@ function updateCardTimer() {
 }
 
 function updateDevice(id) {
-    sendTo(namespace, 'getDevice', {id: id}, function (devs) {
-        if (devs) {
-            if (devs.error) {
-                showMessage(devs.error, _('Error'));
-            } else {
-                removeDevice(id);
-                devs.forEach(dev => devices.push(dev));
-                showDevices();
+    sendTo(namespace, 'getDevice', {id: id}, function (msg) {
+        if (msg) {
+            const devs = msg.devices;
+            if (devs) {
+                if (devs.error) {
+                    showMessage(devs.error, _('Error'));
+                } else {
+                    removeDevice(id);
+                    devs.forEach(dev => devices.push(dev));
+                    showDevices();
+                }
             }
         }
     });
@@ -3408,4 +3518,73 @@ function reconfigureDevice(id) {
         }
     });
     showWaitingDialog('Device is being reconfigure', 30);
+}
+
+const warnLevel = {
+    extPanID : function(v) { return !(v && v.toLowerCase().trim()!='dddddddddddddddd')},
+    channel: function(v) { const num = parseInt(v); return !(num==11 || num==15 || num==20 || num==25)},
+}
+const validatableKeys = ['channel', 'precfgkey', 'extPanID', 'panID'];
+
+function validateConfigData(key, val) {
+    if (validatableKeys.indexOf(key) < 0 || !val) return;
+    if (warnLevel[key]) {
+        if (warnLevel[key](val)) {
+            console.warn(`warning set for ${key} (${val})`)
+            $(`#${key}_ALERT`).removeClass('hide')
+        } else $(`#${key}_ALERT`).addClass('hide')
+    }
+    if (nvRamBackup[key]) {
+        console.warn(`value of ${key} is ${val} (${nvRamBackup[key]})`);
+        if (val == nvRamBackup[key])
+        {
+            console.warn(`ok set for ${key} (${val})`)
+            $(`#${key}_OK`).removeClass('hide')
+            $(`#${key}_NOK`).addClass('hide')
+        }
+        else
+        {
+            console.warn(`nok set for ${key} (${val})`)
+            $(`#${key}_OK`).addClass('hide')
+            $(`#${key}_NOK`).removeClass('hide')
+        }
+    }
+    else {
+        console.warn(`noval set for ${key} (${val})`)
+        $(`#${key}_OK`).addClass('hide')
+        $(`#${key}_NOK`).addClass('hide')
+    }
+}
+
+function validateNVRamBackup(update, src) {
+    console.warn('validateNVRam');
+    const validatedKeys = src ? [src] : validatableKeys;
+    const validator = {};
+    for (const key of validatedKeys) {
+        const value = $('#' + key + '.value');
+        if (nvRamBackup[key] && update) {
+            if (value.attr('type') === 'checkbox') {
+                value.prop('checked', nvRamBackup[key]);
+            } else {
+                value.val(nvRamBackup[key])
+            }
+        }
+        validateConfigData(key, value.val());
+    }
+}
+
+
+function readNVRamBackup(update) {
+    console.warn('read nvRam')
+    sendTo(namespace, 'readNVRam', {}, function(msg) {
+        if (msg) {
+            if (msg.error && update) {
+                showMessages(msg.error, _('Error'));
+                delete msg.error;
+            }
+            nvRamBackup = msg;
+            validateNVRamBackup(update)
+        }
+    });
+
 }
