@@ -36,8 +36,8 @@ The software is divided into "converter" and "adapter".
 3. Determine the coordinator path. On Unix/Linux systems, this is often located in the /dev/serial/by-id directory. Alternatively, /dev/ttyUSB*, /dev/ttyAM* (Unix/Linux), /dev/tty.usbserial-* (macOS), or com* (Windows) are expected.<br>
 The following example shows a Linux installation on a Raspberry Pi. The command `ls -la /dev/serial/by-id/` produces the output shown in the image.
 ![](../de/img/Bild2.png)
-4. ioBroker -> Install the ZigBee adapter, here version 1.8.10 as an example. <br> ![](../de/img/Bild3.png) <br> This installs all required software components (converter and adapter).
-5. Open the adapter configuration. The following image shows the interface from version 2.1.0 onwards.<br>![](img/Zigbee_config_en.png)<br>
+4. ioBroker -> Install the ZigBee adapter, here version 1.8.10 as an example. <br> ![](../de/img/Bild3.png) <br> This installs all required software components (converter and adapter). <br>![](img/Zigbee_config_en.png)<br>
+5. Open the adapter configuration. The above image shows the interface version 3.0.0 or newer.
 In this situation, the admin indicates whether the ZigBee subsystem is started (A).
 6. Enter the port for the coordinator (B). In the case of USB coordinators, this is the previously determined device path. For coordinators controlled via the network, the network address and port must be specified in the form tcp://ip:port instead of the device path. If the adapter itself (not the Zigbee subsystem) is active, a list of available serial interfaces is available for selection. The following applies when selecting:
 - If multiple adapters with different USB devices are used for communication on the system, a port from the /dev/serial/by-id directory (if available) should **absolutely** be selected. This ensures that the adapter's association with the coordinator is retained when the system is restarted.
