@@ -31,24 +31,21 @@ The software is divided into "converter" and "adapter".
 
 
 ## Installation
-1. Connect the coordinator hardware to the Raspberry Pi.<br>
-2. Connect to the Raspberry Pi using PuTTY, for example.<br>
-3. Determine the coordinator path. On Linux systems, this is often located in the /dev/serial/by-id directory. Alternatively, /dev/ttyUSB*, /dev/ttyAM* (Linux), /dev/tty.usbserial-* (macOS), or com* (Windows) are expected.<br>
+1. Connect the coordinator hardware to computer running ioBroker (or the network, in case of LAN/WLan coordinators).<br>
+2. Open a console on the server. In case of Unix/Linux based systems, this can be done remotely via ssh. Depending on the OS used, additional programs (e.g. puTTY on Windows) may be needed.<br>
+3. Determine the coordinator path. On Unix/Linux systems, this is often located in the /dev/serial/by-id directory. Alternatively, /dev/ttyUSB*, /dev/ttyAM* (Unix/Linux), /dev/tty.usbserial-* (macOS), or com* (Windows) are expected.<br>
 The following example shows a Linux installation on a Raspberry Pi. The command `ls -la /dev/serial/by-id/` produces the output shown in the image.
 ![](../de/img/Bild2.png)
 4. ioBroker -> Install the ZigBee adapter, here version 1.8.10 as an example. <br> ![](../de/img/Bild3.png) <br> This installs all required software components (converter and adapter).
 5. Open the adapter configuration. The following image shows the interface from version 2.1.0 onwards.<br>![](img/Zigbee_config_en.png)<br>
 In this situation, the admin indicates whether the ZigBee subsystem is started (A).
 6. Enter the port for the coordinator. (B) In the case of USB coordinators, this is the previously determined device path.
-(B) In the case of USB coordinators, this is the previously determined device path.
-(B) Bei USB-Koordinatoren ist dies der zuvor ermittelte Gerätepfad.
-(B) In the case of USB coordinators, this is the device path previously determined.
-(B) Bei USB-Koordinatoren ist dies der zuvor ermittelte Gerätepfad.
+- In the case of USB coordinators, this is the previously determined device path.
  For coordinators controlled via the network, the network address and port must be specified in the form tcp://ip:port instead of the device path. If the adapter itself (not the Zigbee subsystem) is active, a list of available serial interfaces is available for selection. The following applies when selecting:
 - If multiple adapters with different USB devices are used for communication on the system, a port from the /dev/serial/by-id directory (if available) should **absolutely** be selected. This ensures that the adapter's association with the coordinator is retained when the system is restarted.
 - If only one USB device is used, the /dev/TTY* port is preferable. This allows the coordinator to be replaced with an identical device in the event of a defect without having to adjust the configuration.
 7. Assign a Network ID and Pan ID to distinguish it from other ZigBee networks within wireless range. e.g., starting with adapter version 2.1.0, ExtPanID (C) and PanID (D) are automatically pre-assigned with random values ​​until the configuration is saved.<br>
-8. Select a suitable ZigBee channel (E). Please note that ZigBee and 2.4GHz Wi-Fi share the same frequency band. The optimal channel therefore depends, among other things, on the Wi-Fi channels used in the area. The channel names for ZigBee and Wi-Fi are **not** identical. It is also advisable to limit your selection to the ZigBee Light Link channels (11, 15, 20, 25). If a channel is selected that does not belong to the ZLL, the interface displays a yellow triangle with an exclamation mark above the entered channel. <br>After the adapter has been successfully started, a scan of the network channels can also be performed via the configuration.<br>
+8. Select a suitable ZigBee channel (E). Please note that ZigBee and 2.4GHz Wi-Fi share the same frequency band. The optimal channel therefore depends, among other things, on the Wi-Fi channels used in the area. The channel names for ZigBee and Wi-Fi are **not** identical, e.g. WIFI channel 11 and Zigbee channel 11 do **not** interfere with each other. It is also advisable to limit your selection to the ZigBee Light Link channels (11, 15, 20, 25). If a channel is selected that does not belong to the ZLL, the interface displays a yellow triangle with an exclamation mark above the entered channel. <br>After the adapter has been successfully started, a scan of the network channels can also be performed via the configuration.<br>
 **Note:** Starting with adapter version 2.1.0, it is possible to change the channel without deleting the configuration and re-learning all devices. However, **this feature is considered experimental** – individual devices may not respond to the channel change; these devices will then need to be re-learned.<br>
 9. Check whether the Zigbee subsystem is starting. To do this, try starting the Zigbee subsystem using *Start/Stop* (F). The progress of the start attempt can be observed in the log. The icon (A) changes from black/red to black/orange while the Herdsman starts. If the attempt was successful, the icon disappears completely; otherwise, it turns red again, and the messages in the log provide clues as to the cause.<br>
 The Herdsman can also be stopped using the same button. The icon is also displayed in black/orange. **Important: Stopping can take up to 2 minutes in some cases – especially when using network coordinators.** Patience is required here. After Herdsman has been terminated, the icon appears in black/red and the message 'Herdsman stopped!' appears.
