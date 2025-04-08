@@ -152,7 +152,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.0.0 (2025-04-08)
 * (asgothian) Breaking change: Start of zigbee subsystem requires configuration entry !!!
 * (asgothian) Hardware configuration panel
 * (asgothian) Update for external converter - detect /dist/ subfolder
