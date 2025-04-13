@@ -69,6 +69,11 @@ At first start, it is vital to set up the adapter settings. These include:
 
 
 ![](docs/en/img/Zigbee_config_en.png)
+
+The *Test Port* and *Star/Stop* buttons are provided to test the settings. 
+
+**Once the settings are verified the adapter can be prepared for automatic start by setting teh CheckBox *start the zigbee network automatically* **
+
 Please refer to the [in depth documentation](docs/en/readme.md) ([german version](docs/de/readme.md), [russian version](docs/ru/readme.md)) for a detailed explanation on how to configure the adapter.
 
 Once the adapter is up and running, the desired devices need to be integrated into the network. This requires for both the adapter and the device to be in pairing mode. Most new devices will be in pairing-mode when they are powered up for the first time, but some will require a special procedure for this. Please refer to the device manual for information on this.
