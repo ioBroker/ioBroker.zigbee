@@ -72,7 +72,7 @@ At first start, it is vital to set up the adapter settings. These include:
 
 The *Test Port* and *Star/Stop* buttons are provided to test the settings. 
 
-**Once the settings are verified the adapter can be prepared for automatic start by setting teh CheckBox *start the zigbee network automatically* **
+**Once the settings are verified the adapter can be prepared for automatic start by setting the CheckBox *start the zigbee network automatically* and saving the parameters.**
 
 Please refer to the [in depth documentation](docs/en/readme.md) ([german version](docs/de/readme.md), [russian version](docs/ru/readme.md)) for a detailed explanation on how to configure the adapter.
 
