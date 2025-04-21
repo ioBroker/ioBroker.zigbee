@@ -429,7 +429,51 @@ function EndPointIDfromEndPoint(ep) {
     return 'unidentified';
 }
 
+function updateOptions(k, n) {
+    const options = device_options;
+    const html_options=[];
+    if (k && options.hasOwnProperty(k)) delete options[k];
+    let idx=0;
+    let key = "";
+    if (n) {
+        do {
+            key = `option_${idx++}`
+        }
+        while (options.hasOwnProperty(key));
+        options[key] = '';
+    }
+
+    let cnt = 1;
+    for (const k in options) {
+        html_options.push(`<div class="row">`);
+        html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_key_${cnt}" type="text" class="value" /><label for="option_key_${cnt}">Option</label></div>`)
+        html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${cnt}" type="text" class="value" /><label for="option_value_${cnt}">Value</label></div>`)
+        html_options.push(`<div class="col"><a id="option_rem_${cnt}" class='btn' ><i class="material-icons">remove_circle</i></a></div>`);
+        html_options.push(`</div>`)
+        cnt++;
+    }
+    if (cnt > 1) {
+        $('#modaledit').find('.options_grid').html(html_options.join(""));
+        $('#modaledit').find('.options_available').removeClass('hide');
+        cnt = 1;
+        for (const k of Object.keys(options)) {
+            $(`#option_key_${cnt}`).val(k);
+            $(`#option_value_${cnt}`).val(options[k]);
+            $(`#option_rem_${cnt}`).unbind('click');
+            $(`#option_rem_${cnt}`).click(() => { updateOptions(k, undefined) });
+            cnt++;
+        }
+    }
+    else {
+        $('#modaledit').find('.options_available').addClass('hide');
+    }
+}
+
+let device_options = {};
+
 function editName(id, name) {
+    device_options = {};
+    let cnt = 0;
     console.warn('editName called with ' + id + ' and ' + name);
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find('input[id=\'d_name\']').val(name);
@@ -442,15 +486,17 @@ function editName(id, name) {
         }
     }
     const numEP = groupables.length;
-    $('#modaledit').find('.row.epid0').addClass('hide');
-    $('#modaledit').find('.row.epid1').addClass('hide');
-    $('#modaledit').find('.row.epid2').addClass('hide');
-    $('#modaledit').find('.row.epid3').addClass('hide');
-    $('#modaledit').find('.row.epid4').addClass('hide');
-    $('#modaledit').find('.row.epid5').addClass('hide');
-    $('#modaledit').find('.row.epid6').addClass('hide');
+
     if (numEP > 0) {
-        // go through all the groups. Find the ones to list for each groupable
+        $('#modaledit').find('.groups_available').removeClass('hide');
+        $('#modaledit').find('.row.epid0').addClass('hide');
+        $('#modaledit').find('.row.epid1').addClass('hide');
+        $('#modaledit').find('.row.epid2').addClass('hide');
+        $('#modaledit').find('.row.epid3').addClass('hide');
+        $('#modaledit').find('.row.epid4').addClass('hide');
+        $('#modaledit').find('.row.epid5').addClass('hide');
+        $('#modaledit').find('.row.epid6').addClass('hide');
+                // go through all the groups. Find the ones to list for each groupable
         if (numEP == 1) {
             $('#modaledit').find('.endpointid').addClass('hide');
         } else {
@@ -479,7 +525,25 @@ function editName(id, name) {
             list2select('#d_groups_ep' + i, groups, groupables[i].memberOf || []);
         }
     }
+    else
+    {
+        $('#modaledit').find('.groups_available').addClass('hide');
+    }
+    sendTo(namespace, 'getLocalConfigItems', { target:id, global:false, key:'options' }, function (msg) {
+        if (msg) {
+            if (msg.error) showMessage(msg.error, '_Error');
+            console.warn(`return is ${msg}`)
+            if (msg.hasOwnProperty('options')) {
+                device_options = msg.options;
+                updateOptions(undefined, undefined);
+            }
+        } else showMessage('callback without message');
+    });
+//    $('#modaledit a.btn[name=\'remove_options\']').unbind('click');
+//    $('#modaledit a.btn[name=\'remove_options\']').click(() => {});
     $('#modaledit a.btn[name=\'save\']').unbind('click');
+    $('#modaledit a.btn[name=\'add_options\']').unbind('click');
+    $('#modaledit a.btn[name=\'add_options\']').click(() => { updateOptions(undefined, 1) });
     $('#modaledit a.btn[name=\'save\']').click(() => {
         const newName = $('#modaledit').find('input[id=\'d_name\']').val();
         const groupsbyid = {};
@@ -490,8 +554,32 @@ function editName(id, name) {
                     groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
             }
         }
-        console.log('grpid ' + JSON.stringify(groupsbyid));
+        // read device_options from UI
+        const new_options = {};
+        let cnt = 1;
+        let changed = false;
+        for (const k in device_options) {
+            const key = $(`#option_key_${cnt}`).val();
+            const val = $(`#option_value_${cnt}`).val();
+            if (key.length > 0) {
+                new_options[key] = val;
+                changed |= new_options[key] != device_options[key];
+            }
+            cnt++;
+        }
+        console.warn(`options have changed : ${JSON.stringify(new_options)} vs ${JSON.stringify(new_options)} , saving them`);
+        if (changed) {
+            sendTo(namespace, 'updateLocalConfigItems', {
+                target: id,
+                global:false,
+                data: { options:new_options }
+            },
+            function (msg) {
+                if (msg && msg.error) showMessage(msg.error, '_Error');
+            });
+        }
         updateDev(id, newName, groupsbyid);
+
     });
     $('#modaledit').modal('open');
     Materialize.updateTextFields();
@@ -848,8 +936,8 @@ async function toggleDebugDevice(id) {
     });
 }
 
-function updateDeviceData(device, data, global) {
-    sendTo(namespace, 'updateDeviceData', {target: device, data:data, global:global}, function(msg) {
+function updateLocalConfigItems(device, data, global) {
+    sendTo(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
         if (msg && msg.hasOwnProperty.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -898,7 +986,7 @@ async function selectImageOverride(id) {
                 const data = {};
                 if (image != 'current') data.icon= image;
                 if (name != dev.common.name) data.name = name;
-                updateDeviceData(id, data, global);
+                updateLocalConfigItems(id, data, global);
             });
             $('#chooseimage').modal('open');
             Materialize.updateTextFields();
@@ -1022,6 +1110,7 @@ function displayDebugMessages(msg) {
             Html.push('</tbody></table></li>')
             for (const devID of Object.keys(dbgData)) {
                 const dev = devices.find((d) => d._id.endsWith(devID.slice(-16)));
+                if (!dev) continue;
                 const type_url = (dev && dev.common && dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown');
                 const image = `<img src="${dev.common.icon || dev.icon}" width="40px" onerror="this.onerror=null;this.src='img/unavailable.png';">`
                 const modelUrl = (type_url === 'unknown') ? 'unknown' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${image}</a>`;
@@ -3338,6 +3427,7 @@ function getDashCard(dev, groupImage, groupstatus) {
     const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
+        let hasval = '';
         let val = stateDef.val || '';
         if (stateDef.role === 'switch' && stateDef.write) {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? 'checked' : ''}><span class="lever"></span></label></span>`;
@@ -3358,6 +3448,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             let options;
             if (typeof stateDef.states == 'string') {
                 const sts = stateDef.states.split(';');
+                if (sts.length < 2) return '';
                 options = sts.map((item) => {
                     const v = item.split(':');
                     return `<option value="${v[0]}" ${(val == v[0]) ? 'selected' : ''}>${v[1]}</option>`;
@@ -3368,9 +3459,13 @@ function getDashCard(dev, groupImage, groupstatus) {
                     options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${key}</option>`);
                 }
             }
+            if (options.length < 2) return '';
             val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
-        } else {
-            val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
+        } else if (stateDef.write) { return;
+            val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
+        }
+        else {
+            val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
         return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
     }).join('') : '';
@@ -3536,7 +3631,7 @@ function validateConfigData(key, val) {
     }
     if (nvRamBackup[key]) {
         console.warn(`value of ${key} is ${val} (${nvRamBackup[key]})`);
-        if (val == nvRamBackup[key])
+        if ((typeof val == 'string' && typeof nvRamBackup[key] == 'string' && val.toLowerCase == nvRamBackup[key].toLowerCase) || val == nvRamBackup[key])
         {
             console.warn(`ok set for ${key} (${val})`)
             $(`#${key}_OK`).removeClass('hide')
