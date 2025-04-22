@@ -429,50 +429,69 @@ function EndPointIDfromEndPoint(ep) {
     return 'unidentified';
 }
 
-function updateOptions(k, n) {
-    const options = device_options;
-    const html_options=[];
-    if (k && options.hasOwnProperty(k)) delete options[k];
-    let idx=0;
-    let key = "";
-    if (n) {
-        do {
-            key = `option_${idx++}`
-        }
-        while (options.hasOwnProperty(key));
-        options[key] = '';
-    }
 
-    let cnt = 1;
-    for (const k in options) {
-        html_options.push(`<div class="row">`);
-        html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_key_${cnt}" type="text" class="value" /><label for="option_key_${cnt}">Option</label></div>`)
-        html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${cnt}" type="text" class="value" /><label for="option_value_${cnt}">Value</label></div>`)
-        html_options.push(`<div class="col"><a id="option_rem_${cnt}" class='btn' ><i class="material-icons">remove_circle</i></a></div>`);
-        html_options.push(`</div>`)
-        cnt++;
-    }
-    if (cnt > 1) {
-        $('#modaledit').find('.options_grid').html(html_options.join(""));
-        $('#modaledit').find('.options_available').removeClass('hide');
-        cnt = 1;
-        for (const k of Object.keys(options)) {
-            $(`#option_key_${cnt}`).val(k);
-            $(`#option_value_${cnt}`).val(options[k]);
-            $(`#option_rem_${cnt}`).unbind('click');
-            $(`#option_rem_${cnt}`).click(() => { updateOptions(k, undefined) });
-            cnt++;
-        }
-    }
-    else {
-        $('#modaledit').find('.options_available').addClass('hide');
-    }
-}
-
-let device_options = {};
 
 function editName(id, name) {
-    device_options = {};
+
+    function removeOption(k) {
+        if (k && device_options.hasOwnProperty(k)) delete device_options[k];
+    }
+
+    function addOption() {
+        let idx=1;
+        let key = "";
+        do {
+            key = `o${idx++}`;
+        }
+        while (device_options.hasOwnProperty(key));
+        device_options[key] = {key:`option_${idx++}`, value:""};
+    }
+
+    function updateOptions() {
+        const html_options=[];
+
+        for (const k in device_options) {
+            html_options.push(`<div class="row">`);
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_key_${k}" type="text" class="value" /><label for="option_key_${cnt}">Option</label></div>`)
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${cnt}">Value</label></div>`)
+            html_options.push(`<div class="col"><a id="option_rem_${k}" class='btn' ><i class="material-icons">remove_circle</i></a></div>`);
+            html_options.push(`</div>`)
+        }
+        $('#modaledit').find('.options_grid').html(html_options.join(""));
+        if (html_options.length > 0) {
+            $('#modaledit').find('.options_available').removeClass('hide');
+            for (const k of Object.keys(device_options)) {
+                $(`#option_key_${k}`).val(device_options[k].key);
+                $(`#option_value_${k}`).val(device_options[k].value);
+                $(`#option_rem_${k}`).unbind('click');
+                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions() });
+            }
+        }
+        else {
+            $('#modaledit').find('.options_available').addClass('hide');
+        }
+    }
+
+    function getOptionsFromUI(_do, _so) {
+        const _no = {};
+        let changed = false;
+        for (const k in _do) {
+            const key =  $(`#option_key_${k}`).val();
+            _do[k].key = key;
+            _do[k].value = $(`#option_value_${k}`).val();
+            if (device_options[k].key.length > 0) {
+                _no[key] = device_options[k].value;
+                changed |= _no[key] != _so[key];
+            }
+        }
+        changed |= (Object.keys(_no).length != Object.keys(_so).length)
+        if (changed) return _no;
+        return undefined;
+    }
+
+    let device_options = {};
+    let received_options = {};
+
     let cnt = 0;
     console.warn('editName called with ' + id + ' and ' + name);
     const dev = devices.find((d) => d._id == id);
@@ -533,8 +552,16 @@ function editName(id, name) {
         if (msg) {
             if (msg.error) showMessage(msg.error, '_Error');
             console.warn(`return is ${msg}`)
-            if (msg.hasOwnProperty('options')) {
-                device_options = msg.options;
+            device_options = {};
+            received_options = {};
+            if (typeof msg.options === 'object') {
+                let cnt = 1;
+                received_options = msg.options;
+                for (const key in msg.options)
+                {
+                    device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
+                    cnt++;
+                }
                 updateOptions(undefined, undefined);
             }
         } else showMessage('callback without message');
@@ -543,7 +570,11 @@ function editName(id, name) {
 //    $('#modaledit a.btn[name=\'remove_options\']').click(() => {});
     $('#modaledit a.btn[name=\'save\']').unbind('click');
     $('#modaledit a.btn[name=\'add_options\']').unbind('click');
-    $('#modaledit a.btn[name=\'add_options\']').click(() => { updateOptions(undefined, 1) });
+    $('#modaledit a.btn[name=\'add_options\']').click(() => {
+        getOptionsFromUI(device_options, received_options);
+        addOption();
+        updateOptions()
+    });
     $('#modaledit a.btn[name=\'save\']').click(() => {
         const newName = $('#modaledit').find('input[id=\'d_name\']').val();
         const groupsbyid = {};
@@ -555,24 +586,14 @@ function editName(id, name) {
             }
         }
         // read device_options from UI
-        const new_options = {};
         let cnt = 1;
-        let changed = false;
-        for (const k in device_options) {
-            const key = $(`#option_key_${cnt}`).val();
-            const val = $(`#option_value_${cnt}`).val();
-            if (key.length > 0) {
-                new_options[key] = val;
-                changed |= new_options[key] != device_options[key];
-            }
-            cnt++;
-        }
-        console.warn(`options have changed : ${JSON.stringify(new_options)} vs ${JSON.stringify(new_options)} , saving them`);
-        if (changed) {
+        const co = getOptionsFromUI(device_options, received_options)
+        console.warn(`options have ${co ? 'changed' : 'not changed'} : ${JSON.stringify(co)} vs ${JSON.stringify(received_options)} , saving them`);
+        if (co) {
             sendTo(namespace, 'updateLocalConfigItems', {
                 target: id,
                 global:false,
-                data: { options:new_options }
+                data: { options:co }
             },
             function (msg) {
                 if (msg && msg.error) showMessage(msg.error, '_Error');
