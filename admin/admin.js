@@ -480,7 +480,13 @@ function editName(id, name) {
             _do[k].key = key;
             _do[k].value = $(`#option_value_${k}`).val();
             if (device_options[k].key.length > 0) {
-                _no[key] = device_options[k].value;
+                const val = device_options[k].value;
+                try {
+                    _do[k].value = JSON.parse(val);
+                }
+                catch {
+                    _do[k].value = val;
+                }
                 changed |= _no[key] != _so[key];
             }
         }
