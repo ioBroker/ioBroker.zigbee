@@ -433,6 +433,9 @@ function EndPointIDfromEndPoint(ep) {
 
 function editName(id, name) {
 
+    const device_options = {};
+    const received_options = {};
+
     function removeOption(k) {
         if (k && device_options.hasOwnProperty(k)) delete device_options[k];
     }
@@ -450,6 +453,8 @@ function editName(id, name) {
     function updateOptions() {
         const html_options=[];
 
+        console.warn(`device_options is ${JSON.stringify(device_options)}`)
+
         for (const k in device_options) {
             html_options.push(`<div class="row">`);
             html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_key_${k}" type="text" class="value" /><label for="option_key_${cnt}">Option</label></div>`)
@@ -457,7 +462,9 @@ function editName(id, name) {
             html_options.push(`<div class="col"><a id="option_rem_${k}" class='btn' ><i class="material-icons">remove_circle</i></a></div>`);
             html_options.push(`</div>`)
         }
+        console.warn(`html is ${$('#modaledit').find('.options_grid').html()}`)
         $('#modaledit').find('.options_grid').html(html_options.join(""));
+        console.warn(`html is now ${$('#modaledit').find('.options_grid').html()}`)
         if (html_options.length > 0) {
             $('#modaledit').find('.options_available').removeClass('hide');
             for (const k of Object.keys(device_options)) {
@@ -478,15 +485,15 @@ function editName(id, name) {
         for (const k in _do) {
             const key =  $(`#option_key_${k}`).val();
             _do[k].key = key;
-            _do[k].value = $(`#option_value_${k}`).val();
+            const val = $(`#option_value_${k}`).val();
+            try {
+                _do[k].value = JSON.parse(val);
+            }
+            catch {
+                _do[k].value = val;
+            }
             if (device_options[k].key.length > 0) {
-                const val = device_options[k].value;
-                try {
-                    _do[k].value = JSON.parse(val);
-                }
-                catch {
-                    _do[k].value = val;
-                }
+                _no[key] = device_options[k].value;
                 changed |= _no[key] != _so[key];
             }
         }
@@ -495,8 +502,6 @@ function editName(id, name) {
         return undefined;
     }
 
-    let device_options = {};
-    let received_options = {};
 
     let cnt = 0;
     console.warn('editName called with ' + id + ' and ' + name);
@@ -558,18 +563,20 @@ function editName(id, name) {
         if (msg) {
             if (msg.error) showMessage(msg.error, '_Error');
             console.warn(`return is ${msg}`)
-            device_options = {};
-            received_options = {};
+            Object.keys(device_options).forEach(key => delete device_options[key]);
+            Object.keys(received_options).forEach(key => delete received_options[key]);
             if (typeof msg.options === 'object') {
+
                 let cnt = 1;
-                received_options = msg.options;
                 for (const key in msg.options)
                 {
+                    received_options[key]=msg.options[key];
                     device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
                     cnt++;
                 }
-                updateOptions(undefined, undefined);
             }
+            updateOptions(undefined, undefined);
+
         } else showMessage('callback without message');
     });
 //    $('#modaledit a.btn[name=\'remove_options\']').unbind('click');
