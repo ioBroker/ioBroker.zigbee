@@ -497,7 +497,7 @@ function editName(id, name) {
                 changed |= _no[key] != _so[key];
             }
         }
-        changed |= (Object.keys(_no).length != Object.keys(_so).length)
+        changed |= (Object.keys(_no).length != Object.keys(_so).length);
         if (changed) return _no;
         return undefined;
     }
@@ -575,7 +575,7 @@ function editName(id, name) {
                     cnt++;
                 }
             }
-            updateOptions(undefined, undefined);
+            updateOptions();
 
         } else showMessage('callback without message');
     });
