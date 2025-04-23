@@ -809,7 +809,7 @@ class Zigbee extends utils.Adapter {
                         this.emit('device_debug', { ID:debugID, data: { error: 'NOCONV',states:[{id:stateDesc.id, value:value, payload:'no converter'}] , IO:false }, message:message});
                     }
                     else {
-                        this.log.warn(message);
+                        this.log.info(message);
                     }
                     return;
                 }
@@ -1085,19 +1085,12 @@ class Zigbee extends utils.Adapter {
             }
 
             this.log.info('cleaning everything up...');
-            if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
-            await new Promise(r => setTimeout(r, 500));
-            this.log.info('ping 1');
             await this.callPluginMethod('stop');
             await this.stController.stop();
-            this.log.info('pong 1');
             if (this.zbController) {
                 await this.zbController.stop();
             }
-            this.log.info('ping 2');
-            await new Promise(r => setTimeout(r, 500));
             this.log.info('cleanup successful');
-            await new Promise(r => setTimeout(r, 500));
             callback();
         } catch (error) {
             if (error) {
