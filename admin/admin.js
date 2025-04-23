@@ -442,12 +442,12 @@ function editName(id, name) {
 
     function addOption() {
         let idx=1;
-        let key = "";
+        let key = '';
         do {
             key = `o${idx++}`;
         }
         while (device_options.hasOwnProperty(key));
-        device_options[key] = {key:`option_${idx++}`, value:""};
+        device_options[key] = {key:`option_${idx++}`, value:''};
     }
 
     function updateOptions() {
@@ -457,13 +457,13 @@ function editName(id, name) {
 
         for (const k in device_options) {
             html_options.push(`<div class="row">`);
-            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_key_${k}" type="text" class="value" /><label for="option_key_${cnt}">Option</label></div>`)
-            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${cnt}">Value</label></div>`)
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">Value</label></div>`)
             html_options.push(`<div class="col"><a id="option_rem_${k}" class='btn' ><i class="material-icons">remove_circle</i></a></div>`);
             html_options.push(`</div>`)
         }
         console.warn(`html is ${$('#modaledit').find('.options_grid').html()}`)
-        $('#modaledit').find('.options_grid').html(html_options.join(""));
+        $('#modaledit').find('.options_grid').html(html_options.join(''));
         console.warn(`html is now ${$('#modaledit').find('.options_grid').html()}`)
         if (html_options.length > 0) {
             $('#modaledit').find('.options_available').removeClass('hide');
@@ -503,7 +503,7 @@ function editName(id, name) {
     }
 
 
-    let cnt = 0;
+
     console.warn('editName called with ' + id + ' and ' + name);
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find('input[id=\'d_name\']').val(name);
@@ -526,7 +526,7 @@ function editName(id, name) {
         $('#modaledit').find('.row.epid4').addClass('hide');
         $('#modaledit').find('.row.epid5').addClass('hide');
         $('#modaledit').find('.row.epid6').addClass('hide');
-                // go through all the groups. Find the ones to list for each groupable
+        // go through all the groups. Find the ones to list for each groupable
         if (numEP == 1) {
             $('#modaledit').find('.endpointid').addClass('hide');
         } else {
@@ -579,8 +579,6 @@ function editName(id, name) {
 
         } else showMessage('callback without message');
     });
-//    $('#modaledit a.btn[name=\'remove_options\']').unbind('click');
-//    $('#modaledit a.btn[name=\'remove_options\']').click(() => {});
     $('#modaledit a.btn[name=\'save\']').unbind('click');
     $('#modaledit a.btn[name=\'add_options\']').unbind('click');
     $('#modaledit a.btn[name=\'add_options\']').click(() => {
@@ -599,7 +597,6 @@ function editName(id, name) {
             }
         }
         // read device_options from UI
-        let cnt = 1;
         const co = getOptionsFromUI(device_options, received_options)
         console.warn(`options have ${co ? 'changed' : 'not changed'} : ${JSON.stringify(co)} vs ${JSON.stringify(received_options)} , saving them`);
         if (co) {
@@ -3461,7 +3458,6 @@ function getDashCard(dev, groupImage, groupstatus) {
     const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
-        let hasval = '';
         let val = stateDef.val || '';
         if (stateDef.role === 'switch' && stateDef.write) {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? 'checked' : ''}><span class="lever"></span></label></span>`;
@@ -3495,8 +3491,9 @@ function getDashCard(dev, groupImage, groupstatus) {
             }
             if (options.length < 2) return '';
             val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
-        } else if (stateDef.write) { return;
-            val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
+        } else if (stateDef.write) {
+            return;
+            // val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
         }
         else {
             val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
