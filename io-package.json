@@ -159,6 +159,7 @@
       "tab": "materialize"
     },
     "messagebox": true,
+    "stopTimeout": 30000,
     "stopBeforeUpdate": true,
     "dataFolder": "zigbee_%INSTANCE%",
     "compact": true,

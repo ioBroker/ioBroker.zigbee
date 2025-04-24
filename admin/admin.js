@@ -429,7 +429,81 @@ function EndPointIDfromEndPoint(ep) {
     return 'unidentified';
 }
 
+
+
 function editName(id, name) {
+
+    const device_options = {};
+    const received_options = {};
+
+    function removeOption(k) {
+        if (k && device_options.hasOwnProperty(k)) delete device_options[k];
+    }
+
+    function addOption() {
+        let idx=1;
+        let key = '';
+        do {
+            key = `o${idx++}`;
+        }
+        while (device_options.hasOwnProperty(key));
+        device_options[key] = {key:`option_${idx++}`, value:''};
+    }
+
+    function updateOptions() {
+        const html_options=[];
+
+        console.warn(`device_options is ${JSON.stringify(device_options)}`)
+
+        for (const k in device_options) {
+            html_options.push(`<div class="row">`);
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">Value</label></div>`)
+            html_options.push(`<div class="col"><a id="option_rem_${k}" class='btn' ><i class="material-icons">remove_circle</i></a></div>`);
+            html_options.push(`</div>`)
+        }
+        console.warn(`html is ${$('#modaledit').find('.options_grid').html()}`)
+        $('#modaledit').find('.options_grid').html(html_options.join(''));
+        console.warn(`html is now ${$('#modaledit').find('.options_grid').html()}`)
+        if (html_options.length > 0) {
+            $('#modaledit').find('.options_available').removeClass('hide');
+            for (const k of Object.keys(device_options)) {
+                $(`#option_key_${k}`).val(device_options[k].key);
+                $(`#option_value_${k}`).val(device_options[k].value);
+                $(`#option_rem_${k}`).unbind('click');
+                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions() });
+            }
+        }
+        else {
+            $('#modaledit').find('.options_available').addClass('hide');
+        }
+    }
+
+    function getOptionsFromUI(_do, _so) {
+        const _no = {};
+        let changed = false;
+        for (const k in _do) {
+            const key =  $(`#option_key_${k}`).val();
+            _do[k].key = key;
+            const val = $(`#option_value_${k}`).val();
+            try {
+                _do[k].value = JSON.parse(val);
+            }
+            catch {
+                _do[k].value = val;
+            }
+            if (device_options[k].key.length > 0) {
+                _no[key] = device_options[k].value;
+                changed |= _no[key] != _so[key];
+            }
+        }
+        changed |= (Object.keys(_no).length != Object.keys(_so).length);
+        if (changed) return _no;
+        return undefined;
+    }
+
+
+
     console.warn('editName called with ' + id + ' and ' + name);
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find('input[id=\'d_name\']').val(name);
@@ -442,14 +516,16 @@ function editName(id, name) {
         }
     }
     const numEP = groupables.length;
-    $('#modaledit').find('.row.epid0').addClass('hide');
-    $('#modaledit').find('.row.epid1').addClass('hide');
-    $('#modaledit').find('.row.epid2').addClass('hide');
-    $('#modaledit').find('.row.epid3').addClass('hide');
-    $('#modaledit').find('.row.epid4').addClass('hide');
-    $('#modaledit').find('.row.epid5').addClass('hide');
-    $('#modaledit').find('.row.epid6').addClass('hide');
+
     if (numEP > 0) {
+        $('#modaledit').find('.groups_available').removeClass('hide');
+        $('#modaledit').find('.row.epid0').addClass('hide');
+        $('#modaledit').find('.row.epid1').addClass('hide');
+        $('#modaledit').find('.row.epid2').addClass('hide');
+        $('#modaledit').find('.row.epid3').addClass('hide');
+        $('#modaledit').find('.row.epid4').addClass('hide');
+        $('#modaledit').find('.row.epid5').addClass('hide');
+        $('#modaledit').find('.row.epid6').addClass('hide');
         // go through all the groups. Find the ones to list for each groupable
         if (numEP == 1) {
             $('#modaledit').find('.endpointid').addClass('hide');
@@ -479,7 +555,37 @@ function editName(id, name) {
             list2select('#d_groups_ep' + i, groups, groupables[i].memberOf || []);
         }
     }
+    else
+    {
+        $('#modaledit').find('.groups_available').addClass('hide');
+    }
+    sendTo(namespace, 'getLocalConfigItems', { target:id, global:false, key:'options' }, function (msg) {
+        if (msg) {
+            if (msg.error) showMessage(msg.error, '_Error');
+            console.warn(`return is ${msg}`)
+            Object.keys(device_options).forEach(key => delete device_options[key]);
+            Object.keys(received_options).forEach(key => delete received_options[key]);
+            if (typeof msg.options === 'object') {
+
+                let cnt = 1;
+                for (const key in msg.options)
+                {
+                    received_options[key]=msg.options[key];
+                    device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
+                    cnt++;
+                }
+            }
+            updateOptions();
+
+        } else showMessage('callback without message');
+    });
     $('#modaledit a.btn[name=\'save\']').unbind('click');
+    $('#modaledit a.btn[name=\'add_options\']').unbind('click');
+    $('#modaledit a.btn[name=\'add_options\']').click(() => {
+        getOptionsFromUI(device_options, received_options);
+        addOption();
+        updateOptions()
+    });
     $('#modaledit a.btn[name=\'save\']').click(() => {
         const newName = $('#modaledit').find('input[id=\'d_name\']').val();
         const groupsbyid = {};
@@ -490,8 +596,21 @@ function editName(id, name) {
                     groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
             }
         }
-        console.log('grpid ' + JSON.stringify(groupsbyid));
+        // read device_options from UI
+        const co = getOptionsFromUI(device_options, received_options)
+        console.warn(`options have ${co ? 'changed' : 'not changed'} : ${JSON.stringify(co)} vs ${JSON.stringify(received_options)} , saving them`);
+        if (co) {
+            sendTo(namespace, 'updateLocalConfigItems', {
+                target: id,
+                global:false,
+                data: { options:co }
+            },
+            function (msg) {
+                if (msg && msg.error) showMessage(msg.error, '_Error');
+            });
+        }
         updateDev(id, newName, groupsbyid);
+
     });
     $('#modaledit').modal('open');
     Materialize.updateTextFields();
@@ -848,8 +967,8 @@ async function toggleDebugDevice(id) {
     });
 }
 
-function updateDeviceData(device, data, global) {
-    sendTo(namespace, 'updateDeviceData', {target: device, data:data, global:global}, function(msg) {
+function updateLocalConfigItems(device, data, global) {
+    sendTo(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
         if (msg && msg.hasOwnProperty.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -898,7 +1017,7 @@ async function selectImageOverride(id) {
                 const data = {};
                 if (image != 'current') data.icon= image;
                 if (name != dev.common.name) data.name = name;
-                updateDeviceData(id, data, global);
+                updateLocalConfigItems(id, data, global);
             });
             $('#chooseimage').modal('open');
             Materialize.updateTextFields();
@@ -1022,6 +1141,7 @@ function displayDebugMessages(msg) {
             Html.push('</tbody></table></li>')
             for (const devID of Object.keys(dbgData)) {
                 const dev = devices.find((d) => d._id.endsWith(devID.slice(-16)));
+                if (!dev) continue;
                 const type_url = (dev && dev.common && dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown');
                 const image = `<img src="${dev.common.icon || dev.icon}" width="40px" onerror="this.onerror=null;this.src='img/unavailable.png';">`
                 const modelUrl = (type_url === 'unknown') ? 'unknown' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${image}</a>`;
@@ -3358,6 +3478,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             let options;
             if (typeof stateDef.states == 'string') {
                 const sts = stateDef.states.split(';');
+                if (sts.length < 2) return '';
                 options = sts.map((item) => {
                     const v = item.split(':');
                     return `<option value="${v[0]}" ${(val == v[0]) ? 'selected' : ''}>${v[1]}</option>`;
@@ -3368,9 +3489,14 @@ function getDashCard(dev, groupImage, groupstatus) {
                     options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${key}</option>`);
                 }
             }
+            if (options.length < 2) return '';
             val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
-        } else {
-            val = `<span class="dash value">${val} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
+        } else if (stateDef.write) {
+            return;
+            // val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
+        }
+        else {
+            val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
         return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
     }).join('') : '';
@@ -3536,7 +3662,7 @@ function validateConfigData(key, val) {
     }
     if (nvRamBackup[key]) {
         console.warn(`value of ${key} is ${val} (${nvRamBackup[key]})`);
-        if (val == nvRamBackup[key])
+        if ((typeof val == 'string' && typeof nvRamBackup[key] == 'string' && val.toLowerCase == nvRamBackup[key].toLowerCase) || val == nvRamBackup[key])
         {
             console.warn(`ok set for ${key} (${val})`)
             $(`#${key}_OK`).removeClass('hide')
