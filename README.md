@@ -160,7 +160,7 @@ You can thank the authors by these links:
 ### **WORK IN PROGRESS**
 * (AlexHaxe)  Fix for Ikea SOMRIG configuration raising 'definition.endpoint is not a function' error.
 * (asgothian) Access to 'zigbee2mqtt options as settings in zigbee adapter (ALPHA Stage !)
-* (asgothian) Fix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)
+* (asgothian) Fix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)
 * (asgothian) Updated hardware configuration panel - exchanged text buttons for buttons with icons.
 * (asgothian) Limited states on device tiles to states which are read only or which can be modified sensibly via the device tile.
 *
