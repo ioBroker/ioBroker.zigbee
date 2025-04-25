@@ -157,7 +157,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.0.1 (2025-04-25)
 * (AlexHaxe)  Fix for Ikea SOMRIG configuration raising 'definition.endpoint is not a function' error.
 * (asgothian) Access to 'zigbee2mqtt options as settings in zigbee adapter (ALPHA Stage !)
 * (asgothian) Fix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)
@@ -165,7 +165,6 @@ You can thank the authors by these links:
 * (asgothian) Limited states on device tiles to states which are read only or which can be modified sensibly via the device tile.
 *
 
-## Changelog
 ### 3.0.0 (2025-04-08)
 * (asgothian) Breaking change: Start of zigbee subsystem requires checking the 'start the Zigbee network automatically' checkbox. !!!
 * (asgothian) Hardware configuration panel
