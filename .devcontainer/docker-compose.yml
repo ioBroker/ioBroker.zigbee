@@ -1,0 +1,38 @@
+services:
+    iobroker:
+        build: ./iobroker
+        container_name: iobroker-zigbee
+        hostname: iobroker-zigbee
+        # This port is only internal, so we can work on this while another instance of ioBroker is running on the host
+        expose:
+            - 8081
+        volumes:
+            - ..:/workspace:cached
+        environment:
+            # using non-default ports to not interfere with integration tests
+            - IOB_OBJECTSDB_TYPE=jsonl
+            - IOB_OBJECTSDB_HOST=127.0.0.1
+            - IOB_OBJECTSDB_PORT=29001
+            - IOB_STATESDB_TYPE=jsonl
+            - IOB_STATESDB_HOST=127.0.0.1
+            - IOB_STATESDB_PORT=29000
+            - LANG=en_US.UTF-8
+            - LANGUAGE=en_US:en
+            - LC_ALL=en_US.UTF-8
+            - TZ=Europe/Berlin
+            - SETGID=1000
+
+    # Reverse proxy to load up-to-date admin sources from the repo
+    nginx:
+        image: nginx:latest
+        depends_on:
+            - iobroker
+        links:
+            - iobroker
+        container_name: nginx-zigbee
+        volumes:
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ..:/workspace:cached
+        ports:
+            # Port will be forwarded in the devcontainer
+            - 80
