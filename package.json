@@ -41,7 +41,7 @@
     "chai": "^5.1.2",
     "chai-as-promised": "^7.1.1",
     "eslint": "^9.19.0",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.4.1",
     "gulp": "^4.0.2",
     "gulp-jsdoc3": "^3.0.0",
