@@ -23,7 +23,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.3",
     "@iobroker/dm-utils": "^1.0.9",
-    "humanize-duration": "^3.32.1",
+    "humanize-duration": "^3.32.2",
     "tar": "^7.4.3",
     "ajv": "^8.17.1",
     "uri-js": "^4.4.1",
