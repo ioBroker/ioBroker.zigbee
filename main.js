@@ -232,7 +232,11 @@ class Zigbee extends utils.Adapter {
         this.deviceDebug.start(this.stController, this.zbController);
 
         this.reconnectCounter = 1;
-        if (this.config.autostart) this.doConnect();
+        if (this.config.autostart) {
+            this.log.info('Autostart Zigbee subsystem');
+            this.doConnect();
+        }
+        else this.log.warn('Zigbee autostart option not set - omitting start of zigbee substystem!');
     }
     updateDebugLevel(state) {
         const dbActive = state === 'debug';
@@ -1079,6 +1083,7 @@ class Zigbee extends utils.Adapter {
      */
     async onUnload(callback) {
         try {
+            this.log.info(`Halting zigbee adapter. Restart delay is at least ${this.ioPack.common.stopTimeout / 1000} seconds.`)
             if (this.config.debugHerdsman) {
                 debug.disable();
                 debug.log = originalLogMethod;
