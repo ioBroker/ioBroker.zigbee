@@ -37,7 +37,7 @@ body:
       id: ZHC_Version
       attributes:
           label: min. ZHC version
-          description: Search the changelog at https://github.com/Koenkk/zigbee-herdsman-converters/blob/master/CHANGELOG.md for the reported Model Name, modelZigbee or manufacturer entry.
+          description: Search the changelog at https://github.com/Koenkk/zigbee-herdsman-converters/blob/master/CHANGELOG.md for the Model Name, the reported modelZigbee or manufacturer entry.
           placeholder: '23.0.0'
       validations:
           required: true
