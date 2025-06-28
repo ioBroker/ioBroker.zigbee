@@ -8,7 +8,8 @@ body:
               **IMPORTANT:**    
               - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is listed as supported at zigbee2mqtt.io. Any device without a link to zigbee2mqtt.io will be assumed not supported - integration of these devices requires physical access to the device, so it is unlikely that any work will be done on it in this project.
               - ensure that both the manufacturer and the model match between your device and the listed device.
-              - lack of testing with the current github version will result in no action taken. Please ensure to test if a device works in the current github version before submitting a report.
+              - identify required ZHC version !
+              - **lack of testing with the current github version will result in no action taken.** Please ensure to test if a device works in the current github version before submitting a report.
     - type: input
       id: zigbee_version
       attributes:
@@ -23,7 +24,7 @@ body:
           description: Can be found on the info-panel accessible from the backside of the device tile in the Admin GUI / Zigbee Tab
           placeholder: 'TS0601'
       validations:
-          required: true          
+          required: true         
     - type: input
       id: manufacturer
       attributes:
@@ -32,6 +33,14 @@ body:
           placeholder: '_TZ3000_upgcbody'
       validations:
           required: true          
+    - type: input
+      id: ZHC_Version
+      attributes:
+          label: min. ZHC version
+          description: Search the changelog at https://github.com/Koenkk/zigbee-herdsman-converters/blob/master/CHANGELOG.md for the reported modelZigbee or manufacturer entry.
+          placeholder: '23.0.0'
+      validations:
+          required: true
     - type: input
       id: Link_to_device
       attributes:
