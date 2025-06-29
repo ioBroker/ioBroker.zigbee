@@ -109,7 +109,7 @@ The debug information is only available from the zigbee tab.
 
 ### Local overrides
 
-Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 2.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.
+Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 3.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.
 
 The local overrides are only available from the instance configuration
 
