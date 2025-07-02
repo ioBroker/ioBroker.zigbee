@@ -9,7 +9,7 @@ body:
               - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is listed as supported at zigbee2mqtt.io. Any device without a link to zigbee2mqtt.io will be assumed not supported - integration of these devices requires physical access to the device, so it is unlikely that any work will be done on it in this project.
               - ensure that both the manufacturer and the model match between your device and the listed device.
               - identify required ZHC version !
-              - **lack of testing with the current github version will result in no action taken.** Please ensure to test if a device works in the current github version before submitting a report.
+              - **do NOT open an issue without at least testing with the current latest or github version.** Issues tested only against the current stable version will **NOT** be acted upon.
     - type: input
       id: zigbee_version
       attributes:
