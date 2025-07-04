@@ -13,7 +13,7 @@ body:
     - type: input
       id: zigbee_version
       attributes:
-          label: Tested with adapter version (Note: Test with latest and/or GitHub Version **required**
+          label: Tested with adapter version (Test with latest and/or GitHub Version required)
           placeholder: '1.10.15'
       validations:
           required: true    
