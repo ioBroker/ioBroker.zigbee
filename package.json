@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -23,7 +23,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.2.3",
     "@iobroker/dm-utils": "^1.0.10",
-    "humanize-duration": "^3.32.2",
+    "humanize-duration": "^3.33.0",
     "tar": "^7.4.3",
     "ajv": "^8.17.1",
     "uri-js": "^4.4.1",
@@ -40,9 +40,9 @@
     "@iobroker/testing": "^5.0.4",
     "chai": "^5.1.2",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^9.19.0",
+    "eslint": "^9.30.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.4.1",
+    "eslint-plugin-prettier": "^5.5.1",
     "gulp": "^4.0.2",
     "gulp-jsdoc3": "^3.0.0",
     "gulp-replace": "^1.1.4",
