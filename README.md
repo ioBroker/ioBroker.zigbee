@@ -152,6 +152,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### 3.0.2 (2025-07-07)
+* (asgothian) fix images
+
 ### 3.0.1 (2025-04-25)
 * (AlexHaxe)  Fix for Ikea SOMRIG configuration raising 'definition.endpoint is not a function' error.
 * (asgothian) Access to 'zigbee2mqtt options as settings in zigbee adapter (ALPHA Stage !)
