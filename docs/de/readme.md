@@ -37,7 +37,7 @@ Die Software wird unterteilt in "Konverter" und "Adapter".
 Das folgende Beispiel zeigt eine Linux-Installation auf einem Raspberry PI. Der Befehl `ls -la /dev/serial/by-id/` erzeugt die im Bild erkennbare Ausgabe.
 ![](img/Bild2.png)
 4.	ioBroker -> ZigBee-Adapter installieren, hier als Beispiel die Version 1.8.10 <br> ![](img/Bild3.png)  <br> Hiermit werden alle erforderlichen Softwareteile (Konverter und Adapter) installiert.
-5. Konfiguration des Adapters öffnen. Das folgende Bild zeigt das Interface ab der Version 2.1.0.<br>![](img/Zigbee_config_de.jpg)<br>
+5. Konfiguration des Adapters öffnen. Das folgende Bild zeigt das Interface ab der Version 2.1.0.<br>![](img/Zigbee_config2_de.jpg)<br>
 Der Admin zeigt in dieser Situation an ob das Zigbee-Subsystem gestartet ist (A).
 6. Port zum Koordinator eintragen. (B) Im Fall von USB Koordinatoren ist das der zuvor ermittelte Device-Pfad. Im Fall von über das Netzwerk angesteuerten Koordinatoren muss an Stelle des Gerätepfades die Netzwerkaddresse samt port in der Form tcp://ip:port angegeben werden. Sofern der Adapter selber (nicht das Zigbee-Subsyste) aktiv ist steht eine Liste der verfügbaren seriellen Schnittstellen zur Auswahl zur Verfügung. Bei der Auswahl gilt:
 - Sofern am System mehrere Adapter mit unterschiedlichen USB Geräten zur Kommunikation verwendet werden und der ioBroker nativ auf dem System läuft (nicht in einem Container) sollte **unbedingt** ein Port aus dem Verzeichnis /dev/serial/by-id (sofern verfügbar) ausgewählt werden. Damit wird sicher gestellt das bei einem Neustart des Systems die Zuordnung des Adapters zum Koordinator erhalte bleibt.
