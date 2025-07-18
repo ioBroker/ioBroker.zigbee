@@ -1020,10 +1020,10 @@ class Zigbee extends utils.Adapter {
     }
 
 
-    newDevice(entity) {
+    async newDevice(entity) {
 
         if (this.debugActive) this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
-        this.stController.AddModelFromHerdsman(entity.device, entity.mapped ? entity.mapped.model : entity.device.modelID)
+        //this.stController.AddModelFromHerdsman(entity.device, entity.mapped ? entity.mapped.model : entity.device.modelID)
 
         const dev = entity.device;
         const model = (entity.mapped) ? entity.mapped.model : dev.modelID;
@@ -1033,7 +1033,7 @@ class Zigbee extends utils.Adapter {
             this.log.warn(msg);
             this.logToPairing(msg, true);
         }
-        this.stController.AddModelFromHerdsman(entity.device, model)
+        await this.stController.AddModelFromHerdsman(entity.device, model)
         if (dev) {
             this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
                 if (!obj) {
