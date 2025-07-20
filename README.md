@@ -152,7 +152,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.0.3 (2025-07-20)
 * (asgothian) fix 'icon' error for unknown devices
 * (asgothian) fix state for level.color.rgb role (hex_color, accepts only #rrggbb values
 * (asgothian) ZH 4.4.1
