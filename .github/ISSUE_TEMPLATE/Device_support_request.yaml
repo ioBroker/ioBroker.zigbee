@@ -12,7 +12,7 @@ body:
               - ensure that both the manufacturer and the model match between your device and the listed device.
               - identify required ZHC version! This is **not** the currently installed ZHC version. The description of the entry field contains an explanation how to identify this version. Issues opened without a proper entry in this field are considered **incomplete**.
               - **do NOT open an issue without at least testing with the current latest or github version.** Issues where device integration has not been tested in this manner are considererd **incomplete**.
-              > **Incomplete issues - i.e. issues with one of the required fields not filled in properly or where device-integration has been tested with the current stable version only - will be automatically closed after 7 days.**
+              - **Incomplete issues - i.e. issues with one of the required fields not filled in properly or where device-integration has been tested with the current stable version only - will be automatically closed after 7 days.**
     - type: input
       id: zigbee_version
       attributes:
