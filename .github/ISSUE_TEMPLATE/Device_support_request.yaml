@@ -6,13 +6,14 @@ body:
       attributes:
           value: |
               **IMPORTANT:**
-              - **Handling device support issues is impossible without physical access to a device of this exact type. It is safe to assume that none of the developers have said device, and it is wrong to assuem that developes will spend their money to purchase a device for integration!**
+              - **Handling device support issues is impossible without physical access to a device of this exact type. It is safe to assume that none of the developers have said device, and it is wrong to assume that developes will spend their money to purchase a device for integration!**
               - Resolving the issue requires **your participation**, which may include physical access to **your device** by one of the developers. Do not open an issue unless you are willing to actively participate in its resolution.
               - check whether your [device](https://www.zigbee2mqtt.io/supported-devices/) is listed as supported at zigbee2mqtt.io. Any device without a link to zigbee2mqtt.io will be assumed not supported - integration of these devices requires physical access to the device, so it is unlikely that any work will be done on it in this project.
               - ensure that both the manufacturer and the model match between your device and the listed device.
-              - identify required ZHC version! This is **not** the currently installed ZHC version. The description of the entry field contains an explanation how to identify this version. Issues opened without a proper entry in this field are considered incomplete.
-              - **do NOT open an issue without at least testing with the current latest or github version.** Issues where device integration has not been tested in this manner are considererd incomplete.
-              - **Incomplete issues will be automatically closed after 7 days.**
+              - identify required ZHC version! This is **not** the currently installed ZHC version. The description of the entry field contains an explanation how to identify this version. Issues opened without a proper entry in this field are considered **incomplete**.
+              - **do NOT open an issue without at least testing with the current latest or github version.** Issues where device integration has not been tested in this manner are considererd **incomplete**.
+              
+              **Incomplete issues - i.e. issues with one of the required fields not filled in properly or where device-integration has been tested with the current stable version only - will be automatically closed after 7 days.**
     - type: input
       id: zigbee_version
       attributes:
