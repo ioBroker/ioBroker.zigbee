@@ -1,8 +1,9 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.0.3",
+    "version": "3.0.4",
     "news": {
+      "3.0.4": { "en": "Github Testing Version" },
       "3.0.3": {
         "en": "fix 'icon' error for unknown devices\nfix state for level.color.rgb role (hex_color, accepts only #rrggbb values\nZH 4.4.1\nZHC 23.72.1\npreparation for breaking change in ZHC 24.0.0",
         "de": "'icon' fehler für unbekannte geräte beheben\nfix zustand für level.color.rgb rolle (hex_color, akzeptiert nur #rrggbb werte\nZH 4.4.1\nZHC 23.72.1\nvorbereitung auf den Bruchwechsel in ZHC 24.0.0",

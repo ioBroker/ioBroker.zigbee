@@ -673,39 +673,43 @@
                     <li>
                         <a id="ErrorNotificationBtn" class="btn-floating waves-effect waves-light black tooltipped center-align hoverable translateT hide" title="Zigbee not running">
                         <i id="ErrorNotificationIcon" class="material-icons large icon-red">error</i></a>
-                        </li>
-                    <li>
+                    </li>
+                    <!--
+                        <li>
                         <a id="state_cleanup_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="State Cleanup">
                         <i class="material-icons large icon-blue">delete_sweep</i></a>
-                    </li>
+                        </li>
+                    -->
                     <li>
                         <a id="show_errors_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Show Errors">
                         <i class="material-icons large icon-blue">feedback</i></a>
                     </li>
-                    <li>
+                    <!--
+                        <li>
                         <a id="fw_check_btn"
                            class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
                            title="Check firmware updates">
                             <i class="material-icons large icon-blue">system_update</i></a>
-                    </li>
-                    <li>
-                        <a id="add_grp_btn"
-                           class="btn-floating waves-effect waves-light brown tooltipped center-align hoverable translateT"
-                           title="Add Group">
-                            <i class="material-icons large">group_work</i></a>
-                    </li>
-                    <li>
-                        <a id="touchlink_btn"
-                           class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
-                           title="Touchlink reset and pairing">
-                            <i class="material-icons large">wifi_tethering</i></a>
-                    </li>
-                    <li>
-                        <a id="code_pairing"
-                        class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
-                        title="Pairing with QR Code">
-                         <i class="material-icons large">select_all</i></a>
-                    </li>
+                        </li>
+                        <li>
+                            <a id="add_grp_btn"
+                            class="btn-floating waves-effect waves-light brown tooltipped center-align hoverable translateT"
+                            title="Add Group">
+                                <i class="material-icons large">group_work</i></a>
+                        </li>
+                        <li>
+                            <a id="touchlink_btn"
+                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
+                            title="Touchlink reset and pairing">
+                                <i class="material-icons large">wifi_tethering</i></a>
+                        </li>
+                        <li>
+                            <a id="code_pairing"
+                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
+                            title="Pairing with QR Code">
+                            <i class="material-icons large">select_all</i></a>
+                        </li>
+                    -->
                     <li>
                         <a id="pairing"
                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
@@ -721,9 +725,9 @@
                     <!--<li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a></li> -->
                     <!--<li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li> -->
                     <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>
-                    <li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>
+                    <!--<li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>-->
                     <li class="tab col s2"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
-                    <li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>
+                    <!--<li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>-->
                     </li>
                 </ul>
             </div>
@@ -840,7 +844,7 @@
                 <h6 class="translate">External converters</h6>
                 <div class="input-field col s12 m6 l4">
                     <input id="external" type="text" class="value"/>
-                    <label class="translate" for="external">Paths to files, semicolon (;) splitted</label>
+                    <label class="translate" for="external">Paths to files, separated by semicolon (;)</label>
                 </div>
             </div>
             <div class="input-field col s12 m12 l12 col-startWithInconsistent">
@@ -1511,6 +1515,7 @@
         </div>
         <div class="modal-footer">
             <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
+            <a name="extendpairing" id="extendpairing" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Extend</a>
             <a name="hidepairing" id="hidepairing" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
         </div>
     </div>

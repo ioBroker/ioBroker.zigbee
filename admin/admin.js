@@ -22,11 +22,15 @@ let devices = [],
     binding = [],
     excludes = [],
     coordinatorinfo = {
-        type: 'd2',
-        version: 'd2',
-        revision: 'd2',
-        port: 'd2',
-        channel: 'd2'
+        installSource: 'IADefault_1',
+        channel: '-1',
+        port: 'Default_1',
+        installedVersion: 'Default_1',
+        type: 'Default_1',
+        revision: 'Default_1',
+        version: '9-9.9.9.9',
+        herdsman: '4.0.0',
+        converters: '24.0.0',
     },
     cidList,
     shuffleInstance,
@@ -111,14 +115,14 @@ function getLQICls(value) {
 
 function getCoordinatorCard(dev) {
     const title = 'Zigbee Coordinator',
-        id = dev._id,
+        id = dev && dev._id ? dev._id : '0x00000000',
         img_src = 'zigbee.png',
         rid = id.split('.').join('_'),
         image = `<img src="${img_src}" width="80px">`,
         paired = '',
-        status = `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>`,
-        lqi_cls = getLQICls(dev.link_quality),
-        lq = (dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
+        status = dev ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-red">remove_circle</i></div>`,
+        lqi_cls = dev ? getLQICls(dev.link_quality) : -1,
+        lq = (dev && dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
                         <li><span class="label">type:</span><span>${coordinatorinfo.type}</span></li>
@@ -126,9 +130,13 @@ function getCoordinatorCard(dev) {
                         <li><span class="label">revision:</span><span>${coordinatorinfo.revision}</span></li>
                         <li><span class="label">port:</span><span>${coordinatorinfo.port}</span></li>
                         <li><span class="label">channel:</span><span>${coordinatorinfo.channel}</span></li>
+                        <li><span class="label">------------</span><span>Software versions </span></li>
+                        <li><span class="label">adapter:</span><span>${coordinatorinfo.installedVersion}</span></li>
+                        <li><span class="label">installed from:</span><span>${coordinatorinfo.installSource}</span></li>
+                        <li><span class="label">ZHC / ZH:</span><span>${coordinatorinfo.converters} / ${coordinatorinfo.herdsman}</span></li>
                     </ul>
                 </div>`,
-        permitJoinBtn = (dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        permitJoinBtn = (dev && dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
@@ -396,7 +404,8 @@ function deleteNvBackupConfirmation() {
             closeWaitingDialog();
             if (msg) {
                 if (msg.error) {
-                    showMessage(msg.error, _('Error'));
+                    if (msg.error.includes('ENOENT')) showMessage('No nvRam backup available for deletion.', _('Error'))
+                    else showMessage(msg.error, _('Error'));
                 } else {
                     getDevices();
                 }
@@ -671,7 +680,9 @@ function renameDevice(id, name) {
 }
 
 function showDevices() {
+    console.warn('show Devices called')
     let html = '';
+    let hasCoordinator = false;
     const lang = systemLang || 'en';
     // sort by rooms
     devices.sort((a, b) => {
@@ -712,6 +723,7 @@ function showDevices() {
         }
         ;
         if (d.info && d.info.device._type == 'Coordinator') {
+            hasCoordinator=true;
             const card = getCoordinatorCard(d);
             html += card;
         } else {
@@ -730,6 +742,8 @@ function showDevices() {
             html += card;
         }
     }
+    if (!hasCoordinator) html += getCoordinatorCard();
+
     $('#devices').html(html);
     hookControls();
 
@@ -926,17 +940,19 @@ function joinProcess(devId) {
 }
 
 function getCoordinatorInfo() {
+    console.warn('calling getCoordinatorInfo');
     sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
         if (msg) {
+            console.warn(JSON.stringify(msg))
             if (msg.error) {
                 errorData.push(msg.error);
+                delete msg.error;
                 isHerdsmanRunning = false;
-                updateStartButton();
             } else {
-                coordinatorinfo = msg;
                 isHerdsmanRunning = true;
-                updateStartButton()
             }
+            coordinatorinfo = msg;
+            updateStartButton()
         }
     });
 }
@@ -1223,47 +1239,63 @@ function getDebugMessages() {
 
 
 function getDevices() {
-    getCoordinatorInfo();
-    sendTo(namespace, 'getDevices', {}, function (msg) {
+    console.warn('getDevices called')
+    sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
+        console.warn(`getCoordinatorInfo returned ${JSON.stringify(msg)}`)
         if (msg) {
-            devices = msg.devices ? msg.devices : [];
-            // check if stashed error messages are sent alongside
-            if (msg.clean)
-                $('#state_cleanup_btn').removeClass('hide');
-            else
-                $('#state_cleanup_btn').addClass('hide');
-            if (msg.errors && msg.errors.length > 0) {
-                $('#show_errors_btn').removeClass('hide');
-                errorData = msg.errors;
-            }
-            else {
-                $('#show_errors_btn').addClass('hide');
-            }
-
-            //check if debug messages are sent alongside
-            if (msg && typeof (msg.debugDevices == 'array')) {
-                debugDevices = msg.debugDevices;
-                console.warn('debug devices is sent')
-            }
-            else
-                debugDevices = [];
-            if (debugMessages.byId) {
-                debugMessages.byId = msg;
-                if (msg) displayDebugMessages(debugMessages)
-            }
+            console.warn(JSON.stringify(msg))
             if (msg.error) {
                 errorData.push(msg.error);
+                delete msg.error;
                 isHerdsmanRunning = false;
-                updateStartButton();
             } else {
                 isHerdsmanRunning = true;
-                updateStartButton();
-                showDevices();
-                getDebugMessages();
-                getExclude();
-                getBinding();
             }
+            coordinatorinfo = msg;
+            updateStartButton()
         }
+        sendTo(namespace, 'getDevices', {}, function (msg) {
+            if (msg) {
+                devices = msg.devices ? msg.devices : [];
+                // check if stashed error messages are sent alongside
+                if (msg.clean)
+                    $('#state_cleanup_btn').removeClass('hide');
+                else
+                    $('#state_cleanup_btn').addClass('hide');
+                if (msg.errors && msg.errors.length > 0) {
+                    $('#show_errors_btn').removeClass('hide');
+                    errorData = msg.errors;
+                }
+                else {
+                    $('#show_errors_btn').addClass('hide');
+                }
+
+                //check if debug messages are sent alongside
+                if (msg && typeof (msg.debugDevices == 'array')) {
+                    debugDevices = msg.debugDevices;
+                    console.warn('debug devices is sent')
+                }
+                else
+                    debugDevices = [];
+                if (debugMessages.byId) {
+                    debugMessages.byId = msg;
+                    if (msg) displayDebugMessages(debugMessages)
+                }
+                if (msg.error) {
+                    errorData.push(msg.error);
+                    isHerdsmanRunning = false;
+                    updateStartButton();
+                    showDevices();
+                } else {
+                    isHerdsmanRunning = true;
+                    updateStartButton();
+                    showDevices();
+                    getDebugMessages();
+                    getExclude();
+                    getBinding();
+                }
+            }
+        });
     });
 }
 
@@ -1288,24 +1320,27 @@ function getDeviceCard(devId) {
 
 function getMap() {
     $('#refresh').addClass('disabled');
-    sendTo(namespace, 'getMap', {}, function (msg) {
-        $('#refresh').removeClass('disabled');
-        if (msg) {
-            if (msg.error) {
-                errorData.push(msg.error);
-                isHerdsmanRunning = false;
-                updateStartButton();
-            } else {
-                isHerdsmanRunning = true;
-                updateStartButton();
-                if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
-                    showMessage(msg.errors.join('<p>'), 'Map generation messages');
+    if (isHerdsmanRunning) {
+        sendTo(namespace, 'getMap', {}, function (msg) {
+            $('#refresh').removeClass('disabled');
+            if (msg) {
+                if (msg.error) {
+                    errorData.push(msg.error);
+                    isHerdsmanRunning = false;
+                    updateStartButton();
+                } else {
+                    isHerdsmanRunning = true;
+                    updateStartButton();
+                    if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
+                        showMessage(msg.errors.join('<p>'), 'Map generation messages');
+                    }
+                    map = msg;
+                    showNetworkMap(devices, map);
                 }
-                map = msg;
-                showNetworkMap(devices, map);
             }
-        }
-    });
+        });
+    }
+    else showMessage('Unable to generate map, the zigbee subsystem is inactive', 'Map generation error');
 }
 
 function getRandomExtPanID()
@@ -1454,6 +1489,10 @@ function load(settings, onChange) {
         deleteNvBackupConfirmation();
     });
 
+    $('#ErrorNotificationBtn').click(function () {
+        if (!isHerdsmanRunning) showMessage('The zigbee subsystem is not running. Please ensure that the configuration is correct and either start the subsystem manually from the hardware tab or set it to automatically start in the settings.', _('Zigbee subsystem error'));
+    })
+
     $('#viewconfig').click(function () {
         showViewConfig();
     });
@@ -1555,7 +1594,7 @@ function showMessages() {
 }
 
 function showPairingProcess() {
-    $('#modalpairing').modal({
+    if (isHerdsmanRunning) $('#modalpairing').modal({
         startingTop: '4%',
         endingTop: '10%',
         dismissible: false
@@ -1628,6 +1667,7 @@ function getDevId(adapterDevId) {
 
 
 function updateStartButton(block) {
+    console.warn(`update start button with${isHerdsmanRunning ? ' Herdsman' : 'out Herdsman'}`);
     if (block) {
         $('#show_test_run').addClass('disabled');
         $('#reset-btn').addClass('disabled');
@@ -1645,6 +1685,11 @@ function updateStartButton(block) {
         $('#show_test_run').removeClass('disabled');
         $('#deleteNVRam-btn').removeClass('disabled');
         $('#reset-btn').removeClass('disabled');
+        $('#fw_check_btn').removeClass('hide');  
+        $('#add_grp_btn').removeClass('hide');  
+        $('#touchlink_btn').removeClass('hide');  
+        $('#code_pairing').removeClass('hide');  
+        $('#pairing').removeClass('hide');  
     }
     else {
         $('#ErrorNotificationIcon').addClass('icon-red')
@@ -1654,6 +1699,11 @@ function updateStartButton(block) {
         $('#show_test_run').removeClass('disabled');
         $('#deleteNVRam-btn').removeClass('disabled');
         $('#reset-btn').addClass('disabled');
+        $('#fw_check_btn').addClass('hide');  
+        $('#add_grp_btn').addClass('hide');  
+        $('#touchlink_btn').addClass('hide');  
+        $('#code_pairing').addClass('hide');  
+        $('#pairing').addClass('hide');  
     }
 }
 // subscribe to changes
@@ -3656,34 +3706,34 @@ function validateConfigData(key, val) {
     if (validatableKeys.indexOf(key) < 0 || !val) return;
     if (warnLevel[key]) {
         if (warnLevel[key](val)) {
-            console.warn(`warning set for ${key} (${val})`)
+            //console.warn(`warning set for ${key} (${val})`)
             $(`#${key}_ALERT`).removeClass('hide')
         } else $(`#${key}_ALERT`).addClass('hide')
     }
     if (nvRamBackup[key]) {
-        console.warn(`value of ${key} is ${val} (${nvRamBackup[key]})`);
+        //console.warn(`value of ${key} is ${val} (${nvRamBackup[key]})`);
         if ((typeof val == 'string' && typeof nvRamBackup[key] == 'string' && val.toLowerCase == nvRamBackup[key].toLowerCase) || val == nvRamBackup[key])
         {
-            console.warn(`ok set for ${key} (${val})`)
+            //console.warn(`ok set for ${key} (${val})`)
             $(`#${key}_OK`).removeClass('hide')
             $(`#${key}_NOK`).addClass('hide')
         }
         else
         {
-            console.warn(`nok set for ${key} (${val})`)
+            //console.warn(`nok set for ${key} (${val})`)
             $(`#${key}_OK`).addClass('hide')
             $(`#${key}_NOK`).removeClass('hide')
         }
     }
     else {
-        console.warn(`noval set for ${key} (${val})`)
+        //console.warn(`noval set for ${key} (${val})`)
         $(`#${key}_OK`).addClass('hide')
         $(`#${key}_NOK`).addClass('hide')
     }
 }
 
 function validateNVRamBackup(update, src) {
-    console.warn('validateNVRam');
+    //console.warn('validateNVRam');
     const validatedKeys = src ? [src] : validatableKeys;
     const validator = {};
     for (const key of validatedKeys) {
@@ -3703,9 +3753,11 @@ function validateNVRamBackup(update, src) {
 function readNVRamBackup(update) {
     console.warn('read nvRam')
     sendTo(namespace, 'readNVRam', {}, function(msg) {
+        console.warn(JSON.stringify(msg));
         if (msg) {
             if (msg.error && update) {
-                showMessages(msg.error, _('Error'));
+                if (msg.error.includes('ENOENT')) showMessage('Unable to read nvRam backup - no backup available.',_('Error'))
+                else showMessage(msg.error, _('Error'));
                 delete msg.error;
             }
             nvRamBackup = msg;
