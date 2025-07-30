@@ -1685,11 +1685,11 @@ function updateStartButton(block) {
         $('#show_test_run').removeClass('disabled');
         $('#deleteNVRam-btn').removeClass('disabled');
         $('#reset-btn').removeClass('disabled');
-        $('#fw_check_btn').removeClass('hide');  
-        $('#add_grp_btn').removeClass('hide');  
-        $('#touchlink_btn').removeClass('hide');  
-        $('#code_pairing').removeClass('hide');  
-        $('#pairing').removeClass('hide');  
+        $('#fw_check_btn').removeClass('hide');
+        $('#add_grp_btn').removeClass('hide');
+        $('#touchlink_btn').removeClass('hide');
+        $('#code_pairing').removeClass('hide');
+        $('#pairing').removeClass('hide');
     }
     else {
         $('#ErrorNotificationIcon').addClass('icon-red')
@@ -1699,11 +1699,11 @@ function updateStartButton(block) {
         $('#show_test_run').removeClass('disabled');
         $('#deleteNVRam-btn').removeClass('disabled');
         $('#reset-btn').addClass('disabled');
-        $('#fw_check_btn').addClass('hide');  
-        $('#add_grp_btn').addClass('hide');  
-        $('#touchlink_btn').addClass('hide');  
-        $('#code_pairing').addClass('hide');  
-        $('#pairing').addClass('hide');  
+        $('#fw_check_btn').addClass('hide');
+        $('#add_grp_btn').addClass('hide');
+        $('#touchlink_btn').addClass('hide');
+        $('#code_pairing').addClass('hide');
+        $('#pairing').addClass('hide');
     }
 }
 // subscribe to changes

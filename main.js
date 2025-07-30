@@ -252,14 +252,14 @@ class Zigbee extends utils.Adapter {
     sandboxAdd(sandbox, item, module) {
         const multipleItems = item.split(',');
         for(const singleItem of multipleItems) {
-            let message = `Adding code from '${module}' as '${singleItem.trim()}' to sandbox `;
+            const message = `Adding code from '${module}' as '${singleItem.trim()}' to sandbox `;
             if (!module.match(new RegExp(`/${sandbox.zhclibBase}/`)))
                 module = module.replace(/zigbee-herdsman-converters\//, `${sandbox.zhclibBase}/`);
             try {
                 const m = require(module);
                 sandbox[singleItem.trim()] = m;
                 this.log.warn(`${message} -- success`);
-            }    
+            }
             catch (error) {
                 this.log.error(`${message} -- failed: ${error && error.message ? error.message : 'no reason given'}`);
             }
@@ -268,7 +268,7 @@ class Zigbee extends utils.Adapter {
 
     SandboxRequire(sandbox, items) {
         if (!items) return true;
-        let converterLoaded = true;
+        //let converterLoaded = true;
         for (const item of items) {
             const modulePath = item[2].replace(/['"]/gm, '');
 
@@ -300,8 +300,8 @@ class Zigbee extends utils.Adapter {
         if (this.config.external === undefined) {
             return;
         }
-        const zhcPackageFn = require.resolve("zigbee-herdsman-converters/package.json");
-        const zhcBaseDir = path.relative('.',path.dirname(require.resolve("zigbee-herdsman-converters/package.json")));
+        const zhcPackageFn = require.resolve('zigbee-herdsman-converters/package.json');
+        const zhcBaseDir = path.relative('.',path.dirname(zhcPackageFn));
         const extfiles = this.config.external.split(';');
         for (const moduleName of extfiles) {
             if (!moduleName) continue;
@@ -313,7 +313,7 @@ class Zigbee extends utils.Adapter {
             };
 
             const mN = this.checkExternalConverterExists(moduleName);
-            
+
             if (mN) {
                 const converterCode = fs.readFileSync(mN, {encoding: 'utf8'}).toString();
                 let converterLoaded = true;
@@ -339,7 +339,7 @@ class Zigbee extends utils.Adapter {
                 for(const component of modifiedCode.matchAll(/const (.+):(.+)=/gm)) {
                     modifiedCode = modifiedCode.replace(component[0], `const ${component[1]} = `);
                 }
-                modifiedCode = modifiedCode.replace(/export .+;/gm, '');
+                modifiedCode = modifiedCode.replace(/export .+;/gm, 'module.exports =');
 
                 if (modifiedCode.indexOf('module.exports') < 0) {
                     converterLoaded = false;
