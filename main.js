@@ -334,7 +334,6 @@ class Zigbee extends utils.Adapter {
 
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+(\S+)\s+=\s+require\((.+)\)/gm)]);
                 modifiedCode = modifiedCode.replace(/const\s+\S+\s+=\s+require\(.+\)/gm, '');
-                //mfs.writeFileSync(mN+'.tmp', modifiedCode)
 
                 for(const component of modifiedCode.matchAll(/const (.+):(.+)=/gm)) {
                     modifiedCode = modifiedCode.replace(component[0], `const ${component[1]} = `);
@@ -346,7 +345,7 @@ class Zigbee extends utils.Adapter {
                     this.log.error(`converter does not export any converter array, please add 'module.exports' statement to ${mN}`);
                 }
 
-                fs.writeFileSync(mN+'.tmp', modifiedCode)
+                //fs.writeFileSync(mN+'.tmp', modifiedCode)
 
                 if (converterLoaded) {
                     try {

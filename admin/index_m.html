@@ -734,60 +734,6 @@
         </nav>
     </div>
     <div id="tabs" class="tabs-content row">
-        <div id="tab-main" class="col s12 page active">
-            <div class="navbar-fixed" style="height: 36px;">
-                <nav style="height: 36px; margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
-                    <ul id="nav-mobile" class="left">
-                        <li>
-                            <a id="rotate_btn"
-                               class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
-                               title="Rotate cards">
-                                <i class="material-icons large icon-blue">3d_rotation</i>
-                            </a>
-                        </li>
-                        <li>
-                            <div class="col main-toolbar-table-types-tools main-toolbar-table-filter input-field"
-                                 style="line-height: 24px;">
-                                <i class="material-icons prefix" style="line-height: 24px;">search</i>
-                                <input id="device-search" class="filter-input translateP" placeholder="Искать"
-                                       autocomplete="new-password" readonly="readonly"
-                                       onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}"
-                                       data-lang-placeholder="Filter">
-                                <a class="filter-clear btn-floating btn-very-small translateT red lighten-3"
-                                   title="Очистить" data-lang-title="clear" style="display: none;"><i
-                                        class="material-icons">clear</i></a>
-                            </div>
-
-                        </li>
-                        <li>
-                            <div class="col input-field" style="line-height: 24px;">
-                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
-                                <a id="device-order-btn" class="dropdown-trigger btn" href="#"
-                                   data-target="device-order">Default</a>
-                                <ul id="device-order" class="dropdown-content" tabindex="0">
-                                    <li class="device-order-item" data-type="a-z" tabindex="0"><a class="translate"
-                                                                                                  data-lang="A-Z">A-Z</a>
-                                    </li>
-                                    <li class="device-order-item" data-type="default" tabindex="0"><a class="translate"
-                                                                                                      data-lang="Default">Default</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="col input-field" style="line-height: 24px;">
-                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">art_track</i>
-                                <a id="room-filter-btn" class="dropdown-trigger btn" href="#" data-target="room-filter">All</a>
-                                <ul id="room-filter" class="dropdown-content" tabindex="0">
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            <div id="devices" class="row">
-            </div>
-        </div>
         <div id="tab-map" class="col s12 page">
             <div class="fixed-action-btn" style="margin-bottom: 100px">
                 <a id="refresh"
@@ -802,7 +748,7 @@
             <div id="map" class="row">
             </div>
         </div>
-        <div id="tab-sett" class="col s12 page">
+        <div id="tab-sett" class="col s12 page active">
             <div class="row">
                 <h6>Adapter</h6>
                 <div class="input-field col s12 m6 l8 col-transmitPower">
