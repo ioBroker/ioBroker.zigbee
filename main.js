@@ -258,10 +258,10 @@ class Zigbee extends utils.Adapter {
             try {
                 const m = require(module);
                 sandbox[singleItem.trim()] = m;
-                this.log.warn(`${message} -- success`);
+                this.log.info(`${message} -- success`);
             }
             catch (error) {
-                this.log.error(`${message} -- failed: ${error && error.message ? error.message : 'no reason given'}`);
+                this.log.warn(`${message} -- failed: ${error && error.message ? error.message : 'no reason given'}`);
             }
         }
     }
@@ -338,7 +338,7 @@ class Zigbee extends utils.Adapter {
                 for(const component of modifiedCode.matchAll(/const (.+):(.+)=/gm)) {
                     modifiedCode = modifiedCode.replace(component[0], `const ${component[1]} = `);
                 }
-                modifiedCode = modifiedCode.replace(/export .+;/gm, 'module.exports =');
+                modifiedCode = modifiedCode.replace(/export .+ +/gm, 'module.exports = ');
 
                 if (modifiedCode.indexOf('module.exports') < 0) {
                     converterLoaded = false;
