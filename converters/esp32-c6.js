@@ -31,6 +31,7 @@ module.exports = [
             await reporting.acFrequency(endpoint);
         },
         exposes: [e.power(), e.current(), e.voltage(), e.ac_frequency().withUnit('mHz')],
+
         icon: 'img/esp32-c6.png',
         useadaptericon: false,
     }
