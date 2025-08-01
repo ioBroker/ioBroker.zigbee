@@ -84,7 +84,6 @@ class Zigbee extends utils.Adapter {
         this.deviceDebug.on('log', this.onLog.bind(this));
         this.debugActive = true;
 
-
         this.plugins = [
             new SerialListPlugin(this),
             new CommandsPlugin(this),
@@ -202,7 +201,6 @@ class Zigbee extends utils.Adapter {
             debug.log = this.debugLog.bind(this);
             debug.enable('zigbee-herdsman*');
         }
-
         // external converters
         this.applyExternalConverters();
         // get devices from exposes
@@ -298,6 +296,16 @@ class Zigbee extends utils.Adapter {
     }
 
 
+    checkExternalConverterExists(fn) {
+        if (fs.existsSync(fn)) return fn;
+        const fnD = this.expandFileName(fn)
+        if (fs.existsSync(fnD)) return fnD;
+        const fnL = path.join('converters', fn)
+        if (fs.existsSync(fnL)) return fnL;
+        this.log.error(`unable to load ${fn} - checked ${path.resolve(fn)}, ${path.resolve(fnD)} and ${path.resolve(fnL)}`);
+        return false;
+    }
+
     * getExternalDefinition() {
         if (this.config.external === undefined) {
             return;
@@ -312,11 +320,9 @@ class Zigbee extends utils.Adapter {
                 zhclibBase : path.join('zigbee-herdsman-converters',(ZHCP && ZHCP.exports && ZHCP.exports['.'] ? path.dirname(ZHCP.exports['.']) : ''))
             };
 
-            const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName));
-            if (!fs.existsSync(mN)) {
-                this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
-            }
-            else {
+            const mN = this.checkExternalConverterExists(moduleName.trim());
+
+            if (mN) {
                 const converterCode = fs.readFileSync(mN, {encoding: 'utf8'}).toString();
                 let converterLoaded = true;
                 let modifiedCode = converterCode.replace(/\s+\/\/.+/gm, ''); // remove all lines starting with // (with the exception of the first.)
@@ -360,6 +366,10 @@ class Zigbee extends utils.Adapter {
 
                         if (Array.isArray(converter)) for (const item of converter) {
                             this.log.info('Model ' + item.model + ' defined in external converter ' + mN);
+                            if (item.hasOwnProperty('icon')) {
+                                if (!item.icon.toLowerCase().startsWith('http') && !item.useadaptericon)
+                                    item.icon = path.join(path.dirname(mN), item.icon);
+                            }
                             yield item;
                         }
                         else {
