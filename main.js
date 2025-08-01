@@ -230,7 +230,11 @@ class Zigbee extends utils.Adapter {
         this.deviceDebug.start(this.stController, this.zbController);
 
         this.reconnectCounter = 1;
-        if (this.config.autostart) this.doConnect();
+        if (this.config.autostart) {
+            this.log.info('Autostart Zigbee subsystem');
+            this.doConnect();
+        }
+        else this.log.warn('Zigbee autostart option not set - omitting start of zigbee substystem!');
     }
     updateDebugLevel(state) {
         const dbActive = state === 'debug';
@@ -1026,10 +1030,10 @@ class Zigbee extends utils.Adapter {
     }
 
 
-    newDevice(entity) {
+    async newDevice(entity) {
 
         if (this.debugActive) this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
-        this.stController.AddModelFromHerdsman(entity.device, entity.mapped ? entity.mapped.model : entity.device.modelID)
+        //this.stController.AddModelFromHerdsman(entity.device, entity.mapped ? entity.mapped.model : entity.device.modelID)
 
         const dev = entity.device;
         const model = (entity.mapped) ? entity.mapped.model : dev.modelID;
@@ -1039,7 +1043,7 @@ class Zigbee extends utils.Adapter {
             this.log.warn(msg);
             this.logToPairing(msg, true);
         }
-        this.stController.AddModelFromHerdsman(entity.device, model)
+        await this.stController.AddModelFromHerdsman(entity.device, model)
         if (dev) {
             this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
                 if (!obj) {
@@ -1089,6 +1093,7 @@ class Zigbee extends utils.Adapter {
      */
     async onUnload(callback) {
         try {
+            this.log.info(`Halting zigbee adapter. Restart delay is at least ${this.ioPack.common.stopTimeout / 1000} seconds.`)
             if (this.config.debugHerdsman) {
                 debug.disable();
                 debug.log = originalLogMethod;

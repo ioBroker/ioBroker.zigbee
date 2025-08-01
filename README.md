@@ -35,18 +35,13 @@ Current firmware files for these devices can be found [on GitHub](https://github
 ### Dresden Elektronik SoC
 <span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/en/img/deconz.png" width="180"></span>
 
-recommended:
-- ConBee II
-- RaspBee II
+As of May 2025, raspbee and conbee variants are no longer recommended, as the code is no longer actively maintained and has fallen behind the other variants with regards to functionality.
 
-no longer recommended:
-- ConBee I
-- RaspBee
-
-While Conbee/RaspBee Support is no longer considered experimental in the zigbee-herdsman and zigbee-herdsman-converters libraries used by the zigbee Adapter, use of these devices with the adapter may limit functionality. Known issues are:
+Conbee/RaspBee Support is no longer considered experimental in the zigbee-herdsman and zigbee-herdsman-converters libraries used by the zigbee Adapter, use of these devices with the adapter may limit functionality. Known issues are:
 - link quality display may be incorrect
 - device map metrics may be incorrect
 - NVRam Backup is not supported.
+- channel change is not supported.
 
 ### Silicon Labs SoC
 
@@ -114,7 +109,7 @@ The debug information is only available from the zigbee tab.
 
 ### Local overrides
 
-Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 2.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.
+Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 3.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.
 
 The local overrides are only available from the instance configuration
 
@@ -157,7 +152,17 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.0.3 (2025-07-27)
+* (asgothian) fix 'icon' error for unknown devices
+* (asgothian) fix state for level.color.rgb role (hex_color, accepts only #rrggbb values
+* (asgothian) ZH 4.4.1
+* (asgothian) ZHC 23.72.1
+* (asgothian) preparation for breaking change in ZHC 24.0.0
+
+### 3.0.2 (2025-07-07)
+* (asgothian) fix images
+
+### 3.0.1 (2025-04-25)
 * (AlexHaxe)  Fix for Ikea SOMRIG configuration raising 'definition.endpoint is not a function' error.
 * (asgothian) Access to 'zigbee2mqtt options as settings in zigbee adapter (ALPHA Stage !)
 * (asgothian) Fix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)
@@ -165,7 +170,6 @@ You can thank the authors by these links:
 * (asgothian) Limited states on device tiles to states which are read only or which can be modified sensibly via the device tile.
 *
 
-## Changelog
 ### 3.0.0 (2025-04-08)
 * (asgothian) Breaking change: Start of zigbee subsystem requires checking the 'start the Zigbee network automatically' checkbox. !!!
 * (asgothian) Hardware configuration panel
