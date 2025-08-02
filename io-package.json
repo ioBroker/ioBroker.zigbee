@@ -1,9 +1,24 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.0.4",
+    "version": "3.1.0",
     "news": {
-      "3.0.4": { "en": "Github Testing Version" },
+      "3.1.0": {
+        "en": "ZHC 24.9.0\nZH 5.x\nextend and stop pairing countdown",
+        "de": "ZHC 24.9.0\nZH 5,x\nerweitern und stoppen paaren countdown",
+        "ru": "ZHC 24.9.0\nZH 5.x\nпродлить и остановить обратный отсчет",
+        "pt": "ZHC 24.9.0\nZH 5. x\nestender e parar de emparelhar contagem regressiva",
+        "nl": "ZHC 24.9.0\nZH 5.x\nuitzetten en stoppen met aftellen",
+        "fr": "ZHC 24.9.0\nZH 5.x\nétendre et arrêter l'appariement du compte à rebours",
+        "it": "ZHC 24.9.0\nZH 5.x\nprolungare e fermare l'accoppiamento conto alla rovescia",
+        "es": "ZHC 24.9.0\nZH 5.x\nextender y dejar de emparejar la cuenta atrás",
+        "pl": "ZHC 24.9.0\nZH 5,x\nrozszerzenie i zatrzymanie parowania odliczania",
+        "uk": "ЗХК 24.9.0\nЗХ 5.х\nпродовжити і зупинити парі відлік",
+        "zh-cn": "ZHC 24.9.0\nZH 5.x (英语)\n扩展和停止对齐倒计时"
+      },
+      "3.0.4": {
+        "en": "Github Testing Version"
+      },
       "3.0.3": {
         "en": "fix 'icon' error for unknown devices\nfix state for level.color.rgb role (hex_color, accepts only #rrggbb values\nZH 4.4.1\nZHC 23.72.1\npreparation for breaking change in ZHC 24.0.0",
         "de": "'icon' fehler für unbekannte geräte beheben\nfix zustand für level.color.rgb rolle (hex_color, akzeptiert nur #rrggbb werte\nZH 4.4.1\nZHC 23.72.1\nvorbereitung auf den Bruchwechsel in ZHC 24.0.0",
@@ -68,32 +83,6 @@
         "pl": "ZHC 23.6.0\nZH 3.3.x\nusunięte dodatkowe logowanie\nproblemy z pamięcią stałą.\nKonfiguracja wiadomości - 5 prób.\ntransmiter aktualizacji Power\nnaprawić wypadek w ZigbeeController. ByteArrayToString\noznaczenie urządzenia dla urządzeń bez mapowanego modelu (pozwala na stosowanie w grupach i wiązaniach)\n",
         "uk": "ЗХК 23.6.0\nZH 3.3.x\nвидалення додаткового входу\nвиправлено проблему пам'яті.\nНастроювання повідомлення - 5 спроб.\nоновлення трансмісії\nфіксувати аварійну аварійну аварійність в ZigbeeController. ByteArrayToString\nпозначення пристрою для пристроїв без картографічної моделі ( дозволяє використовувати в групах і зв'язках)\n",
         "zh-cn": "ZHC 23.6.0\nZH 3.3.x 电话\n已删除的额外日志\n固定记忆问题.\n配置信件 - 5 个尝试 .\n更新传输\n修复Zigbee控制器的崩溃。 字节箭头结构\n没有绘图模型的设备指定(分组和捆绑中的允许使用)\n"
-      },
-      "2.0.4": {
-        "en": "back to 2.0.2",
-        "de": "zurück zu 2.0.2",
-        "ru": "вернуться в 2.0.2",
-        "pt": "voltar para 2.0.2",
-        "nl": "terug naar 2.0.2",
-        "fr": "retour à 2.0.2",
-        "it": "torna a 2.0.2",
-        "es": "volver a 2.0.2",
-        "pl": "powrót do 2.0.2",
-        "uk": "до 2.0.2",
-        "zh-cn": "返回到2.0.2"
-      },
-      "2.0.3": {
-        "en": "fix configured info\nfix battery voltage (V -> mV)\nenable debug interface v1.0\nPush Zigbee-Herdsman to 3.5.7\nPush Zigbee-Herdsman-Converters to 23.1.1\nfix configure on message\nremove extra warning messages\nfix Adapter-Checker notes\nimprove base64 image detection\nremoved unused adaptert objects (info.groups, excludes) from adapter config\n",
-        "de": "die konfigurierten informationen\nbatteriespannung fixieren (V -> mV)\ndebug interface v1.0\nPush Zigbee-Herdsman auf 3.5.7\nPush Zigbee-Herdsman-Konverter auf 23.1.1\nkonfigurieren der nachricht\nzusätzliche warnmeldungen entfernen\nfix Adapter-Checker-Noten\nverbesserung der bilderkennung von base64\nentfernte ungenutzte adapterobjekte (info.groups, ausgenommen) von adapter config\n",
-        "ru": "исправить сконфигурированную информацию\nфиксировать напряжение батареи (V -> mV)\nвключить интерфейс отладки v1.0\nПодтолкнуть Зигби-Хердсмана к 3.5.7\nНажмите Zigbee-Herdsman-Converters на 23.1.1\nисправить конфигурацию на сообщение\nудалить дополнительные предупреждающие сообщения\nзаписи Adapter-Checker\nобнаружение изображений base64\nудаленные неиспользуемые объекты адаптера (info.groups, исключает) из конфигурации адаптера\n",
-        "pt": "corrigir informações configuradas\ncorrigir a tensão da bateria (V -> mV)\nenable debug interface v1.0\nEmpurre Zigbee-Herdsman para 3.5.7\nEmpurre Zigbee-Herdsman-Converters para 23.1.1\ncorrigir configurar na mensagem\nremover mensagens de aviso extra\ncorrigir notas Adapter-Checker\nmelhorar a detecção de imagem base64\nremoveu objetos adaptadores não utilizados (info.groups, exclui) da configuração do adaptador\n",
-        "nl": "fix geconfigureerde informatie\nvast te stellen batterijspanning (V -> mV)\ndebug interface v1.0 inschakelen\nDuw Zigbee-Herdsman naar 3.5.7\nDuw Zigbee-Herdsman-Converters naar 23.1.1\nfix configureren op bericht\nextra waarschuwingsberichten verwijderen\nfix Adapter-Checker notities\nverbeteren base64 beelddetectie\nverwijderd ongebruikte adapter objecten (info.groups, exclusief) uit adapter config\n",
-        "fr": "correction des informations configurées\ncorrection de la tension de la batterie (V -> mV)\nactive l'interface debug v1.0\nPoussez Zigbee-Herdsman à 3.5.7\nPousser Zigbee-Herdsman-Converters à 23.1.1\ncorrection de configuration sur le message\nsupprimer les messages d'avertissement supplémentaires\ncorrection des notes de l'adaptateur-vérificateur\naméliorer la détection d'image de base64\nobjets de l'adaptateurt supprimés (info.groups, exclut) de la configuration de l'adaptateur\n",
-        "it": "correzione delle informazioni configurate\ncorreggere la tensione della batteria (V -> mV)\nabilitare l'interfaccia di debug v1.0\nSpingere Zigbee-Herdsman a 3.5.7\nSpingere Zigbee-Herdsman-Converters a 23.1.1\ncorrezione configurare sul messaggio\nrimuovere i messaggi di avviso extra\nfissare le note dell'adattatore-Checker\nmigliorare il rilevamento delle immagini base64\nrimosso oggetti adattatori non utilizzati (info.groups, esclude) dalla configurazione dell'adattatore\n",
-        "es": "fijar información configurada\ntensión de batería de fijación (V - título mV)\nhabilitar interfaz de depuración v1.0\nEmpuja Zigbee-Herdsman a 3.5.7\nEmpuja Zigbee-Herdsman-Converters a 23.1.1\nfijar configuración en el mensaje\neliminar mensajes de advertencia extra\nfijar las notas de Adaptador-Checker\nmejorar la detección de imágenes base64\nobjetos de adaptador no usados (info.groups, excluye) de configuración de adaptador\n",
-        "pl": "naprawić skonfigurowane informacje\nstałe napięcie akumulatora (V - > mV)\nwłącz interfejs debugowania v1.0\nPush Zigbee-Herdsman do 3.5.7\nPush Zigbee- Herdsman- Konwertery do 23.1.1\nustaw konfigurację na wiadomości\nusuwa dodatkowe komunikaty ostrzegawcze\nfix Adapter- Notatki kontrolne\npoprawa wykrywania obrazu bazowego64\nusunięte niewykorzystane obiekty adaptert (info.groups, excluses) z konfiguracji adaptera\n",
-        "uk": "виправлено налаштовану інформацію\nфіксатор напруги акумулятора (В -> мВ)\nувімкнути інтерфейс налагодження v1.0\nPush Zigbee-Herdsman до 3.5.7\nPush Zigbee-Herdsman-Converters до 23.1.1\nфіксувати налаштування на повідомлення\nвидалити додаткові повідомлення попередження\nвиправити адаптер-Checker ноти\nполіпшення базового64 виявлення зображень\nвидалити невикористані об'єкти адаптера (info.groups, виключає) з налаштування адаптера\n",
-        "zh-cn": "修复已配置的信息\n固定电池电压(V - > mV)\n启用调试接口 v1.0\n将Zigbee-Herdsman推至3.5.7\n将Zigbee-Herdsman-Convers推向23.1.1\n固定信件的配置\n删除额外的警告信件\n修正适配器检查符\n改进基本64图像检测\n从适配器配置中删除未使用的适配对象( 信息组, 排除)\n"
       }
     },
     "titleLang": {
