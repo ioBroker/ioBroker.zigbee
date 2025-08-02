@@ -785,6 +785,7 @@ function showDevices() {
         return dev_block.find('#dName').text();
     };
     const getDevId = function (dev_block) {
+        console.warn(`getDevId called with ${JSON.stringify(dev_block)}`)
         return dev_block.attr('id');
     };
     $('.card-reveal-buttons button[name=\'delete\']').click(function () {
@@ -827,6 +828,12 @@ function showDevices() {
             joinProcess(getDevId(dev_block));
         }
         showPairingProcess();
+    });
+    $('#modalpairing a.btn[name=\'extendpairing\']').click(function () {
+        letsPairing();
+    });
+    $('#modalpairing a.btn[name=\'endpairing\']').click(function () {
+        stopPairing();
     });
     $('.card-reveal-buttons button[name=\'info\']').click(function () {
         const dev_block = $(this).parents('div.device');
@@ -902,7 +909,7 @@ function checkFwUpdate() {
 
 function letsPairingWithCode(code) {
     messages = [];
-    sendTo(namespace, 'letsPairing', {code: code}, function (msg) {
+    sendTo(namespace, 'letsPairing', {code: code, start:true}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -914,7 +921,16 @@ function letsPairingWithCode(code) {
 
 function letsPairing() {
     messages = [];
-    sendTo(namespace, 'letsPairing', {}, function (msg) {
+    sendTo(namespace, 'letsPairing', {start:true}, function (msg) {
+        if (msg && msg.error) {
+            showMessage(msg.error, _('Error'));
+        }
+    });
+}
+
+function stopPairing() {
+    messages = [];
+    sendTo(namespace, 'letsPairing', {start:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -932,7 +948,7 @@ function touchlinkReset() {
 
 function joinProcess(devId) {
     messages = [];
-    sendTo(namespace, 'letsPairing', {id: devId}, function (msg) {
+    sendTo(namespace, 'letsPairing', {id: devId, start:true}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -1474,6 +1490,7 @@ function load(settings, onChange) {
         if (!$('#pairing').hasClass('pulse')) {
             letsPairing();
         }
+        console.warn('lets pairing');
         showPairingProcess();
     });
 
@@ -1689,7 +1706,7 @@ function updateStartButton(block) {
         $('#add_grp_btn').removeClass('hide');
         $('#touchlink_btn').removeClass('hide');
         $('#code_pairing').removeClass('hide');
-        $('#pairing').removeClass('hide');
+        //$('#pairing').removeClass('hide');
     }
     else {
         $('#ErrorNotificationIcon').addClass('icon-red')
@@ -1703,7 +1720,7 @@ function updateStartButton(block) {
         $('#add_grp_btn').addClass('hide');
         $('#touchlink_btn').addClass('hide');
         $('#code_pairing').addClass('hide');
-        $('#pairing').addClass('hide');
+        //$('#pairing').addClass('hide');
     }
 }
 // subscribe to changes
