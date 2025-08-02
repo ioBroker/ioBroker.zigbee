@@ -293,16 +293,6 @@ class Zigbee extends utils.Adapter {
         return false;
     }
 
-    checkExternalConverterExists(fn) {
-        if (fs.existsSync(fn)) return fn;
-        const fnD = this.expandFileName(fn)
-        if (fs.existsSync(fnD)) return fnD;
-        const fnL = path.join('converters', fn)
-        if (fs.existsSync(fnL)) return fnL;
-        this.log.error(`unable to load ${fn} - checked ${path.resolve(fn)}, ${path.resolve(fnD)} and ${path.resolve(fnL)}`);
-        return false;
-    }
-
     * getExternalDefinition() {
 
         if (this.config.external === undefined) {
