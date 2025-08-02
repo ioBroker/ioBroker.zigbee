@@ -909,7 +909,7 @@ function checkFwUpdate() {
 
 function letsPairingWithCode(code) {
     messages = [];
-    sendTo(namespace, 'letsPairing', {code: code, start:true}, function (msg) {
+    sendTo(namespace, 'letsPairing', {code: code, stop:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -921,7 +921,7 @@ function letsPairingWithCode(code) {
 
 function letsPairing() {
     messages = [];
-    sendTo(namespace, 'letsPairing', {start:true}, function (msg) {
+    sendTo(namespace, 'letsPairing', {stop:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -930,7 +930,7 @@ function letsPairing() {
 
 function stopPairing() {
     messages = [];
-    sendTo(namespace, 'letsPairing', {start:false}, function (msg) {
+    sendTo(namespace, 'letsPairing', {stop:true}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -948,7 +948,7 @@ function touchlinkReset() {
 
 function joinProcess(devId) {
     messages = [];
-    sendTo(namespace, 'letsPairing', {id: devId, start:true}, function (msg) {
+    sendTo(namespace, 'letsPairing', {id: devId, stop:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
