@@ -673,39 +673,43 @@
                     <li>
                         <a id="ErrorNotificationBtn" class="btn-floating waves-effect waves-light black tooltipped center-align hoverable translateT hide" title="Zigbee not running">
                         <i id="ErrorNotificationIcon" class="material-icons large icon-red">error</i></a>
-                        </li>
-                    <li>
+                    </li>
+                    <!--
+                        <li>
                         <a id="state_cleanup_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="State Cleanup">
                         <i class="material-icons large icon-blue">delete_sweep</i></a>
-                    </li>
+                        </li>
+                    -->
                     <li>
                         <a id="show_errors_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Show Errors">
                         <i class="material-icons large icon-blue">feedback</i></a>
                     </li>
-                    <li>
+                    <!--
+                        <li>
                         <a id="fw_check_btn"
                            class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
                            title="Check firmware updates">
                             <i class="material-icons large icon-blue">system_update</i></a>
-                    </li>
-                    <li>
-                        <a id="add_grp_btn"
-                           class="btn-floating waves-effect waves-light brown tooltipped center-align hoverable translateT"
-                           title="Add Group">
-                            <i class="material-icons large">group_work</i></a>
-                    </li>
-                    <li>
-                        <a id="touchlink_btn"
-                           class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
-                           title="Touchlink reset and pairing">
-                            <i class="material-icons large">wifi_tethering</i></a>
-                    </li>
-                    <li>
-                        <a id="code_pairing"
-                        class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
-                        title="Pairing with QR Code">
-                         <i class="material-icons large">select_all</i></a>
-                    </li>
+                        </li>
+                        <li>
+                            <a id="add_grp_btn"
+                            class="btn-floating waves-effect waves-light brown tooltipped center-align hoverable translateT"
+                            title="Add Group">
+                                <i class="material-icons large">group_work</i></a>
+                        </li>
+                        <li>
+                            <a id="touchlink_btn"
+                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
+                            title="Touchlink reset and pairing">
+                                <i class="material-icons large">wifi_tethering</i></a>
+                        </li>
+                        <li>
+                            <a id="code_pairing"
+                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
+                            title="Pairing with QR Code">
+                            <i class="material-icons large">select_all</i></a>
+                        </li>
+                    -->
                     <li>
                         <a id="pairing"
                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
@@ -721,69 +725,15 @@
                     <!--<li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a></li> -->
                     <!--<li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li> -->
                     <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>
-                    <li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>
+                    <!--<li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>-->
                     <li class="tab col s2"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
-                    <li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>
+                    <!--<li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>-->
                     </li>
                 </ul>
             </div>
         </nav>
     </div>
     <div id="tabs" class="tabs-content row">
-        <div id="tab-main" class="col s12 page active">
-            <div class="navbar-fixed" style="height: 36px;">
-                <nav style="height: 36px; margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
-                    <ul id="nav-mobile" class="left">
-                        <li>
-                            <a id="rotate_btn"
-                               class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
-                               title="Rotate cards">
-                                <i class="material-icons large icon-blue">3d_rotation</i>
-                            </a>
-                        </li>
-                        <li>
-                            <div class="col main-toolbar-table-types-tools main-toolbar-table-filter input-field"
-                                 style="line-height: 24px;">
-                                <i class="material-icons prefix" style="line-height: 24px;">search</i>
-                                <input id="device-search" class="filter-input translateP" placeholder="Искать"
-                                       autocomplete="new-password" readonly="readonly"
-                                       onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}"
-                                       data-lang-placeholder="Filter">
-                                <a class="filter-clear btn-floating btn-very-small translateT red lighten-3"
-                                   title="Очистить" data-lang-title="clear" style="display: none;"><i
-                                        class="material-icons">clear</i></a>
-                            </div>
-
-                        </li>
-                        <li>
-                            <div class="col input-field" style="line-height: 24px;">
-                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
-                                <a id="device-order-btn" class="dropdown-trigger btn" href="#"
-                                   data-target="device-order">Default</a>
-                                <ul id="device-order" class="dropdown-content" tabindex="0">
-                                    <li class="device-order-item" data-type="a-z" tabindex="0"><a class="translate"
-                                                                                                  data-lang="A-Z">A-Z</a>
-                                    </li>
-                                    <li class="device-order-item" data-type="default" tabindex="0"><a class="translate"
-                                                                                                      data-lang="Default">Default</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="col input-field" style="line-height: 24px;">
-                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">art_track</i>
-                                <a id="room-filter-btn" class="dropdown-trigger btn" href="#" data-target="room-filter">All</a>
-                                <ul id="room-filter" class="dropdown-content" tabindex="0">
-                                </ul>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-            <div id="devices" class="row">
-            </div>
-        </div>
         <div id="tab-map" class="col s12 page">
             <div class="fixed-action-btn" style="margin-bottom: 100px">
                 <a id="refresh"
@@ -798,7 +748,7 @@
             <div id="map" class="row">
             </div>
         </div>
-        <div id="tab-sett" class="col s12 page">
+        <div id="tab-sett" class="col s12 page active">
             <div class="row">
                 <h6>Adapter</h6>
                 <div class="input-field col s12 m6 l8 col-transmitPower">
@@ -840,7 +790,7 @@
                 <h6 class="translate">External converters</h6>
                 <div class="input-field col s12 m6 l4">
                     <input id="external" type="text" class="value"/>
-                    <label class="translate" for="external">Paths to files, semicolon (;) splitted</label>
+                    <label class="translate" for="external">Paths to files, separated by semicolon (;)</label>
                 </div>
             </div>
             <div class="input-field col s12 m12 l12 col-startWithInconsistent">
@@ -1511,6 +1461,7 @@
         </div>
         <div class="modal-footer">
             <!-- <a name="stop" href="#!" class="modal-action modal-close waves-effect waves-red btn-flat left">Stop</a> -->
+            <a name="extendpairing" id="extendpairing" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Extend</a>
             <a name="hidepairing" id="hidepairing" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
         </div>
     </div>
