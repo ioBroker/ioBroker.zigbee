@@ -53,7 +53,7 @@ Je nach Fehlerbild gibt es verschiedene mögliche Ursachen dafür das der Herdsm
 - Löschen des NVBackups. In diesem Fall bleibt die Konfiguration im Adapter wie sie ist. Dieses **erzwingt** einen Neuaufbau des Netzwerkes so das in der Folge alle bereits angelernten Geräte zurückgesetzt und neu angelernt werden müssen.<br>
 Die Ausgaben im Log sind auch dazu geeignet bei der Suche nach einer Lösung im [ioBroker Forum](https://forum.iobroker.net) eingesetzt zu werden. Dazu bitte die Meldungen markieren und **als Text** im Forum posten.
 
-10. Nachdem das Zigbee-Subsystem sauber konfiguriert wurde und anstandslos startet muss der Haken bei 'Start the zigbee network automatically' gesetzt werden. Erst dann startet der Adapter das Zigbee Netzwerk automatisch beim Start.
+10. Nachdem das Zigbee-Subsystem sauber konfiguriert wurde und anstandslos startet muss der Haken bei 'Start the zigbee network automatically' (G) gesetzt werden. Erst dann startet der Adapter das Zigbee Netzwerk automatisch beim Start.
 
 
 ## Pairing
