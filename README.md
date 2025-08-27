@@ -153,7 +153,7 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 
-## **WORK IN PROGRESS**
+### **WORK IN PROGRESS**
 * (asgothian) fix random error where devices are not shown due to illegal groups
 * (asgothian) drop support for node 18
 * (asgothian) Required node Versions Node 20.19.0 or 22.11.0 or newer (courtesy of ZH 4.4.1 / ZHC 24.8.0)
