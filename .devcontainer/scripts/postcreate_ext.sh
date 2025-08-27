@@ -2,7 +2,7 @@
 
 set -e
 # Configure based on the
-iob object set system.adapter.zigbee.0 native.port=tcp://192.168.0.17:6638
+iob object set system.adapter.zigbee.0 native.port=tcp://192.168.2.55:6638
 iob object set system.adapter.zigbee.0 native.adapterType=ember
 iob object set system.adapter.zigbee.0 native.flowCTRL=true
 iob object set system.adapter.zigbee.0 native.baudrate=115200
