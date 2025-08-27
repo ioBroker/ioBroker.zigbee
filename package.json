@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -15,7 +15,7 @@
     }
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "optionalDependencies": {
     "serialport": "^13.0.0"
