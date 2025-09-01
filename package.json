@@ -21,7 +21,7 @@
     "serialport": "^13.0.0"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^3.2.3",
+    "@iobroker/adapter-core": "^3.3.2",
     "@iobroker/dm-utils": "^1.0.10",
     "humanize-duration": "^3.33.0",
     "tar": "^7.4.3",
