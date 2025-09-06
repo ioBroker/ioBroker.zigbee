@@ -714,15 +714,12 @@ function showDevices() {
     });
     for (let i = 0; i < devices.length; i++) {
         const d = devices[i];
-        if (!d.info) {
-            if (d.common && d.common.type == 'group') {
-                const card = getGroupCard(d);
-                html += card;
-                continue;
-            }
-        }
-        ;
-        if (d.info && d.info.device._type == 'Coordinator') {
+        if (d.common && d.common.type == 'group') {
+            const card = getGroupCard(d);
+            html += card;
+            continue;
+        };
+        if (d.info && d.info.device && d.info.device._type == 'Coordinator') {
             hasCoordinator=true;
             const card = getCoordinatorCard(d);
             html += card;
@@ -2743,7 +2740,7 @@ function prepareBindingDialog(bindObj) {
                 // check for output clusters
                 let allow = false;
                 for (const cluster of allowClusters) {
-                    for (const ep of device.info.endpoints) {
+                    if (device.info.endpoints) for (const ep of device.info.endpoints) {
                         if (ep.outputClusters.includes(cluster)) {
                             allow = true;
                             break;
@@ -2794,7 +2791,7 @@ function prepareBindingDialog(bindObj) {
                 // check for input clusters
                 let allow = false;
                 for (const cluster of allowClusters) {
-                    for (const ep of device.info.endpoints) {
+                    if (device.info.endpoints) for (const ep of device.info.endpoints) {
                         if (ep.inputClusters.includes(cluster)) {
                             allow = true;
                             break;
