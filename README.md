@@ -157,9 +157,10 @@ You can thank the authors by these links:
 * (asgothian) ZH 5.x
 * (asgothian) extend and stop pairing countdown
 
-### 3.0.4 (2025-07-31)
-* (asgothian) rewrite external converter code
-* (asgothian) icons in external converter
+### 3.0.5 (2025-08-27)
+* (asgothian) fix random error where devices are not shown due to illegal groups
+* (asgothian) drop support for node 18
+* (asgothian) Required node Versions Node 20.19.0 or 22.11.0 or newer (courtesy of ZH 4.4.1 / ZHC 24.8.0)
 
 ### 3.0.3 (2025-07-27)
 * (asgothian) fix 'icon' error for unknown devices

@@ -1,6 +1,7 @@
 {
   "common": {
     "name": "zigbee",
+
     "version": "3.1.0",
     "news": {
       "3.1.0": {
@@ -17,7 +18,23 @@
         "zh-cn": "ZHC 24.9.0\nZH 5.x (英语)\n扩展和停止对齐倒计时"
       },
       "3.0.4": {
-        "en": "Github Testing Version"
+        "en": "Github Testing Version
+        
+    "version": "3.0.5",
+    "news": {
+      "3.0.5": {
+        "en": "fix random error where devices are not shown due to illegal groups\ndrop support for node 18\nRequired node Versions Node 20.19.0 or 22.11.0 or newer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
+        "de": "fehler beheben, bei denen geräte wegen illegaler gruppen nicht angezeigt werden\ndrop-unterstützung für knoten 183\nErforderliche Knotenversionen Nr. 20.19.0 oder 22.11.0 oder neuer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
+        "ru": "исправить случайную ошибку, когда устройства не отображаются из-за незаконных групп\nподдержка drop для node 18\nТребуемый узел Версии Узел 20.19.0 или 22.11.0 или новее (документ ZH 4.4.1 / ZHC 24.8.0)",
+        "pt": "corrigir erro aleatório onde os dispositivos não são mostrados devido a grupos ilegais\nsuporte de gota para o nó 18\nNó necessário Versões Node 20.19.0 ou 22.11.0 ou mais recente (cortesia de ZH 4.4.1 / ZHC 24.8.0)",
+        "nl": "fix willekeurige fout wanneer apparaten niet worden getoond als gevolg van illegale groepen\ndrop ondersteuning voor knooppunt 18\nVereiste node Versies Node 20.19.0 of 22.11.0 of nieuwer (met dank aan ZH 4.4.1 / ZHC 24.8.0)",
+        "fr": "corriger une erreur aléatoire lorsque les appareils ne sont pas montrés en raison de groupes illégaux\nsupport de chute pour noeud 18\nVersion requise Node 20.19.0 ou 22.11.0 ou plus récent (avec la permission de ZH 4.4.1 / ZHC 248.0)",
+        "it": "correggere errore casuale in cui i dispositivi non vengono visualizzati a causa di gruppi illegali\nsupporto a goccia per nodo 18\nNodo richiesto Versioni Nodo 20.19.0 o 22.11.0 o più recente (cortesia di ZH 4.4.1 / ZHC 24.8.0)",
+        "es": "corregir errores aleatorios donde no se muestran dispositivos debido a grupos ilegales\napoyo a los nodos 18\nNodo requerido Versiones Nodo 20.19.0 o 22.11.0 o nuevo (cortesía de ZH 4.4.1 / ZHC 24.8.0)",
+        "pl": "naprawić błąd losowy w przypadku gdy urządzenia nie są wyświetlane z powodu nielegalnych grup\nobsługa zrzutu dla węzła 18\nWymagany węzeł Wersje Węzeł 20.19.0 lub 22.11.0 lub nowszy (uprzejmość ZH 4.4.1 / ZHC 24.8.0)",
+        "uk": "виправити випадкові помилки, де пристрої не відображаються через незаконні групи\nпідтримка крапель для вузла 18 років\nПотрібні версії вузла Node 20.19.0 або 22.11.0 або новачка (кількість ЗЗ 4.4.1 / ЗЖК 24.8.0)",
+        "zh-cn": "在设备因非法组而未显示时修复随机错误\n放弃节点支持 第 18 条\n要求的节点版本为20.19.0或22.11.0或更新(礼仪为ZH 4.4.1 / ZHC 24.8.0)"
+
       },
       "3.0.3": {
         "en": "fix 'icon' error for unknown devices\nfix state for level.color.rgb role (hex_color, accepts only #rrggbb values\nZH 4.4.1\nZHC 23.72.1\npreparation for breaking change in ZHC 24.0.0",
@@ -83,6 +100,19 @@
         "pl": "ZHC 23.6.0\nZH 3.3.x\nusunięte dodatkowe logowanie\nproblemy z pamięcią stałą.\nKonfiguracja wiadomości - 5 prób.\ntransmiter aktualizacji Power\nnaprawić wypadek w ZigbeeController. ByteArrayToString\noznaczenie urządzenia dla urządzeń bez mapowanego modelu (pozwala na stosowanie w grupach i wiązaniach)\n",
         "uk": "ЗХК 23.6.0\nZH 3.3.x\nвидалення додаткового входу\nвиправлено проблему пам'яті.\nНастроювання повідомлення - 5 спроб.\nоновлення трансмісії\nфіксувати аварійну аварійну аварійність в ZigbeeController. ByteArrayToString\nпозначення пристрою для пристроїв без картографічної моделі ( дозволяє використовувати в групах і зв'язках)\n",
         "zh-cn": "ZHC 23.6.0\nZH 3.3.x 电话\n已删除的额外日志\n固定记忆问题.\n配置信件 - 5 个尝试 .\n更新传输\n修复Zigbee控制器的崩溃。 字节箭头结构\n没有绘图模型的设备指定(分组和捆绑中的允许使用)\n"
+      },
+      "2.0.4": {
+        "en": "back to 2.0.2",
+        "de": "zurück zu 2.0.2",
+        "ru": "вернуться в 2.0.2",
+        "pt": "voltar para 2.0.2",
+        "nl": "terug naar 2.0.2",
+        "fr": "retour à 2.0.2",
+        "it": "torna a 2.0.2",
+        "es": "volver a 2.0.2",
+        "pl": "powrót do 2.0.2",
+        "uk": "до 2.0.2",
+        "zh-cn": "返回到2.0.2"
       }
     },
     "titleLang": {
@@ -187,6 +217,58 @@
       }
     ],
     "messages": [
+      {
+        "condition": {
+          "operand": "and",
+          "rules": [
+            "oldVersion<3.0.0",
+            "newVersion>=3.0.0"
+          ]
+        },
+        "title": {
+          "en": "Important notice!",
+          "de": "Wichtiger Hinweis!",
+          "ru": "Важное замечание!",
+          "pt": "Notícia importante!",
+          "nl": "Belangrijke mededeling!",
+          "fr": "Avis important!",
+          "it": "Avviso IMPORTANTE!",
+          "es": "Noticia importante!",
+          "pl": "Ważna uwaga!",
+          "zh-cn": "重要通知!"
+        },
+        "text": {
+          "en": "\"BREAKING CHANGE. <br> Adapter version 3.x no longer automatically starts the zigbee network unless the adapter is configured to do so. When upgrading from a version <3.0, the option 'start the zigbee network automatically' needs to be set once the configuration of the adapter has been verified. Please check the documentation on Github for details",
+          "de": "\"BREAKING CHANGE. <br> Adapterversion 3.x startet das ZigBee-Netzwerk nicht mehr automatisch, es sei denn, der Adapter ist entsprechend konfiguriert. Beim Upgrade von einer Version <3.0 muss die Option 'ZigBee-Netzwerk automatisch starten' aktiviert werden, sobald die Konfiguration des Adapters überprüft wurde. Weitere Informationen finden Sie in der Dokumentation auf Github.",
+          "ru": "\"BREAKING CHANGE. <br> Адаптер версии 3.x больше не запускает сеть ZigBee автоматически, если только он не настроен соответствующим образом. При обновлении с версии ниже 3.0 необходимо включить опцию «Запускать сеть ZigBee автоматически» после проверки конфигурации адаптера. Подробности см. в документации на Github.",
+          "pt": "\"BREAKING CHANGE. <br> A versão 3. x do adaptador já não inicia a rede Zigbee automaticamente, a menos que o adaptador esteja configurado para tal. Ao atualizar a partir de uma versão inferior a 3.0, a opção 'iniciar a rede Zigbee automaticamente' necessita de ser definida após a verificação da configuração do adaptador. Consulte a documentação no GitHub para mais detalhes.",
+          "nl": "\"BREAKING CHANGE. <br> Adapterversie 3.x start het ZigBee-netwerk niet meer automatisch, tenzij de adapter hiervoor is geconfigureerd. Bij een upgrade vanaf een versie <3.0 moet de optie 'ZigBee-netwerk automatisch starten' worden ingeschakeld nadat de configuratie van de adapter is geverifieerd. Raadpleeg de documentatie op Github voor meer informatie.",
+          "fr": "\"BREAKING CHANGE. <br> La version 3.x de l'adaptateur ne démarre plus automatiquement le réseau Zigbee, sauf si l'adaptateur est configuré pour le faire. Lors d'une mise à niveau depuis une version antérieure à la version 3.0, l'option « Démarrer automatiquement le réseau Zigbee » doit être activée une fois la configuration de l'adaptateur vérifiée. Veuillez consulter la documentation sur GitHub pour plus de détails.",
+          "it": "\"BREAKING CHANGE. <br> La versione 3.x dell'adattatore non avvia più automaticamente la rete ZigBee, a meno che l'adattatore non sia configurato per farlo. Quando si esegue l'aggiornamento da una versione <3.0, è necessario impostare l'opzione 'Avvia automaticamente la rete ZigBee' una volta verificata la configurazione dell'adattatore. Per i dettagli, consultare la documentazione su Github.",
+          "es": "\"BREAKING CHANGE. <br> La versión 3.x del adaptador ya no inicia automáticamente la red Zigbee a menos que esté configurada para ello. Al actualizar desde una versión anterior a la 3.0, es necesario activar la opción 'Iniciar la red Zigbee automáticamente' una vez verificada la configuración del adaptador. Para más información, consulte la documentación en Github.",
+          "pl": "\"BREAKING CHANGE. <br> Wersja adaptera 3.x nie uruchamia już automatycznie sieci Zigbee, chyba że adapter jest odpowiednio skonfigurowany. Podczas aktualizacji z wersji <3.0, po zweryfikowaniu konfiguracji adaptera należy ustawić opcję 'Automatyczne uruchamianie sieci Zigbee'. Szczegółowe informacje można znaleźć w dokumentacji na Github.",
+          "uk": "\"BREAKING CHANGE. <br> Версія адаптера 3.x більше не запускає мережу ZigBee автоматично, якщо адаптер не налаштовано на це. Під час оновлення з версії <3.0 необхідно встановити опцію «автоматично запускати мережу ZigBee» після перевірки конфігурації адаптера. Будь ласка, перегляньте документацію на Github для отримання детальної інформації.",
+          "zh-cn": "\"BREAKING CHANGE. <br> 適配器 3.x 版不再自動啟動 Zigbee 網絡，除非適配器已配置為自動啟動。從低於 3.0 的版本升級時，需要在驗證適配器配置後設定「自動啟動 Zigbee 網路」選項。詳情請查看 Github 上的文件。"
+        },
+        "link": "https://github.com/ioBroker/ioBroker.zigbee/blob/master/README.md",
+        "level": "warn",
+        "linkText": {
+          "en": "Readme",
+          "de": "Liesmich",
+          "ru": "Прочти меня",
+          "pt": "Leia-me",
+          "nl": "Leesmij",
+          "fr": "Lisez-moi",
+          "it": "Leggimi",
+          "es": "Léame",
+          "pl": "Readme",
+          "zh-cn": "自述文件"
+        },
+        "buttons": [
+          "agree",
+          "cancel"
+        ]
+      },
       {
         "condition": {
           "operand": "and",
