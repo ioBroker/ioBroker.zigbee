@@ -51,7 +51,9 @@ Depending on the error, there are various possible reasons why Herdsman may not 
 - Reading the data from the NV backup. In this case, the adapter's configuration is adjusted.
 - Deleting the NV backup. In this case, the adapter's configuration remains as it is. This **forces** a rebuild of the network, which subsequently requires all previously trained devices to be reset and retrained.<br>
 The log output can also be used to search for a solution in the [ioBroker Forum](https://forum.iobroker.net). Please highlight the messages and post them **as text** in the forum.
+
 10. Once the zigbee network is configured correctly and starts without issues, it is time to set the adapter to automatically start the network at start. This is done by checking the checkbox labeled 'start the zigbee network automatically'.
+
 ## Pairing
 Each ZigBee device (switch, bulb, sensor, ...) must be paired with the coordinator (pairing):  <br>
 
