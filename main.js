@@ -37,6 +37,7 @@ const vm = require('vm');
 const util = require('util');
 const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
+const { regexpCode } = require('ajv/dist/compile/codegen');
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -68,6 +69,8 @@ class Zigbee extends utils.Adapter {
             name: 'zigbee',
             systemConfig: true,
         }));
+        this.zhversion = zigbeeHerdsmanPackage ? zigbeeHerdsmanPackage.version : 'unknown';
+        this.zhcversion = zigbeeHerdsmanConvertersPackage ? zigbeeHerdsmanConvertersPackage.version : 'unknown';
         this.on('ready', () => this.onReady());
         this.on('unload', callback => this.onUnload(callback));
         this.on('message', obj => this.onMessage(obj));
@@ -83,7 +86,6 @@ class Zigbee extends utils.Adapter {
         this.deviceDebug =  new DeviceDebug(this),
         this.deviceDebug.on('log', this.onLog.bind(this));
         this.debugActive = true;
-
 
         this.plugins = [
             new SerialListPlugin(this),
@@ -202,7 +204,6 @@ class Zigbee extends utils.Adapter {
             debug.log = this.debugLog.bind(this);
             debug.enable('zigbee-herdsman*');
         }
-
         // external converters
         this.applyExternalConverters();
         // get devices from exposes
@@ -248,64 +249,57 @@ class Zigbee extends utils.Adapter {
 
     sandboxAdd(sandbox, item, module) {
         const multipleItems = item.split(',');
-        if (multipleItems.length > 1) {
-            for(const singleItem of multipleItems) {
-                this.log.warn(`trying to add "${singleItem.trim()} = require(${module})[${singleItem.trim()}]" to sandbox`)
-                sandbox[singleItem.trim()] = require(module)[singleItem.trim()];
+        for(const singleItem of multipleItems) {
+            const message = `Adding code from '${module}' as '${singleItem.trim()}' to sandbox `;
+            if (!module.match(new RegExp(`/${sandbox.zhclibBase}/`)))
+                module = module.replace(/zigbee-herdsman-converters\//, `${sandbox.zhclibBase}/`);
+            try {
+                const m = require(module);
+                sandbox[singleItem.trim()] = m;
+                this.log.info(`${message} -- success`);
             }
-        }
-        else {
-            this.log.warn(`trying to add "${item} = require(${module})" to sandbox`)
-            sandbox[item] = require(module);
+            catch (error) {
+                this.log.warn(`${message} -- failed: ${error && error.message ? error.message : 'no reason given'}`);
+            }
         }
     }
 
     SandboxRequire(sandbox, items) {
         if (!items) return true;
-        let converterLoaded = true;
+        //let converterLoaded = true;
         for (const item of items) {
             const modulePath = item[2].replace(/['"]/gm, '');
 
-            let zhcm1 = modulePath.match(/^zigbee-herdsman-converters\//);
-            if (zhcm1) {
-                try {
-                    const i2 = modulePath.replace(/^zigbee-herdsman-converters\//, `../${sandbox.zhclibBase}/`);
-                    this.sandboxAdd(sandbox, item[1], i2);
-                }
-                catch (error) {
-                    this.log.error(`Sandbox error: ${(error && error.message ? error.message : 'no error message given')}`)
-                }
+            const ZHCComponentMatch = modulePath.match(/\/(lib|converters|devices)\/(.+)/)
+
+            if (ZHCComponentMatch) {
+                const fullModulePath = '.' + path.sep + path.join('.',sandbox.zhclibBase, ZHCComponentMatch[1], ZHCComponentMatch[2]);
+                this.sandboxAdd(sandbox, item[1], fullModulePath);
                 continue;
             }
-            zhcm1 = modulePath.match(/^..\//);
-            if (zhcm1) {
-                const i2 = modulePath.replace(/^..\//, `../${sandbox.zhclibBase}/`);
-                try {
-                    this.sandboxAdd(sandbox, item[1], i2);
-                }
-                catch (error) {
-                    this.log.error(`Sandbox error: ${(error && error.message ? error.message : 'no error message given')}`);
-                    converterLoaded = false;
-                }
-                continue;
-            }
-            try {
-                this.sandboxAdd(sandbox, item[1], modulePath);
-            }
-            catch (error) {
-                this.log.error(`Sandbox error: ${(error && error.message ? error.message : 'no error message given')}`);
-                converterLoaded = false;
-            }
+            this.sandboxAdd(sandbox, item[1], modulePath);
 
         }
-        return converterLoaded;
+        return true;
     }
 
+    checkExternalConverterExists(fn) {
+        if (fs.existsSync(fn)) return fn;
+        const fnD = this.expandFileName(fn)
+        if (fs.existsSync(fnD)) return fnD;
+        const fnL = path.join('converters', fn)
+        if (fs.existsSync(fnL)) return fnL;
+        this.log.error(`unable to load ${fn} - checked ${path.resolve(fn)}, ${path.resolve(fnD)} and ${path.resolve(fnL)}`);
+        return false;
+    }
 
     * getExternalDefinition() {
+
         if (this.config.external === undefined) {
             return;
         }
+        const zhcPackageFn = require.resolve('zigbee-herdsman-converters/package.json');
+        const zhcBaseDir = path.relative('.',path.dirname(zhcPackageFn));
         const extfiles = this.config.external.split(';');
         for (const moduleName of extfiles) {
             if (!moduleName) continue;
@@ -313,48 +307,43 @@ class Zigbee extends utils.Adapter {
             const sandbox = {
                 require,
                 module: {},
-                zhclibBase : path.join('zigbee-herdsman-converters',(ZHCP && ZHCP.exports && ZHCP.exports['.'] ? path.dirname(ZHCP.exports['.']) : ''))
+                zhclibBase : path.join(zhcBaseDir,(ZHCP && ZHCP.exports && ZHCP.exports['.'] ? path.dirname(ZHCP.exports['.']) : ''))
             };
 
-            const mN = (fs.existsSync(moduleName) ? moduleName : this.expandFileName(moduleName));
-            if (!fs.existsSync(mN)) {
-                this.log.warn(`External converter not loaded - neither ${moduleName} nor ${mN} exist.`);
-            }
-            else {
+            const mN = this.checkExternalConverterExists(moduleName.trim());
+
+            if (mN) {
                 const converterCode = fs.readFileSync(mN, {encoding: 'utf8'}).toString();
                 let converterLoaded = true;
                 let modifiedCode = converterCode.replace(/\s+\/\/.+/gm, ''); // remove all lines starting with // (with the exception of the first.)
-                //fs.writeFileSync(mN+'.tmp1', modifiedCode)
                 modifiedCode = modifiedCode.replace(/^\/\/.+/gm, ''); // remove the fist line if it starts with //
-                //fs.writeFileSync(mN+'.tmp2', modifiedCode)
 
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\*\s+as\s+(\S+)\s+from\s+(\S+);/gm)]);
                 modifiedCode = modifiedCode.replace(/import\s+\*\s+as\s+\S+\s+from\s+\S+;/gm, '')
-                //fs.writeFileSync(mN+'.tmp3', modifiedCode)
+
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\{(.+)\}\s+from\s+(\S+);/gm)]);
                 modifiedCode = modifiedCode.replace(/import\s+\{.+\}\s+from\s+\S+;/gm, '');
 
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+(.+)\s+from\s+(\S+);/gm)]);
                 modifiedCode = modifiedCode.replace(/import\s+.+\s+from\s+\S+;/gm, '');
-                //fs.writeFileSync(mN+'.tmp4', modifiedCode)
+
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+\{(.+)\}\s+=\s+require\((.+)\)/gm)]);
                 modifiedCode = modifiedCode.replace(/const\s+\{.+\}\s+=\s+require\(.+\)/gm, '');
-                //fs.writeFileSync(mN+'.tmp5', modifiedCode)
+
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+(\S+)\s+=\s+require\((.+)\)/gm)]);
                 modifiedCode = modifiedCode.replace(/const\s+\S+\s+=\s+require\(.+\)/gm, '');
-                //mfs.writeFileSync(mN+'.tmp', modifiedCode)
 
                 for(const component of modifiedCode.matchAll(/const (.+):(.+)=/gm)) {
                     modifiedCode = modifiedCode.replace(component[0], `const ${component[1]} = `);
                 }
-                modifiedCode = modifiedCode.replace(/export .+;/gm, '');
+                modifiedCode = modifiedCode.replace(/export .+ +/gm, 'module.exports = ');
 
                 if (modifiedCode.indexOf('module.exports') < 0) {
                     converterLoaded = false;
                     this.log.error(`converter does not export any converter array, please add 'module.exports' statement to ${mN}`);
                 }
 
-                fs.writeFileSync(mN+'.tmp', modifiedCode)
+                //fs.writeFileSync(mN+'.tmp', modifiedCode)
 
                 if (converterLoaded) {
                     try {
@@ -364,6 +353,10 @@ class Zigbee extends utils.Adapter {
 
                         if (Array.isArray(converter)) for (const item of converter) {
                             this.log.info('Model ' + item.model + ' defined in external converter ' + mN);
+                            if (item.hasOwnProperty('icon')) {
+                                if (!item.icon.toLowerCase().startsWith('http') && !item.useadaptericon)
+                                    item.icon = path.join(path.dirname(mN), item.icon);
+                            }
                             yield item;
                         }
                         else {
@@ -730,7 +723,8 @@ class Zigbee extends utils.Adapter {
                                 if (converter.hasOwnProperty('convertGet')) {
                                     for (const ckey of converter.key) {
                                         try {
-                                            await converter.convertGet(entity.device.endpoints[0], ckey, {});
+                                            await converter.convertGet(entity.device.endpoints[0], ckey, {device:entity.device});
+                                            this.log.warn(`read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
                                         } catch (error) {
                                             if (has_elevated_debug) {
                                                 const message = `Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`;

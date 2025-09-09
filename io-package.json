@@ -1,6 +1,25 @@
 {
   "common": {
     "name": "zigbee",
+
+    "version": "3.1.0",
+    "news": {
+      "3.1.0": {
+        "en": "ZHC 24.9.0\nZH 5.x\nextend and stop pairing countdown",
+        "de": "ZHC 24.9.0\nZH 5,x\nerweitern und stoppen paaren countdown",
+        "ru": "ZHC 24.9.0\nZH 5.x\nпродлить и остановить обратный отсчет",
+        "pt": "ZHC 24.9.0\nZH 5. x\nestender e parar de emparelhar contagem regressiva",
+        "nl": "ZHC 24.9.0\nZH 5.x\nuitzetten en stoppen met aftellen",
+        "fr": "ZHC 24.9.0\nZH 5.x\nétendre et arrêter l'appariement du compte à rebours",
+        "it": "ZHC 24.9.0\nZH 5.x\nprolungare e fermare l'accoppiamento conto alla rovescia",
+        "es": "ZHC 24.9.0\nZH 5.x\nextender y dejar de emparejar la cuenta atrás",
+        "pl": "ZHC 24.9.0\nZH 5,x\nrozszerzenie i zatrzymanie parowania odliczania",
+        "uk": "ЗХК 24.9.0\nЗХ 5.х\nпродовжити і зупинити парі відлік",
+        "zh-cn": "ZHC 24.9.0\nZH 5.x (英语)\n扩展和停止对齐倒计时"
+      },
+      "3.0.4": {
+        "en": "Github Testing Version
+        
     "version": "3.0.5",
     "news": {
       "3.0.5": {
@@ -15,6 +34,7 @@
         "pl": "naprawić błąd losowy w przypadku gdy urządzenia nie są wyświetlane z powodu nielegalnych grup\nobsługa zrzutu dla węzła 18\nWymagany węzeł Wersje Węzeł 20.19.0 lub 22.11.0 lub nowszy (uprzejmość ZH 4.4.1 / ZHC 24.8.0)",
         "uk": "виправити випадкові помилки, де пристрої не відображаються через незаконні групи\nпідтримка крапель для вузла 18 років\nПотрібні версії вузла Node 20.19.0 або 22.11.0 або новачка (кількість ЗЗ 4.4.1 / ЗЖК 24.8.0)",
         "zh-cn": "在设备因非法组而未显示时修复随机错误\n放弃节点支持 第 18 条\n要求的节点版本为20.19.0或22.11.0或更新(礼仪为ZH 4.4.1 / ZHC 24.8.0)"
+
       },
       "3.0.3": {
         "en": "fix 'icon' error for unknown devices\nfix state for level.color.rgb role (hex_color, accepts only #rrggbb values\nZH 4.4.1\nZHC 23.72.1\npreparation for breaking change in ZHC 24.0.0",

@@ -152,6 +152,11 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### 3.1.0 (2025-08-02)
+* (asgothian) ZHC 24.9.0
+* (asgothian) ZH 5.x
+* (asgothian) extend and stop pairing countdown
+
 ### 3.0.5 (2025-08-27)
 * (asgothian) fix random error where devices are not shown due to illegal groups
 * (asgothian) drop support for node 18
