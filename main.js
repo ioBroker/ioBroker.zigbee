@@ -723,7 +723,8 @@ class Zigbee extends utils.Adapter {
                                 if (converter.hasOwnProperty('convertGet')) {
                                     for (const ckey of converter.key) {
                                         try {
-                                            await converter.convertGet(entity.device.endpoints[0], ckey, {});
+                                            await converter.convertGet(entity.device.endpoints[0], ckey, {device:entity.device});
+                                            this.log.warn(`read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
                                         } catch (error) {
                                             if (has_elevated_debug) {
                                                 const message = `Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`;

@@ -93,6 +93,19 @@
         "pl": "ZHC 23.6.0\nZH 3.3.x\nusunięte dodatkowe logowanie\nproblemy z pamięcią stałą.\nKonfiguracja wiadomości - 5 prób.\ntransmiter aktualizacji Power\nnaprawić wypadek w ZigbeeController. ByteArrayToString\noznaczenie urządzenia dla urządzeń bez mapowanego modelu (pozwala na stosowanie w grupach i wiązaniach)\n",
         "uk": "ЗХК 23.6.0\nZH 3.3.x\nвидалення додаткового входу\nвиправлено проблему пам'яті.\nНастроювання повідомлення - 5 спроб.\nоновлення трансмісії\nфіксувати аварійну аварійну аварійність в ZigbeeController. ByteArrayToString\nпозначення пристрою для пристроїв без картографічної моделі ( дозволяє використовувати в групах і зв'язках)\n",
         "zh-cn": "ZHC 23.6.0\nZH 3.3.x 电话\n已删除的额外日志\n固定记忆问题.\n配置信件 - 5 个尝试 .\n更新传输\n修复Zigbee控制器的崩溃。 字节箭头结构\n没有绘图模型的设备指定(分组和捆绑中的允许使用)\n"
+      },
+      "2.0.4": {
+        "en": "back to 2.0.2",
+        "de": "zurück zu 2.0.2",
+        "ru": "вернуться в 2.0.2",
+        "pt": "voltar para 2.0.2",
+        "nl": "terug naar 2.0.2",
+        "fr": "retour à 2.0.2",
+        "it": "torna a 2.0.2",
+        "es": "volver a 2.0.2",
+        "pl": "powrót do 2.0.2",
+        "uk": "до 2.0.2",
+        "zh-cn": "返回到2.0.2"
       }
     },
     "titleLang": {
