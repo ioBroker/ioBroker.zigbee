@@ -1,7 +1,6 @@
 {
   "common": {
     "name": "zigbee",
-
     "version": "3.1.0",
     "news": {
       "3.1.0": {
@@ -17,11 +16,6 @@
         "uk": "ЗХК 24.9.0\nЗХ 5.х\nпродовжити і зупинити парі відлік",
         "zh-cn": "ZHC 24.9.0\nZH 5.x (英语)\n扩展和停止对齐倒计时"
       },
-      "3.0.4": {
-        "en": "Github Testing Version
-        
-    "version": "3.0.5",
-    "news": {
       "3.0.5": {
         "en": "fix random error where devices are not shown due to illegal groups\ndrop support for node 18\nRequired node Versions Node 20.19.0 or 22.11.0 or newer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
         "de": "fehler beheben, bei denen geräte wegen illegaler gruppen nicht angezeigt werden\ndrop-unterstützung für knoten 183\nErforderliche Knotenversionen Nr. 20.19.0 oder 22.11.0 oder neuer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
