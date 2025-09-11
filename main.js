@@ -38,6 +38,9 @@ const util = require('util');
 const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
 const { regexpCode } = require('ajv/dist/compile/codegen');
+const dns = require('dns');
+const net = require('net');
+const { getNetAddress } = require('./lib/utils')
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -443,23 +446,16 @@ class Zigbee extends utils.Adapter {
             if (noReconnect) this.logToPairing(`Starting Adapter ${debugversion}`);
             this.log.info(`Starting Adapter ${debugversion}`);
 
-            this.getForeignObject(`system.adapter.${this.namespace}`,async (err, obj) => {
-                try {
-                    if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
-                        const instFrom = obj.common.installedFrom;
-                        gitVers = gitVers + instFrom.replace('tarball', 'commit');
-                    } else {
-                        gitVers = obj.common.installedFrom;
-                    }
-                    if (noReconnect) this.logToPairing(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
-                    this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
-                    await this.zbController.start(noReconnect);
-                } catch (error) {
-                    this.logToPairing(error && error.message ? error.message : error);
-                    this.log.error(error && error.message ? error.message : error);
-                }
-                return false;
-            });
+            const obj = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
+            if (!obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
+                const instFrom = obj.common.installedFrom;
+                gitVers = gitVers + instFrom.replace('tarball', 'commit');
+            } else {
+                gitVers = obj.common.installedFrom;
+            }
+            if (noReconnect) this.logToPairing(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
+            this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
+            const result = await this.zbController.start(noReconnect);
         } catch (error) {
             this.setState('info.connection', false, true);
             this.logToPairing(`Failed to start Zigbee: ${error && error.message ? error.message : 'no message given'}`)
@@ -494,8 +490,14 @@ class Zigbee extends utils.Adapter {
         this.tryToReconnect();
     }
 
-    tryToReconnect() {
-        this.reconnectTimer = setTimeout(() => {
+    async tryToReconnect() {
+        this.reconnectTimer = setTimeout(async () => {
+            const result = await this.testConnection(this.config.port)
+            if (result.error) {
+                delete this.herdsman;
+                this.tryToReconnect();
+                return;
+            }
             if (this.config.port.includes('tcp://')) {
                 // Controller connect though Wi-Fi.
                 // Unlikely USB dongle, connection broken may only cause user unplugged the dongle,
@@ -509,6 +511,65 @@ class Zigbee extends utils.Adapter {
             }
             this.doConnect();
         }, 10 * 1000); // every 10 seconds
+    }
+
+
+    async testConnection(address, interactive) {
+
+        function InteractivePairingMessage(msg, t) {
+            if (interactive) t.logToPairing(msg);
+            t.log.debug(msg);
+        }
+
+        this.log.debug(`Test connection for ${address}`);
+        const strMsg = '';
+
+        if (address) {
+            const netAddress = getNetAddress(address);
+            if (netAddress && netAddress.host) {
+                const netConnectPromise = new Promise((resolve) => {
+                    InteractivePairingMessage(`attempting dns lookup for ${netAddress.host}`, this);
+                    dns.lookup(netAddress.host, (err, ip, _) => {
+                        if (err) {
+                            resolve({error:`Unable to resolve name: ${err && err.message ? err.message : 'no message'}`});
+                        }
+                        InteractivePairingMessage(`dns lookup for ${address} produced ${ip}`, this );
+                        const client = new net.Socket();
+                        InteractivePairingMessage(`attempting to connect to ${ip} port ${netAddress.port ? netAddress.port : 80}`, this);
+                        client.connect(netAddress.port, ip, () => {
+                            client.destroy()
+                            InteractivePairingMessage(`connected successfully to connect to ${ip} port ${netAddress.port ? netAddress.port : 80}`, this);
+                            resolve({});
+                        })
+                        client.on('error', (error) => {
+                            resolve({error:`unable to connect to ${ip} port ${netAddress.port ? netAddress.port : 80} : ${error && error.message ? error.message : 'no message given'}`});
+                        });
+                    })
+                });
+                return await netConnectPromise;
+            }
+            else
+            {
+                const serialConnectPromise = new Promise((resolve) => {
+                    try {
+                        const port =address.trim();
+                        InteractivePairingMessage(`reading access rights for ${port}`, this);
+                        fs.access(port, fs.constants.R_OK | fs.constants.W_OK, (error) => {
+                            if (error) {
+                                resolve({error:`unable to access ${port} : ${error && error.message ? error.message : 'no message given'}`});
+                            }
+                            InteractivePairingMessage(`read and write access available for ${port}`, this);
+                            resolve({});
+                        });
+                    }
+                    catch (error) {
+                        resolve({error:`File access error: ${error && error.message ? error.message : 'no message given'}`});
+                    }
+                });
+                return await serialConnectPromise;
+            }
+        }
+        return {error: `missing parameter: address`};
     }
 
     async onZigbeeAdapterReady() {
