@@ -38,6 +38,9 @@ const util = require('util');
 const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
 const { regexpCode } = require('ajv/dist/compile/codegen');
+const dns = require('dns');
+const net = require('net');
+const { getNetAddress } = require('./lib/utils')
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -80,7 +83,7 @@ class Zigbee extends utils.Adapter {
 
         this.stController = new StatesController(this);
         this.stController.on('log', this.onLog.bind(this));
-        this.stController.on('changed', this.publishFromState.bind(this));
+        this.stController.on('acknowledge_state', this.acknowledgeState.bind(this));
 
         this.deviceManagement = new dmZigbee(this);
         this.deviceDebug =  new DeviceDebug(this),
@@ -215,6 +218,9 @@ class Zigbee extends utils.Adapter {
         this.setState('info.connection', false, true);
         const zigbeeOptions = this.getZigbeeOptions();
         this.zbController = new ZigbeeController(this);
+
+
+
         this.zbController.on('log', this.onLog.bind(this));
         this.zbController.on('ready', this.onZigbeeAdapterReady.bind(this));
         this.zbController.on('disconnect', this.onZigbeeAdapterDisconnected.bind(this));
@@ -223,7 +229,12 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('pairing', this.onPairing.bind(this));
         this.zbController.on('event', this.stController.onZigbeeEvent.bind(this.stController));
         this.zbController.on('msg', this.stController.onZigbeeEvent.bind(this.stController));
-        this.zbController.on('publish', this.publishToState.bind(this));
+        this.zbController.on('publish', this.stController.publishToState.bind(this.stController));
+        this.stController.on('send_payload', this.zbController.publishPayload.bind(this.zbController));
+        this.stController.on('changed', this.zbController.publishFromState.bind(this.zbController));
+        this.stController.on('device_query', this.zbController.deviceQuery.bind(this.zbController));
+        this.zbController.on('acknowledge_state', this.acknowledgeState.bind(this));
+
         this.zbController.configure(zigbeeOptions);
         this.zbController.debugActive = this.debugActive;
         this.stController.debugActive = this.debugActive;
@@ -416,7 +427,7 @@ class Zigbee extends utils.Adapter {
             //this.logToPairing('herdsman stopped !');
             this.sendTo(from, command, { status:true }, callback);
         } catch (error) {
-            this.sendTo(from, command, { status:false }, callback);
+            this.sendTo(from, command, { status:true }, callback);
         }
     }
 
@@ -435,23 +446,16 @@ class Zigbee extends utils.Adapter {
             if (noReconnect) this.logToPairing(`Starting Adapter ${debugversion}`);
             this.log.info(`Starting Adapter ${debugversion}`);
 
-            this.getForeignObject(`system.adapter.${this.namespace}`,async (err, obj) => {
-                try {
-                    if (!err && obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
-                        const instFrom = obj.common.installedFrom;
-                        gitVers = gitVers + instFrom.replace('tarball', 'commit');
-                    } else {
-                        gitVers = obj.common.installedFrom;
-                    }
-                    if (noReconnect) this.logToPairing(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
-                    this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
-                    await this.zbController.start(noReconnect);
-                } catch (error) {
-                    this.logToPairing(error && error.message ? error.message : error);
-                    this.log.error(error && error.message ? error.message : error);
-                }
-                return false;
-            });
+            const obj = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
+            if (!obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
+                const instFrom = obj.common.installedFrom;
+                gitVers = gitVers + instFrom.replace('tarball', 'commit');
+            } else {
+                gitVers = obj.common.installedFrom;
+            }
+            if (noReconnect) this.logToPairing(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
+            this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
+            const result = await this.zbController.start(noReconnect);
         } catch (error) {
             this.setState('info.connection', false, true);
             this.logToPairing(`Failed to start Zigbee: ${error && error.message ? error.message : 'no message given'}`)
@@ -486,8 +490,14 @@ class Zigbee extends utils.Adapter {
         this.tryToReconnect();
     }
 
-    tryToReconnect() {
-        this.reconnectTimer = setTimeout(() => {
+    async tryToReconnect() {
+        this.reconnectTimer = setTimeout(async () => {
+            const result = await this.testConnection(this.config.port)
+            if (result.error) {
+                delete this.herdsman;
+                this.tryToReconnect();
+                return;
+            }
             if (this.config.port.includes('tcp://')) {
                 // Controller connect though Wi-Fi.
                 // Unlikely USB dongle, connection broken may only cause user unplugged the dongle,
@@ -501,6 +511,65 @@ class Zigbee extends utils.Adapter {
             }
             this.doConnect();
         }, 10 * 1000); // every 10 seconds
+    }
+
+
+    async testConnection(address, interactive) {
+
+        function InteractivePairingMessage(msg, t) {
+            if (interactive) t.logToPairing(msg);
+            t.log.debug(msg);
+        }
+
+        this.log.debug(`Test connection for ${address}`);
+        const strMsg = '';
+
+        if (address) {
+            const netAddress = getNetAddress(address);
+            if (netAddress && netAddress.host) {
+                const netConnectPromise = new Promise((resolve) => {
+                    InteractivePairingMessage(`attempting dns lookup for ${netAddress.host}`, this);
+                    dns.lookup(netAddress.host, (err, ip, _) => {
+                        if (err) {
+                            resolve({error:`Unable to resolve name: ${err && err.message ? err.message : 'no message'}`});
+                        }
+                        InteractivePairingMessage(`dns lookup for ${address} produced ${ip}`, this );
+                        const client = new net.Socket();
+                        InteractivePairingMessage(`attempting to connect to ${ip} port ${netAddress.port ? netAddress.port : 80}`, this);
+                        client.connect(netAddress.port, ip, () => {
+                            client.destroy()
+                            InteractivePairingMessage(`connected successfully to connect to ${ip} port ${netAddress.port ? netAddress.port : 80}`, this);
+                            resolve({});
+                        })
+                        client.on('error', (error) => {
+                            resolve({error:`unable to connect to ${ip} port ${netAddress.port ? netAddress.port : 80} : ${error && error.message ? error.message : 'no message given'}`});
+                        });
+                    })
+                });
+                return await netConnectPromise;
+            }
+            else
+            {
+                const serialConnectPromise = new Promise((resolve) => {
+                    try {
+                        const port =address.trim();
+                        InteractivePairingMessage(`reading access rights for ${port}`, this);
+                        fs.access(port, fs.constants.R_OK | fs.constants.W_OK, (error) => {
+                            if (error) {
+                                resolve({error:`unable to access ${port} : ${error && error.message ? error.message : 'no message given'}`});
+                            }
+                            InteractivePairingMessage(`read and write access available for ${port}`, this);
+                            resolve({});
+                        });
+                    }
+                    catch (error) {
+                        resolve({error:`File access error: ${error && error.message ? error.message : 'no message given'}`});
+                    }
+                });
+                return await serialConnectPromise;
+            }
+        }
+        return {error: `missing parameter: address`};
     }
 
     async onZigbeeAdapterReady() {
@@ -607,10 +676,6 @@ class Zigbee extends utils.Adapter {
         });
     }
 
-    publishToState(devId, model, payload) {
-        this.stController.publishToState(devId, model, payload);
-    }
-
     acknowledgeState(deviceId, model, stateDesc, value) {
         if (model === 'group') {
             const stateId = `${this.namespace}.group_${deviceId}.${stateDesc.id}`;
@@ -621,396 +686,8 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    processSyncStatesList(deviceId, model, syncStateList) {
-        syncStateList.forEach((syncState) => {
-            this.acknowledgeState(deviceId, model, syncState.stateDesc, syncState.value);
-        });
-    }
-
-    async publishFromState(deviceId, model, stateModel, stateList, options, debugID) {
-        let isGroup = false;
-        const has_elevated_debug = this.stController.checkDebugDevice(deviceId)
-
-        if (has_elevated_debug)
-        {
-            const stateNames = [];
-            for (const state of stateList) {
-                stateNames.push(state.stateDesc.id);
-            }
-            const message = `Publishing to ${deviceId} of model ${model} with ${stateNames.join(', ')}`;
-            this.emit('device_debug', { ID:debugID, data: { ID: deviceId, flag: '03', IO:false }, message: message});
-        }
-        else
-            if (this.debugActive) this.log.debug(`publishFromState : ${deviceId} ${model} ${safeJsonStringify(stateList)}`);
-        if (model === 'group') {
-            isGroup = true;
-            deviceId = parseInt(deviceId);
-        }
-        try {
-            const entity = await this.zbController.resolveEntity(deviceId);
-            if (this.debugActive) this.log.debug(`entity: ${deviceId} ${model} ${safeJsonStringify(entity)}`);
-            const mappedModel = entity ? entity.mapped : undefined;
-
-            if (!mappedModel) {
-                if (this.debugActive) this.log.debug(`No mapped model for ${model}`);
-                if (has_elevated_debug) {
-                    const message=`No mapped model ${deviceId} (model ${model})`;
-                    this.emit('device_debug', { ID:debugID, data: { error: 'NOMODEL' , IO:false }, message: message});
-                }
-                return;
-            }
-
-            if (!mappedModel.toZigbee)
-            {
-                this.log.error(`No toZigbee in mapped model for ${model}`);
-                return;
-            }
-
-            stateList.forEach(async changedState => {
-                const stateDesc = changedState.stateDesc;
-                const value = changedState.value;
-
-                if (stateDesc.id === 'send_payload') {
-                    try {
-                        const json_value = JSON.parse(value);
-                        const payload = {device: deviceId.replace('0x', ''), payload: json_value, model:model, stateModel:stateModel};
-                        if (has_elevated_debug) this.emit('device_debug', { ID:debugID, data: { flag: '04' ,payload:value ,states:[{id:stateDesc.id, value:json_value, payload:'none'}], IO:false }});
-
-                        const result = await this.sendPayload(payload);
-                        if (result.hasOwnProperty('success') && result.success) {
-                            this.acknowledgeState(deviceId, model, stateDesc, value);
-                        }
-                        else {
-                            this.log.error('Error in SendPayload: '+result.error.message);
-                        }
-                    } catch (error) {
-                        const message = `send_payload: ${value} does not parse as JSON Object : ${error.message}`;
-                        if (has_elevated_debug) this.emit('device_debug', { ID:debugID, data: { error: 'EXSEND' ,states:[{id:stateDesc.id, value:value, payload:error.message}], IO:false }, message:message});
-                        else this.log.error(message);
-                        return;
-                    }
-                    return;
-                }
-
-                if (stateDesc.isOption || stateDesc.compositeState) {
-                    // acknowledge state with given value
-                    if (has_elevated_debug) {
-                        const message = 'changed state: ' + JSON.stringify(changedState);
-                        this.emit('device_debug', { ID:debugID, data: { flag: 'cc', states:[{id:stateDesc.id, value:value, payload:'none (OC State)'}] , IO:false }, message:message});
-                    }
-                    else
-                        if (this.debugActive) this.log.debug('changed composite state: ' + JSON.stringify(changedState));
-
-                    this.acknowledgeState(deviceId, model, stateDesc, value);
-                    if (stateDesc.compositeState && stateDesc.compositeTimeout) {
-                        this.stController.triggerComposite(deviceId, model, stateDesc, changedState.source.includes('.admin.'));
-                    }
-                    // on activation of the 'device_query' state trigger hardware query where possible
-                    if (stateDesc.id === 'device_query') {
-                        if (this.query_device_block.indexOf(deviceId) > -1) {
-                            this.log.info(`Device query for '${entity.device.ieeeAddr}' blocked`);
-                            return;
-                        }
-                        if (mappedModel) {
-                            this.query_device_block.push(deviceId);
-                            if (has_elevated_debug) {
-                                const message  = `Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' triggered`;
-                                this.emit('device_debug', { ID:debugID, data: { flag: 'qs' ,states:[{id:stateDesc.id, value:value, payload:'none for device query'}], IO:false }, message:message});
-                            }
-                            else
-                                if (this.debugActive) this.log.debug(`Device query for '${entity.device.ieeeAddr}' started`);
-                            for (const converter of mappedModel.toZigbee) {
-                                if (converter.hasOwnProperty('convertGet')) {
-                                    for (const ckey of converter.key) {
-                                        try {
-                                            await converter.convertGet(entity.device.endpoints[0], ckey, {device:entity.device});
-                                            this.log.warn(`read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
-                                        } catch (error) {
-                                            if (has_elevated_debug) {
-                                                const message = `Failed to read state '${JSON.stringify(ckey)}'of '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' from query with '${error && error.message ? error.message : 'no error message'}`;
-                                                this.log.warn(`ELEVATED OE02.1 ${message}`);
-                                                this.emit('device_debug', { ID:debugID, data: { error: 'NOTREAD' , IO:false }, message:message });
-                                            }
-                                            else
-                                                this.log.info(`failed to read state ${JSON.stringify(ckey)} of ${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID} after device query`);
-                                        }
-                                    }
-                                }
-                            }
-                            if (has_elevated_debug) {
-                                const message = `ELEVATED O07: Device query for '${entity.device.ieeeAddr}/${entity.device.endpoints[0].ID}' complete`;
-                                this.emit('device_debug', { ID:debugID, data: { flag: 'qe' , IO:false }, message:message});
-                            }
-                            else
-                                this.log.info(`Device query for '${entity.device.ieeeAddr}' done`);
-                            const idToRemove = deviceId;
-                            setTimeout(() => {
-                                const idx = this.query_device_block.indexOf(idToRemove);
-                                if (idx > -1) {
-                                    this.query_device_block.splice(idx);
-                                }
-                            }, 10000);
-                        }
-                        return;
-                    }
-                    return;
-                }
-
-                let converter = undefined;
-                let msg_counter = 0;
-                for (const c of mappedModel.toZigbee) {
-
-                    if (!c.hasOwnProperty('convertSet')) continue;
-                    if (this.debugActive) this.log.debug(`Type of toZigbee is '${typeof c}', Contains key ${(c.hasOwnProperty('key')?JSON.stringify(c.key):'false ')}`)
-                    if (!c.hasOwnProperty('key'))
-                    {
-                        if (converter === undefined)
-                        {
-                            converter = c;
-                            if (has_elevated_debug) {
-                                const message = `Setting converter to keyless converter for ${deviceId} of type ${model}`;
-                                this.emit('device_debug', { ID:debugID, data: { flag: `s4.${msg_counter}` , IO:false }, message:message});
-                            }
-                            else
-                                if (this.debugActive) this.log.debug(`Setting converter to keyless converter for ${deviceId} of type ${model}`);
-                            msg_counter++;
-                        }
-                        else
-                        {
-                            if (has_elevated_debug)
-                            {
-                                const message = `ignoring keyless converter for ${deviceId} of type ${model}`;
-                                this.emit('device_debug', { ID:debugID, data: { flag: `i4.${msg_counter}` , IO:false} , message:message});
-                            }
-                            else
-                                if (this.debugActive) this.log.debug(`ignoring keyless converter for ${deviceId} of type ${model}`);
-                            msg_counter++;
-                        }
-                        continue;
-                    }
-                    if (c.key.includes(stateDesc.prop) || c.key.includes(stateDesc.setattr) || c.key.includes(stateDesc.id))
-                    {
-                        const message = `${(converter===undefined?'Setting':'Overriding')}' converter to converter with key(s)'${JSON.stringify(c.key)}}`;
-                        if (has_elevated_debug) {
-                            this.emit('device_debugug', { ID:debugID, data: { flag: `${converter===undefined ? 's' : 'o'}4.${msg_counter}` , IO:false }, message:message});
-
-                        }
-                        else
-                            if (this.debugActive) this.log.debug(message);
-                        converter = c;
-                        msg_counter++;
-                    }
-                }
-                if (converter === undefined) {
-                    const message = `No converter available for '${model}' with key '${stateDesc.id}' `;
-                    if (has_elevated_debug) {
-                        this.emit('device_debug', { ID:debugID, data: { error: 'NOCONV',states:[{id:stateDesc.id, value:value, payload:'no converter'}] , IO:false }, message:message});
-                    }
-                    else {
-                        this.log.info(message);
-                    }
-                    return;
-                }
-
-                const preparedValue = (stateDesc.setter) ? stateDesc.setter(value, options) : value;
-                const preparedOptions = (stateDesc.setterOpt) ? stateDesc.setterOpt(value, options) : {};
-
-                let syncStateList = [];
-                if (stateModel && stateModel.syncStates) {
-                    stateModel.syncStates.forEach(syncFunct => {
-                        const res = syncFunct(stateDesc, value, options);
-                        if (res) {
-                            syncStateList = syncStateList.concat(res);
-                        }
-                    });
-                }
-
-                const epName = stateDesc.epname !== undefined ? stateDesc.epname : (stateDesc.prop || stateDesc.id);
-                const key = stateDesc.setattr || stateDesc.prop || stateDesc.id;
-                const message = `convert ${key}, ${safeJsonStringify(preparedValue)}, ${safeJsonStringify(preparedOptions)} for device ${deviceId} with Endpoint ${epName}`;
-                if (has_elevated_debug) {
-                    this.emit('device_debug', { ID:debugID, data: { flag: '04', payload: {key:key, ep: stateDesc.epname, value:preparedValue, options:preparedOptions}, IO:false }, message:message});
-                }
-                else
-                    if (this.debugActive) this.log.debug(message);
-
-                let target;
-                if (model === 'group') {
-                    target = entity.mapped;
-                } else {
-                    target = await this.zbController.resolveEntity(deviceId, epName);
-                    target = target.endpoint;
-                }
-
-                if (this.debugActive) this.log.debug(`target: ${safeJsonStringify(target)}`);
-
-                const meta = {
-                    endpoint_name: epName,
-                    options: preparedOptions,
-                    device: entity.device,
-                    mapped: model === 'group' ? [] : mappedModel,
-                    message: {[key]: preparedValue},
-                    logger: this.log,
-                    state: {},
-                };
-
-                // new toZigbee
-                if (preparedValue !== undefined && Object.keys(meta.message).filter(p => p.startsWith('state')).length > 0) {
-                    if (typeof preparedValue === 'number') {
-                        meta.message.state = preparedValue > 0 ? 'ON' : 'OFF';
-                    } else {
-                        meta.message.state = preparedValue;
-                    }
-                }
-                if (has_elevated_debug) {
-                    this.emit('device_debug', { ID:debugID, data: { states:[{id:stateDesc.id, value:value, payload:preparedValue, ep:stateDesc.epname}] , IO:false }});
-                }
-
-                if (preparedOptions !== undefined) {
-                    if (preparedOptions.hasOwnProperty('state')) {
-                        meta.state = preparedOptions.state;
-                    }
-                }
-
-                try {
-                    const result = await converter.convertSet(target, key, preparedValue, meta);
-                    const message = `convert result ${safeJsonStringify(result)} for device ${deviceId}`;
-                    if (has_elevated_debug) {
-                        this.emit('device_debug', { ID:debugID, data: { flag: 'SUCCESS' , IO:false }, message:message});
-                    }
-                    else
-                        if (this.debugActive) this.log.debug(message);
-                    if (result !== undefined) {
-                        if (stateModel && !isGroup && !stateDesc.noack) {
-                            this.acknowledgeState(deviceId, model, stateDesc, value);
-                        }
-                        // process sync state list
-                        this.processSyncStatesList(deviceId, model, syncStateList);
-                    }
-                    else {
-                        if (has_elevated_debug) {
-                            const message = `Convert does not return a result result for ${key} with ${safeJsonStringify(preparedValue)} on device ${deviceId}.`;
-                            this.emit('device_debug', { ID:debugID, data: { flag: '06' , IO:false }, message:message});
-                        }
-                    }
-                } catch (error) {
-                    if (has_elevated_debug) {
-                        const message = `caught error ${safeJsonStringify(error)} when setting value for device ${deviceId}.`;
-                        this.emit('device_debug', { ID:debugID, data: { error: 'EXSET' , IO:false },message:message});
-                    }
-                    this.filterError(`Error ${error.code} on send command to ${deviceId}.` +
-                        ` Error: ${error.stack}`, `Send command to ${deviceId} failed with`, error);
-                }
-            });
-        } catch (err) {
-            const message = `No entity for ${deviceId} : ${err && err.message ? err.message : 'no error message'}`;
-            this.emit('device_debug', { ID:debugID, data: { error: 'EXPUB' , IO:false }, message:message});
-        }
-    }
-
-
-    extractEP(key, endpoints) {
-        try {
-            if (endpoints) for (const ep of Object.keys(endpoints)) {
-                if (key.endsWith('_'+ep)) return { setattr: key.replace('_'+ep, ''), epname:ep }
-            }
-        }
-        catch {
-            return {};
-        }
-        return {};
-    }
-    // This function is introduced to explicitly allow user level scripts to send Commands
-    // directly to the zigbee device. It utilizes the zigbee-herdsman-converters to generate
-    // the exact zigbee message to be sent and can be used to set device options which are
-    // not exposed as states. It serves as a wrapper function for "publishFromState" with
-    // extended parameter checking
-    //
-    // The payload can either be a JSON object or the string representation of a JSON object
-    // The following keys are supported in the object:
-    // device: name of the device. For a device zigbee.0.0011223344556677 this would be 0011223344556677
-    // payload: The data to send to the device as JSON object (key/Value pairs)
-    // endpoint: optional: the endpoint to send the data to, if supported.
-    //
     async sendPayload(payload) {
-        let payloadObj = {};
-        if (typeof payload === 'string') {
-            try {
-                payloadObj = JSON.parse(payload);
-            } catch (e) {
-                this.log.error(`Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
-                this.sendError(e, `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`);
-                return {
-                    success: false,
-                    error: `Unable to parse ${safeJsonStringify(payload)}: ${safeJsonStringify(e)}`
-                };
-            }
-        } else if (typeof payload === 'object') {
-            payloadObj = payload;
-        } else return { success: false, error: 'illegal type of payload: ' + typeof payload};
-
-        if (payloadObj.hasOwnProperty('device') && payloadObj.hasOwnProperty('payload')) {
-            try {
-                const isDevice = !payload.device.includes('group_');
-                const stateList = [];
-                const devID = isDevice ? `0x${payload.device}` : parseInt(payload.device.replace('group_', ''));
-
-                const entity = await this.zbController.resolveEntity(devID);
-                if (!entity) {
-                    this.log.error(`Device ${safeJsonStringify(payloadObj.device)} not found`);
-                    this.sendError(`Device ${safeJsonStringify(payloadObj.device)} not found`);
-                    return {success: false, error: `Device ${safeJsonStringify(payloadObj.device)} not found`};
-                }
-                const mappedModel = entity.mapped;
-                if (!mappedModel) {
-                    this.log.error(`No Model for Device ${safeJsonStringify(payloadObj.device)}`);
-                    this.sendError(`No Model for Device ${safeJsonStringify(payloadObj.device)}`);
-                    return {success: false, error: `No Model for Device ${safeJsonStringify(payloadObj.device)}`};
-                }
-                if (typeof payloadObj.payload !== 'object') {
-                    this.log.error(`Illegal payload type for ${safeJsonStringify(payloadObj.device)}`);
-                    this.sendError(`Illegal payload type for ${safeJsonStringify(payloadObj.device)}`);
-                    return {success: false, error: `Illegal payload type for ${safeJsonStringify(payloadObj.device)}`};
-                }
-                const endpoints = mappedModel && mappedModel.endpoint ? mappedModel.endpoint(entity.device) : null;
-                for (const key in payloadObj.payload) {
-                    if (payloadObj.payload[key] != undefined) {
-                        const datatype = typeof payloadObj.payload[key];
-                        const epobj = this.extractEP(key, endpoints);
-                        if (payloadObj.endpoint) {
-                            epobj.epname = payloadObj.endpoint;
-                            delete epobj.setattr;
-                        }
-                        stateList.push({
-                            stateDesc: {
-                                id: key,
-                                prop: key,
-                                role: 'state',
-                                type: datatype,
-                                noack:true,
-                                epname: epobj.epname,
-                                setattr: epobj.setattr,
-                            },
-                            value: payloadObj.payload[key],
-                            index: 0,
-                            timeout: 0,
-                        });
-                    }
-                }
-                try {
-                    await this.publishFromState(`0x${payload.device}`, payload.model, payload.stateModel, stateList, payload.options, Date.now());
-                    return {success: true};
-                } catch (error) {
-                    this.log.error(`Error ${error.code} on send command to ${payload.device}.` + ` Error: ${error.stack} ` + `Send command to ${payload.device} failed with ` + error);
-                    this.filterError(`Error ${error.code} on send command to ${payload.device}.` + ` Error: ${error.stack}`, `Send command to ${payload.device} failed with`, error);
-                    return {success: false, error};
-                }
-            } catch (e) {
-                return {success: false, error: e};
-            }
-        }
-
-        return {success: false, error: `missing parameter device or payload in message ${JSON.stringify(payload)}`};
+        return await this.zbController.publishPayload(payload);
     }
 
 
