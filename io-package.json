@@ -336,7 +336,7 @@
     "autostart": false,
     "readAllAtStart":false,
     "readAtAnnounce":true,
-    "startReadDelay":500
+    "startReadDelay":1
   },
   "instanceObjects": [
     {
