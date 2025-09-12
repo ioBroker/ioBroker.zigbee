@@ -62,7 +62,7 @@ const networkOptions = {
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
     'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent',
-    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart'
+    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart',
 ];
 
 function getDeviceByID(ID) {
@@ -1376,6 +1376,7 @@ function getRandomChannel()
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
+    console.warn(JSON.stringify(settings));
     if (settings.extPanID === undefined || settings.extPanID == '') {
         settings.channel = getRandomChannel();
     }

@@ -694,7 +694,6 @@ class Zigbee extends utils.Adapter {
     async newDevice(entity) {
 
         if (this.debugActive) this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
-        //this.stController.AddModelFromHerdsman(entity.device, entity.mapped ? entity.mapped.model : entity.device.modelID)
 
         const dev = entity.device;
         const model = (entity.mapped) ? entity.mapped.model : dev.modelID;

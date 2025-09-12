@@ -333,7 +333,10 @@
     "warnOnDeviceAnnouncement": true,
     "baudRate": 115200,
     "flowCTRL": false,
-    "autostart": false
+    "autostart": false,
+    "readAllAtStart":false,
+    "readAtAnnounce":true,
+    "startReadDelay":1
   },
   "instanceObjects": [
     {

@@ -793,9 +793,24 @@
                     <label class="translate" for="external">Paths to files, separated by semicolon (;)</label>
                 </div>
             </div>
-            <div class="input-field col s12 m12 l12 col-startWithInconsistent">
-                <input id="startWithInconsistent" type="checkbox" class="value"/>
-                <label class="translate" for="startWithInconsistent">SettingsExclude</label>
+            <div class="row">
+                <h6 class="translate">Global Options</h6>
+                <div class="input-field col s12 m6 l4 col-readAtAnnounce">
+                    <input id="readAtAnnounce" type="checkbox" class="value"/>
+                    <label class="translate" for="readAtAnnounce">Read states at device announce</label>
+                </div>
+                <div class="input-field col s12 m6 l4 col-readAtAnnounce">
+                    <input id="readAllAtStart" type="checkbox" class="value"/>
+                    <label class="translate" for="readAllAtStart">try to read all states at adapter start</label>
+                </div>
+                <div class="input-field col s12 m6 l4">
+                    <input id="startReadDelay" type="number" min="0.5" max="10" class="value"/>
+                    <label class="translate" for="startReadDelay">Read delay</label>
+                </div>
+                <div class="input-field col s12 m12 l12 col-startWithInconsistent">
+                    <input id="startWithInconsistent" type="checkbox" class="value"/>
+                    <label class="translate" for="startWithInconsistent">SettingsExclude</label>
+                </div>
             </div>
         </div>
         <div id="tab-herdsman" class="col s12 page">

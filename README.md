@@ -152,6 +152,17 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (asgothian) Preparation for ZHC 25.x (Part 1)
+* (asgothian) Refactor main/statescontroller/zigbeecontroller
+* (asgothian) Allow groups to trigger member state reads (via state memberupdate)
+* (asgothian) Allow groups to set state based on accumulated member states (via state stateupdate)
+* (asgothian) Trigger state read at device announce (via Settings: Read states at device announce)
+* (asgothian) Trigger state read at adapter start for all pingable devices (via settings: 'try to read all states at adapter start' and 'read delay' (in seconds))
+* (asgothian) Bugfix: Error in automatic restart function
+* (asgothian) Bugfix: Error in device_query blocked certain states from being read
+* (asgothian) Change to device Query: 15 second delay between queries only for automated queries. Manual queries are not affected
+
 ### 3.1.0 (2025-08-02)
 * (asgothian) ZHC 24.9.0
 * (asgothian) ZH 5.x
