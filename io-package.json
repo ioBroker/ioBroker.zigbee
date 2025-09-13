@@ -336,7 +336,8 @@
     "autostart": false,
     "readAllAtStart":false,
     "readAtAnnounce":true,
-    "startReadDelay":1
+    "startReadDelay":1,
+    "pingTimeout":300
   },
   "instanceObjects": [
     {
