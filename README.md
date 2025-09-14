@@ -153,7 +153,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
-* (asgothian) Preparation for ZHC 25.x (Part 1)
+
+### 3.1.1 (2025-09-14)
+* (asgothian) ZHC 25.x ZH 6.x
 * (asgothian) Refactor main/statescontroller/zigbeecontroller
 * (asgothian) Allow groups to trigger member state reads (via state memberupdate)
 * (asgothian) Allow groups to set state based on accumulated member states (via state stateupdate)
