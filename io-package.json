@@ -3,6 +3,19 @@
     "name": "zigbee",
     "version": "3.1.0",
     "news": {
+      "3.1.1": {
+        "en": "ZHC 25.x\nZH 6.x\n",
+        "de": "ZHC 25.x\nZH 6,x\n",
+        "ru": "ZHC 25.x\nZH 6.x\n",
+        "pt": "ZHC 25.x\nZH 6. x\n",
+        "nl": "ZHC 25.x\nZH 6.x\n",
+        "fr": "ZHC 25.x\nZH 6.x\n",
+        "it": "ZHC 25.x\nZH 6.x\n",
+        "es": "ZHC 25.x\nZH 6.x\n",
+        "pl": "ZHC 25.x\nZH 6,x\n",
+        "uk": "ЗХК 25.x\nЗХ 6.х\n",
+        "zh-cn": "ZHC 25.x\nZH 6.x (英语)\n"
+      },
       "3.1.0": {
         "en": "ZHC 24.9.0\nZH 5.x\nextend and stop pairing countdown",
         "de": "ZHC 24.9.0\nZH 5,x\nerweitern und stoppen paaren countdown",
