@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.1.0",
+    "version": "3.1.1",
     "news": {
       "3.1.1": {
         "en": "ZHC 25.x\nZH 6.x\n",
