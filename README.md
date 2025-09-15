@@ -153,7 +153,9 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
-
+* (asgothian) Fix pairing bug
+* (asgothian) add ping messages to device debug to verify ping failure reasons
+*
 ### 3.1.1 (2025-09-14)
 * (asgothian) ZHC 25.x ZH 6.x
 * (asgothian) Refactor main/statescontroller/zigbeecontroller
