@@ -155,7 +155,8 @@ You can thank the authors by these links:
 ### 3.1.2 (2025-09-15)
 * (asgothian) Fix pairing bug
 * (asgothian) add ping messages to device debug to verify ping failure reasons
-*
+* (asgothian) Fix bug that blocked group names and renaming
+* (asgothian) removed extra warning message for resolveEntity
 
 ### 3.1.1 (2025-09-14)
 * (asgothian) ZHC 25.x ZH 6.x
