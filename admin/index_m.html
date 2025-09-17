@@ -781,13 +781,23 @@
                     <input id="disableBackup" type="checkbox" class="value"/>
                     <label class="translate" for="disableBackup">disable internal Backup</label>
                 </div>
-                <div class="input-field col s12 m6 l4 col-disablePing">
+                <!--<div class="input-field col s12 m6 l4 col-disablePing">
                     <input id="disablePing" type="checkbox" class="value"/>
                     <label class="translate" for="disablePing">Disable active availability check</label>
+                </div>-->
+                <div class="input-field col s12 m6 l4 col">
+                    <select id="pingCluster" class="value" >
+                        <option value="off">off</option>
+                        <option value="default" selected>default</option>
+                        <option value="c0a0">genBasic/zclVersion</option>
+                        <option value="c0a5">genBasic/modelId</option>
+                        <option value="c25a0">genOta/serverId</option>
+                    </select>
+                    <label class="translate" for="pingCluster">Active activity check</label>
                 </div>
                 <div class="input-field col s12 m6 l4">
                     <input id="pingTimeout" type="number" min="60" max="3600" class="value"/>
-                    <label class="translate" for="pingTimeout">Time between activity Check [s]</label>
+                    <label class="translate" for="pingTimeout">Time between activity Checks [s]</label>
                 </div>
             </div>
             <div class="row">
@@ -800,8 +810,8 @@
             <div class="row">
                 <h6 class="translate">Global Options</h6>
                 <div class="input-field col s12 m6 l4 col-readAtAnnounce">
-                    <input id="readAtAnnounce" type="checkbox" class="value"/>
-                    <label class="translate" for="readAtAnnounce">Read states at device announce</label>
+                    <input id="listDevicesAtStart" type="checkbox" class="value"/>
+                    <label class="translate" for="listDevicesAtStart">List devices at start</label>
                 </div>
                 <div class="input-field col s12 m6 l4 col-readAtAnnounce">
                     <input id="readAllAtStart" type="checkbox" class="value"/>
@@ -810,6 +820,10 @@
                 <div class="input-field col s12 m6 l4">
                     <input id="startReadDelay" type="number" min="0" max="10" class="value"/>
                     <label class="translate" for="startReadDelay">Read delay in seconds.</label>
+                </div>
+                <div class="input-field col s12 m6 l4 col-readAtAnnounce">
+                    <input id="readAtAnnounce" type="checkbox" class="value"/>
+                    <label class="translate" for="readAtAnnounce">Read states at device announce</label>
                 </div>
                 <div class="input-field col s12 m12 l12 col-startWithInconsistent">
                     <input id="startWithInconsistent" type="checkbox" class="value"/>

@@ -823,7 +823,7 @@ class Zigbee extends utils.Adapter {
             dbPath: 'shepherd.db',
             backupPath: 'nvbackup.json',
             disableLed: this.config.disableLed,
-            disablePing: this.config.disablePing,
+            disablePing: (this.config.pingCluster=='off'),
             transmitPower: this.config.transmitPower,
             disableBackup: this.config.disableBackup,
             extPanIdFix: extPanIdFix,
