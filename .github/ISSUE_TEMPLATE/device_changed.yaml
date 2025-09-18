@@ -75,7 +75,7 @@ body:
       validations:
           required: true          
     - type: textarea
-      id: log
+      id: log2
       attributes:
           label: Protocol of the error (as text, encapsulated in multiline code tags <>). Logs which are too big to be shown in the issue **must** be trimmed so that they fit, e.g. by removing duplicate warning messages.
           description: ELEVATED warning messages for the device from the obroker protocol. NOTE - Include any error messages encountered with the warnings, but no info or debug messages
