@@ -1,4 +1,4 @@
-name: Problem
+name: Device functionality changed
 description: Create an issue related to a device changing functionality after adapter update
 labels: [device function change]
 body:
