@@ -13,8 +13,6 @@ try {
 }
 const originalLogMethod = debug.log;
 
-const zigbeeHerdsmanConvertersUtils = require('zigbee-herdsman-converters/lib/utils');
-
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
 const path = require('path');
@@ -37,7 +35,6 @@ const vm = require('vm');
 const util = require('util');
 const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
-const { regexpCode } = require('ajv/dist/compile/codegen');
 const dns = require('dns');
 const net = require('net');
 const { getNetAddress } = require('./lib/utils')
