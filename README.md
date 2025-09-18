@@ -158,7 +158,7 @@ You can thank the authors by these links:
 * (asgothian) Do not read states from deactivated devices
 * (asgothian) Ignore deactivated devices for group state updates
 * (asgothian) Change display for deactivated devices in the object tree (gray, no connected icon)
-* (asgothian) swap from axios to fetch
+* (asgothian) ~swap from axios to fetch~
 
 ### 3.1.2 (2025-09-15)
 * (asgothian) Fix pairing bug
