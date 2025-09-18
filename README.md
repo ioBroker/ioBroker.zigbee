@@ -152,6 +152,14 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (asgothian) Remove extra logging
+* (asgothian) Add extra configurations
+* (asgothian) Do not read states from deactivated devices
+* (asgothian) Ignore deactivated devices for group state updates
+* (asgothian) Change display for deactivated devices in the object tree (gray, no connected icon)
+* (asgothian) swap from axios to fetch
+
 ### 3.1.2 (2025-09-15)
 * (asgothian) Fix pairing bug
 * (asgothian) add ping messages to device debug to verify ping failure reasons

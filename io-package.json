@@ -4,43 +4,17 @@
     "version": "3.1.2",
     "news": {
       "3.1.2": {
-        "en": "Fix pairing bug\nadd ping messages to device debug to verify ping failure reasons\n",
-        "de": "Behebung des Kopplungsfehlers\nFügen Sie Ping-Nachrichten zum Geräte-Debugging hinzu, um die Gründe für Ping-Ausfälle zu überprüfen.\n",
-        "ru": "Исправлена ошибка сопряжения.\nдобавьте сообщения ping в отладке устройства для проверки причин отказа ping\n",
-        "pt": "Corrigir bug de emparelhamento\nAdicionar mensagens de ping ao debug do dispositivo para verificar os motivos da falha no ping\n",
-        "nl": "Repareer koppelingsfout\nVoeg pingberichten toe aan apparaatdebug om pingfoutredenen te controleren\n",
-        "fr": "Corriger le bogue de couplage\najouter des messages de ping au débogage des appareils pour vérifier les raisons des échecs de ping\n",
-        "it": "Risoluzione bug di accoppiamento\nAggiungi messaggi ping al debug del dispositivo per verificare le cause del fallimento del ping\n",
-        "es": "Corregir error de emparejamiento\nañadir mensajes de ping al depurador del dispositivo para verificar las razones de fallo del ping\n",
-        "pl": "Napraw błąd parowania\nDodaj wiadomości ping do debugowania urządzenia, aby zweryfikować przyczyny niepowodzenia pingu\n",
-        "uk": "Виправлено помилку з'єднання\nдодано повідомлення ping до відлагодження пристрою для перевірки причин невдачі ping\n",
-        "zh-cn": "修复配对问题\n将ping消息添加到设备调试中，以验证ping失败的原因\n"
-      },
-      "3.1.1": {
-        "en": "ZHC 25.x\nZH 6.x\n",
-        "de": "ZHC 25.x\nZH 6,x\n",
-        "ru": "ZHC 25.x\nZH 6.x\n",
-        "pt": "ZHC 25.x\nZH 6. x\n",
-        "nl": "ZHC 25.x\nZH 6.x\n",
-        "fr": "ZHC 25.x\nZH 6.x\n",
-        "it": "ZHC 25.x\nZH 6.x\n",
-        "es": "ZHC 25.x\nZH 6.x\n",
-        "pl": "ZHC 25.x\nZH 6,x\n",
-        "uk": "ЗХК 25.x\nЗХ 6.х\n",
-        "zh-cn": "ZHC 25.x\nZH 6.x (英语)\n"
-      },
-      "3.1.0": {
-        "en": "ZHC 24.9.0\nZH 5.x\nextend and stop pairing countdown",
-        "de": "ZHC 24.9.0\nZH 5,x\nerweitern und stoppen paaren countdown",
-        "ru": "ZHC 24.9.0\nZH 5.x\nпродлить и остановить обратный отсчет",
-        "pt": "ZHC 24.9.0\nZH 5. x\nestender e parar de emparelhar contagem regressiva",
-        "nl": "ZHC 24.9.0\nZH 5.x\nuitzetten en stoppen met aftellen",
-        "fr": "ZHC 24.9.0\nZH 5.x\nétendre et arrêter l'appariement du compte à rebours",
-        "it": "ZHC 24.9.0\nZH 5.x\nprolungare e fermare l'accoppiamento conto alla rovescia",
-        "es": "ZHC 24.9.0\nZH 5.x\nextender y dejar de emparejar la cuenta atrás",
-        "pl": "ZHC 24.9.0\nZH 5,x\nrozszerzenie i zatrzymanie parowania odliczania",
-        "uk": "ЗХК 24.9.0\nЗХ 5.х\nпродовжити і зупинити парі відлік",
-        "zh-cn": "ZHC 24.9.0\nZH 5.x (英语)\n扩展和停止对齐倒计时"
+        "en": "ZHC 25.x\nZH 6.x\nFix pairing bug\nadd ping messages to device debug to verify ping failure reasons\n",
+        "de": "ZHC 25.x\nZH 6.x\nBehebung des Kopplungsfehlers\nFügen Sie Ping-Nachrichten zum Geräte-Debugging hinzu, um die Gründe für Ping-Ausfälle zu überprüfen.\n",
+        "ru": "ZHC 25.x\nZH 6.x\nИсправлена ошибка сопряжения.\nдобавьте сообщения ping в отладке устройства для проверки причин отказа ping\n",
+        "pt": "ZHC 25.x\nZH 6.x\nCorrigir bug de emparelhamento\nAdicionar mensagens de ping ao debug do dispositivo para verificar os motivos da falha no ping\n",
+        "nl": "ZHC 25.x\nZH 6.x\nRepareer koppelingsfout\nVoeg pingberichten toe aan apparaatdebug om pingfoutredenen te controleren\n",
+        "fr": "ZHC 25.x\nZH 6.x\nCorriger le bogue de couplage\najouter des messages de ping au débogage des appareils pour vérifier les raisons des échecs de ping\n",
+        "it": "ZHC 25.x\nZH 6.x\nRisoluzione bug di accoppiamento\nAggiungi messaggi ping al debug del dispositivo per verificare le cause del fallimento del ping\n",
+        "es": "ZHC 25.x\nZH 6.x\nCorregir error de emparejamiento\nañadir mensajes de ping al depurador del dispositivo para verificar las razones de fallo del ping\n",
+        "pl": "ZHC 25.x\nZH 6.x\nNapraw błąd parowania\nDodaj wiadomości ping do debugowania urządzenia, aby zweryfikować przyczyny niepowodzenia pingu\n",
+        "uk": "ЗХК 25.x\nЗХ 6.х\nВиправлено помилку з'єднання\nдодано повідомлення ping до відлагодження пристрою для перевірки причин невдачі ping\n",
+        "zh-cn": "ZHC 25.x\nZH 6.x (英语)\n修复配对问题\n将ping消息添加到设备调试中，以验证ping失败的原因\n"
       },
       "3.0.5": {
         "en": "fix random error where devices are not shown due to illegal groups\ndrop support for node 18\nRequired node Versions Node 20.19.0 or 22.11.0 or newer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
@@ -93,6 +67,32 @@
         "pl": "Napraw dla definicji podnoszenie konfiguracji Ikea SOMRIG. Punkt końcowy nie jest błędem funkcji.\nDostęp do opcji 'zigbee2mqtt jako ustawień w adapterze zigbee (ALPHA Stage!)\nFix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)\nAktualizacja panelu konfiguracji sprzętowej - wymieniono przyciski tekstowe na przyciski z ikonami.\nOgraniczone stany na płytkach urządzenia do stanów, które są tylko odczytywane lub które mogą być modyfikowane w sposób rozsądny za pomocą płytki urządzenia.\n",
         "uk": "Виправлення для налаштування Ikea SOMRIG 'Визначення. кінцева точка не є помилкою функції.\nДоступ до опцій Zigbee2mqtt як налаштування адаптера Zigbee (ALPHA Stage !)\nВиправлення для 'error: zigbee.0 (1118300) zigbee.0 вже запущений' при запуску адаптера (Alpha Stage)\nОновлена панель конфігурації обладнання - обмінні текстові кнопки для гудзиків з іконками.\nОбмежені стани на плитці пристрою для станів, які читаються тільки або які можуть бути змінені, швидко через плитку пристрою.\n",
         "zh-cn": "修复Ikea SOMRIG 配置提升定义 。 结束点不是一个函数'错误.\n访问 'zigbee2mqtt 选项作为 Zigbee 适配器的设置( ALPHA stage !) \n在适配器启动( Alpha Stage)时为 'error: zigbee. 0 (1118300) zigbee. 0 已经运行' 进行修复\n更新的硬件配置面板 - 用图标交换文本按钮作为按钮.\n将设备瓦片的状态限制在只读或通过设备瓦片可敏感修改的状态.\n"
+      },
+      "3.0.0": {
+        "en": "Breaking change: Start of zigbee subsystem requires configuration entry !!!\nHardware configuration panel\nUpdate for external converter - detect /dist/ subfolder\nUpdate device image: use of icons defined in external converter (beta)\n",
+        "de": "Bruchänderung: Beginn des Zickbee Subsystems erfordert Konfigurationseintrag!!!\nHardware-Konfigurationspanel\nUpdate für externen Konverter - Erkennung /dist/ Unterordner\nGerätebild aktualisieren: Verwendung von Icons, die im externen Konverter (beta) definiert sind\n",
+        "ru": "Переломные изменения: Запуск подсистемы Zigbee требует ввода конфигурации!!!\nАппаратная конфигурационная панель\nОбновление внешнего конвертера - детектировать /dist/ подпапку\nОбновление изображения устройства: использование значков, определенных во внешнем конвертере (бета)\n",
+        "pt": "Mudança de ruptura: O início do subsistema zigbee requer entrada de configuração !!!\nPainel de configuração do hardware\nAtualização para conversor externo - detectar /dist / subpastas\nImagem do dispositivo de atualização: uso de ícones definidos no conversor externo (beta)\n",
+        "nl": "Verandering: Start van zigbee subsysteem vereist configuratie toegang !!!\nHardware configuratiepaneel\nUpdate voor externe converter - detecteer /dist/submap\nAfbeelding van het apparaat bijwerken: gebruik van pictogrammen gedefinieerd in externe converter (beta)\n",
+        "fr": "Briser le changement : Le démarrage du sous-système zigbee nécessite une entrée de configuration !!!\nPanneau de configuration du matériel\nMise à jour pour convertisseur externe - détecter /dist/ sous-dossier\nMise à jour de l'image du périphérique : utilisation d'icônes définies dans le convertisseur externe (beta)\n",
+        "it": "Cambiamento di rottura: L'avvio del sottosistema zigbee richiede l'ingresso di configurazione !!!\nPannello di configurazione hardware\nAggiornamento per convertitore esterno - rilevare /dist/ subfolder\nImmagine del dispositivo di aggiornamento: uso delle icone definite nel convertitore esterno (beta)\n",
+        "es": "Cambio de ruptura: Inicio del subsistema zigbee requiere entrada de configuración !!!\nPanel de configuración de hardware\nActualización para convertidor externo - detect /dist/ subfolder\nActualizar imagen del dispositivo: uso de iconos definidos en convertidor externo (beta)\n",
+        "pl": "Łamanie zmian: Rozpoczęcie podsystemu Zigbee wymaga wprowadzenia konfiguracji!!!\nPanel konfiguracji sprzętu\nAktualizacja konwertera zewnętrznego - wykryj / dist / subfolder\nAktualizacja obrazu urządzenia: użycie ikon zdefiniowanych w konwerterze zewnętrznym (beta)\n",
+        "uk": "Зміна розривів: Старт підсистеми zigbee вимагає введення конфігурації !!!\nПанель конфігурації обладнання\nОновлення для зовнішнього конвертера - виявлення /dist / підпалювач\nОновлення зображення пристрою: використання ікон, визначених у зовнішній конвертер (beta)\n",
+        "zh-cn": "中断更改 : Zigbee子系统的启动需要配置输入!!!!\n硬件配置面板\n外部转换器更新 - 检测/ dist/ 子文件夹\n更新设备图像: 使用外部转换器( β) 中定义的图标\n"
+      },
+      "2.0.5": {
+        "en": "ZHC 23.6.0\nZH 3.3.x\nremoved extra logging\nfixed memory issue.\nConfigure on Message - 5 attempts.\nupdate transmitPower\nfix crash in ZigbeeController.ByteArrayToString\ndevice designation for  devices without mapped model (allows use in groups and bindings)\n",
+        "de": "ZHC 23.6.0\nZH 3.3.x\nentfernte zusätzliche protokollierung\nfeste speicherausgabe.\nKonfigurieren auf Nachricht - 5 Versuche.\nupdate sendPower\ncrash in ZigbeeController beheben. ByteArrayToString\ngerätebezeichnung für geräte ohne abgebildetes modell (ermöglicht die verwendung in gruppen und bindungen)\n",
+        "ru": "ZHC 23.6.0\nZH 3.3.x\nудаленный дополнительный лес\nпроблемы с памятью.\nНастройка на сообщение - 5 попыток.\nобновление передатчика\nкрушение в ZigbeeController. Разработчик:teArrayToString\nобозначение устройства для устройств без картографической модели (позволяет использовать в группах и привязках)\n",
+        "pt": "ZHC 23.6.0\nZH 3.3.x\nretirada extra\nproblema de memória fixa.\nConfigurar na Mensagem - 5 tentativas.\natualização de energia\ncorrigir acidente em ZigbeeController. Linha de produção\ndesignação do dispositivo para dispositivos sem modelo mapeado (permite o uso em grupos e encadernações)\n",
+        "nl": "ZHC 23.6.0\nZH 3.3.x\nextra loggen verwijderd\nvast geheugen probleem.\nConfigureren op Bericht - 5 pogingen.\nupdate transmitPower\nherstel crash in ZigbeeController. ByteArrayToString\napparaataanduiding voor apparaten zonder in kaart gebracht model (kan worden gebruikt in groepen en bindingen)\n",
+        "fr": "ZHC 23.6.0\nZH 3.3.x\nretrait de l'exploitation supplémentaire\nproblème de mémoire fixe.\nConfigurer sur Message - 5 tentatives.\nmise à jour de transmissionPower\nréparer l'accident dans ZigbeeController. ByteArrayToString\ndésignation de l'appareil pour les dispositifs sans modèle cartographié (permet d'utiliser en groupes et de fixations)\n",
+        "it": "ZHC 23.6.0\nZH 3.3.x\nrimosso extra logging\nproblema di memoria fisso.\nConfigurare su Messaggio - 5 tentativi.\naggiornamento trasmetterePower\nfissare l'incidente a ZigbeeController. ByteArrayToString\ndesignazione del dispositivo per dispositivi senza modello mappato (permette l'uso in gruppi e binding)\n",
+        "es": "ZHC 23.6.0\nZH 3.3.x\nextra de registro\nproblema de memoria fijo.\nConfigurar en el Mensaje - 5 intentos.\ntransmisión de actualizaciónPower\narregla el accidente en ZigbeeController. ByteArrayToString\ndesignación de dispositivos para dispositivos sin modelo mapeado (permite el uso en grupos y encuadernaciones)\n",
+        "pl": "ZHC 23.6.0\nZH 3.3.x\nusunięte dodatkowe logowanie\nproblemy z pamięcią stałą.\nKonfiguracja wiadomości - 5 prób.\ntransmiter aktualizacji Power\nnaprawić wypadek w ZigbeeController. ByteArrayToString\noznaczenie urządzenia dla urządzeń bez mapowanego modelu (pozwala na stosowanie w grupach i wiązaniach)\n",
+        "uk": "ЗХК 23.6.0\nZH 3.3.x\nвидалення додаткового входу\nвиправлено проблему пам'яті.\nНастроювання повідомлення - 5 спроб.\nоновлення трансмісії\nфіксувати аварійну аварійну аварійність в ZigbeeController. ByteArrayToString\nпозначення пристрою для пристроїв без картографічної моделі ( дозволяє використовувати в групах і зв'язках)\n",
+        "zh-cn": "ZHC 23.6.0\nZH 3.3.x 电话\n已删除的额外日志\n固定记忆问题.\n配置信件 - 5 个尝试 .\n更新传输\n修复Zigbee控制器的崩溃。 字节箭头结构\n没有绘图模型的设备指定(分组和捆绑中的允许使用)\n"
       }
     },
     "titleLang": {
@@ -324,7 +324,9 @@
     "readAllAtStart": false,
     "readAtAnnounce": true,
     "startReadDelay": 1,
-    "pingTimeout": 300
+    "pingTimeout": 300,
+    "pingCluster": "",
+    "listDevicesAtStart": true
   },
   "instanceObjects": [
     {

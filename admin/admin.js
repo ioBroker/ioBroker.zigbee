@@ -61,8 +61,8 @@ const networkOptions = {
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
-    'adapterType', 'debugHerdsman', 'disableBackup', 'disablePing', 'external', 'startWithInconsistent',
-    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart',
+    'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
+    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster'
 ];
 
 function getDeviceByID(ID) {
@@ -175,6 +175,7 @@ function getGroupCard(dev) {
         }
     }
     devGroups[numid] = dev;
+    const roomInfo = rooms.length ? `<li><span class="labelinfo">rooms:</span><span>${rooms.join(',') || ''}</span></li>` : '';
     const room = rooms.join(',') || '&nbsp';
     let memberCount = 0;
     let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
@@ -189,7 +190,7 @@ function getGroupCard(dev) {
         memberCount = (dev.memberinfo.length < 8 ? dev.memberinfo.length : 7);
     }
     ;
-    info = info.concat(`                    </ul>
+    info = info.concat(`              ${roomInfo}</ul>
                 </div>`);
     const image = `<img src="${dev.common.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
     const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
@@ -207,11 +208,11 @@ function getGroupCard(dev) {
                             </div>
                             <i class="left">${image}</i>
                             ${info}
+
                             <div class="footer right-align"></div>
                         </div>
                         <div class="card-action">
                             <div class="card-reveal-buttons">
-                                <span class="left" style="padding-top:8px">${room}</span>
                                 <button name="deletegrp" class="right btn-flat btn-small">
                                     <i class="material-icons icon-black">delete</i>
                                 </button>
@@ -254,10 +255,11 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
-    const room = rooms.join(',') || '&nbsp';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const groupInfo = dev.groupNames ? `<li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>` : '';
+    const roomInfo = rooms.length ? `<li><span class="labelinfo">rooms:</span><span>${rooms.join(',') || ''}</span></li>` : '';
     const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
         battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
@@ -272,7 +274,8 @@ function getCard(dev) {
                         <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
                         <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
                         <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
-                        <li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>
+                        ${groupInfo}
+                        ${roomInfo}
                     </ul>
                 </div>`,
         deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
@@ -300,7 +303,7 @@ function getCard(dev) {
                         <div class="card-action">
                             <div class="card-reveal-buttons">
                                 ${infoBtn}
-                                <span class="left" style="padding-top:8px">${room}</span>
+
                                 <span class="left fw_info"></span>
                                 <button name="delete" class="right btn-flat btn-small tooltipped" title="Delete">
                                     <i class="material-icons icon-red">delete</i>
@@ -1404,6 +1407,7 @@ function load(settings, onChange) {
         settings.baudRate = 115200;
     }
     if (settings.autostart === undefined) settings.autostart = false;
+    if (typeof settings.pingCluster != 'string') settings.pingCluster = settings.disablePing ? 'off' : 'default';
 
     // example: select elements with id=key and class=value and insert value
     for (const key in settings) {

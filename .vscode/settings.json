@@ -1,0 +1,9 @@
+{
+    "workbench.commandPalette.experimental.enableNaturalLanguageSearch": false,
+    "workbench.experimental.cloudChanges.partialMatches.enabled": false,
+    "workbench.externalBrowser": "Firefox",
+    "workbench.editor.autoLockGroups": {
+        "workbench.editor.chatSession": false
+    },
+    "telemetry.editStats.enabled": false
+}
