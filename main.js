@@ -640,37 +640,18 @@ class Zigbee extends utils.Adapter {
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
+
     async checkIfModelUpdate(entity) {
         const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
         const device = entity.device;
         const devId = device.ieeeAddr.substr(2);
 
-        return new Promise((resolve) => {
-            this.getObject(devId, (err, obj) => {
-                if (obj && obj.common.type !== model) {
-                    // let's change model
-                    this.getStatesOf(devId, (err, states) => {
-                        if (!err && states) {
-                            const chain = [];
-                            states.forEach((state) =>
-                                chain.push(this.deleteStateAsync(devId, null, state._id)));
-
-                            Promise.all(chain)
-                                .then(() =>
-                                    this.stController.deleteObj(devId, () =>
-                                        this.stController.updateDev(devId, model, model, async () => {
-                                            await this.stController.syncDevStates(device, model);
-                                            resolve();
-                                        })));
-                        } else {
-                            resolve();
-                        }
-                    });
-                } else {
-                    resolve();
-                }
-            });
-        });
+        const obj = await this.getObjectAsync(devId);
+        if (obj && obj.common.type !== model) {
+            await this.stController.deleteObj(devId);
+            await this.stController.updateDev(devId, model, model);
+            await this.stController.syncDevStates(device, model);
+        }
     }
 
     acknowledgeState(deviceId, model, stateDesc, value) {
