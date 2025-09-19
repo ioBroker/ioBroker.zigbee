@@ -326,7 +326,8 @@
     "startReadDelay": 1,
     "pingTimeout": 300,
     "pingCluster": "",
-    "listDevicesAtStart": true
+    "listDevicesAtStart": true,
+    "useNewCompositeStates": false
   },
   "instanceObjects": [
     {

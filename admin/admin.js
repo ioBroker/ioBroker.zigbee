@@ -60,7 +60,7 @@ const networkOptions = {
 
 
 const savedSettings = [
-    'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower',
+    'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower','useNewCompositeStates',
     'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
     'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster'
 ];
@@ -388,7 +388,7 @@ function deleteConfirmation(id, name) {
     $('#modaldelete a.btn[name=\'yes\']').unbind('click');
     $('#modaldelete a.btn[name=\'yes\']').click(() => {
         const force = $('#force').prop('checked');
-        deleteDevice(id, force);
+        deleteZigbeeDevice(id, force);
     });
     $('#modaldelete').modal('open');
     Materialize.updateTextFields();
@@ -637,8 +637,8 @@ function GenerateGroupChange(oldmembers, newmembers) {
     return grpchng;
 }
 
-function deleteDevice(id, force) {
-    sendTo(namespace, 'deleteDevice', {id: id, force: force}, function (msg) {
+function deleteZigbeeDevice(id, force) {
+    sendTo(namespace, 'deleteZigbeeDevice', {id: id, force: force}, function (msg) {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
@@ -3712,7 +3712,7 @@ function reconfigureDevice(id) {
             }
         }
     });
-    showWaitingDialog('Device is being reconfigure', 30);
+    showWaitingDialog('Device is being reconfigured', 30);
 }
 
 const warnLevel = {
