@@ -1083,6 +1083,7 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
     const Html = [];
     const filterSet = new Set();
     let isodd = true;
+    const buttonList = [];
     if (dbgMsghide.has('i_'+devID)) {
         console.warn('in all filtered out')
         Html.push('&nbsp;')
@@ -1097,8 +1098,11 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
                 const redText = (item.errors && item.errors.length > 0 ? ' id="dbgred"' : '');
                 idx--;
                 const LHtml = [(`<tr id="${isodd ? 'dbgrowodd' : 'dbgroweven'}">`)];
-                if (idx==0)
-                    LHtml.push(`<td${rowspan}>${item.dataID.toString(16).slice(-4)}</td><td${rowspan}>${safestring(item.payload)}</td>`);
+                if (idx==0) {
+                    const msgbutton = `<a id="lx_${item.dataID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Messages from ${new Date(item.dataID).toLocaleTimeString()}"><i class="material-icons large">speaker_notes</i></a>`
+                    buttonList.push(item.dataID)
+                    LHtml.push(`<td${rowspan}>${msgbutton}</td><td${rowspan}>${safestring(item.payload)}</td>`);
+                }
                 LHtml.push(`<td></td><td${redText}>${safestring(state.payload)}</td><td${redText}>${state.id}</td><td${redText}>${state.value}</td><td${redText}>${fne(item)}</td></tr>`);
                 IHtml.unshift(...LHtml)
             }
@@ -1111,7 +1115,7 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
     const ifbutton = `<a id="i_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('i_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
     const ofbutton = `<a id="hi_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.has('i_'+devID) ? 'unfold_more' : 'unfold_less' }</i></a>`
     const dataHide = dbgMsgfilter.has('hi_'+devID) ? 'Data hidden' : '&nbsp;';
-    return `<thead id="dbgtable"><tr><td>&nbsp</td><td>Incoming messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>&nbsp;</td><td>State Payload</td><td>ID</td><td>value</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`;
+    return {html:`<thead id="dbgtable"><tr><td>&nbsp</td><td>Incoming messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>&nbsp;</td><td>State Payload</td><td>ID</td><td>value</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`, buttonList };
 }
 
 
@@ -1119,6 +1123,7 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
     const Html = [];
     const filterSet = new Set();
     let isodd=true;
+    const buttonList = [];
     if (dbgMsghide.has('o_'+devID)) {
         console.warn('out all filtered out')
         Html.push('&nbsp;')
@@ -1134,8 +1139,11 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
                 const redText = (item.errors && item.errors.length > 0 ? ' id="dbgred"' : '');
                 const LHtml = [(`<tr id="${isodd ? 'dbgrowodd' : 'dbgroweven'}">`)];
                 idx--;
-                if (idx==0)
-                    LHtml.push(`<td${rowspan}>${item.dataID.toString(16).slice(-4)}</td><td${rowspan}>${safestring(item.payload)}</td>`);
+                if (idx==0) {
+                    const msgbutton = `<a id="lx_${item.dataID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Messages from ${new Date(item.dataID).toLocaleTimeString()}"><i class="material-icons large">speaker_notes</i></a>`
+                    LHtml.push(`<td${rowspan}>${msgbutton}</td><td${rowspan}>${safestring(item.payload)}</td>`);
+                    buttonList.push(item.dataID)
+                }
                 LHtml.push(`<td${redText}>${state.ep ? state.ep : ''}</td><td${redText}>${state.id}</td><td${redText}>${safestring(state.value)}</td><td${redText}>${safestring(state.payload)}</td><td${redText}>${fne(item)}</td></tr>`);
                 IHtml.unshift(...LHtml);
 
@@ -1149,12 +1157,13 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
     const ifbutton = `<a id="o_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('o_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
     const ofbutton = `<a id="ho_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.has('o_'+devID) ? 'unfold_more' : 'unfold_less'}</i></a>`
     const dataHide = dbgMsgfilter.has('ho_'+devID) ? 'Data hidden' : '&nbsp;';
-    return `<thead id="dbgtable"><tr><td>&nbsp</td><td>Outgoing messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>EP</td><td>ID</td><td>value</td><td>State Payload</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`;
+    return { html:`<thead id="dbgtable"><tr><td>&nbsp</td><td>Outgoing messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>EP</td><td>ID</td><td>value</td><td>State Payload</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`, buttonList};
 }
 
 
 function displayDebugMessages(msg) {
     const buttonNames = [];
+    const idButtons = [];
     if (msg.byId) {
         const dbgData = msg.byId;
         const keys = Object.keys(dbgData);
@@ -1182,10 +1191,14 @@ function displayDebugMessages(msg) {
                 buttonNames.push(devID);
                 Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">${devName} (ID: ${devID} Model: ${dev && dev.common ? dev.common.name : 'unknown'})</td><td>${modelUrl}</td><td>&nbsp;</td><td>${button}</td></tr></thead><tbody>`);
                 if (dbgData[devID].IN.length > 0) {
-                    Html.push(`${HtmlFromInDebugMessages(dbgData[devID].IN, devID, dbgMsgfilter.has('i_'+devID))}`);
+                    const indata = HtmlFromInDebugMessages(dbgData[devID].IN, devID, dbgMsgfilter.has('i_'+devID));
+                    Html.push(`${indata.html}`);
+                    idButtons.push(...indata.buttonList)
                 }
                 if (dbgData[devID].OUT.length > 0) {
-                    Html.push(`${HtmlFromOutDebugMessages(dbgData[devID].OUT, devID, dbgMsgfilter.has('o_'+devID))}`);
+                    const outdata = HtmlFromOutDebugMessages(dbgData[devID].OUT, devID, dbgMsgfilter.has('o_'+devID));
+                    Html.push(`${outdata.html}`);
+                    idButtons.push(...outdata.buttonList)
                 }
                 Html.push('</tbody></table></li>');
             }
@@ -1243,7 +1256,73 @@ function displayDebugMessages(msg) {
                 displayDebugMessages(debugMessages);
             });
         }
+        for (const b of idButtons) {
+            console.warn(`trying to add link to button ${b}`);
+            $(`#lx_${b}`).click(function() { showMessageList(b)});
+        }
     }
+}
+
+function showNamedMessages(messages, title, icon, timestamp) {
+    // noinspection JSJQueryEfficiency
+    let $dialogMessage = $('#dialog-message');
+    if (!$dialogMessage.length) {
+        $('body').append(
+            '<div class="m"><div id="dialog-message" class="modal modal-fixed-footer">' +
+            '    <div class="modal-content">' +
+            '        <h6 class="dialog-title title"></h6>' +
+            '        <p><i class="large material-icons dialog-icon"></i><span class="dialog-text"></span></p>' +
+            '    </div>' +
+            '    <div class="modal-footer">' +
+            '        <a class="modal-action modal-close waves-effect waves-green btn-flat translate">Ok</a>' +
+            '    </div>' +
+            '</div></div>');
+        $dialogMessage = $('#dialog-message');
+    }
+    if (icon) {
+        $dialogMessage.find('.dialog-icon')
+            .show()
+            .html(icon);
+    } else {
+        $dialogMessage.find('.dialog-icon').hide();
+    }
+    if (title) {
+        $dialogMessage.find('.dialog-title').html(title).show();
+    } else {
+        $dialogMessage.find('.dialog-title').hide();
+    }
+    const lihtml = ['```<br><ul>'];
+    for (const key of Object.keys(messages)) {
+        lihtml.push(`<li>${key}: ${messages[key]}</li>`)
+    }
+    lihtml.push('</ul><br>```')
+    $dialogMessage.find('.dialog-text').html(lihtml);
+    $dialogMessage.modal().modal('open');
+
+}
+
+function showMessageList(msgId) {
+    console.warn(`trying to show messages for ${msgId}`);
+    console.warn(JSON.stringify(debugMessages));
+    for (const devId of Object.keys(debugMessages.byId)) {
+        for (const id of debugMessages.byId[devId].IN) {
+            if (id.dataID == msgId) {
+                console.warn(`showing messages for ${id.type} ${devId}`);
+                showNamedMessages(id.messages, `Messages from ${new Date(msgId).toLocaleTimeString()} for device ${devId}`);
+                return;
+            }
+        }
+        for (const id of debugMessages.byId[devId].OUT) {
+            if (id.dataID == msgId) {
+                console.warn(`showing messages for ${msgId}`);
+                showNamedMessages(id.messages, `Messages from ${new Date(msgId).toLocaleTimeString()} for device ${devId}`);
+                return;
+            }
+        }
+    }
+    console.warn(`nothing to show`);
+
+
 }
 
 function getDebugMessages() {
@@ -1253,66 +1332,91 @@ function getDebugMessages() {
     })
 }
 
-
+const lockout = {
+    timeoutid:undefined,
+    isActive:false,
+};
 function getDevices() {
     console.warn('getDevices called')
-    sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
-        console.warn(`getCoordinatorInfo returned ${JSON.stringify(msg)}`)
-        if (msg) {
-            console.warn(JSON.stringify(msg))
-            if (msg.error) {
-                errorData.push(msg.error);
-                delete msg.error;
-                isHerdsmanRunning = false;
-            } else {
-                isHerdsmanRunning = true;
-            }
-            coordinatorinfo = msg;
-            updateStartButton()
-        }
-        sendTo(namespace, 'getDevices', {}, function (msg) {
-            if (msg) {
-                devices = msg.devices ? msg.devices : [];
-                // check if stashed error messages are sent alongside
-                if (msg.clean)
-                    $('#state_cleanup_btn').removeClass('hide');
-                else
-                    $('#state_cleanup_btn').addClass('hide');
-                if (msg.errors && msg.errors.length > 0) {
-                    $('#show_errors_btn').removeClass('hide');
-                    errorData = msg.errors;
-                }
-                else {
-                    $('#show_errors_btn').addClass('hide');
-                }
 
-                //check if debug messages are sent alongside
-                if (msg && typeof (msg.debugDevices == 'array')) {
-                    debugDevices = msg.debugDevices;
-                    console.warn('debug devices is sent')
-                }
-                else
-                    debugDevices = [];
-                if (debugMessages.byId) {
-                    debugMessages.byId = msg;
-                    if (msg) displayDebugMessages(debugMessages)
-                }
+    function sendForData() {
+        sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
+            console.warn(`getCoordinatorInfo returned ${JSON.stringify(msg)}`)
+            if (msg) {
+                console.warn(JSON.stringify(msg))
                 if (msg.error) {
                     errorData.push(msg.error);
+                    delete msg.error;
                     isHerdsmanRunning = false;
-                    updateStartButton();
-                    showDevices();
                 } else {
                     isHerdsmanRunning = true;
-                    updateStartButton();
-                    showDevices();
-                    getDebugMessages();
-                    getExclude();
-                    getBinding();
                 }
+                coordinatorinfo = msg;
+                updateStartButton()
             }
+            sendTo(namespace, 'getDevices', {}, function (msg) {
+                if (msg) {
+                    devices = msg.devices ? msg.devices : [];
+                    // check if stashed error messages are sent alongside
+                    if (msg.clean)
+                        $('#state_cleanup_btn').removeClass('hide');
+                    else
+                        $('#state_cleanup_btn').addClass('hide');
+                    if (msg.errors && msg.errors.length > 0) {
+                        $('#show_errors_btn').removeClass('hide');
+                        errorData = msg.errors;
+                    }
+                    else {
+                        $('#show_errors_btn').addClass('hide');
+                    }
+                    let newDebugMessages = false;
+
+                    //check if debug messages are sent alongside
+                    if (msg && typeof (msg.debugDevices == 'array')) {
+                        debugDevices = msg.debugDevices;
+                        console.warn('debug devices is sent')
+                    }
+                    else
+                        debugDevices = [];
+                    if (debugMessages.byId) {
+                        newDebugMessages = true;
+                        console.warn('having debug messages');
+                        debugMessages.byId = msg;
+                        if (msg) displayDebugMessages(debugMessages)
+                    }
+                    lockout.isActive = false;
+                    if (msg.error) {
+                        errorData.push(msg.error);
+                        isHerdsmanRunning = false;
+                        updateStartButton();
+                        showDevices();
+                    } else {
+                        isHerdsmanRunning = true;
+                        updateStartButton();
+                        showDevices();
+                        if (!newDebugMessages) {
+                            console.warn('getting debug messages');
+                            getDebugMessages();
+                        }
+                        //getExclude();
+                        getBinding();
+                    }
+                }
+            });
         });
-    });
+    }
+
+    if (lockout.timeoutid) {
+        clearTimeout(lockout.timeoutid);
+        console.warn('clearing getDevices timeout')
+    }
+
+    setTimeout(() => {
+        lockout.isActive = true;
+        lockout.timeoutid = undefined;
+        sendForData();
+    }, 100);
+
 }
 
 function getNamedColors() {
