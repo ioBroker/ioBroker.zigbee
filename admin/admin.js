@@ -261,7 +261,7 @@ function getCard(dev) {
     const groupInfo = dev.groupNames ? `<li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>` : '';
     const roomInfo = rooms.length ? `<li><span class="labelinfo">rooms:</span><span>${rooms.join(',') || ''}</span></li>` : '';
     const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
-        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+        nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
         battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
         lqi_cls = getLQICls(dev.link_quality),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
@@ -522,7 +522,7 @@ function editName(id, name) {
     const groupables = [];
     if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
-            if (ep.inputClusters.includes(4)) {
+            if (ep.input_clusters.includes(4)) {
                 groupables.push({epid: EndPointIDfromEndPoint(ep), ep: ep, memberOf: []});
             }
         }
@@ -722,12 +722,12 @@ function showDevices() {
             html += card;
             continue;
         };
-        if (d.info && d.info.device && d.info.device._type == 'Coordinator') {
+        if (d.info && d.info.device && d.info.device.type == 'Coordinator') {
             hasCoordinator=true;
             const card = getCoordinatorCard(d);
             html += card;
         } else {
-            //if (d.groups && d.info && d.info.device._type == "Router") {
+            //if (d.groups && d.info && d.info.device.type == "Router") {
             if (d.groups) {
                 //devGroups[d._id] = d.groups;
                 if (typeof d.groups.map == 'function') {
@@ -857,6 +857,14 @@ function showDevices() {
 
     showNetworkMap(devices, map);
     translateAll();
+}
+
+function downloadIcons() {
+    sendTo(namespace, 'downloadIcons', {}, function (msg) {
+        if (msg && msg.msg) {
+            showMessage(msg.msg, _('Result'));
+        }
+    });
 }
 
 function checkFwUpdate() {
@@ -1585,6 +1593,9 @@ function load(settings, onChange) {
     $('#show_errors_btn').click(function () {
         showMessage(errorData.join('<br>'), 'Stashed error messages');
     });
+    $('#download_icons_btn').click(function () {
+        showMessage(downloadIcons());
+    });
     $('#fw_check_btn').click(function () {
         checkFwUpdate();
     });
@@ -1970,7 +1981,7 @@ function showNetworkMap(devices, map) {
             borderWidth: 1,
             borderWidthSelected: 4,
         };
-        if (dev.info && dev.info.device._type == 'Coordinator') {
+        if (dev.info && dev.info.device.type == 'Coordinator') {
             // node.shape = 'star';
             node.image = 'zigbee.png';
             node.label = 'Coordinator';
@@ -2130,7 +2141,7 @@ function showNetworkMap(devices, map) {
 
             if (node) {
                 node.font = {color: '#ff0000'};
-                if (dev.info && dev.info.device._type == 'Coordinator') {
+                if (dev.info && dev.info.device.type == 'Coordinator') {
                     node.font = {color: '#00ff00'};
                 }
                 nodesArray.push(node);
@@ -2295,7 +2306,7 @@ function loadDeveloperTab() {
     updateSelect('#dev', devices,
         function (key, device) {
             if (device.hasOwnProperty('info')) {
-                if (device.info.device._type === 'Coordinator') {
+                if (device.info.device.type === 'Coordinator') {
                     return null;
                 }
                 return `${device.common.name} (${device.info.name})`;
@@ -2407,7 +2418,7 @@ function loadDeveloperTab() {
                 return obj._id === this.value;
             });
 
-            const epList = device ? device.info.device._endpoints : null;
+            const epList = device ? device.info.device.endpoints : null;
             updateSelect('#ep', epList,
                 function (key, ep) {
                     return ep.ID;
@@ -2843,14 +2854,14 @@ function prepareBindingDialog(bindObj) {
                 return 'Select source device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device._type === 'Coordinator') {
+                if (device.info.device.type === 'Coordinator') {
                     return null;
                 }
                 // check for output clusters
                 let allow = false;
                 for (const cluster of allowClusters) {
                     if (device.info.endpoints) for (const ep of device.info.endpoints) {
-                        if (ep.outputClusters.includes(cluster)) {
+                        if (ep.output_clusters.includes(cluster)) {
                             allow = true;
                             break;
                         }
@@ -2894,14 +2905,14 @@ function prepareBindingDialog(bindObj) {
                 return 'Select target device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device._type === 'Coordinator') {
+                if (device.info.device.type === 'Coordinator') {
                     return null;
                 }
                 // check for input clusters
                 let allow = false;
                 for (const cluster of allowClusters) {
                     if (device.info.endpoints) for (const ep of device.info.endpoints) {
-                        if (ep.inputClusters.includes(cluster)) {
+                        if (ep.input_clusters.includes(cluster)) {
                             allow = true;
                             break;
                         }
@@ -2945,7 +2956,7 @@ function prepareBindingDialog(bindObj) {
 
         const epList = device ? device.info.endpoints : [];
         const sClusterList = epList.map((ep) => {
-            const clusters = ep.outputClusters.map((cl) => {
+            const clusters = ep.output_clusters.map((cl) => {
                 return allowClusters.includes(cl) ? {ID: ep.ID + '_' + cl, name: allowClustersName[cl]} : null;
             }).filter((i) => {
                 return i != null;
@@ -2971,7 +2982,7 @@ function prepareBindingDialog(bindObj) {
 
         const epList = device ? device.info.endpoints : [];
         const tClusterList = epList.map((ep) => {
-            const clusters = ep.inputClusters.map((cl) => {
+            const clusters = ep.input_clusters.map((cl) => {
                 return (allowClusters.includes(cl) && (!sourceCl || sourceCl == cl)) ? {
                     ID: ep.ID + '_' + cl,
                     name: allowClustersName[cl]
@@ -3204,12 +3215,13 @@ function genDevInfo(device) {
     //console.log(device);
     const dev = (device && device.info) ? device.info.device : undefined;
     const mapped = (device && device.info) ? device.info.mapped : undefined;
+    const endpoints = (device && device.info) ? device.info.endpoints : [];
     if (!dev) return `<div class="truncate">No info</div>`;
     const genRow = function (name, value, refresh) {
         if (value === undefined) {
             return '';
         } else {
-            return `<li><span class="label">${name}:</span><span>${value}</span></li>`;
+            return `<li><span class="label">${name.replace('_',' ')}:</span><span>${value}</span></li>`;
         }
     };
     const genRowValues = function (name, value) {
@@ -3217,66 +3229,68 @@ function genDevInfo(device) {
             return '';
         } else {
             let label = `${name}:`;
-            return value.map((val) => {
-                const row = `<li><span class="label">${label}</span><span>${val}</span></li>`;
-                label = '';
-                return row;
-            }).join('');
+            try {
+                return value.map((val) => {
+                    const row = `<li><span class="label">${label}</span><span>${val}</span></li>`;
+                    label = '';
+                    return row;
+                }).join('');
+            }
+            catch {
+                return `<li><span class="label">${label}</span><span>${JSON.stringify(value)}</span></li>`
+            }
         }
     };
     const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(mapped.model)}.html" target="_blank" rel="noopener noreferrer">${mapped.model}</a>`;
-    const mappedInfo = (!mapped) ? '' :
-        `<div style="font-size: 0.9em">
-            <ul>
-                ${genRow('model', modelUrl)}
-                ${genRow('description', mapped.description)}
-                ${genRow('supports', mapped.supports)}
-            </ul>
-        </div>`;
+    const mappedInfo = [];
+    if (mapped) {
+        mappedInfo.push(
+            `<div style="font-size: 0.9em">
+                <ul>`);
+        for (const item in mapped) {
+            if (item == 'model')
+                mappedInfo.push(genRow(item,modelUrl));
+            else
+                mappedInfo.push(genRow(item,mapped[item]));
+        }
+        mappedInfo.push(
+            `            </ul>
+                    </div>`);
+    }
     let epInfo = '';
-    for (const epind in dev._endpoints) {
-        const ep = dev._endpoints[epind];
+    for (const epind in endpoints) {
+        const ep = endpoints[epind];
+        console.warn(JSON.stringify(ep));
         epInfo +=
             `<div style="font-size: 0.9em" class="truncate">
                 <ul>
                     ${genRow('endpoint', ep.ID)}
-                    ${genRow('profile', ep.profileID)}
-                    ${genRowValues('input clusters', ep.inputClusters.map(findClName))}
-                    ${genRowValues('output clusters', ep.outputClusters.map(findClName))}
+                    ${genRow('profile', ep.profile)}
+                    ${genRowValues('input clusters', ep.input_clusters ? ep.input_clusters.map(findClName) : 'none')}
+                    ${genRowValues('output clusters', ep.output_clusters ? ep.output_clusters.map(findClName): 'none')}
                 </ul>
             </div>`;
     }
     const imgSrc = device.icon || device.common.icon;
     const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px' onerror="this.onerror=null;this.src='img/unavailable.png';"><div class="divider"></div>` : '';
-    const info =
+    const info =[
         `<div class="col s12 m6 l6 xl6">
             ${imgInfo}
-            ${mappedInfo}
+            ${mappedInfo.join('')}
             <div class="divider"></div>
             <div style="font-size: 0.9em" class="truncate">
-                <ul>
-                    ${genRow('modelZigbee', dev._modelID)}
-                    ${genRow('type', dev._type)}
-                    ${genRow('ieee', dev.ieeeAddr)}
-                    ${genRow('nwk', dev._networkAddress)}
-                    ${genRow('manuf id', dev._manufacturerID)}
-                    ${genRow('manufacturer', dev._manufacturerName)}
-                    ${genRow('power', dev._powerSource)}
-                    ${genRow('app version', dev._applicationVersion)}
-                    ${genRow('hard version', dev._hardwareVersion)}
-                    ${genRow('zcl version', dev._zclVersion)}
-                    ${genRow('stack version', dev._stackVersion)}
-                    ${genRow('date code', dev._dateCode)}
-                    ${genRow('build', dev._softwareBuildID)}
-                    ${genRow('interviewed', dev._interviewCompleted)}
-                    ${genRow('configured', (device.isConfigured), true)}
+                <ul>`];
+    for (const item in dev) {
+        info.push(genRow(item, dev[item]));
+    }
+    info.push(`                ${genRow('configured', (device.isConfigured), true)}
                 </ul>
             </div>
         </div>
         <div class="col s12 m6 l6 xl6">
         ${epInfo}
-        </div>`;
-    return info;
+        </div>`);
+    return info.join('');
 }
 
 function showDevInfo(id) {
@@ -3384,7 +3398,7 @@ function prepareExcludeDialog(excludeObj) {
                 return 'Select model';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device._type == 'Coordinator') {
+                if (device.info.device.type == 'Coordinator') {
                     return null;
                 }
                 return device.common.type;
@@ -3618,14 +3632,14 @@ function getDashCard(dev, groupImage, groupstatus) {
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
-        nwk = (dev.info && dev.info.device) ? dev.info.device._networkAddress : undefined,
+        nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
         battery_cls = getBatteryCls(dev.battery),
         lqi_cls = getLQICls(dev.link_quality),
         unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>'),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
         lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
         //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
-        //permitJoinBtn = (isActive && dev.info && dev.info.device._type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        permitJoinBtn = (isActive && dev.info && dev.info.device.type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
     const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
