@@ -136,7 +136,7 @@ function getCoordinatorCard(dev) {
                         <li><span class="label">ZHC / ZH:</span><span>${coordinatorinfo.converters} / ${coordinatorinfo.herdsman}</span></li>
                     </ul>
                 </div>`,
-        permitJoinBtn = (dev && dev.info && dev.info.device._type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        permitJoinBtn = (dev && dev.info && dev.info.device && dev.info.device.type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
@@ -2141,7 +2141,7 @@ function showNetworkMap(devices, map) {
 
             if (node) {
                 node.font = {color: '#ff0000'};
-                if (dev.info && dev.info.device.type == 'Coordinator') {
+                if (dev.info && dev.info.device && dev.info.device.type == 'Coordinator') {
                     node.font = {color: '#00ff00'};
                 }
                 nodesArray.push(node);
@@ -2306,7 +2306,7 @@ function loadDeveloperTab() {
     updateSelect('#dev', devices,
         function (key, device) {
             if (device.hasOwnProperty('info')) {
-                if (device.info.device.type === 'Coordinator') {
+                if (device.info.device && device.info.device.type === 'Coordinator') {
                     return null;
                 }
                 return `${device.common.name} (${device.info.name})`;
@@ -2854,7 +2854,7 @@ function prepareBindingDialog(bindObj) {
                 return 'Select source device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device.type === 'Coordinator') {
+                if (device.info.device && device.info.device.type === 'Coordinator') {
                     return null;
                 }
                 // check for output clusters
@@ -2905,7 +2905,7 @@ function prepareBindingDialog(bindObj) {
                 return 'Select target device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device.type === 'Coordinator') {
+                if (device.info.device && device.info.device.type === 'Coordinator') {
                     return null;
                 }
                 // check for input clusters
@@ -3398,7 +3398,7 @@ function prepareExcludeDialog(excludeObj) {
                 return 'Select model';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device.type == 'Coordinator') {
+                if (device.info.device && device.info.device.type == 'Coordinator') {
                     return null;
                 }
                 return device.common.type;
@@ -3639,7 +3639,7 @@ function getDashCard(dev, groupImage, groupstatus) {
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
         lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
         //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
-        permitJoinBtn = (isActive && dev.info && dev.info.device.type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        permitJoinBtn = (isActive && dev.info && dev.info.device && dev.info.device.type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
     const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {

@@ -627,15 +627,27 @@ class Zigbee extends utils.Adapter {
 
         await this.setState('info.connection', true, true);
         this.stController.CleanupRequired(false);
+        const devicesFromObjects = (await this.getDevicesAsync()).filter(item => item.native.id.length ==16).map((item) => `0x${item.native.id}`);
         const devicesFromDB = this.zbController.getClientIterator(false);
         for (const device of devicesFromDB) {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
+                const idx = devicesFromObjects.indexOf(device.ieeeAddr);
+                if (idx > -1) devicesFromObjects.splice(idx, 1);
                 this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () =>
                     this.stController.syncDevStates(device, model));
             }
             else (this.log.warn('resolveEntity returned no entity'));
+        }
+        for (const id of devicesFromObjects) {
+            try {
+                this.log.warn(`removing object for device ${id} - it is no longer in the zigbee database`);
+                await this.delObjectAsync(id.substring(2), { recursive:true })
+            }
+            catch {
+                this.log.warn(`error removing ${id}`)
+            }
         }
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
