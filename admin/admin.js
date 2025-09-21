@@ -136,7 +136,8 @@ function getCoordinatorCard(dev) {
                         <li><span class="label">ZHC / ZH:</span><span>${coordinatorinfo.converters} / ${coordinatorinfo.herdsman}</span></li>
                     </ul>
                 </div>`,
-        permitJoinBtn = (dev && dev.info && dev.info.device && dev.info.device.type == 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
+        permitJoinBtn = '<div class="col tool"><button name="join" class="waves-effect right hoverable green"><i class="material-icons">leak_add</i></button></div>',
+        //permitJoinBtn = `<div class="col tool"><button name="join" class="btn-floating-sml waves-effect waves-light right hoverable green><i class="material-icons">leak_add</i></button></div>`,
         card = `<div id="${id}" class="device">
                   <div class="card hoverable">
                     <div class="card-content zcard">
@@ -149,11 +150,6 @@ function getCoordinatorCard(dev) {
                         <i class="left">${image}</i>
                         ${info}
                         <div class="footer right-align"></div>
-                    </div>
-                    <div class="card-action">
-                        <div class="card-reveal-buttons">
-                            ${permitJoinBtn}
-                        </div>
                     </div>
                   </div>
                 </div>`;
@@ -1178,10 +1174,11 @@ function displayDebugMessages(msg) {
         const keylength = keys.length;
         const Html = [];
         const button = `<a id="e_all" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">sync_problem</i></a>`;
-        const fbutton = `<a id="f_all" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.size != 0 ? 'filter_list' : 'format_align_justify' }</i></a>`;
+        const dbutton = `<a id="d_all" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons icon-yellowlarge">delete_forever</i></a>`;
+        const fbutton = `<a id="f_all" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.size != 0 ? 'filter_list' : 'format_align_justify' }</i></a>`;
         const hbutton = `<a id="h_all" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.size != 0 ? 'unfold_more' : 'unfold_less'}</i></a>`;
         const logbutton = `<a id="l_all" class="btn-floating waves-effect waves-light ${debugInLog ? 'green' : 'red'} tooltipped center-align hoverable translateT" title="Log messages"><i class="material-icons large">${debugInLog ? 'speaker_notes' : 'speaker_notes_off'}</i></a>`;
-        Html.push(`<li><table><thead id="dbgtable"><tr><td>${logbutton}</td><td colspan="3">Debug information by device</td><td>${fbutton}</td><td>${hbutton}</td><td>${button}</td></tr></thead><tbody>`);
+        Html.push(`<li><table><thead id="dbgtable"><tr><td>${logbutton}</td><td colspan="3">Debug information by device</td><td>${fbutton}</td><td>${hbutton}</td><td>${button}</td><td>${dbutton}</td></tr></thead><tbody>`);
         if (!keylength) {
             Html.push('<tr><td></td><td>No debug data loaded - press reload to refresh</td><td></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></li>')
             $('#dbg_data_list').html(Html.join(''));
@@ -1196,8 +1193,9 @@ function displayDebugMessages(msg) {
                 const modelUrl = (type_url === 'unknown') ? 'unknown' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${image}</a>`;
                 const devName = (dev && dev.common && dev.common.name) ? dev.common.name : 'unnamed';
                 const button = `<a id="e_${devID}" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">sync_problem</i></a>`
+                const dbutton = `<a id="d_${devID}" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons icon-yellow large">delete_forever</i></a>`;
                 buttonNames.push(devID);
-                Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">${devName} (ID: ${devID} Model: ${dev && dev.common ? dev.common.name : 'unknown'})</td><td>${modelUrl}</td><td>&nbsp;</td><td>${button}</td></tr></thead><tbody>`);
+                Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">${devName} (ID: ${devID} Model: ${dev && dev.common ? dev.common.name : 'unknown'})</td><td>${modelUrl}</td><td>${button}</td><td>${dbutton}</td></tr></thead><tbody>`);
                 if (dbgData[devID].IN.length > 0) {
                     const indata = HtmlFromInDebugMessages(dbgData[devID].IN, devID, dbgMsgfilter.has('i_'+devID));
                     Html.push(`${indata.html}`);
@@ -1213,7 +1211,10 @@ function displayDebugMessages(msg) {
             $('#dbg_data_list').html(Html.join(''));
         }
         $(`#e_all`).click(function () {
-            getDebugMessages();
+            getDebugMessages(false);
+        });
+        $(`#d_all`).click(function () {
+            getDebugMessages(true, 'all');
         });
         $(`#l_all`).click(function () {
             debugInLog = !debugInLog;
@@ -1245,7 +1246,10 @@ function displayDebugMessages(msg) {
         });
         for (const b of buttonNames) {
             $(`#e_${b}`).click(function () {
-                getDebugMessages();
+                getDebugMessages(false);
+            });
+            $(`#d_${b}`).click(function () {
+                getDebugMessages(true, b);
             });
             $(`#o_${b}`).click(function () {
                 if (dbgMsgfilter.has(`o_${b}`)) dbgMsgfilter.delete(`o_${b}`); else dbgMsgfilter.add(`o_${b}`);
@@ -1333,8 +1337,8 @@ function showMessageList(msgId) {
 
 }
 
-function getDebugMessages() {
-    sendTo(namespace, 'getDebugMessages', { inlog: debugInLog }, function(msg) {
+function getDebugMessages(deleteBeforeRead, deleteSelected) {
+    sendTo(namespace, 'getDebugMessages', { inlog: debugInLog, del:deleteBeforeRead ? deleteSelected : '' }, function(msg) {
         debugMessages = msg;
         if (msg) displayDebugMessages(debugMessages)
     })
@@ -2309,32 +2313,34 @@ function loadDeveloperTab() {
                 if (device.info.device && device.info.device.type === 'Coordinator') {
                     return null;
                 }
-                return `${device.common.name} (${device.info.name})`;
+                if (device.common.type === 'group') return null;
+                return `${device.common.name} (${device.info.device.ieee})`;
             } else { // fallback if device in list but not paired
                 return device.common.name + ' ' + device.native.id;
             }
         },
         function (key, device) {
-            return device._id;
+            return device.native.id;
         });
-    // add groups to device selector
-    const groupList = [];
-    for (const key in groups) {
-        groupList.push({
-            _id: namespace + '.' + key.toString(16).padStart(16, '0'),
-            groupId: key,
-            groupName: groups[key]
-        });
-    }
-    updateSelect('#dev', groupList,
-        function (key, device) {
-            return 'Group ' + device.groupId + ': ' + device.groupName;
-        },
-        function (key, device) {
-            return device._id;
-        }, true);
+    /*
+        const groupList = [];
+        for (const key in groups) {
+            groupList.push({
+                id: namespace + '.' + key.toString(16).padStart(16, '0'),
+                groupId: key,
+                groupName: groups[key]
+            });
+        }
+        updateSelect('#dev', groupList,
+            function (key, device) {
+                return 'Group ' + device.groupId + ': ' + device.groupName;
+            },
+            function (key, device) {
+                return device.id;
+            }, true);
 
-    // fill cid, cmd, type selector
+        // fill cid, cmd, type selector
+    */
     populateSelector('#cid', 'cidList');
     populateSelector('#cmd', 'cmdListFoundation', this.value);
     populateSelector('#type', 'typeList', this.value);
@@ -2415,10 +2421,11 @@ function loadDeveloperTab() {
             }
 
             const device = devices.find(obj => {
-                return obj._id === this.value;
+                return this.value ===obj.native.id;
             });
+            console.warn(`dev selector: ${this.selectedIndex} ${this.value} ->${JSON.stringify(device)}`)
 
-            const epList = device ? device.info.device.endpoints : null;
+            const epList = device ? device.info.endpoints : null;
             updateSelect('#ep', epList,
                 function (key, ep) {
                     return ep.ID;
@@ -3639,7 +3646,6 @@ function getDashCard(dev, groupImage, groupstatus) {
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
         lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
         //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
-        permitJoinBtn = (isActive && dev.info && dev.info.device && dev.info.device.type === 'Router') ? '<button name="join" class="btn-floating btn-small waves-effect waves-light right hoverable green"><i class="material-icons tiny">leak_add</i></button>' : '',
         //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
     const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
