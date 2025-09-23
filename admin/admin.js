@@ -120,7 +120,8 @@ function getCoordinatorCard(dev) {
         rid = id.split('.').join('_'),
         image = `<img src="${img_src}" width="80px">`,
         paired = '',
-        status = dev ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-red">remove_circle</i></div>`,
+        status = coordinatorinfo.autostart ? (dev ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-red">remove_circle</i></div>`) :  `<div class="col tool"><i class="material-icons icon-orange">pause_circle_filled</i></div>`,
+        //status = dev ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : `<div class="col tool"><i class="material-icons icon-red">remove_circle</i></div>`,
         lqi_cls = dev ? getLQICls(dev.link_quality) : -1,
         lq = (dev && dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
@@ -136,7 +137,7 @@ function getCoordinatorCard(dev) {
                         <li><span class="label">ZHC / ZH:</span><span>${coordinatorinfo.converters} / ${coordinatorinfo.herdsman}</span></li>
                     </ul>
                 </div>`,
-        permitJoinBtn = '<div class="col tool"><button name="join" class="waves-effect right hoverable green"><i class="material-icons">leak_add</i></button></div>',
+        permitJoinBtn = '<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>',
         //permitJoinBtn = `<div class="col tool"><button name="join" class="btn-floating-sml waves-effect waves-light right hoverable green><i class="material-icons">leak_add</i></button></div>`,
         card = `<div id="${id}" class="device">
                   <div class="card hoverable">
@@ -144,6 +145,7 @@ function getCoordinatorCard(dev) {
                         <span class="top right small" style="border-radius: 50%">
                             ${lq}
                             ${status}
+                            ${permitJoinBtn}
                         </span>
                         <!--/a--!>
                         <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
@@ -277,6 +279,7 @@ function getCard(dev) {
         deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
         debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'Automatic by '+debugDevices[isDebug-1]: 'Disable Debug' : 'Enable Debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
                   <div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
@@ -1812,8 +1815,8 @@ function updateStartButton(block) {
         $('#deleteNVRam-btn').addClass('disabled');
         $('#ErrorNotificationBtn').removeClass('hide')
         $('#ErrorNotificationBtn').removeClass('blinking')
-        $('#ErrorNotificationIcon').removeClass('icon-red')
-        $('#ErrorNotificationIcon').addClass('icon-orange')
+        $('#ErrorNotificationBtn').removeClass('red')
+        $('#ErrorNotificationBtn').addClass('orange')
         return;
     }
     if (isHerdsmanRunning)
@@ -1830,8 +1833,8 @@ function updateStartButton(block) {
         //$('#pairing').removeClass('hide');
     }
     else {
-        $('#ErrorNotificationIcon').addClass('icon-red')
-        $('#ErrorNotificationIcon').removeClass('icon-orange')
+        $('#ErrorNotificationBtn').addClass('red')
+        $('#ErrorNotificationBtn').removeClass('orange')
         $('#ErrorNotificationBtn').removeClass('hide')
         $('#ErrorNotificationBtn').addClass('blinking');
         $('#show_test_run').removeClass('disabled');
@@ -3636,6 +3639,7 @@ function getDashCard(dev, groupImage, groupstatus) {
         rooms = [],
         lang = systemLang || 'en';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
+    const permitJoinBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard_0x${dev._id}" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
@@ -3700,6 +3704,7 @@ function getDashCard(dev, groupImage, groupstatus) {
                 ${idleTime}
                 ${battery}
                 ${lq}
+                ${permitJoinBtn}
             </span>
             <span class="card-title truncate">${title}</span>
             </div>
