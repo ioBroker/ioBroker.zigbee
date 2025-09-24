@@ -416,7 +416,7 @@ class Zigbee extends utils.Adapter {
                 this.sendTo(from, command, response, callback);
             }
             catch (error) {
-                this.sendTo(from, command, { status:false }, callback);
+                this.sendTo(from, command, { status:false, error }, callback);
             }
         }
         else try {
@@ -424,7 +424,7 @@ class Zigbee extends utils.Adapter {
             //this.logToPairing('herdsman stopped !');
             this.sendTo(from, command, { status:true }, callback);
         } catch (error) {
-            this.sendTo(from, command, { status:true }, callback);
+            this.sendTo(from, command, { status:true, error }, callback);
         }
     }
 
@@ -744,17 +744,19 @@ class Zigbee extends utils.Adapter {
     async onUnload(callback) {
         try {
             this.log.info(`Halting zigbee adapter. Restart delay is at least ${this.ioPack.common.stopTimeout / 1000} seconds.`)
+            this.setState('info.connection', false, true);
+            const chain = [];
             if (this.config.debugHerdsman) {
                 debug.disable();
                 debug.log = originalLogMethod;
             }
-
-            this.log.info('cleaning everything up...');
+            this.log.info('cleaning everything up');
             await this.callPluginMethod('stop');
-            await this.stController.stop();
+            if (this.stController) chain.push(this.stController.stop());
             if (this.zbController) {
-                await this.zbController.stop();
+                chain.push(this.zbController.stop());
             }
+            Promise.all(chain);
             this.log.info('cleanup successful');
             callback();
         } catch (error) {
@@ -766,8 +768,8 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    getZigbeeOptions(_overrideOptions) {
-        const override = (_overrideOptions ? _overrideOptions:{});
+    getZigbeeOptions(overrideOptions) {
+        const override = (overrideOptions ? overrideOptions:{});
         // file path for db
         const dbDir = this.expandFileName('');
 
