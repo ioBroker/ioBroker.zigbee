@@ -784,11 +784,13 @@
                 </div>
             </div>
             <div id="tab-map" class="col s12 page">
-                <div class="fixed-action-btn">
-                    <a id="refresh" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Refresh"><i class="material-icons large">autorenew</i></a>
-                </div>
-                <div id="viewconfigbtn" class="fixed-action-btn top left">
-                    <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translateT" title="View config"><i class="material-icons large">menu</i></a>
+                <div class="row">
+                    <div class="fixed-action-btn left">
+                        <a id="refresh" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Reload"><i class="material-icons large">autorenew</i></a>
+                    </div>
+                    <div id="viewconfigbtn" class="fixed-action-btn left">
+                        <a id="viewconfig" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translateT" title="View config"><i class="material-icons large">menu</i></a>
+                    </div>
                 </div>
                 <div id="map" class="row">
                 </div>
@@ -1307,7 +1309,12 @@
                                 <span style="pointer-events: none;">Show Messages</span>
                             </label>
                         </div>
+                        <div class="input-field col s12 admin-tooltip-icon translateT" title="Regenerate Map">
+                        <br><button id="regenerate" class="waves-effect center hoverable blue"><i class="material-icons medium border:0 icon-Black">map</i></button>
+                        </div>
                     </div>
+<!--                        <a id="regenerate" class="waves-effect waves-light blue btn"><img class="img-btn" src="img/start_stop.png" title="start / stop" ></a>&nbsp;
+                        -->
                     <div class="input-field input-group col s12 m6 l6">
                         <p class="translate">Device map info</p>
                     </div>

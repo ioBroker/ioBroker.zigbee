@@ -78,7 +78,7 @@ function getDeviceByID(ID) {
 function getDevice(ieeeAddr) {
     return devices.find((devInfo) => {
         try {
-            return devInfo.info.device._ieeeAddr == ieeeAddr;
+            return devInfo.info.device.ieee == ieeeAddr;
         } catch (e) {
             //console.log("No dev with ieee " + ieeeAddr);
         }
@@ -89,7 +89,7 @@ function getDevice(ieeeAddr) {
 function getDeviceByNetwork(nwk) {
     return devices.find((devInfo) => {
         try {
-            return devInfo.info.device._networkAddress == nwk;
+            return devInfo.info.device.nwk == nwk;
         } catch (e) {
             //console.log("No dev with nwkAddr " + nwk);
         }
@@ -176,7 +176,7 @@ function getGroupCard(dev) {
     const roomInfo = rooms.length ? `<li><span class="labelinfo">rooms:</span><span>${rooms.join(',') || ''}</span></li>` : '';
     const room = rooms.join(',') || '&nbsp';
     let memberCount = 0;
-    let info = `<div style="min-height:88px; font-size: 0.8em; height: 98px; overflow-y: auto" class="truncate">
+    let info = `<div style="min-height:88px; font-size: 0.8em; overflow-y: auto" class="truncate">
                 <ul>`;
     info = info.concat(`<li><span class="labelinfo">Group ${numid}</span></li>`);
     if (dev.memberinfo === undefined) {
@@ -821,7 +821,7 @@ function showDevices() {
         const name = getDevName(dev_block);
         editGroup(id, name, false);
     });
-    $('button.btn-floating[name=\'join\']').click(function () {
+    $('button[name=\'joinCard\']').click(function () {
         const dev_block = $(this).parents('div.device');
         if (!$('#pairing').hasClass('pulse')) {
             joinProcess(getDevId(dev_block));
@@ -1453,10 +1453,10 @@ function getDeviceCard(devId) {
     return $('#devices').find(`div[id='${namespace}.${devId}']`);
 }
 
-function getMap() {
+function getMap(rebuild) {
     $('#refresh').addClass('disabled');
     if (isHerdsmanRunning) {
-        sendTo(namespace, 'getMap', {}, function (msg) {
+        sendTo(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
             $('#refresh').removeClass('disabled');
             if (msg) {
                 if (msg.error) {
@@ -1619,7 +1619,11 @@ function load(settings, onChange) {
     });
 
     $('#refresh').click(function () {
-        getMap();
+        getMap(false);
+    });
+    $('#regenerate').click(function () {
+        getMap(true);
+        $('#modalviewconfig').modal('close');
     });
 
     $('#reset-btn').click(function () {
@@ -1631,7 +1635,9 @@ function load(settings, onChange) {
     });
 
     $('#ErrorNotificationBtn').click(function () {
-        if (!isHerdsmanRunning) showMessage('The zigbee subsystem is not running. Please ensure that the configuration is correct and either start the subsystem manually from the hardware tab or set it to automatically start in the settings.', _('Zigbee subsystem error'));
+        if (!isHerdsmanRunning) {
+            doTestStart(!isHerdsmanRunning, true);
+        }
     })
 
     $('#viewconfig').click(function () {
@@ -1745,10 +1751,10 @@ function showPairingProcess() {
     Materialize.updateTextFields();
 }
 
-function doTestStart(start) {
+function doTestStart(start, interactive) {
     updateStartButton(true);
     if (start) {
-        const ovr = { extPanID:$('#extPanID.value').val(),
+        const ovr = interactive ? {} : { extPanID:$('#extPanID.value').val(),
             panID: $('#PanID.value').val(),
             channel: $('#channel.value').val(),
             port: $('#port.value').val(),
@@ -1759,12 +1765,16 @@ function doTestStart(start) {
         };
         // $('#testStartStart').addClass('disabled');
         messages = [];
+        if (interactive) showWaitingDialog('Trying to start the zigbee subsystem manually', 120);
         sendTo(namespace, 'testConnect', { start:true, zigbeeOptions:ovr }, function(msg) {
             if (msg) {
+                closeWaitingDialog();
                 if (msg.status)
                     $('#testStartStop').removeClass('disabled');
-                else
+                else {
+                    showMessage(`The zigbee subsystem is not running. Please ensure that the configuration is correct. ${msg.error ? 'Error on start-Attempt ' + msg.error.message : ''}`);
                     $('#testStartStart').removeClass('disabled');
+                }
             }
         })
     }
@@ -3639,7 +3649,7 @@ function getDashCard(dev, groupImage, groupstatus) {
         rooms = [],
         lang = systemLang || 'en';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    const permitJoinBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard_0x${dev._id}" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
+    const permitJoinBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
@@ -3699,14 +3709,18 @@ function getDashCard(dev, groupImage, groupstatus) {
     }).join('') : '';
     const dashCard = `
         <div class="card-content zcard ${isActive ? '' : 'bg_red'}">
-            <div class="flip" style="cursor: pointer">
+            <div style="cursor: pointer">
+            <span class="top right small" style="border-radius: 50%">
+                ${permitJoinBtn}
+            </span>
+            <div  class="flip">
             <span class="top right small" style="border-radius: 50%">
                 ${idleTime}
                 ${battery}
                 ${lq}
-                ${permitJoinBtn}
             </span>
-            <span class="card-title truncate">${title}</span>
+             <span class="card-title truncate">${title}</span>
+            </div>
             </div>
             <i class="left">${image}</i>
             <div style="min-height:88px; font-size: 0.8em; height: 130px; overflow-y: auto" class="truncate">

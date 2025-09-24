@@ -416,7 +416,7 @@ class Zigbee extends utils.Adapter {
                 this.sendTo(from, command, response, callback);
             }
             catch (error) {
-                this.sendTo(from, command, { status:false }, callback);
+                this.sendTo(from, command, { status:false, error }, callback);
             }
         }
         else try {
@@ -424,7 +424,7 @@ class Zigbee extends utils.Adapter {
             //this.logToPairing('herdsman stopped !');
             this.sendTo(from, command, { status:true }, callback);
         } catch (error) {
-            this.sendTo(from, command, { status:true }, callback);
+            this.sendTo(from, command, { status:true, error }, callback);
         }
     }
 
