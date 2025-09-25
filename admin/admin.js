@@ -446,29 +446,52 @@ function editName(id, name) {
 
     const device_options = {};
     const received_options = {};
+    console.warn('editName called with ' + id + ' and ' + name);
+    const dev = devices.find((d) => d._id == id);
+    $('#modaledit').find('input[id=\'d_name\']').val(name);
+    const groupables = [];
 
     function removeOption(k) {
-        if (k && device_options.hasOwnProperty(k)) delete device_options[k];
+        if (k && device_options.hasOwnProperty(k)) {
+            if (dev.info.mapped && dev.info.mapped.options && dev.info.mapped.options.includes(device_options[k].key))
+                availableOptions.push(device_options[k].key)
+            delete device_options[k];
+        }
     }
 
     function addOption() {
         let idx=1;
         let key = '';
+        const optionName = $('#option_Selector').val();
+        console.warn(`option name is ${optionName}`);
         do {
             key = `o${idx++}`;
         }
         while (device_options.hasOwnProperty(key));
-        device_options[key] = {key:`option_${idx++}`, value:''};
+        device_options[key] = { key:optionName, value:''};
+        console.warn(`device_options: ${JSON.stringify(device_options)}`);
+        idx = availableOptions.indexOf(optionName);
+        console.warn(`idx: ${idx}, ao:${JSON.stringify(availableOptions)}, on: ${optionName}`);
+        if (idx > -1) availableOptions.splice(idx, 1);
+
+//        device_options[key] = {key:`option_${idx++}`, value:''};
     }
 
-    function updateOptions() {
+    function updateOptions(candidates) {
+        if (candidates.length > 0) {
+            $('#modaledit').find('.new_options_available').removeClass('hide');
+            list2select('#option_Selector', candidates, [], (key, val) => { return val; }, (key, val) => { return val; })
+        }
+        else {
+            $('#modaledit').find('.new_options_available').addClass('hide');
+        }
         const html_options=[];
 
-        console.warn(`device_options is ${JSON.stringify(device_options)}`)
+        console.warn(`option_Selector is ${JSON.stringify(device_options)}`)
 
         for (const k in device_options) {
             html_options.push(`<div class="row">`);
-            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input disabled id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
             html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">Value</label></div>`)
             html_options.push(`<div class="col"><a id="option_rem_${k}" class='btn' ><i class="material-icons">remove_circle</i></a></div>`);
             html_options.push(`</div>`)
@@ -482,11 +505,11 @@ function editName(id, name) {
                 $(`#option_key_${k}`).val(device_options[k].key);
                 $(`#option_value_${k}`).val(device_options[k].value);
                 $(`#option_rem_${k}`).unbind('click');
-                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions() });
+                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions(availableOptions) });
             }
         }
         else {
-            $('#modaledit').find('.options_available').addClass('hide');
+            if (candidates.length == 0) $('#modaledit').find('.options_available').addClass('hide');
         }
     }
 
@@ -515,10 +538,6 @@ function editName(id, name) {
 
 
 
-    console.warn('editName called with ' + id + ' and ' + name);
-    const dev = devices.find((d) => d._id == id);
-    $('#modaledit').find('input[id=\'d_name\']').val(name);
-    const groupables = [];
     if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
             if (ep.input_clusters.includes(4)) {
@@ -527,6 +546,7 @@ function editName(id, name) {
         }
     }
     const numEP = groupables.length;
+    const availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
 
     if (numEP > 0) {
         $('#modaledit').find('.groups_available').removeClass('hide');
@@ -573,7 +593,7 @@ function editName(id, name) {
     sendTo(namespace, 'getLocalConfigItems', { target:id, global:false, key:'options' }, function (msg) {
         if (msg) {
             if (msg.error) showMessage(msg.error, '_Error');
-            console.warn(`return is ${msg}`)
+            console.warn(`return is ${JSON.stringify(msg)}`)
             Object.keys(device_options).forEach(key => delete device_options[key]);
             Object.keys(received_options).forEach(key => delete received_options[key]);
             if (typeof msg.options === 'object') {
@@ -581,12 +601,16 @@ function editName(id, name) {
                 let cnt = 1;
                 for (const key in msg.options)
                 {
+                    const idx = availableOptions.indexOf(key);
+                    console.warn(`key ${key} : index : ${idx}`);
+                    if (idx > -1) availableOptions.splice(idx,1);
                     received_options[key]=msg.options[key];
                     device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
                     cnt++;
                 }
             }
-            updateOptions();
+            console.warn(`avo ${JSON.stringify(availableOptions)}, mapped: ${JSON.stringify(dev.info.mapped.options)}`);
+            updateOptions(availableOptions);
 
         } else showMessage('callback without message');
     });
@@ -595,7 +619,7 @@ function editName(id, name) {
     $('#modaledit a.btn[name=\'add_options\']').click(() => {
         getOptionsFromUI(device_options, received_options);
         addOption();
-        updateOptions()
+        updateOptions(availableOptions)
     });
     $('#modaledit a.btn[name=\'save\']').click(() => {
         const newName = $('#modaledit').find('input[id=\'d_name\']').val();
@@ -1769,11 +1793,13 @@ function doTestStart(start, interactive) {
         sendTo(namespace, 'testConnect', { start:true, zigbeeOptions:ovr }, function(msg) {
             if (msg) {
                 closeWaitingDialog();
+                isHerdsmanRunning = msg.status;
+                updateStartButton(false);
                 if (msg.status)
                     $('#testStartStop').removeClass('disabled');
                 else {
-                    showMessage(`The zigbee subsystem is not running. Please ensure that the configuration is correct. ${msg.error ? 'Error on start-Attempt ' + msg.error.message : ''}`);
-                    $('#testStartStart').removeClass('disabled');
+                    //showMessage(`The zigbee subsystem is not running. Please ensure that the configuration is correct. ${msg.error ? 'Error on start-Attempt ' + msg.error.message : ''}`);
+                    $('#testStartStop').removeClass('disabled');
                 }
             }
         })
