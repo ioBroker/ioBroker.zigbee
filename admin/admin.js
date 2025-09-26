@@ -235,7 +235,7 @@ function sanitizeModelParameter(parameter) {
 
 function getCard(dev) {
     //console.warn(JSON.stringify(dev));
-    if (!dev._id) return '';
+    if (!dev._id || dev.common.type === 'Coordinator') return '';
     const title = dev.common.name,
         id = (dev._id ? dev._id : ''),
         type = (dev.common.type ? dev.common.type : 'unknown'),
@@ -2001,6 +2001,7 @@ function putEventToNode(devId) {
 }
 
 function showNetworkMap(devices, map) {
+    console.warn('network map - device list ' + JSON.stringify(devices));
     // create an object with nodes
     const nodes = {};
     // create an array with edges
@@ -2013,12 +2014,15 @@ function showNetworkMap(devices, map) {
     }
 
     const createNode = function (dev, mapEntry) {
-        if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) return undefined;
+        if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) {
+            return undefined;
+        }
         const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
+        const t = dev._id.replace(namespace + '.', '');
         const node = {
             id: dev._id,
             label: (dev.link_quality > 0 ? dev.common.name : `${dev.common.name}\n(disconnected)`),
-            title: dev._id.replace(namespace + '.', '') + extInfo,
+            title: `${t} ${extInfo}`,
             shape: 'circularImage',
             image: dev.common.icon || dev.icon,
             imagePadding: {top: 5, bottom: 5, left: 5, right: 5},
@@ -2027,12 +2031,13 @@ function showNetworkMap(devices, map) {
             borderWidth: 1,
             borderWidthSelected: 4,
         };
-        if (dev.info && dev.info.device.type == 'Coordinator') {
+        if (dev.common && dev.common.type === 'Coordinator') {
             // node.shape = 'star';
             node.image = 'zigbee.png';
             node.label = 'Coordinator';
             // delete node.color;
         }
+        console.warn(`node for device ${JSON.stringify(node)}`)
         return node;
     };
 
@@ -2040,6 +2045,7 @@ function showNetworkMap(devices, map) {
         map.lqis.forEach((mapEntry) => {
             const dev = getDevice(mapEntry.ieeeAddr);
             if (!dev) {
+                console.warn(`no dev for ${mapEntry.ieeeAddr} - no matching device`);
                 //console.log("No dev with ieee "+mapEntry.ieeeAddr);
                 return;
             }
