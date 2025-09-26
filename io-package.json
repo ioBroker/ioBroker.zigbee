@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.1.4",
+    "version": "3.1.4-alpha.1",
     "news": {
       "3.1.4": {
         "en": "Remove extra logging\nAdd extra configurations\nDo not read states from deactivated devices\nIgnore deactivated devices for group state updates\nChange display for deactivated devices in the object tree (gray, no connected icon)\nmore detailed device debug\ndevice debug UI improvements\nPairing and device Query buttons on router cards\nZHC 25.31.0, ZH 6.1.2 or newer\nOptions based on ZHC defined options",
