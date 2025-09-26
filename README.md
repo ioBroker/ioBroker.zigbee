@@ -160,6 +160,9 @@ You can thank the authors by these links:
 * (asgothian) Change display for deactivated devices in the object tree (gray, no connected icon)
 * (asgothian) more detailed device debug
 * (asgothian) device debug UI improvements
+* (asgothian) Pairing and device Query buttons on router cards
+* (asgothian) ZHC 25.31.0, ZH 6.1.2 or newer
+* (asgothian) Options based on ZHC defined options
 
 ### 3.1.2 (2025-09-15)
 * (asgothian) Fix pairing bug

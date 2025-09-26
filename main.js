@@ -413,6 +413,7 @@ class Zigbee extends utils.Adapter {
                 }
                 this.zbController.configure(this.getZigbeeOptions(message.zigbeeOptions));
                 response.status = await this.doConnect(true);
+                if (!response.status) response.error = { message: 'Unable to start the Zigbee Network. Please check the previous messages.'}
                 this.sendTo(from, command, response, callback);
             }
             catch (error) {
