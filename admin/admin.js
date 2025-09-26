@@ -473,8 +473,6 @@ function editName(id, name) {
         idx = availableOptions.indexOf(optionName);
         console.warn(`idx: ${idx}, ao:${JSON.stringify(availableOptions)}, on: ${optionName}`);
         if (idx > -1) availableOptions.splice(idx, 1);
-
-//        device_options[key] = {key:`option_${idx++}`, value:''};
     }
 
     function updateOptions(candidates) {
@@ -852,6 +850,11 @@ function showDevices() {
         }
         showPairingProcess();
     });
+    $('button[name=\'deviceQuery\']').click(function () {
+        const dev_block = $(this).parents('div.device');
+        sendTo(namespace, 'setState', {id: `${getDevId(dev_block)}.device_query`, val: true}, function (data) {
+            //console.log(data);
+        });    });
     $('#modalpairing a.btn[name=\'extendpairing\']').click(function () {
         letsPairing();
     });
@@ -3676,6 +3679,7 @@ function getDashCard(dev, groupImage, groupstatus) {
         lang = systemLang || 'en';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const permitJoinBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
+    const device_queryBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">play_for_work</i></button></div>`;
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
@@ -3737,6 +3741,7 @@ function getDashCard(dev, groupImage, groupstatus) {
         <div class="card-content zcard ${isActive ? '' : 'bg_red'}">
             <div style="cursor: pointer">
             <span class="top right small" style="border-radius: 50%">
+                ${device_queryBtn}
                 ${permitJoinBtn}
             </span>
             <div  class="flip">
