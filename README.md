@@ -152,7 +152,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.1.4 (2025-09-26)
 * (asgothian) Remove extra logging
 * (asgothian) Add extra configurations
 * (asgothian) Do not read states from deactivated devices
