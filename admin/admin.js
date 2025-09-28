@@ -74,6 +74,13 @@ const connectionStatus = {
     lastcheck: Date.now(),
 }
 
+
+////
+//
+//. section Alive
+//
+////
+
 function keepAlive(callback) {
     const responseTimeout = setTimeout(function() {
         UpdateAdapterAlive(false); }, 500);
@@ -116,6 +123,12 @@ function UpdateAdapterAlive(state) {
     connectionStatus.connected = state;
 }
 
+
+////
+//
+// Utility functions
+//
+////
 function sendToWrapper(target,command,msg,callback) {
     if (connectionStatus.connected)
         sendTo(target,command,msg,callback);
@@ -128,7 +141,7 @@ function getDeviceByID(ID) {
     });
 }
 
-function getDevice(ieeeAddr) {
+function getDeviceByIEEE(ieeeAddr) {
     return devices.find((devInfo) => {
         try {
             return devInfo.info.device.ieee == ieeeAddr;
@@ -163,6 +176,273 @@ function getLQICls(value) {
         if (value < 50) return 'icon-orange';
     }
     return 'icon-green';
+}
+
+function sanitizeModelParameter(parameter) {
+    const replaceByUnderscore = /[\s/]/g;
+    return parameter.replace(replaceByUnderscore, '_');
+}
+
+/////
+//
+// Section Local Data
+//
+////
+
+function getLocalData() {
+    const localdata = {
+        models: {
+          Coordinator: {
+            instances: ['0x00124b00258f182e'],
+            options: []
+          },  
+          Plug_01: {
+            instances: ['0x7cb03eaa00a715a9', '0xdeadeaa00a715a9'],
+            modelinfo: {
+                description:'none',
+                link:'http://blafasel',
+                icon:'http://LinkToIcon',
+                options: { 
+                    power_calibration: {
+                        type:'numeric',
+                        min:0,
+                        max:100,
+                        default:50,
+                        description:'option desciption'
+                    },
+                    current_calibration: {
+                        type:'numeric',
+                        min:0,
+                        max:100,
+                        default:50,
+                        description:'option desciption'
+                    }
+                },
+            },
+            options: [{ key:'power_calibration', value: 20},],
+            overrides: [],
+          },  
+          WXKG02LM_rev2: {
+            Instances: ['0x00158d0003165f60'],
+            modelinfo: {
+                description:'none',
+                link:'http://blafasel',
+                icon:'http://LinkToIcon',
+                options: { 
+                    idle_time: {
+                        type:'numeric',
+                        min:0,
+                        max:100,
+                        default:50,
+                        description:'option desciption'
+                    },
+                    connected_mode: {
+                        type:'numeric',
+                        min:0,
+                        max:100,
+                        default:50,
+                        description:'option desciption'
+                    },
+                    left_mode: {
+                        type:'numeric',
+                        min:0,
+                        max:100,
+                        default:50,
+                        valueLimits:[0,10,20,30,40,50,60,70,80,90,100],
+                        description:'option desciption'
+                    },
+                    right_mode: {
+                        type:'string',
+                        default:'isolated',
+                        valueLimits:['isolated', 'dual', 'triple'],
+                        description:'option desciption'
+                    }
+                },
+            },
+            options: [{ key:'idle_time', value: 20},],
+            overrides: [],
+          },  
+        },
+        devices: {
+            '0x00158d0003165f60': {
+                name: 'mmm',
+                model: 'WXKG02LM_rev2',
+                legacy: false,
+                options: [{ key:'idle_time', value: '30'},{ key:'right_mode', value: 'bla'},],
+                overrides: [],
+
+            },
+            '0x7cb03eaa00a715a9': {
+                name: 'nnnn',
+                model: 'Plug_01',
+                legacy: false,
+                options: [{ key:'keyname', value: 'bla'},{ key:'keyname', value: 'bla'},],
+                overrides: [{ key:'name', value: 'overridden'},],
+            },
+            '0xdead3eaa00a715a9': {
+                name: 'nnnn',
+                model: 'Plug_01',
+                legacy: false,
+                options: [{ key:'power_calibration', value: 100},{ key:'current_calibration', value: '0'},],
+                overrides: [],
+            }
+
+        },
+        options: [{ key:'keyname', value: 'bla'},{ key:'keyname', value: 'bla'},{ key:'keyname', value: 'bla'},]
+    };
+    return localdata;
+}
+
+function getModelData(data) {
+    const Html = [];
+    Html.push(`<ul class="collapsible">`);
+    Html.push(`<li>`);
+    Html.push(`<div class="collapsible-header"><img src="zigbee.png" alt="" class="circle" width="32" height="auto">Paired Models</div>`);
+    Html.push(`<div class="collapsile-body"<span>Nothing</span></div>`);
+    Html.push(`</li><li>`)
+    Html.push(`<div class="collapsible-header"><img src="zigbee.png" alt="" class="circle" width="40" height="auto">Paired Models</div>`);
+    Html.push(`<div class="collapsile-body"<span>Nothing</span></div>`);
+    Html.push(`</li><li>`)
+    Html.push(`<div class="collapsible-header"><img src="zigbee.png" alt="" class="circle" width="64" height="auto">Paired Models</div>`);
+    Html.push(`<div class="collapsile-body"<span>Nothing</span></div>`);
+    Html.push(`</li></ul>`);
+    return Html.join('');
+}
+function getDeviceData(data, modelFilter) {
+    return 'No Data Yet'
+}
+function getGlobalOptionData() {
+    return 'No Data Yet'
+}
+
+function showLocalData() {
+    const data = getLocalData();
+    const Html = [];
+
+    Html.push(`<ul class="collapsible">`);
+    Html.push('<li>')
+    Html.push (`<li class="active"><div class="collapsible-header">
+                    Paired Models
+                </div>`);
+    Html.push (`<div class="collapsible-body">
+                    <span>${getModelData(data)}</span>
+                </div>`);
+    Html.push ('</li><li>')
+    Html.push (`<div class="collapsible-header">
+                    Paired Devices
+                </div>`);
+    Html.push (`<div class="collapsible-body">
+                    <span>${getDeviceData(data)}</span>
+                </div>`);
+    Html.push ('</li><li>')
+    Html.push (`<div class="collapsible-header">
+                   Global Options
+                </div>`);
+    Html.push (`<div class="collapsible-body">
+                    <span>${getGlobalOptionData(data)}</span>
+                </div>`);
+    Html.push ('</li>')
+    Html.push (`</ul>`);
+    $('#tab-overrides').html(Html.join(''));
+    $('.collapsible').collapsible();
+}
+
+/////
+//
+// Section Cards
+//
+////
+
+function getCard(dev) {
+    if (!dev._id) return '';
+    const title = dev.common.name,
+        id = (dev._id ? dev._id : ''),
+        type = (dev.common.type ? dev.common.type : 'unknown'),
+        type_url = (dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown'),
+        img_src = dev.common.icon || dev.icon,
+        rooms = [],
+        isActive = (dev.common.deactivated ? false : true),
+        lang = systemLang || 'en',
+        ieee = id.replace(namespace + '.', ''),
+        isDebug = checkDebugDevice(ieee);
+    for (const r in dev.rooms) {
+        if (dev.rooms[r].hasOwnProperty(lang)) {
+            rooms.push(dev.rooms[r][lang]);
+        } else {
+            rooms.push(dev.rooms[r]);
+        }
+    }
+    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
+    const rid = id.split('.').join('_');
+    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const groupInfo = dev.groupNames ? `<li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>` : '';
+    const roomInfo = rooms.length ? `<li><span class="labelinfo">rooms:</span><span>${rooms.join(',') || ''}</span></li>` : '';
+    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
+        nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
+        battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
+        lqi_cls = getLQICls(dev.link_quality),
+        battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+        lq = (dev.link_quality > 0)
+            ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
+            : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
+        status = (isActive ? lq : `<div class="col tool"><i class="material-icons icon-red">cancel</i></div>`),
+        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+                    <ul>
+                        <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
+                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
+                        <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
+                        ${groupInfo}
+                        ${roomInfo}
+                    </ul>
+                </div>`,
+        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
+        debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'Automatic by '+debugDevices[isDebug-1]: 'Disable Debug' : 'Enable Debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
+        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+
+    const dashCard = getDashCard(dev);
+    const card = `<div id="${id}" class="device">
+                  <div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
+                    <div class="front face">${dashCard}</div>
+                    <div class="back face">
+                        <div class="card-content zcard">
+                            <div class="flip" style="cursor: pointer">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${battery}
+                                <!--${lq}-->
+                                ${status}
+                            </span>
+                            <!--/a--!>
+                            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                            </div>
+                            <i class="left">${image}</i>
+                            ${info}
+                            <div class="footer right-align"></div>
+                        </div>
+                        <div class="card-action">
+                            <div class="card-reveal-buttons">
+                                ${infoBtn}
+
+                                <span class="left fw_info"></span>
+                                <button name="delete" class="right btn-flat btn-small tooltipped" title="Delete">
+                                    <i class="material-icons icon-red">delete</i>
+                                </button>
+                                <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit">
+                                    <i class="material-icons icon-black">edit</i>
+                                </button>
+                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Select Image">
+                                    <i class="material-icons icon-black">image</i>
+                                </button>
+                                <button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
+                                    <i class="material-icons icon-red">sync</i>
+                                </button>
+                                ${deactBtn}
+                                ${debugBtn}
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>`;
+    return card;
 }
 
 function getCoordinatorCard(dev) {
@@ -280,153 +560,174 @@ function getGroupCard(dev) {
     return card;
 }
 
-function sanitizeModelParameter(parameter) {
-    const replaceByUnderscore = /[\s/]/g;
-    return parameter.replace(replaceByUnderscore, '_');
+function getDeviceCards() {
+    return $('#devices .device').not('.group');
 }
 
-
-function getLocalData() {
-    return {};
+function getDeviceCard(devId) {
+    if (devId.startsWith('0x')) {
+        devId = devId.substr(2, devId.length);
+    }
+    return $('#devices').find(`div[id='${namespace}.${devId}']`);
 }
 
-function getModelData(data) {
-    const Html = [];
-    Html.push(`<ul class="collection ">`);
-    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Paired Models</span>`);
-    Html.push(`<br><span>Nothing</span>`);
-    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
-    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Paired Devices</span>`);
-    Html.push(`<br><span>Nothing</span>`);
-    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
-    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Global Data</span>`);
-    Html.push(`<br><span>Nothing</span>`);
-    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
-    Html.push(`</ul>`);
-    return Html;
-}
-function getDeviceData(data, modelFilter) {
-    return 'No Data Yet'
-}
-function getGlobalOptionData() {
-    return 'No Data Yet'
-}
-
-function showLocalData() {
-    const data = getLocalData();
-    const Html = [];
-
-    const logbutton = '';
-    const fbutton = '';
-    const hbutton = '';
-    const button = '';
-    const dbutton = '';
-    Html.push(`<div class="row"><div class="col s12 m6 l4"><H3>Local Data</H3></div>`);
-    Html.push(`<div class="col s11 offset -s1"><ul class="collection ">`);
-    Html.push(`<img src="zigbee.png" alt="" class="circle"><H4>Paired Models</h4></span>`);
-    Html.push(`<br><span>${getModelData(data)}</span>`);
-    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
-    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Paired Devices</span>`);
-    Html.push(`<br><span>${getDeviceData(data)}</span>`);
-    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
-    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Global Data</span>`);
-    Html.push(`<br><span>${getGlobalOptionData(data)}</span>`);
-    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
-    Html.push(`</ul></div>`);
-    $('#tab-overrides').html(Html.join(''));
-}
-
-function getCard(dev) {
-    if (!dev._id) return '';
+function getDashCard(dev, groupImage, groupstatus) {
     const title = dev.common.name,
-        id = (dev._id ? dev._id : ''),
-        type = (dev.common.type ? dev.common.type : 'unknown'),
-        type_url = (dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown'),
-        img_src = dev.common.icon || dev.icon,
+        id = dev._id,
+        type = dev.common.type,
+        img_src = (groupImage ? groupImage : dev.common.icon || dev.icon),
+        isActive = !dev.common.deactivated,
         rooms = [],
-        isActive = (dev.common.deactivated ? false : true),
-        lang = systemLang || 'en',
-        ieee = id.replace(namespace + '.', ''),
-        isDebug = checkDebugDevice(ieee);
-    for (const r in dev.rooms) {
-        if (dev.rooms[r].hasOwnProperty(lang)) {
-            rooms.push(dev.rooms[r][lang]);
-        } else {
-            rooms.push(dev.rooms[r]);
+        lang = systemLang || 'en';
+    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
+    const permitJoinBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
+    const device_queryBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">play_for_work</i></button></div>`;
+    const rid = id.split('.').join('_');
+    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
+        nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
+        battery_cls = getBatteryCls(dev.battery),
+        lqi_cls = getLQICls(dev.link_quality),
+        unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>'),
+        battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
+        //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
+        //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
+        idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
+    const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
+        const id = stateDef.id;
+        const sid = id.split('.').join('_');
+        let val = stateDef.val || '';
+        if (stateDef.role === 'switch' && stateDef.write) {
+            val = `<span class="switch"><label><input type="checkbox" ${(val) ? 'checked' : ''}><span class="lever"></span></label></span>`;
+        } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
+            val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
+        } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
+            val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
+        } else if (stateDef.type === 'boolean') {
+            const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
+            val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+        } else if (stateDef.role === 'level.color.rgb') {
+            const options = []
+            for (const key of namedColors) {
+                options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
+            }
+            val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
+        } else if (stateDef.states && stateDef.write) {
+            let options;
+            if (typeof stateDef.states == 'string') {
+                const sts = stateDef.states.split(';');
+                if (sts.length < 2) return '';
+                options = sts.map((item) => {
+                    const v = item.split(':');
+                    return `<option value="${v[0]}" ${(val == v[0]) ? 'selected' : ''}>${v[1]}</option>`;
+                });
+            } else {
+                options = [];
+                for (const [key, value] of Object.entries(stateDef.states)) {
+                    options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${key}</option>`);
+                }
+            }
+            if (options.length < 2) return '';
+            val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
+        } else if (stateDef.write) {
+            return;
+            // val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
+        }
+        else {
+            val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
+        }
+        return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
+    }).join('') : '';
+    const dashCard = `
+        <div class="card-content zcard ${isActive ? '' : 'bg_red'}">
+            <div style="cursor: pointer">
+            <span class="top right small" style="border-radius: 50%">
+                ${device_queryBtn}
+                ${permitJoinBtn}
+            </span>
+            <div  class="flip">
+            <span class="top right small" style="border-radius: 50%">
+                ${idleTime}
+                ${battery}
+                ${lq}
+            </span>
+             <span class="card-title truncate">${title}</span>
+            </div>
+            </div>
+            <i class="left">${image}</i>
+            <div style="min-height:88px; font-size: 0.8em; height: 130px; overflow-y: auto" class="truncate">
+                <ul>
+                    ${(isActive ? info : 'Device deactivated')}
+                </ul>
+            </div>
+            <div class="footer right-align"></div>
+        </div>`;
+
+    return dashCard;
+}
+
+function setDashStates(id, state) {
+    const devId = getDevId(id);
+    const dev = getDeviceByID(devId);
+    if (dev) {
+        const stateDef = dev.statesDef.find((stateDef) => stateDef.id == id);
+        if (stateDef) {
+            const sid = id.split('.').join('_');
+            if (stateDef.role === 'switch' && stateDef.write) {
+                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+            } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
+                $(`#${sid}`).find('input[type=\'range\']').prop('value', state.val);
+            } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
+                $(`#${sid}`).find('input[type=\'range\']').prop('value', state.val);
+            } else if (stateDef.states && stateDef.write) {
+                $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
+            } else if (stateDef.type === 'boolean') {
+                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+            } else {
+                $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
+            }
         }
     }
-    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    const rid = id.split('.').join('_');
-    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
-    const groupInfo = dev.groupNames ? `<li><span class="labelinfo">groups:</span><span>${dev.groupNames || ''}</span></li>` : '';
-    const roomInfo = rooms.length ? `<li><span class="labelinfo">rooms:</span><span>${rooms.join(',') || ''}</span></li>` : '';
-    const image = `<img src="${img_src}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
-        nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
-        battery_cls = (isActive ? getBatteryCls(dev.battery) : ''),
-        lqi_cls = getLQICls(dev.link_quality),
-        battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0)
-            ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
-            : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
-        status = (isActive ? lq : `<div class="col tool"><i class="material-icons icon-red">cancel</i></div>`),
-        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
-                    <ul>
-                        <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
-                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
-                        <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
-                        ${groupInfo}
-                        ${roomInfo}
-                    </ul>
-                </div>`,
-        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
-        debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'Automatic by '+debugDevices[isDebug-1]: 'Disable Debug' : 'Enable Debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
-        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
-
-    const dashCard = getDashCard(dev);
-    const card = `<div id="${id}" class="device">
-                  <div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
-                    <div class="front face">${dashCard}</div>
-                    <div class="back face">
-                        <div class="card-content zcard">
-                            <div class="flip" style="cursor: pointer">
-                            <span class="top right small" style="border-radius: 50%">
-                                ${battery}
-                                <!--${lq}-->
-                                ${status}
-                            </span>
-                            <!--/a--!>
-                            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
-                            </div>
-                            <i class="left">${image}</i>
-                            ${info}
-                            <div class="footer right-align"></div>
-                        </div>
-                        <div class="card-action">
-                            <div class="card-reveal-buttons">
-                                ${infoBtn}
-
-                                <span class="left fw_info"></span>
-                                <button name="delete" class="right btn-flat btn-small tooltipped" title="Delete">
-                                    <i class="material-icons icon-red">delete</i>
-                                </button>
-                                <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit">
-                                    <i class="material-icons icon-black">edit</i>
-                                </button>
-                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Select Image">
-                                    <i class="material-icons icon-black">image</i>
-                                </button>
-                                <button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
-                                    <i class="material-icons icon-red">sync</i>
-                                </button>
-                                ${deactBtn}
-                                ${debugBtn}
-                            </div>
-                        </div>
-                    </div>
-                  </div>
-                </div>`;
-    return card;
 }
+
+function hookControls() {
+    $('input[type=\'checkbox\']').change(function (event) {
+        const val = $(this).is(':checked');
+        const id = $(this).parents('.state').attr('oid');
+        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
+        });
+    });
+    $('input[type=\'range\']').change(function (event) {
+        const val = $(this).val();
+        const id = $(this).parents('.state').attr('oid');
+        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
+        });
+    });
+    $('.state select').on('change', function () {
+        const val = $(this).val();
+        const id = $(this).parents('.state').attr('oid');
+        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
+        });
+    });
+}
+
+function getIdleTime(value) {
+    return (value) ? moment(new Date(value)).fromNow(true) : '';
+}
+
+function updateCardTimer() {
+    if (devices) {
+        devices.forEach((dev) => {
+            const id = dev._id;
+            if (id) {
+                const rid = id.split('.').join('_');
+                $(`#${rid}_link_quality_lc`).text(getIdleTime(dev.link_quality_lc));
+            }
+        });
+    }
+}
+
 /*
 function openReval(e, id, name){
     const $card = $(e.target).closest('.card');
@@ -481,6 +782,17 @@ function closeReval(e, id) {
     });
 }
 
+function showDevInfo(id) {
+    const info = genDevInfo(getDeviceByID(id));
+    $('#devinfo').html(info);
+    $('#modaldevinfo').modal('open');
+}
+
+////
+//
+// section Confirmations
+//
+////
 function deleteConfirmation(id, name) {
     const text = translateWord('Do you really want to delete device') + ' "' + name + '" (' + id + ')?';
     $('#modaldelete').find('p').text(text);
@@ -545,107 +857,24 @@ function EndPointIDfromEndPoint(ep) {
 
 
 function editName(id, name) {
-    // start local functions
-    function removeOption(k) {
-        if (k && device_options.hasOwnProperty(k)) {
-            if (dev.info.mapped && dev.info.mapped.options && dev.info.mapped.options.includes(device_options[k].key))
-                availableOptions.push(device_options[k].key)
-            delete device_options[k];
-        }
-    }
-
-    function addOption() {
-        let idx=1;
-        let key = '';
-        const optionName = $('#option_Selector').val();
-        console.warn(`option name is ${optionName}`);
-        do {
-            key = `o${idx++}`;
-        }
-        while (device_options.hasOwnProperty(key));
-        device_options[key] = { key:optionName, value:''};
-        console.warn(`device_options: ${JSON.stringify(device_options)}`);
-        idx = availableOptions.indexOf(optionName);
-        console.warn(`idx: ${idx}, ao:${JSON.stringify(availableOptions)}, on: ${optionName}`);
-        if (idx > -1) availableOptions.splice(idx, 1);
-    }
-
-    function updateOptions(candidates) {
-        if (candidates.length > 0) {
-            $('#modaledit').find('.new_options_available').removeClass('hide');
-            list2select('#option_Selector', candidates, [], (key, val) => { return val; }, (key, val) => { return val; })
-        }
-        else {
-            $('#modaledit').find('.new_options_available').addClass('hide');
-        }
-        const html_options=[];
-
-        console.warn(`option_Selector is ${JSON.stringify(device_options)}`)
-
-        for (const k in device_options) {
-            html_options.push(`<div class="row">`);
-            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input disabled id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
-            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">Value</label></div>`)
-            html_options.push(`<div class="col"><a id="option_rem_${k}" class='btn' ><i class="material-icons">remove_circle</i></a></div>`);
-            html_options.push(`</div>`)
-        }
-        console.warn(`html is ${$('#modaledit').find('.options_grid').html()}`)
-        $('#modaledit').find('.options_grid').html(html_options.join(''));
-        console.warn(`html is now ${$('#modaledit').find('.options_grid').html()}`)
-        if (html_options.length > 0) {
-            $('#modaledit').find('.options_available').removeClass('hide');
-            for (const k of Object.keys(device_options)) {
-                $(`#option_key_${k}`).val(device_options[k].key);
-                $(`#option_value_${k}`).val(device_options[k].value);
-                $(`#option_rem_${k}`).unbind('click');
-                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions(availableOptions) });
-            }
-        }
-    }
 
     function updateGroupables(groupables) {
         const html = [];
-
         if (groupables && groupables.length > 0)
         {
-            html.push(`<div class="col s12 m12 l12><H6>Group memberships</H6></div></div>`);
             for (const groupable of groupables) {
-                const k = groupable.epid || -1;
-                html.push(`<div class="input-field suffix col s12 m12 l12"><select id="gk_${k}" class="materialSelect" multiple><option value="1">select</option><select><label for="gk_${k}">Endpoint ${k}</label></div>`);
+                const k = groupable.ep.ID || -1;
+                const n = groupable.epid != `unidentified` ? groupable.epid : `Endpoint ${k}`; 
+                html.push(`<div class="input-field suffix col s12 m12 l12"><select id="gk_${k}" class="materialSelect" multiple><option value="1">select</option><select><label for="gk_${k}">Group membership for ${n}</label></div>`);
             }
-            $('#modaledit').find('endpoints_for_groups').html(html);
+            $('#modaledit').find('.endpoints_for_groups').html(html.join(''));
             for (const groupable of groupables) {
-                list2select(`#gk_${groupable.epid || -1}`, groups, groupable.memberOf || []);
+                list2select(`#gk_${groupable.ep.ID || -1}`, groups, groupable.memberOf || []);
             }
         }
         return html;
     }
 
-    function getOptionsFromUI(_do, _so) {
-        const _no = {};
-        let changed = false;
-        for (const k in _do) {
-            const key =  $(`#option_key_${k}`).val();
-            _do[k].key = key;
-            const val = $(`#option_value_${k}`).val();
-            try {
-                _do[k].value = JSON.parse(val);
-            }
-            catch {
-                _do[k].value = val;
-            }
-            if (device_options[k].key.length > 0) {
-                _no[key] = device_options[k].value;
-                changed |= _no[key] != _so[key];
-            }
-        }
-        changed |= (Object.keys(_no).length != Object.keys(_so).length);
-        if (changed) return _no;
-        return undefined;
-    }
-    // end local functions
-    const device_options = {};
-    const received_options = {};
 
     const dev = devices.find((d) => d._id == id);
     $('#modaledit').find('input[id=\'d_name\']').val(name);
@@ -658,69 +887,32 @@ function editName(id, name) {
         }
     }
     const numEP = groupables.length;
-    const availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
 
     updateGroupables(groupables);
-    sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:false, key:'options' }, function (msg) {
-        if (msg) {
-            if (msg.error) showMessage(msg.error, '_Error');
-            console.warn(`return is ${JSON.stringify(msg)}`)
-            Object.keys(device_options).forEach(key => delete device_options[key]);
-            Object.keys(received_options).forEach(key => delete received_options[key]);
-            if (typeof msg.options === 'object') {
-
-                let cnt = 1;
-                for (const key in msg.options)
-                {
-                    const idx = availableOptions.indexOf(key);
-                    console.warn(`key ${key} : index : ${idx}`);
-                    if (idx > -1) availableOptions.splice(idx,1);
-                    received_options[key]=msg.options[key];
-                    device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
-                    cnt++;
-                }
-            }
-            console.warn(`avo ${JSON.stringify(availableOptions)}, mapped: ${JSON.stringify(dev.info.mapped.options)}`);
-            updateOptions(availableOptions);
-
-        } else showMessage('callback without message');
-    });
     $('#modaledit a.btn[name=\'save\']').unbind('click');
-    $('#modaledit a.btn[name=\'add_options\']').unbind('click');
-    $('#modaledit a.btn[name=\'add_options\']').click(() => {
-        getOptionsFromUI(device_options, received_options);
-        addOption();
-        updateOptions(availableOptions)
-    });
     $('#modaledit a.btn[name=\'save\']').click(() => {
         const newName = $('#modaledit').find('input[id=\'d_name\']').val();
-        const groupsbyid = {};
+        const groupsById = {};
         if (groupables.length > 0) {
-            for (let i = 0; i < groupables.length; i++) {
-                const ng = $('#d_groups_ep' + i).val();
-                if (ng.toString() != groupables[i].memberOf.toString())
-                    groupsbyid[groupables[i].ep.ID] = GenerateGroupChange(groupables[i].memberOf, ng);
+            for (const groupable of groupables) {
+                const k = groupable.ep.ID || -1;
+                const ng = $('#gk_' + k).val();
+                if (ng.toString() != groupable.memberOf.toString())
+                    groupsById[k] = GenerateGroupChange(groupable.memberOf, ng);
             }
         }
-        // read device_options from UI
-        const co = getOptionsFromUI(device_options, received_options)
-        if (co) {
-            sendToWrapper(namespace, 'updateLocalConfigItems', {
-                target: id,
-                global:false,
-                data: { options:co }
-            },
-            function (msg) {
-                if (msg && msg.error) showMessage(msg.error, '_Error');
-            });
-        }
-        updateDev(id, newName, groupsbyid);
-
+        updateDev(id, newName, groupsById);
     });
     $('#modaledit').modal('open');
     Materialize.updateTextFields();
 }
 
+
+////
+//
+//. section GroupFunctions
+//
+////
 function GenerateGroupChange(oldmembers, newmembers) {
     const grpchng = [];
     for (const oldg of oldmembers)
@@ -944,7 +1136,7 @@ function showDevices() {
     });
     $('.card-reveal-buttons button[name=\'reconfigure\']').click(function () {
         const dev_block = $(this).parents('div.device');
-        reconfigureDlg(getDevId(dev_block));
+        reconfigureConfirmation(getDevId(dev_block));
     });
     $('.card-reveal-buttons button[name=\'swapactive\']').click(function () {
         const dev_block = $(this).parents('div.device');
@@ -1088,6 +1280,7 @@ function checkDebugDevice(id) {
     }
     return -1;
 }
+
 async function toggleDebugDevice(id) {
     sendToWrapper(namespace, 'setDeviceDebug', {id:id}, function (msg) {
         sendToWrapper(namespace, 'getDebugDevices', {}, function(msg) {
@@ -1110,38 +1303,121 @@ function updateLocalConfigItems(device, data, global) {
     });
 }
 
-
 async function selectImageOverride(id) {
+
+    // start local functions
+    function removeOption(k) {
+        if (k && device_options.hasOwnProperty(k)) {
+            if (dev.info.mapped && dev.info.mapped.options && dev.info.mapped.options.includes(device_options[k].key))
+                availableOptions.push(device_options[k].key)
+            delete device_options[k];
+        }
+    }
+
+    function addOption() {
+        let idx=1;
+        let key = '';
+        const optionName = $('#option_Selector').val();
+        do {
+            key = `o${idx++}`;
+        }
+        while (device_options.hasOwnProperty(key));
+        device_options[key] = { key:optionName, value:''};
+        idx = availableOptions.indexOf(optionName);
+        if (idx > -1) availableOptions.splice(idx, 1);
+    }
+
+    function updateOptions(candidates) {
+        if (candidates.length > 0) {
+            $('#chooseimage').find('.new_options_available').removeClass('hide');
+            list2select('#option_Selector', candidates, [], (key, val) => { return val; }, (key, val) => { return val; })
+        }
+        else {
+            $('#chooseimage').find('.new_options_available').addClass('hide');
+        }
+        const html_options=[];
+
+        for (const k in device_options) {
+            html_options.push(`<div class="row">`);
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input disabled id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">Value</label></div>`)
+            html_options.push(`<div class="col"><a id="option_rem_${k}" class="btn-large round red" ><i class="material-icons icon-red">remove_circle</i></a></div>`);
+            html_options.push(`</div>`)
+        }
+        $('#chooseimage').find('.options_grid').html(html_options.join(''));
+        if (html_options.length > 0) {
+            for (const k of Object.keys(device_options)) {
+                $(`#option_key_${k}`).val(device_options[k].key);
+                $(`#option_value_${k}`).val(device_options[k].value);
+                $(`#option_rem_${k}`).unbind('click');
+                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions(availableOptions) });
+            }
+        }
+    }
+
+    function getOptionsFromUI(_do, _so) {
+        const _no = {};
+        let changed = false;
+        for (const k in _do) {
+            const key =  $(`#option_key_${k}`).val();
+            _do[k].key = key;
+            const val = $(`#option_value_${k}`).val();
+            try {
+                _do[k].value = JSON.parse(val);
+            }
+            catch {
+                _do[k].value = val;
+            }
+            if (device_options[k].key.length > 0) {
+                _no[key] = device_options[k].value;
+                changed |= _no[key] != _so[key];
+            }
+        }
+        changed |= (Object.keys(_no).length != Object.keys(_so).length);
+        if (changed) return _no;
+        return undefined;
+    }
+
+    function updateImageSelection(dev, imagedata) {
+        const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
+        if (dev.legacyIcon) imagedata.unshift( { file:dev.legacyIcon, name:'legacy', data:dev.legacyIcon});
+        imagedata.unshift( { file:'none', name:'default', data:default_icon});
+        imagedata.unshift( { file:'current', name:'current', data:dev.common.icon || dev.icon});
+
+        list2select('#images', imagedata, selectItems,
+            function (key, image) {
+                return image.name
+            },
+            function (key, image) {
+                return image.file;
+            },
+            function (key, image) {
+                if (image.isBase64) {
+                    return `data-icon="data:image/png; base64, ${image.data}"`;
+                } else {
+                    return `data-icon="${image.data}"`;
+                }
+            },
+        );
+
+    }
+    // end local functions
+    const device_options = {};
+    const received_options = {};
+
     const dev = devices.find((d) => d._id == id);
+    const availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
     const imghtml = `<img src="${dev.common.icon || dev.icon}" width="80px">`
     //console.error(imghtml)
     const selectItems= [''];
     $('#chooseimage').find('input[id=\'d_name\']').val(dev.common.name);
     $('#chooseimage').find('.currentIcon').html(imghtml);
 
+
+
     sendToWrapper(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
-            const imagedata = msg.imageData;
-            const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
-            if (dev.legacyIcon) imagedata.unshift( { file:dev.legacyIcon, name:'legacy', data:dev.legacyIcon});
-            imagedata.unshift( { file:'none', name:'default', data:default_icon});
-            imagedata.unshift( { file:'current', name:'current', data:dev.common.icon || dev.icon});
-
-            list2select('#images', imagedata, selectItems,
-                function (key, image) {
-                    return image.name
-                },
-                function (key, image) {
-                    return image.file;
-                },
-                function (key, image) {
-                    if (image.isBase64) {
-                        return `data-icon="data:image/png; base64, ${image.data}"`;
-                    } else {
-                        return `data-icon="${image.data}"`;
-                    }
-                },
-            );
+            updateImageSelection(dev, msg.imageData);
 
             $('#chooseimage a.btn[name=\'save\']').unbind('click');
             $('#chooseimage a.btn[name=\'save\']').click(() => {
@@ -1151,14 +1427,42 @@ async function selectImageOverride(id) {
                 const data = {};
                 if (image != 'current') data.icon= image;
                 if (name != dev.common.name) data.name = name;
+                data.options = getOptionsFromUI(device_options, received_options)
+
                 updateLocalConfigItems(id, data, global);
             });
-            $('#chooseimage').modal('open');
-            Materialize.updateTextFields();
+            sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:false, key:'options' }, function (msg) {
+                if (msg) {
+                    if (msg.error) showMessage(msg.error, '_Error');
+                    Object.keys(device_options).forEach(key => delete device_options[key]);
+                    Object.keys(received_options).forEach(key => delete received_options[key]);
+                    if (typeof msg.options === 'object') {
+                        let cnt = 1;
+                        for (const key in msg.options)
+                        {
+                            const idx = availableOptions.indexOf(key);
+                            console.warn(`key ${key} : index : ${idx}`);
+                            if (idx > -1) availableOptions.splice(idx,1);
+                            received_options[key]=msg.options[key];
+                            device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
+                            cnt++;
+                        }
+                    }
+                    updateOptions(availableOptions);
+                } else showMessage('callback without message');
+                $('#chooseimage a.btn[name=\'add_options\']').unbind('click');
+                $('#chooseimage a.btn[name=\'add_options\']').click(() => {
+                    getOptionsFromUI(device_options, received_options);
+                    addOption();
+                    updateOptions(availableOptions)
+                });
+                $('#chooseimage').modal('open');
+                Materialize.updateTextFields();
+            });
         }
     });
-}
 
+}
 
 function safestring(val) {
     const t = typeof val;
@@ -1168,6 +1472,11 @@ function safestring(val) {
     return val;
 }
 
+////
+//
+//. section DebugUI
+//
+////
 function fne(item) {
     const rv = [];
     if (item.flags) {
@@ -1214,12 +1523,11 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
             isodd=!isodd;
         }
     }
-    const ifbutton = `<a id="i_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('i_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
-    const ofbutton = `<a id="hi_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.has('i_'+devID) ? 'unfold_more' : 'unfold_less' }</i></a>`
+    const ifbutton = `<a id="i_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Filter debug messages"><i class="material-icons large">${dbgMsgfilter.has('i_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
+    const ofbutton = `<a id="hi_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Hide debug messages"><i class="material-icons large">${dbgMsghide.has('i_'+devID) ? 'unfold_more' : 'unfold_less' }</i></a>`
     const dataHide = dbgMsgfilter.has('hi_'+devID) ? 'Data hidden' : '&nbsp;';
     return {html:`<thead id="dbgtable"><tr><td>&nbsp</td><td>Incoming messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>&nbsp;</td><td>State Payload</td><td>ID</td><td>value</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`, buttonList };
 }
-
 
 function HtmlFromOutDebugMessages(messages, devID, filter) {
     const Html = [];
@@ -1256,12 +1564,11 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
             isodd=!isodd;
         }
     }
-    const ifbutton = `<a id="o_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.has('o_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
-    const ofbutton = `<a id="ho_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.has('o_'+devID) ? 'unfold_more' : 'unfold_less'}</i></a>`
+    const ifbutton = `<a id="o_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Filter debug messages"><i class="material-icons large">${dbgMsgfilter.has('o_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
+    const ofbutton = `<a id="ho_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Hide debug messages"><i class="material-icons large">${dbgMsghide.has('o_'+devID) ? 'unfold_more' : 'unfold_less'}</i></a>`
     const dataHide = dbgMsgfilter.has('ho_'+devID) ? 'Data hidden' : '&nbsp;';
     return { html:`<thead id="dbgtable"><tr><td>&nbsp</td><td>Outgoing messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>EP</td><td>ID</td><td>value</td><td>State Payload</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`, buttonList};
 }
-
 
 function displayDebugMessages(msg) {
     const buttonNames = [];
@@ -1272,9 +1579,9 @@ function displayDebugMessages(msg) {
         const keylength = keys.length;
         const Html = [];
         const button = `<a id="e_all" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">sync_problem</i></a>`;
-        const dbutton = `<a id="d_all" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons icon-yellowlarge">delete_forever</i></a>`;
-        const fbutton = `<a id="f_all" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsgfilter.size != 0 ? 'filter_list' : 'format_align_justify' }</i></a>`;
-        const hbutton = `<a id="h_all" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">${dbgMsghide.size != 0 ? 'unfold_more' : 'unfold_less'}</i></a>`;
+        const dbutton = `<a id="d_all" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT" title="Delete debug messages"><i class="material-icons icon-yellowlarge">delete_forever</i></a>`;
+        const fbutton = `<a id="f_all" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Filter debug messages"><i class="material-icons large">${dbgMsgfilter.size != 0 ? 'filter_list' : 'format_align_justify' }</i></a>`;
+        const hbutton = `<a id="h_all" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Hide debug messages"><i class="material-icons large">${dbgMsghide.size != 0 ? 'unfold_more' : 'unfold_less'}</i></a>`;
         const logbutton = `<a id="l_all" class="btn-floating waves-effect waves-light ${debugInLog ? 'green' : 'red'} tooltipped center-align hoverable translateT" title="Log messages"><i class="material-icons large">${debugInLog ? 'speaker_notes' : 'speaker_notes_off'}</i></a>`;
         Html.push(`<li><table><thead id="dbgtable"><tr><td>${logbutton}</td><td colspan="3">Debug information by device</td><td>${fbutton}</td><td>${hbutton}</td><td>${button}</td><td>${dbutton}</td></tr></thead><tbody>`);
         if (!keylength) {
@@ -1434,6 +1741,11 @@ function getDebugMessages(deleteBeforeRead, deleteSelected) {
     })
 }
 
+////
+//
+//. section getDataFromAdapter
+//
+////
 function getDevices() {
     function sendForData() {
         sendToWrapper(namespace, 'getCoordinatorInfo', {}, function (msg) {
@@ -1518,16 +1830,6 @@ function getNamedColors() {
     });
 }
 
-function getDeviceCards() {
-    return $('#devices .device').not('.group');
-}
-
-function getDeviceCard(devId) {
-    if (devId.startsWith('0x')) {
-        devId = devId.substr(2, devId.length);
-    }
-    return $('#devices').find(`div[id='${namespace}.${devId}']`);
-}
 
 function getMap(rebuild) {
     $('#refresh').addClass('disabled');
@@ -1554,26 +1856,27 @@ function getMap(rebuild) {
     else showMessage('Unable to generate map, the zigbee subsystem is inactive', 'Map generation error');
 }
 
-function getRandomExtPanID()
-{
-    const bytes = [];
-    for (let i = 0;i<16;i++) {
-        bytes.push(Math.floor(Math.random() * 16).toString(16));
-    }
-    return bytes.join('');
-}
-
-function getRandomChannel()
-{
-    const channels = [11,15,20,25]
-    return channels[Math.floor(Math.random() * 4)];
-}
 
 
 
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
+    function getRandomExtPanID()
+    {
+        const bytes = [];
+        for (let i = 0;i<16;i++) {
+            bytes.push(Math.floor(Math.random() * 16).toString(16));
+        }
+        return bytes.join('');
+    }
+
+    function getRandomChannel()
+    {
+        const channels = [11,15,20,25]
+        return channels[Math.floor(Math.random() * 4)];
+    }
+
     if (settings.extPanID === undefined || settings.extPanID == '') {
         settings.channel = getRandomChannel();
     }
@@ -1625,7 +1928,6 @@ function load(settings, onChange) {
         }
     }
 
-
     getComPorts(onChange);
 
     //dialog = new MatDialog({EndingTop: '50%'});
@@ -1634,6 +1936,10 @@ function load(settings, onChange) {
         getDevices();
         getNamedColors();
         readNVRamBackup(false);
+        sendToWrapper(namespace, 'getGroups', {}, function (data) {
+            groups = data.groups || {};
+        //showGroups();
+    });
         showLocalData();
     })
 
@@ -1725,10 +2031,6 @@ function load(settings, onChange) {
         showChannels();
     });
 
-    sendToWrapper(namespace, 'getGroups', {}, function (data) {
-        groups = data.groups || {};
-        //showGroups();
-    });
 
     $('#add_group').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups || {}).reduce((a, b) => a > b ? a : b, 0));
@@ -1762,6 +2064,7 @@ function load(settings, onChange) {
         $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
         $('.collapsible').collapsible();
+
         Materialize.Tabs.init($('.tabs'));
         $('#device-search').keyup(function (event) {
             doFilter(event.target.value.toLowerCase());
@@ -2093,7 +2396,7 @@ function showNetworkMap(devices, map) {
 
     if (map.lqis) {
         map.lqis.forEach((mapEntry) => {
-            const dev = getDevice(mapEntry.ieeeAddr);
+            const dev = getDeviceByIEEE(mapEntry.ieeeAddr);
             if (!dev) {
                 return;
             }
@@ -2108,7 +2411,7 @@ function showNetworkMap(devices, map) {
                 node = nodes[mapEntry.ieeeAddr];
             }
             if (node) {
-                const parentDev = getDevice(mapEntry.parent);
+                const parentDev = getDeviceByIEEE(mapEntry.parent);
                 const to = parentDev ? parentDev._id : undefined;
                 const from = dev._id;
                 let label = mapEntry.lqi.toString();
@@ -3393,12 +3696,6 @@ function genDevInfo(device) {
     return info.join('');
 }
 
-function showDevInfo(id) {
-    const info = genDevInfo(getDeviceByID(id));
-    $('#devinfo').html(info);
-    $('#modaldevinfo').modal('open');
-}
-
 let waitingTimeout, waitingInt;
 
 function showWaitingDialog(text, timeout) {
@@ -3718,162 +4015,6 @@ function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }
 
-function getDashCard(dev, groupImage, groupstatus) {
-    const title = dev.common.name,
-        id = dev._id,
-        type = dev.common.type,
-        img_src = (groupImage ? groupImage : dev.common.icon || dev.icon),
-        isActive = !dev.common.deactivated,
-        rooms = [],
-        lang = systemLang || 'en';
-    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    const permitJoinBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
-    const device_queryBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">play_for_work</i></button></div>`;
-    const rid = id.split('.').join('_');
-    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
-    const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
-        nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
-        battery_cls = getBatteryCls(dev.battery),
-        lqi_cls = getLQICls(dev.link_quality),
-        unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>'),
-        battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
-        //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
-        //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
-        idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
-    const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
-        const id = stateDef.id;
-        const sid = id.split('.').join('_');
-        let val = stateDef.val || '';
-        if (stateDef.role === 'switch' && stateDef.write) {
-            val = `<span class="switch"><label><input type="checkbox" ${(val) ? 'checked' : ''}><span class="lever"></span></label></span>`;
-        } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
-            val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
-        } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
-            val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
-        } else if (stateDef.type === 'boolean') {
-            const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
-            val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
-        } else if (stateDef.role === 'level.color.rgb') {
-            const options = []
-            for (const key of namedColors) {
-                options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
-            }
-            val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
-        } else if (stateDef.states && stateDef.write) {
-            let options;
-            if (typeof stateDef.states == 'string') {
-                const sts = stateDef.states.split(';');
-                if (sts.length < 2) return '';
-                options = sts.map((item) => {
-                    const v = item.split(':');
-                    return `<option value="${v[0]}" ${(val == v[0]) ? 'selected' : ''}>${v[1]}</option>`;
-                });
-            } else {
-                options = [];
-                for (const [key, value] of Object.entries(stateDef.states)) {
-                    options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${key}</option>`);
-                }
-            }
-            if (options.length < 2) return '';
-            val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
-        } else if (stateDef.write) {
-            return;
-            // val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
-        }
-        else {
-            val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
-        }
-        return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
-    }).join('') : '';
-    const dashCard = `
-        <div class="card-content zcard ${isActive ? '' : 'bg_red'}">
-            <div style="cursor: pointer">
-            <span class="top right small" style="border-radius: 50%">
-                ${device_queryBtn}
-                ${permitJoinBtn}
-            </span>
-            <div  class="flip">
-            <span class="top right small" style="border-radius: 50%">
-                ${idleTime}
-                ${battery}
-                ${lq}
-            </span>
-             <span class="card-title truncate">${title}</span>
-            </div>
-            </div>
-            <i class="left">${image}</i>
-            <div style="min-height:88px; font-size: 0.8em; height: 130px; overflow-y: auto" class="truncate">
-                <ul>
-                    ${(isActive ? info : 'Device deactivated')}
-                </ul>
-            </div>
-            <div class="footer right-align"></div>
-        </div>`;
-
-    return dashCard;
-}
-
-function setDashStates(id, state) {
-    const devId = getDevId(id);
-    const dev = getDeviceByID(devId);
-    if (dev) {
-        const stateDef = dev.statesDef.find((stateDef) => stateDef.id == id);
-        if (stateDef) {
-            const sid = id.split('.').join('_');
-            if (stateDef.role === 'switch' && stateDef.write) {
-                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
-            } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
-                $(`#${sid}`).find('input[type=\'range\']').prop('value', state.val);
-            } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
-                $(`#${sid}`).find('input[type=\'range\']').prop('value', state.val);
-            } else if (stateDef.states && stateDef.write) {
-                $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
-            } else if (stateDef.type === 'boolean') {
-                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
-            } else {
-                $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
-            }
-        }
-    }
-}
-
-function hookControls() {
-    $('input[type=\'checkbox\']').change(function (event) {
-        const val = $(this).is(':checked');
-        const id = $(this).parents('.state').attr('oid');
-        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
-        });
-    });
-    $('input[type=\'range\']').change(function (event) {
-        const val = $(this).val();
-        const id = $(this).parents('.state').attr('oid');
-        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
-        });
-    });
-    $('.state select').on('change', function () {
-        const val = $(this).val();
-        const id = $(this).parents('.state').attr('oid');
-        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
-        });
-    });
-}
-
-function getIdleTime(value) {
-    return (value) ? moment(new Date(value)).fromNow(true) : '';
-}
-
-function updateCardTimer() {
-    if (devices) {
-        devices.forEach((dev) => {
-            const id = dev._id;
-            if (id) {
-                const rid = id.split('.').join('_');
-                $(`#${rid}_link_quality_lc`).text(getIdleTime(dev.link_quality_lc));
-            }
-        });
-    }
-}
 
 function updateDevice(id) {
     sendToWrapper(namespace, 'getDevice', {id: id}, function (msg) {
@@ -3912,7 +4053,7 @@ function swapActive(id) {
     }
 }
 
-function reconfigureDlg(id) {
+function reconfigureConfirmation(id) {
     const text = translateWord(`Do you really want to reconfigure device?`);
     $('#modalreconfigure').find('p').text(text);
     $('#modalreconfigure a.btn[name=\'yes\']').unbind('click');
