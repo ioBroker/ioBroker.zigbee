@@ -1337,7 +1337,7 @@ async function selectImageOverride(id) {
         }
         const html_options=[];
 
-        for (const k in device_options) {
+        for (const k of Object.keys(device_options)) {
             html_options.push(`<div class="row">`);
             html_options.push(`<div class="input-field suffix col s5 m5 l5"><input disabled id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
             html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">Value</label></div>`)
@@ -1358,7 +1358,7 @@ async function selectImageOverride(id) {
     function getOptionsFromUI(_do, _so) {
         const _no = {};
         let changed = false;
-        for (const k in _do) {
+        for (const k of Object.keys(_do)) {
             const key =  $(`#option_key_${k}`).val();
             _do[k].key = key;
             const val = $(`#option_value_${k}`).val();
@@ -1374,6 +1374,7 @@ async function selectImageOverride(id) {
             }
         }
         changed |= (Object.keys(_no).length != Object.keys(_so).length);
+        console.warn(`${changed} : ${JSON.stringify(_do)} - ${JSON.stringify(_no)}`)
         if (changed) return _no;
         return undefined;
     }
@@ -1412,6 +1413,12 @@ async function selectImageOverride(id) {
     const selectItems= [''];
     $('#chooseimage').find('input[id=\'d_name\']').val(dev.common.name);
     $('#chooseimage').find('.currentIcon').html(imghtml);
+    $('#option_add_1084').unbind('click');
+    $('#option_add_1084').click(() => {
+        getOptionsFromUI(device_options, received_options);
+        addOption();
+        updateOptions(availableOptions)
+    });
 
 
 
@@ -1450,12 +1457,6 @@ async function selectImageOverride(id) {
                     }
                     updateOptions(availableOptions);
                 } else showMessage('callback without message');
-                $('#chooseimage a.btn[name=\'add_options\']').unbind('click');
-                $('#chooseimage a.btn[name=\'add_options\']').click(() => {
-                    getOptionsFromUI(device_options, received_options);
-                    addOption();
-                    updateOptions(availableOptions)
-                });
                 $('#chooseimage').modal('open');
                 Materialize.updateTextFields();
             });
