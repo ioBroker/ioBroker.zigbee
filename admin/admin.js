@@ -64,14 +64,67 @@ const savedSettings = [
     'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
     'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster'
 ];
+const lockout = {
+    timeoutid:undefined,
+    isActive:false,
+};
+
+const connectionStatus = {
+    connected: false,
+    lastcheck: Date.now(),
+}
+
+function keepAlive(callback) {
+    const responseTimeout = setTimeout(function() {
+        UpdateAdapterAlive(false); }, 500);
+    sendTo(namespace, 'aliveCheck', {}, function(msg) {
+        clearTimeout(responseTimeout);
+        UpdateAdapterAlive(true);
+        if (callback) callback();
+    });
+}
+
+function startKeepalive() {
+    return setInterval(keepAlive, 10000);
+}
+
+function UpdateAdapterAlive(state) {
+    if (connectionStatus.connected === state) return;
+    connectionStatus.time = Date.now();
+    if (state) {
+        $('#adapterStopped_btn').addClass('hide');
+        $('#code_pairing').removeClass('disabled');
+        $('#touchlink_btn').removeClass('disabled');
+        $('#add_grp_btn').removeClass('disabled');
+        $('#fw_check_btn').removeClass('disabled');
+        $('#ErrorNotificationBtn').removeClass('disabled');
+        $('#show_errors_btn').removeClass('disabled');
+        $('#download_icons_btn').removeClass('disabled');
+        $('#pairing').removeClass('disabled');
+    }
+    else {
+        $('#adapterStopped_btn').removeClass('hide');
+        $('#code_pairing').addClass('disabled');
+        $('#touchlink_btn').addClass('disabled');
+        $('#add_grp_btn').addClass('disabled');
+        $('#fw_check_btn').addClass('disabled');
+        $('#ErrorNotificationBtn').addClass('disabled');
+        $('#show_errors_btn').addClass('disabled');
+        $('#pairing').addClass('disabled');
+        $('#download_icons_btn').addClass('disabled');
+    }
+    connectionStatus.connected = state;
+}
+
+function sendToWrapper(target,command,msg,callback) {
+    if (connectionStatus.connected)
+        sendTo(target,command,msg,callback);
+    else if (callback) callback({error:'Cannot execute command - adapter is not running'});
+}
 
 function getDeviceByID(ID) {
     if (devices) return devices.find((devInfo) => {
-        try {
-            return devInfo._id == ID;
-        } catch (e) {
-            //console.log("No dev with ieee " + ieeeAddr);
-        }
+        return (devInfo ? devInfo._id : '') == ID;
     });
 }
 
@@ -80,7 +133,7 @@ function getDevice(ieeeAddr) {
         try {
             return devInfo.info.device.ieee == ieeeAddr;
         } catch (e) {
-            //console.log("No dev with ieee " + ieeeAddr);
+            return false;
         }
     });
 }
@@ -91,7 +144,7 @@ function getDeviceByNetwork(nwk) {
         try {
             return devInfo.info.device.nwk == nwk;
         } catch (e) {
-            //console.log("No dev with nwkAddr " + nwk);
+            return false;
         }
     });
 }
@@ -111,7 +164,6 @@ function getLQICls(value) {
     }
     return 'icon-green';
 }
-
 
 function getCoordinatorCard(dev) {
     const title = 'Zigbee Coordinator',
@@ -233,9 +285,59 @@ function sanitizeModelParameter(parameter) {
     return parameter.replace(replaceByUnderscore, '_');
 }
 
+
+function getLocalData() {
+    return {};
+}
+
+function getModelData(data) {
+    const Html = [];
+    Html.push(`<ul class="collection ">`);
+    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Paired Models</span>`);
+    Html.push(`<br><span>Nothing</span>`);
+    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
+    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Paired Devices</span>`);
+    Html.push(`<br><span>Nothing</span>`);
+    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
+    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Global Data</span>`);
+    Html.push(`<br><span>Nothing</span>`);
+    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
+    Html.push(`</ul>`);
+    return Html;
+}
+function getDeviceData(data, modelFilter) {
+    return 'No Data Yet'
+}
+function getGlobalOptionData() {
+    return 'No Data Yet'
+}
+
+function showLocalData() {
+    const data = getLocalData();
+    const Html = [];
+
+    const logbutton = '';
+    const fbutton = '';
+    const hbutton = '';
+    const button = '';
+    const dbutton = '';
+    Html.push(`<div class="row"><div class="col s12 m6 l4"><H3>Local Data</H3></div>`);
+    Html.push(`<div class="col s11 offset -s1"><ul class="collection ">`);
+    Html.push(`<img src="zigbee.png" alt="" class="circle"><H4>Paired Models</h4></span>`);
+    Html.push(`<br><span>${getModelData(data)}</span>`);
+    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
+    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Paired Devices</span>`);
+    Html.push(`<br><span>${getDeviceData(data)}</span>`);
+    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
+    Html.push(`<li class="collection-item avatar"><img src="zigbee.png" alt="" class="circle"><span class=title>Global Data</span>`);
+    Html.push(`<br><span>${getGlobalOptionData(data)}</span>`);
+    Html.push(`<a href="#!" class="secondary-content"><i class="material-icons">gradedeveloper_board</i></a></li>`)
+    Html.push(`</ul></div>`);
+    $('#tab-overrides').html(Html.join(''));
+}
+
 function getCard(dev) {
-    //console.warn(JSON.stringify(dev));
-    if (!dev._id || dev.common.type === 'Coordinator') return '';
+    if (!dev._id) return '';
     const title = dev.common.name,
         id = (dev._id ? dev._id : ''),
         type = (dev.common.type ? dev.common.type : 'unknown'),
@@ -402,7 +504,7 @@ function deleteNvBackupConfirmation() {
     $('#modaldelete a.btn[name=\'yes\']').click(() => {
         //const force = $('#force').prop('checked');
         showWaitingDialog('Attempting to delete nvBackup.json', 60000);
-        sendTo(namespace, 'deleteNVBackup', {}, function (msg) {
+        sendToWrapper(namespace, 'deleteNVBackup', {}, function (msg) {
             closeWaitingDialog();
             if (msg) {
                 if (msg.error) {
@@ -443,14 +545,7 @@ function EndPointIDfromEndPoint(ep) {
 
 
 function editName(id, name) {
-
-    const device_options = {};
-    const received_options = {};
-    console.warn('editName called with ' + id + ' and ' + name);
-    const dev = devices.find((d) => d._id == id);
-    $('#modaledit').find('input[id=\'d_name\']').val(name);
-    const groupables = [];
-
+    // start local functions
     function removeOption(k) {
         if (k && device_options.hasOwnProperty(k)) {
             if (dev.info.mapped && dev.info.mapped.options && dev.info.mapped.options.includes(device_options[k].key))
@@ -506,9 +601,24 @@ function editName(id, name) {
                 $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions(availableOptions) });
             }
         }
-        else {
-            if (candidates.length == 0) $('#modaledit').find('.options_available').addClass('hide');
+    }
+
+    function updateGroupables(groupables) {
+        const html = [];
+
+        if (groupables && groupables.length > 0)
+        {
+            html.push(`<div class="col s12 m12 l12><H6>Group memberships</H6></div></div>`);
+            for (const groupable of groupables) {
+                const k = groupable.epid || -1;
+                html.push(`<div class="input-field suffix col s12 m12 l12"><select id="gk_${k}" class="materialSelect" multiple><option value="1">select</option><select><label for="gk_${k}">Endpoint ${k}</label></div>`);
+            }
+            $('#modaledit').find('endpoints_for_groups').html(html);
+            for (const groupable of groupables) {
+                list2select(`#gk_${groupable.epid || -1}`, groups, groupable.memberOf || []);
+            }
         }
+        return html;
     }
 
     function getOptionsFromUI(_do, _so) {
@@ -533,9 +643,13 @@ function editName(id, name) {
         if (changed) return _no;
         return undefined;
     }
+    // end local functions
+    const device_options = {};
+    const received_options = {};
 
-
-
+    const dev = devices.find((d) => d._id == id);
+    $('#modaledit').find('input[id=\'d_name\']').val(name);
+    const groupables = [];
     if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
             if (ep.input_clusters.includes(4)) {
@@ -546,49 +660,8 @@ function editName(id, name) {
     const numEP = groupables.length;
     const availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
 
-    if (numEP > 0) {
-        $('#modaledit').find('.groups_available').removeClass('hide');
-        $('#modaledit').find('.row.epid0').addClass('hide');
-        $('#modaledit').find('.row.epid1').addClass('hide');
-        $('#modaledit').find('.row.epid2').addClass('hide');
-        $('#modaledit').find('.row.epid3').addClass('hide');
-        $('#modaledit').find('.row.epid4').addClass('hide');
-        $('#modaledit').find('.row.epid5').addClass('hide');
-        $('#modaledit').find('.row.epid6').addClass('hide');
-        // go through all the groups. Find the ones to list for each groupable
-        if (numEP == 1) {
-            $('#modaledit').find('.endpointid').addClass('hide');
-        } else {
-            $('#modaledit').find('.endpointid').removeClass('hide');
-        }
-        for (const d of devices) {
-            if (d && d.common && d.common.type == 'group') {
-                if (d.hasOwnProperty('memberinfo')) {
-                    for (const member of d.memberinfo) {
-                        const epid = EndPointIDfromEndPoint(member.ep);
-                        for (let i = 0; i < groupables.length; i++) {
-                            if (groupables[i].epid == epid) {
-                                groupables[i].memberOf.push(d.native.id.replace('group_', ''));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        console.log('groupables: ' + JSON.stringify(groupables));
-        for (let i = 0; i < groupables.length; i++) {
-            if (i > 1) {
-                $('#modaledit').find('translate.device_with_endpoint').innerHtml = name + ' ' + groupables[i].epid;
-            }
-            $('#modaledit').find('.row.epid' + i).removeClass('hide');
-            list2select('#d_groups_ep' + i, groups, groupables[i].memberOf || []);
-        }
-    }
-    else
-    {
-        $('#modaledit').find('.groups_available').addClass('hide');
-    }
-    sendTo(namespace, 'getLocalConfigItems', { target:id, global:false, key:'options' }, function (msg) {
+    updateGroupables(groupables);
+    sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:false, key:'options' }, function (msg) {
         if (msg) {
             if (msg.error) showMessage(msg.error, '_Error');
             console.warn(`return is ${JSON.stringify(msg)}`)
@@ -631,9 +704,8 @@ function editName(id, name) {
         }
         // read device_options from UI
         const co = getOptionsFromUI(device_options, received_options)
-        console.warn(`options have ${co ? 'changed' : 'not changed'} : ${JSON.stringify(co)} vs ${JSON.stringify(received_options)} , saving them`);
         if (co) {
-            sendTo(namespace, 'updateLocalConfigItems', {
+            sendToWrapper(namespace, 'updateLocalConfigItems', {
                 target: id,
                 global:false,
                 data: { options:co }
@@ -659,7 +731,7 @@ function GenerateGroupChange(oldmembers, newmembers) {
 }
 
 function deleteZigbeeDevice(id, force) {
-    sendTo(namespace, 'deleteZigbeeDevice', {id: id, force: force}, function (msg) {
+    sendToWrapper(namespace, 'deleteZigbeeDevice', {id: id, force: force}, function (msg) {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
@@ -674,7 +746,7 @@ function deleteZigbeeDevice(id, force) {
 
 
 function cleanDeviceStates(force) {
-    sendTo(namespace, 'cleanDeviceStates', {force: force}, function (msg) {
+    sendToWrapper(namespace, 'cleanDeviceStates', {force: force}, function (msg) {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
@@ -692,7 +764,7 @@ function cleanDeviceStates(force) {
 
 function renameDevice(id, name) {
     showMessage('rename device with ' + id + ' and ' + name, _('Error'));
-    sendTo(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
+    sendToWrapper(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -704,7 +776,6 @@ function renameDevice(id, name) {
 }
 
 function showDevices() {
-    console.warn('show Devices called')
     let html = '';
     let hasCoordinator = false;
     const lang = systemLang || 'en';
@@ -796,17 +867,16 @@ function showDevices() {
         $('.card.flipable').toggleClass('flipped');
     });
 
-    shuffleInstance = new Shuffle($('#devices'), {
+    shuffleInstance = devices && devices.length ? new Shuffle($('#devices'), {
         itemSelector: '.device',
         sizer: '.js-shuffle-sizer',
-    });
+    }) : undefined;
     doFilter();
 
     const getDevName = function (dev_block) {
         return dev_block.find('#dName').text();
     };
     const getDevId = function (dev_block) {
-        console.warn(`getDevId called with ${JSON.stringify(dev_block)}`)
         return dev_block.attr('id');
     };
     $('.card-reveal-buttons button[name=\'delete\']').click(function () {
@@ -856,7 +926,7 @@ function showDevices() {
             //console.log(data);
         });    });
     $('#modalpairing a.btn[name=\'extendpairing\']').click(function () {
-        letsPairing();
+        openNetwork();
     });
     $('#modalpairing a.btn[name=\'endpairing\']').click(function () {
         stopPairing();
@@ -886,7 +956,7 @@ function showDevices() {
 }
 
 function downloadIcons() {
-    sendTo(namespace, 'downloadIcons', {}, function (msg) {
+    sendToWrapper(namespace, 'downloadIcons', {}, function (msg) {
         if (msg && msg.msg) {
             showMessage(msg.msg, _('Result'));
         }
@@ -915,9 +985,8 @@ function checkFwUpdate() {
                 fwInfoNode.html(createBtn('system_update', 'Click to start firmware update', false));
                 $(fwInfoNode).find('button[name=\'fw_update\']').click(() => {
                     fwInfoNode.html(createBtn('check_circle', 'Firmware update started, check progress in logs.', true, 'icon-blue'));
-                    sendTo(namespace, 'startOta', {devId: devId}, (msg) => {
+                    sendToWrapper(namespace, 'startOta', {devId: devId}, (msg) => {
                         fwInfoNode.html(createBtn('check_circle', 'Finished, see logs.', true));
-                        console.log(msg);
                     });
                 });
             } else if (msg.status == 'not_available') {
@@ -937,13 +1006,13 @@ function checkFwUpdate() {
         }
         const devId = getDevId(devIdAttr);
         getFwInfoNode(deviceCard).html('<span class="left" style="padding-top:8px">checking...</span>');
-        sendTo(namespace, 'checkOtaAvail', {devId: devId}, callback);
+        sendToWrapper(namespace, 'checkOtaAvail', {devId: devId}, callback);
     }
 }
 
 function letsPairingWithCode(code) {
     messages = [];
-    sendTo(namespace, 'letsPairing', {code: code, stop:false}, function (msg) {
+    sendToWrapper(namespace, 'letsPairing', {code: code, stop:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -953,18 +1022,19 @@ function letsPairingWithCode(code) {
     });
 }
 
-function letsPairing() {
+function openNetwork() {
     messages = [];
-    sendTo(namespace, 'letsPairing', {stop:false}, function (msg) {
+    sendToWrapper(namespace, 'letsPairing', {stop:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
+        else showPairingProcess();
     });
 }
 
 function stopPairing() {
     messages = [];
-    sendTo(namespace, 'letsPairing', {stop:true}, function (msg) {
+    sendToWrapper(namespace, 'letsPairing', {stop:true}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -973,7 +1043,7 @@ function stopPairing() {
 
 function touchlinkReset() {
     messages = [];
-    sendTo(namespace, 'touchlinkReset', {}, function (msg) {
+    sendToWrapper(namespace, 'touchlinkReset', {}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -982,7 +1052,7 @@ function touchlinkReset() {
 
 function joinProcess(devId) {
     messages = [];
-    sendTo(namespace, 'letsPairing', {id: devId, stop:false}, function (msg) {
+    sendToWrapper(namespace, 'letsPairing', {id: devId, stop:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -990,10 +1060,8 @@ function joinProcess(devId) {
 }
 
 function getCoordinatorInfo() {
-    console.warn('calling getCoordinatorInfo');
-    sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
+    sendToWrapper(namespace, 'getCoordinatorInfo', {}, function (msg) {
         if (msg) {
-            console.warn(JSON.stringify(msg))
             if (msg.error) {
                 errorData.push(msg.error);
                 delete msg.error;
@@ -1021,8 +1089,8 @@ function checkDebugDevice(id) {
     return -1;
 }
 async function toggleDebugDevice(id) {
-    sendTo(namespace, 'setDeviceDebug', {id:id}, function (msg) {
-        sendTo(namespace, 'getDebugDevices', {}, function(msg) {
+    sendToWrapper(namespace, 'setDeviceDebug', {id:id}, function (msg) {
+        sendToWrapper(namespace, 'getDebugDevices', {}, function(msg) {
             if (msg && typeof (msg.debugDevices == 'array')) {
                 debugDevices = msg.debugDevices;
             }
@@ -1034,7 +1102,7 @@ async function toggleDebugDevice(id) {
 }
 
 function updateLocalConfigItems(device, data, global) {
-    sendTo(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
+    sendToWrapper(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
         if (msg && msg.hasOwnProperty.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -1051,7 +1119,7 @@ async function selectImageOverride(id) {
     $('#chooseimage').find('input[id=\'d_name\']').val(dev.common.name);
     $('#chooseimage').find('.currentIcon').html(imghtml);
 
-    sendTo(namespace, 'getLocalImages', {}, function(msg) {
+    sendToWrapper(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
             const imagedata = msg.imageData;
             const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
@@ -1299,7 +1367,6 @@ function displayDebugMessages(msg) {
             });
         }
         for (const b of idButtons) {
-            console.warn(`trying to add link to button ${b}`);
             $(`#lx_${b}`).click(function() { showMessageList(b)});
         }
     }
@@ -1344,48 +1411,33 @@ function showNamedMessages(messages, title, icon, timestamp) {
 }
 
 function showMessageList(msgId) {
-    console.warn(`trying to show messages for ${msgId}`);
-    console.warn(JSON.stringify(debugMessages));
     for (const devId of Object.keys(debugMessages.byId)) {
         for (const id of debugMessages.byId[devId].IN) {
             if (id.dataID == msgId) {
-                console.warn(`showing messages for ${id.type} ${devId}`);
                 showNamedMessages(id.messages, `Messages from ${new Date(msgId).toLocaleTimeString()} for device ${devId}`);
                 return;
             }
         }
         for (const id of debugMessages.byId[devId].OUT) {
             if (id.dataID == msgId) {
-                console.warn(`showing messages for ${msgId}`);
                 showNamedMessages(id.messages, `Messages from ${new Date(msgId).toLocaleTimeString()} for device ${devId}`);
                 return;
             }
         }
     }
-    console.warn(`nothing to show`);
-
-
 }
 
 function getDebugMessages(deleteBeforeRead, deleteSelected) {
-    sendTo(namespace, 'getDebugMessages', { inlog: debugInLog, del:deleteBeforeRead ? deleteSelected : '' }, function(msg) {
+    sendToWrapper(namespace, 'getDebugMessages', { inlog: debugInLog, del:deleteBeforeRead ? deleteSelected : '' }, function(msg) {
         debugMessages = msg;
         if (msg) displayDebugMessages(debugMessages)
     })
 }
 
-const lockout = {
-    timeoutid:undefined,
-    isActive:false,
-};
 function getDevices() {
-    console.warn('getDevices called')
-
     function sendForData() {
-        sendTo(namespace, 'getCoordinatorInfo', {}, function (msg) {
-            console.warn(`getCoordinatorInfo returned ${JSON.stringify(msg)}`)
+        sendToWrapper(namespace, 'getCoordinatorInfo', {}, function (msg) {
             if (msg) {
-                console.warn(JSON.stringify(msg))
                 if (msg.error) {
                     errorData.push(msg.error);
                     delete msg.error;
@@ -1396,7 +1448,7 @@ function getDevices() {
                 coordinatorinfo = msg;
                 updateStartButton()
             }
-            sendTo(namespace, 'getDevices', {}, function (msg) {
+            sendToWrapper(namespace, 'getDevices', {}, function (msg) {
                 if (msg) {
                     devices = msg.devices ? msg.devices : [];
                     // check if stashed error messages are sent alongside
@@ -1416,13 +1468,11 @@ function getDevices() {
                     //check if debug messages are sent alongside
                     if (msg && typeof (msg.debugDevices == 'array')) {
                         debugDevices = msg.debugDevices;
-                        console.warn('debug devices is sent')
                     }
                     else
                         debugDevices = [];
                     if (debugMessages.byId) {
                         newDebugMessages = true;
-                        console.warn('having debug messages');
                         debugMessages.byId = msg;
                         if (msg) displayDebugMessages(debugMessages)
                     }
@@ -1437,12 +1487,12 @@ function getDevices() {
                         updateStartButton();
                         showDevices();
                         if (!newDebugMessages) {
-                            console.warn('getting debug messages');
                             getDebugMessages();
                         }
                         //getExclude();
                         getBinding();
                     }
+                    UpdateAdapterAlive(true)
                 }
             });
         });
@@ -1450,7 +1500,6 @@ function getDevices() {
 
     if (lockout.timeoutid) {
         clearTimeout(lockout.timeoutid);
-        console.warn('clearing getDevices timeout')
     }
 
     setTimeout(() => {
@@ -1462,7 +1511,7 @@ function getDevices() {
 }
 
 function getNamedColors() {
-    sendTo(namespace, 'getNamedColors', {}, function(msg) {
+    sendToWrapper(namespace, 'getNamedColors', {}, function(msg) {
         if (msg && typeof msg.colors) {
             namedColors = msg.colors;
         }
@@ -1483,7 +1532,7 @@ function getDeviceCard(devId) {
 function getMap(rebuild) {
     $('#refresh').addClass('disabled');
     if (isHerdsmanRunning) {
-        sendTo(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
+        sendToWrapper(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
             $('#refresh').removeClass('disabled');
             if (msg) {
                 if (msg.error) {
@@ -1525,7 +1574,6 @@ function getRandomChannel()
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
-    console.warn(JSON.stringify(settings));
     if (settings.extPanID === undefined || settings.extPanID == '') {
         settings.channel = getRandomChannel();
     }
@@ -1581,9 +1629,14 @@ function load(settings, onChange) {
     getComPorts(onChange);
 
     //dialog = new MatDialog({EndingTop: '50%'});
-    getDevices();
-    getNamedColors();
-    readNVRamBackup(false);
+    const keepAliveHandle = startKeepalive();
+    keepAlive(() => {
+        getDevices();
+        getNamedColors();
+        readNVRamBackup(false);
+        showLocalData();
+    })
+
     //getDebugMessages();
     //getMap();
     //addCard();
@@ -1592,13 +1645,10 @@ function load(settings, onChange) {
     onChange(false);
 
     $('#test-btn').click(function () {
-        console.warn(`isHerdsmanRunning: ${isHerdsmanRunning}`)
         if (!isHerdsmanRunning) {
             const port = $('#port.value').val();
-            console.warn(`port is ${port}`)
             showWaitingDialog(`Trying to connect to ${port}`, 300);
-            sendTo(namespace, 'testConnection', { address:port }, function(msg) {
-                console.warn(`send to returned with ${JSON.stringify(msg)}`);
+            sendToWrapper(namespace, 'testConnection', { address:port }, function(msg) {
                 closeWaitingDialog();
                 if (msg) {
                     if (msg.error) {
@@ -1617,7 +1667,6 @@ function load(settings, onChange) {
     })
     // test start commands
     $('#show_test_run').click(function () {
-        console.warn(`isHerdsmanRunning: ${isHerdsmanRunning}`)
         doTestStart(!isHerdsmanRunning);
     });
 
@@ -1639,10 +1688,8 @@ function load(settings, onChange) {
     });
     $('#pairing').click(function () {
         if (!$('#pairing').hasClass('pulse')) {
-            letsPairing();
-        }
-        console.warn('lets pairing');
-        showPairingProcess();
+            openNetwork();
+        } else showPairingProcess();
     });
 
     $('#refresh').click(function () {
@@ -1678,18 +1725,18 @@ function load(settings, onChange) {
         showChannels();
     });
 
-    sendTo(namespace, 'getGroups', {}, function (data) {
-        groups = data.groups;
+    sendToWrapper(namespace, 'getGroups', {}, function (data) {
+        groups = data.groups || {};
         //showGroups();
     });
 
     $('#add_group').click(function () {
-        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
+        const maxind = parseInt(Object.getOwnPropertyNames(groups || {}).reduce((a, b) => a > b ? a : b, 0));
         addGroup(maxind + 1, 'Group ' + maxind + 1);
     });
 
     $('#add_grp_btn').click(function () {
-        const maxind = parseInt(Object.getOwnPropertyNames(groups).reduce((a, b) => a > b ? a : b, 0));
+        const maxind = parseInt(Object.getOwnPropertyNames(groups || {}).reduce((a, b) => a > b ? a : b, 0));
         addGroup(maxind + 1, 'Group ' + maxind + 1);
     });
 
@@ -1752,7 +1799,7 @@ function load(settings, onChange) {
         addBindingDialog();
     });
 
-    sendTo(namespace, 'getLibData', {key: 'cidList'}, function (data) {
+    sendToWrapper(namespace, 'getLibData', {key: 'cidList'}, function (data) {
         cidList = data.list;
     });
 }
@@ -1767,12 +1814,21 @@ function showMessages() {
     $('#stdout_t').text(messages.join('\n'));
 }
 
-function showPairingProcess() {
+function showPairingProcess(noextrabuttons) {
     if (isHerdsmanRunning) $('#modalpairing').modal({
         startingTop: '4%',
         endingTop: '10%',
         dismissible: false
     });
+
+    if (noextrabuttons) {
+        $('#modalpairing').find('.endpairing').addClass('hide');
+        $('#modalpairing').find('.extendpairing').addClass('hide');
+    }
+    else {
+        $('#modalpairing').find('.endpairing').removeClass('hide');
+        $('#modalpairing').find('.extendpairing').removeClass('hide');
+    }
 
     $('#modalpairing').modal('open');
     Materialize.updateTextFields();
@@ -1792,24 +1848,25 @@ function doTestStart(start, interactive) {
         };
         // $('#testStartStart').addClass('disabled');
         messages = [];
-        if (interactive) showWaitingDialog('Trying to start the zigbee subsystem manually', 120);
-        sendTo(namespace, 'testConnect', { start:true, zigbeeOptions:ovr }, function(msg) {
+        if (interactive) showPairingProcess(true)
+
+        //    showWaitingDialog('Trying to start the zigbee subsystem manually', 120);
+        sendToWrapper(namespace, 'testConnect', { start:true, zigbeeOptions:ovr }, function(msg) {
             if (msg) {
                 closeWaitingDialog();
-                isHerdsmanRunning = msg.status;
                 updateStartButton(false);
                 if (msg.status)
                     $('#testStartStop').removeClass('disabled');
                 else {
                     //showMessage(`The zigbee subsystem is not running. Please ensure that the configuration is correct. ${msg.error ? 'Error on start-Attempt ' + msg.error.message : ''}`);
-                    $('#testStartStop').removeClass('disabled');
+                    $('#testStartStart').removeClass('disabled');
                 }
             }
         })
     }
     else {
         //$('#testStartStop').addClass('disabled');
-        sendTo(namespace, 'testConnect', { start:false }, function(msg) {
+        sendToWrapper(namespace, 'testConnect', { start:false }, function(msg) {
             if (msg) {
                 if (msg.status) $('#testStartStart').removeClass('disabled');
                 else $('#testStartStop').removeClass('disabled');
@@ -1847,7 +1904,6 @@ function getDevId(adapterDevId) {
 
 
 function updateStartButton(block) {
-    console.warn(`update start button with${isHerdsmanRunning ? ' Herdsman' : 'out Herdsman'}`);
     if (block) {
         $('#show_test_run').addClass('disabled');
         $('#reset-btn').addClass('disabled');
@@ -1894,7 +1950,6 @@ socket.emit('subscribeObjects', namespace + '.*');
 socket.on('stateChange', function (id, state) {
     // only watch our own states
     if (id.substring(0, namespaceLen) !== namespace) return;
-    //console.log('stateChange', id, state);
     if (state) {
         if (id.match(/\.info\.pairingMode$/)) {
             if (state.val) {
@@ -1956,14 +2011,12 @@ socket.on('stateChange', function (id, state) {
 
 socket.on('objectChange', function (id, obj) {
     if (id.substring(0, namespaceLen) !== namespace) return;
-    //console.log('objectChange', id, obj);
     if (obj && obj.type == 'device') { // && obj.common.type !== 'group') {
         updateDevice(id);
     }
     if (!obj) {
         // delete state or device
         const elems = id.split('.');
-        //console.log('elems', elems);
         if (elems.length === 3) {
             removeDevice(id);
             showDevices();
@@ -2001,7 +2054,6 @@ function putEventToNode(devId) {
 }
 
 function showNetworkMap(devices, map) {
-    console.warn('network map - device list ' + JSON.stringify(devices));
     // create an object with nodes
     const nodes = {};
     // create an array with edges
@@ -2014,9 +2066,7 @@ function showNetworkMap(devices, map) {
     }
 
     const createNode = function (dev, mapEntry) {
-        if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) {
-            return undefined;
-        }
+        if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) return undefined;
         const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
         const t = dev._id.replace(namespace + '.', '');
         const node = {
@@ -2045,8 +2095,6 @@ function showNetworkMap(devices, map) {
         map.lqis.forEach((mapEntry) => {
             const dev = getDevice(mapEntry.ieeeAddr);
             if (!dev) {
-                console.warn(`no dev for ${mapEntry.ieeeAddr} - no matching device`);
-                //console.log("No dev with ieee "+mapEntry.ieeeAddr);
                 return;
             }
 
@@ -2327,7 +2375,7 @@ function getComPorts(onChange) {
     // timeout = setTimeout(function () {
     //     getComPorts(onChange);
     // }, 2000);
-    sendTo(namespace, 'listUart', null, function (list) {
+    sendToWrapper(namespace, 'listUart', null, function (list) {
         // if (timeout) {
         //     clearTimeout(timeout);
         //     timeout = null;
@@ -2471,7 +2519,6 @@ function loadDeveloperTab() {
             const device = devices.find(obj => {
                 return this.value ===obj.native.id;
             });
-            console.warn(`dev selector: ${this.selectedIndex} ${this.value} ->${JSON.stringify(device)}`)
 
             const epList = device ? device.info.endpoints : null;
             updateSelect('#ep', epList,
@@ -2554,7 +2601,7 @@ function loadDeveloperTab() {
                 data = prepareData();
             }
             sendToZigbee(data.devId, data.ep, data.cid, data.cmd, data.cmdType, data.zclData, data.cfg, function (reply) {
-                console.log('Reply from zigbee: ' + JSON.stringify(reply));
+                console.log('Send to Zigbee replied with ' + JSON.stringify(reply));
                 if (reply.hasOwnProperty('localErr')) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
                 } else if (reply.hasOwnProperty('localStatus')) {
@@ -2569,7 +2616,7 @@ function loadDeveloperTab() {
 
     responseCodes = null;
     // load list of response codes
-    sendTo(namespace, 'getLibData', {key: 'respCodes'}, function (data) {
+    sendToWrapper(namespace, 'getLibData', {key: 'respCodes'}, function (data) {
         responseCodes = data.list;
     });
 }
@@ -2622,7 +2669,7 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
 
     console.log('Send to zigbee, id ' + id + ',ep ' + ep + ', cid ' + cid + ', cmd ' + cmd + ', cmdType ' + cmdType + ', zclData ' + JSON.stringify(zclData));
 
-    sendTo(namespace, 'sendToZigbee', data, function (reply) {
+    sendToWrapper(namespace, 'sendToZigbee', data, function (reply) {
         clearTimeout(sendTimeout);
         if (callback) {
             callback(reply);
@@ -2670,7 +2717,7 @@ function populateSelector(selectId, key, cid) {
         updateSelect(selectId, null);
         return;
     }
-    sendTo(namespace, 'getLibData', {key: key, cid: cid}, function (data) {
+    sendToWrapper(namespace, 'getLibData', {key: key, cid: cid}, function (data) {
         const list = data.list;
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
@@ -2813,7 +2860,7 @@ function deleteGroupConfirmation(id, name) {
 
 function updateGroup(newId, newName, remove) {
     groups[newId] = newName;
-    sendTo(namespace, 'renameGroup', {id: newId, name: newName, remove: remove}, function (msg) {
+    sendToWrapper(namespace, 'renameGroup', {id: newId, name: newName, remove: remove}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -2823,7 +2870,7 @@ function updateGroup(newId, newName, remove) {
 
 function deleteGroup(id) {
     delete groups[id];
-    sendTo(namespace, 'deleteGroup', id, function (msg) {
+    sendToWrapper(namespace, 'deleteGroup', id, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
@@ -2846,7 +2893,7 @@ function updateDev(id, newName, newGroups) {
     const keys = Object.keys(newGroups);
     if (keys && keys.length) {
         command.groups = newGroups
-        sendTo(namespace, 'updateGroupMembership', command, function (msg) {
+        sendToWrapper(namespace, 'updateGroupMembership', command, function (msg) {
             closeWaitingDialog();
             if (msg && msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -2860,7 +2907,7 @@ function updateDev(id, newName, newGroups) {
     }
     else if (needName)
     {
-        sendTo(namespace, 'renameDevice', command, function(msg) {
+        sendToWrapper(namespace, 'renameDevice', command, function(msg) {
             //closeWaitingDialog();
             if (msg && msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -2879,9 +2926,9 @@ function resetConfirmation() {
     const btn = $('#modalreset .modal-content a.btn');
     btn.unbind('click');
     btn.click(function (e) {
-        sendTo(namespace, 'reset', {mode: e.target.id}, function (err) {
+        sendToWrapper(namespace, 'reset', {mode: e.target.id}, function (err) {
             if (err) {
-                console.log(err);
+                console.log(`reset attempt failed with ${err}`);
             } else {
                 console.log('Reset done');
             }
@@ -3110,7 +3157,7 @@ function addBindingDialog() {
 }
 
 function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator) {
-    sendTo(namespace, 'addBinding', {
+    sendToWrapper(namespace, 'addBinding', {
         bind_source: bind_source,
         bind_source_ep: bind_source_ep,
         bind_target: bind_target,
@@ -3127,7 +3174,7 @@ function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, un
 }
 
 function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator) {
-    sendTo(namespace, 'editBinding', {
+    sendToWrapper(namespace, 'editBinding', {
         id: bind_id,
         bind_source: bind_source,
         bind_source_ep: bind_source_ep,
@@ -3220,7 +3267,7 @@ function showBinding() {
 }
 
 function getBinding() {
-    sendTo(namespace, 'getBinding', {}, function (msg) {
+    sendToWrapper(namespace, 'getBinding', {}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -3245,7 +3292,7 @@ function deleteBindingConfirmation(id) {
 }
 
 function deleteBinding(id) {
-    sendTo(namespace, 'delBinding', id, (msg) => {
+    sendToWrapper(namespace, 'delBinding', id, (msg) => {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
@@ -3267,7 +3314,6 @@ function findClName(id) {
 }
 
 function genDevInfo(device) {
-    //console.log(device);
     const dev = (device && device.info) ? device.info.device : undefined;
     const mapped = (device && device.info) ? device.info.mapped : undefined;
     const endpoints = (device && device.info) ? device.info.endpoints : [];
@@ -3315,7 +3361,6 @@ function genDevInfo(device) {
     let epInfo = '';
     for (const epind in endpoints) {
         const ep = endpoints[epind];
-        console.warn(JSON.stringify(ep));
         epInfo +=
             `<div style="font-size: 0.9em" class="truncate">
                 <ul>
@@ -3381,7 +3426,7 @@ function closeWaitingDialog() {
 
 
 function showChannels() {
-    sendTo(namespace, 'getChannels', {}, function (msg) {
+    sendToWrapper(namespace, 'getChannels', {}, function (msg) {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
@@ -3500,21 +3545,20 @@ function addExcludeDialog() {
 
 function addExclude(exclude_model) {
     if (typeof exclude_model == 'object' && exclude_model.hasOwnProperty('common'))
-        sendTo(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
+        sendToWrapper(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
             closeWaitingDialog();
             if (msg) {
                 if (msg.error) {
                     showMessage(msg.error, _('Error'));
                 }
             }
-            console.log('getting excludes ?');
             getExclude();
         });
     else closeWaitingDialog();
 }
 
 function getExclude() {
-    sendTo(namespace, 'getExclude', {}, function (msg) {
+    sendToWrapper(namespace, 'getExclude', {}, function (msg) {
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
@@ -3585,14 +3629,13 @@ function deleteExcludeConfirmation(id) {
 }
 
 function deleteExclude(id) {
-    sendTo(namespace, 'delExclude', id, (msg) => {
+    sendToWrapper(namespace, 'delExclude', id, (msg) => {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
                 showMessage(msg.error, _('Error'));
             }
         }
-        console.log('getting excludes ?');
         getExclude();
     });
 }
@@ -3799,22 +3842,19 @@ function hookControls() {
     $('input[type=\'checkbox\']').change(function (event) {
         const val = $(this).is(':checked');
         const id = $(this).parents('.state').attr('oid');
-        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
-            //console.log(data);
+        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
         });
     });
     $('input[type=\'range\']').change(function (event) {
         const val = $(this).val();
         const id = $(this).parents('.state').attr('oid');
-        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
-            //console.log(data);
+        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
         });
     });
     $('.state select').on('change', function () {
         const val = $(this).val();
         const id = $(this).parents('.state').attr('oid');
-        sendTo(namespace, 'setState', {id: id, val: val}, function (data) {
-            //console.log(data);
+        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
         });
     });
 }
@@ -3836,7 +3876,7 @@ function updateCardTimer() {
 }
 
 function updateDevice(id) {
-    sendTo(namespace, 'getDevice', {id: id}, function (msg) {
+    sendToWrapper(namespace, 'getDevice', {id: id}, function (msg) {
         if (msg) {
             const devs = msg.devices;
             if (devs) {
@@ -3866,7 +3906,7 @@ function swapActive(id) {
     const dev = getDeviceByID(id);
     if (dev && dev.common) {
         dev.common.deactivated = !(dev.common.deactivated);
-        sendTo(namespace, 'setDeviceActivated', {id: id, deactivated: dev.common.deactivated}, function () {
+        sendToWrapper(namespace, 'setDeviceActivated', {id: id, deactivated: dev.common.deactivated}, function () {
             showDevices();
         });
     }
@@ -3884,7 +3924,7 @@ function reconfigureDlg(id) {
 }
 
 function reconfigureDevice(id) {
-    sendTo(namespace, 'reconfigure', {id: id}, function (msg) {
+    sendToWrapper(namespace, 'reconfigure', {id: id}, function (msg) {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
@@ -3905,34 +3945,28 @@ function validateConfigData(key, val) {
     if (validatableKeys.indexOf(key) < 0 || !val) return;
     if (warnLevel[key]) {
         if (warnLevel[key](val)) {
-            //console.warn(`warning set for ${key} (${val})`)
             $(`#${key}_ALERT`).removeClass('hide')
         } else $(`#${key}_ALERT`).addClass('hide')
     }
     if (nvRamBackup[key]) {
-        //console.warn(`value of ${key} is ${val} (${nvRamBackup[key]})`);
         if ((typeof val == 'string' && typeof nvRamBackup[key] == 'string' && val.toLowerCase == nvRamBackup[key].toLowerCase) || val == nvRamBackup[key])
         {
-            //console.warn(`ok set for ${key} (${val})`)
             $(`#${key}_OK`).removeClass('hide')
             $(`#${key}_NOK`).addClass('hide')
         }
         else
         {
-            //console.warn(`nok set for ${key} (${val})`)
             $(`#${key}_OK`).addClass('hide')
             $(`#${key}_NOK`).removeClass('hide')
         }
     }
     else {
-        //console.warn(`noval set for ${key} (${val})`)
         $(`#${key}_OK`).addClass('hide')
         $(`#${key}_NOK`).addClass('hide')
     }
 }
 
 function validateNVRamBackup(update, src) {
-    //console.warn('validateNVRam');
     const validatedKeys = src ? [src] : validatableKeys;
     const validator = {};
     for (const key of validatedKeys) {
@@ -3950,9 +3984,7 @@ function validateNVRamBackup(update, src) {
 
 
 function readNVRamBackup(update) {
-    console.warn('read nvRam')
-    sendTo(namespace, 'readNVRam', {}, function(msg) {
-        console.warn(JSON.stringify(msg));
+    sendToWrapper(namespace, 'readNVRam', {}, function(msg) {
         if (msg) {
             if (msg.error && update) {
                 if (msg.error.includes('ENOENT')) showMessage('Unable to read nvRam backup - no backup available.',_('Error'))
