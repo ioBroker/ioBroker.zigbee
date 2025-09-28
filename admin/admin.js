@@ -195,14 +195,14 @@ function getLocalData() {
           Coordinator: {
             instances: ['0x00124b00258f182e'],
             options: []
-          },  
+          },
           Plug_01: {
             instances: ['0x7cb03eaa00a715a9', '0xdeadeaa00a715a9'],
             modelinfo: {
                 description:'none',
                 link:'http://blafasel',
                 icon:'http://LinkToIcon',
-                options: { 
+                options: {
                     power_calibration: {
                         type:'numeric',
                         min:0,
@@ -221,14 +221,14 @@ function getLocalData() {
             },
             options: [{ key:'power_calibration', value: 20},],
             overrides: [],
-          },  
+          },
           WXKG02LM_rev2: {
             Instances: ['0x00158d0003165f60'],
             modelinfo: {
                 description:'none',
                 link:'http://blafasel',
                 icon:'http://LinkToIcon',
-                options: { 
+                options: {
                     idle_time: {
                         type:'numeric',
                         min:0,
@@ -261,7 +261,7 @@ function getLocalData() {
             },
             options: [{ key:'idle_time', value: 20},],
             overrides: [],
-          },  
+          },
         },
         devices: {
             '0x00158d0003165f60': {
@@ -656,7 +656,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             </div>
             </div>
             <i class="left">${image}</i>
-            <div style="min-height:88px; font-size: 0.8em; height: 130px; overflow-y: auto" class="truncate">
+            <div style="min-height:88px; font-size: 0.8em; height: 130px; width: 220px; overflow-y: auto" class="truncate">
                 <ul>
                     ${(isActive ? info : 'Device deactivated')}
                 </ul>
@@ -864,7 +864,7 @@ function editName(id, name) {
         {
             for (const groupable of groupables) {
                 const k = groupable.ep.ID || -1;
-                const n = groupable.epid != `unidentified` ? groupable.epid : `Endpoint ${k}`; 
+                const n = groupable.epid != `unidentified` ? groupable.epid : `Endpoint ${k}`;
                 html.push(`<div class="input-field suffix col s12 m12 l12"><select id="gk_${k}" class="materialSelect" multiple><option value="1">select</option><select><label for="gk_${k}">Group membership for ${n}</label></div>`);
             }
             $('#modaledit').find('.endpoints_for_groups').html(html.join(''));
