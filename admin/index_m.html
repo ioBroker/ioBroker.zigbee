@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 <head>
     <!-- these 4 files always have to be included -->
@@ -671,54 +672,31 @@
                     </div>
                     <ul id="nav-mobile" class="right">
                     <li>
+                        <a id="adapterStopped_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Adapter not running">
+                        <i class="material-icons large">grid_off</i></a>
+                        </li>
+                    <li>
+                    <li>
                         <a id="ErrorNotificationBtn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Zigbee not running">
                         <i id="ErrorNotificationIcon" class="material-icons large">error</i></a>
                     </li>
-                    <!--
-                        <li>
+                    <li>
                         <a id="state_cleanup_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="State Cleanup">
                         <i class="material-icons large icon-blue">delete_sweep</i></a>
-                        </li>
-                    -->
+                    </li>
                     <li>
-                        <a id="show_errors_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Show Errors">
+                        <a id="show_errors_btn" class="btn-floating disabled waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Show Errors">
                         <i class="material-icons large icon-blue">feedback</i></a>
                     </li>
                     <li>
                     <a id="download_icons_btn"
-                        class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
+                        class="btn-floating disabled waves-effect waves-light blue tooltipped center-align hoverable translateT"
                         title="Download missing icons">
                         <i class="material-icons large">cloud_download</i></a>
                     </li>
-                    <!--
-                        <li>
-                        <a id="fw_check_btn"
-                           class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
-                           title="Check firmware updates">
-                            <i class="material-icons large icon-blue">system_update</i></a>
-                        </li>
-                        <li>
-                            <a id="add_grp_btn"
-                            class="btn-floating waves-effect waves-light brown tooltipped center-align hoverable translateT"
-                            title="Add Group">
-                                <i class="material-icons large">group_work</i></a>
-                        </li>
-                        <li>
-                            <a id="touchlink_btn"
-                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
-                            title="Touchlink reset and pairing">
-                                <i class="material-icons large">wifi_tethering</i></a>
-                        </li>
-                        <li>
-                            <a id="code_pairing"
-                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
-                            title="Pairing with QR Code">
-                            <i class="material-icons large">select_all</i></a>
-                        </li>
-                    -->
                     <li>
                         <a id="pairing"
-                           class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
+                           class="btn-floating disabled waves-effect waves-light green tooltipped center-align hoverable translateT"
                            title="Let's pairing!">
                             <i class="material-icons large">leak_add</i></a>
                     </li>
@@ -731,6 +709,7 @@
                     <!--<li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a></li> -->
                     <!--<li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li> -->
                     <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>
+                    <li class="tab col s2"><a href="#tab-overrides" class="translate tooltipped">Local Data</a></li>
                     <!--<li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>-->
                     <li class="tab col s2"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
                     <!--<li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>-->
@@ -1208,6 +1187,9 @@
             <ul id="dbg_data_list">
             </ul>
         </div>
+        <div id="tab-overrides" class="col s12 page">
+                Nothing to see yet.
+        </div>
     </div>
 </div>
 
@@ -1216,130 +1198,16 @@
         <div class="modal-content">
             <h3 class="translate">Rename / Group device</h3>
             <div class="row">
-                <div class="col1">
+                <div class="col s12 m12 l12">
                     <div class="input-field">
                         <input id="d_name" type="text" class="value validate">
                         <label for="d_name" class="translate">Name</label>
                     </div>
                 </div>
             </div>
-            <div class="groups_available">
-            <div class="row">
-              <h6>Groups</h6>
+            <div class="row endpoints_for_groups">
             </div>
-              <div class="row epid0">
-                  <div class="col">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Main Endpoint</p>
-                      </div>
-                  </div>
-                  <div class="col1">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep0" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep0" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid1">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 1</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep1" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep1" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid2">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 2</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep2" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep2" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid3">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 3</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep3" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep3" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid4">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 4</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep4" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep4" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid5">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 5</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep5" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep5" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid6">
-              <div class="col epid">
-                  <div class=endpointid>
-                      <p class="translate device_with_endpoint">Sub Endpoint 6</p>
-                  </div>
-              </div>
-              <div class="col">
-                  <div class="input-field groups">
-                      <select id="d_groups_ep6" class="materialSelect" multiple>
-                          <option value="1">select</option>
-                      </select>
-                      <label for="d_groups_ep6" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-            </div>
-            <div class="options_available">
-              <div class="row">
-                  <h6>Options</h6>
-              </div>
-              <div class="row options">
-
-              </div>
+            <div class="row options">
             </div>
         </div>
         <div class="modal-footer">
@@ -1504,6 +1372,8 @@
         </div>
         <div class="modal-footer">
             <a name="IEEE" href="#!" class="modal-action waves-effect waves-red btn-flat left">Network</a>
+            <a name="endpairing" id="endpairing" href="#!" class="modal-action  waves-effect waves-red btn red translate">Stop</a>
+            <a name="extendpairing" id="endpairing" href="#!" class="modal-action waves-effect waves-green btn green translate">Extend</a>
             <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
         </div>
     </div>

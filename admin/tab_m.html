@@ -1,3 +1,4 @@
+<!doctype html>
 <html>
 <head>
 <!-- these 4 files always have to be included -->
@@ -675,6 +676,11 @@
                         </p></div>
                         <ul id="nav-mobile" class="right">
                         <li>
+                            <a id="adapterStopped_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Adapter not running">
+                            <i class="material-icons large">grid_off</i></a>
+                            </li>
+                        <li>
+                        <li>
                             <a id="ErrorNotificationBtn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Zigbee not running">
                             <i class="material-icons large">error</i></a>
                             </li>
@@ -935,270 +941,166 @@
     </div>
 
     <div class="materialize-dialogs m">
-      <div id="modaledit" class="modal">
-          <div class="modal-content">
-              <h3 class="translate">Rename / Group device</h3>
-              <div class="row">
-                  <div class="col1">
-                      <div class="input-field">
-                          <input id="d_name" type="text" class="value validate">
-                          <label for="d_name" class="translate">Name</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="groups_available">
-              <div class="row">
-                <h6>Groups</h6>
-              </div>
-                <div class="row epid0">
-                    <div class="col">
-                        <div class=endpointid>
-                            <p class="translate device_with_endpoint">Main Endpoint</p>
-                        </div>
-                    </div>
-                    <div class="col1">
-                        <div class="input-field groups">
-                            <select id="d_groups_ep0" class="materialSelect" multiple>
-                                <option value="1">select</option>
-                            </select>
-                            <label for="d_groups_ep0" class="translate">Groups</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row epid1">
-                    <div class="col epid">
-                        <div class=endpointid>
-                            <p class="translate device_with_endpoint">Sub Endpoint 1</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="input-field groups">
-                            <select id="d_groups_ep1" class="materialSelect" multiple>
-                                <option value="1">select</option>
-                            </select>
-                            <label for="d_groups_ep1" class="translate">Groups</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row epid2">
-                    <div class="col epid">
-                        <div class=endpointid>
-                            <p class="translate device_with_endpoint">Sub Endpoint 2</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="input-field groups">
-                            <select id="d_groups_ep2" class="materialSelect" multiple>
-                                <option value="1">select</option>
-                            </select>
-                            <label for="d_groups_ep2" class="translate">Groups</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row epid3">
-                    <div class="col epid">
-                        <div class=endpointid>
-                            <p class="translate device_with_endpoint">Sub Endpoint 3</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="input-field groups">
-                            <select id="d_groups_ep3" class="materialSelect" multiple>
-                                <option value="1">select</option>
-                            </select>
-                            <label for="d_groups_ep3" class="translate">Groups</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row epid4">
-                    <div class="col epid">
-                        <div class=endpointid>
-                            <p class="translate device_with_endpoint">Sub Endpoint 4</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="input-field groups">
-                            <select id="d_groups_ep4" class="materialSelect" multiple>
-                                <option value="1">select</option>
-                            </select>
-                            <label for="d_groups_ep4" class="translate">Groups</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row epid5">
-                    <div class="col epid">
-                        <div class=endpointid>
-                            <p class="translate device_with_endpoint">Sub Endpoint 5</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="input-field groups">
-                            <select id="d_groups_ep5" class="materialSelect" multiple>
-                                <option value="1">select</option>
-                            </select>
-                            <label for="d_groups_ep5" class="translate">Groups</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="row epid6">
-                <div class="col epid">
-                    <div class=endpointid>
-                        <p class="translate device_with_endpoint">Sub Endpoint 6</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="input-field groups">
-                        <select id="d_groups_ep6" class="materialSelect" multiple>
-                            <option value="1">select</option>
-                        </select>
-                        <label for="d_groups_ep6" class="translate">Groups</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-              <div class="row">
-              <div class="options_available col1">
-                <h6>Options</h6>
-                <div class="options_grid">
-                </div>
-                <div class="new_options_available">
-                  <div class="input-field suffix col s10 m10 l10"><select id="option_Selector" class="materialSelect"></select class="value" /><label for="option_Selector">Available Options</label></div>
-                  <div class="col"><a name="add_options" class="waves-effect waves-green btn green translate"><i class="material-icons large">add_circle</i></a></div>
-                </div>
-              </div>
-              </div>
-          </div>
-          <div class="modal-footer">
-<!--              <a name="add_options" class="waves-effect waves-green btn green translate"><i class="material-icons large">add_circle</i></a>-->
-              <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-              <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-          </div>
-      </div>
-      <div id="codeentry" class="modal">
-          <div class="modal-content">
-              <div class="addgroup">
-                  <h3 class="translate">Enter Pairing Code</h3>
-              </div>
-              <div class="row">
-                  <div class="input-field">
-                      <input id="qr_code" type="text" class="value validate">
-                      <label for="qr_code" class="translate">QR Code</label>
-                  </div>
-              </div>
-          </div>
-          <div class="modal-footer">
-              <a name="pair" href="#!"
-                 class="modal-action modal-close waves-effect waves-green btn green translate">Start Pairing</a>
-              <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-          </div>
-      </div>
 
-      <div id="groupadd" class="modal">
-        <div class="modal-content">
-            <div class = "addgroup">
-                <h3 class="translate">Create Group</h3>
-            </div>
-            <div class="row">
-                <div class="col s4 m4 l2">
-                  <div class="input-field groupid">
-                    <input id="g_index" type="number" min="1" class="value validate">
-                    <label for="g_index" class="translate">№</label>
-                  </div>
-                </div>
-                <div class="input-field col s8 m8 l10">
-                    <input id="g_name" type="text" class="value validate">
-                    <label for="g_name" class="translate">Name</label>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-        </div>
-    </div>
-
-      <div id="groupedit" class="modal">
-          <div class="modal-content">
-              <div class = "editgroup">
-                  <h3 class="translate">Edit Group</h3>
-              </div>
-              <div class="row">
-                <div class="col s4 m4 l2 hide">
-                    <div class="input-field groupid">
-                      <input id="g_index" type="number" min="1" class="value validate">
-                      <label for="g_index" class="translate">№</label>
-                    </div>
-                  </div>
-                    <div class="input-field col s8 m8 l10">
-                      <input id="g_name" type="text" class="value validate">
-                      <label for="g_name" class="translate">Name</label>
-                  </div>
-              </div>
-              <div class="row">
-                <div class="col s12">
-                  <div class="input-field members">
-                    <label for="g_members" class="translate">Members</label>
-                    <ul class="collection">
-                        <li class="collection-item">
-                        <label>
-                            <input id="member1" type="checkbox" class="value"/>
-                            <span class="translate" for="member1">Member 1</span>
-                        </label>
-                        </li>
-                        <li class="collection-item">
-                            Member 2
-                            <label>
-                            <input id="globaloverride" type="checkbox" class="value"/>
-                            <span class="translate" for="member2"></span>
-                            </label>
-                        </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-          </div>
-          <div class="modal-footer">
-              <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-              <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-          </div>
-      </div>
-
-      <div id="chooseimage" class="modal modal-fixed-footer">
-        <div class="modal-content">
-            <div class="row">
-                <h3 class="translate">Data override</h3>
+        <div id="modaledit" class="modal">
+            <div class="modal-content">
+                <h3 class="translate">Rename / Group device</h3>
                 <div class="row">
-                    <div class="col s12 input-field">
-                        <input id="d_name" type="text" class="value validate">
-                        <label for="d_name" class="translate">Name</label>
+                    <div class="col s12">
+                        <div class="input-field">
+                            <input id="d_name" type="text" class="value validate">
+                            <label for="d_name" class="translate">Name</label>
+                        </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col endpoints_for_groups s12">
+                        nothing here now
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="codeentry" class="modal">
+            <div class="modal-content">
+                <div class="addgroup">
+                    <h3 class="translate">Enter Pairing Code</h3>
+                </div>
+                <div class="row">
+                    <div class="input-field">
+                        <input id="qr_code" type="text" class="value validate">
+                        <label for="qr_code" class="translate">QR Code</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="pair" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Start Pairing</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="groupadd" class="modal">
+            <div class="modal-content">
+                <div class = "addgroup">
+                    <h3 class="translate">Create Group</h3>
+                </div>
+                <div class="row">
+                    <div class="col s4 m4 l2">
+                        <div class="input-field groupid">
+                            <input id="g_index" type="number" min="1" class="value validate">
+                            <label for="g_index" class="translate">№</label>
+                        </div>
+                    </div>
+                    <div class="input-field col s8 m8 l10">
+                        <input id="g_name" type="text" class="value validate">
+                        <label for="g_name" class="translate">Name</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="groupedit" class="modal">
+            <div class="modal-content">
+                <div class = "editgroup">
+                    <h3 class="translate">Edit Group</h3>
+                </div>
+                <div class="row">
+                    <div class="col s4 m4 l2 hide">
+                        <div class="input-field groupid">
+                        <input id="g_index" type="number" min="1" class="value validate">
+                        <label for="g_index" class="translate">№</label>
+                        </div>
+                    </div>
+                        <div class="input-field col s8 m8 l10">
+                        <input id="g_name" type="text" class="value validate">
+                        <label for="g_name" class="translate">Name</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12">
+                    <div class="input-field members">
+                        <label for="g_members" class="translate">Members</label>
+                        <ul class="collection">
+                            <li class="collection-item">
+                            <label>
+                                <input id="member1" type="checkbox" class="value"/>
+                                <span class="translate" for="member1">Member 1</span>
+                            </label>
+                            </li>
+                            <li class="collection-item">
+                                Member 2
+                                <label>
+                                <input id="globaloverride" type="checkbox" class="value"/>
+                                <span class="translate" for="member2"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="chooseimage" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <div class="row">
+                    <h3 class="translate">Data override</h3>
                     <div class="row">
-                    <div class="col s9 input-field">
-                        <select id="images" class="icons">
-                        </select>
-                        <label for="images" class="translate">Image</label>
+                        <div class="col s12 input-field">
+                            <input id="d_name" type="text" class="value validate">
+                            <label for="d_name" class="translate">Name</label>
+                        </div>
                     </div>
-                    <div class="col s3 ">
-                        <div class="currentIcon"><img src="img/unknown.png"></div>
+                    <div class="row">
+                        <div class="col s9 input-field">
+                            <select id="images" class="icons">
+                            </select>
+                            <label for="images" class="translate">Image</label>
+                        </div>
+                        <div class="col s3 ">
+                            <div class="currentIcon"><img src="img/unknown.png"></div>
+                        </div>
+                        <div class="col options_grid s12">
+                            No Options available
+                        </div>
+                        <div class="new_options_available">
+                            <div class="input-field suffix col s10 m10 l10">
+                                <select id="option_Selector" class="materialSelect"></select class="value" />
+                                    <label for="option_Selector">Available Options</label>
+                            </div>
+                            <div class="col">
+                                <a name="add_options" id="option_add_1084" class="waves-effect waves-green btn-large">
+                                <i class="material-icons large icon-green">add_circle</i></a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <div class="forcedelete" id = "globaldiv">
-                <label>
-                    <input id="globaloverride" type="checkbox" class="value"/>
-                    <span class="translate" for="globaloverride">Apply to model</span>
-                </label>
+            <div class="modal-footer">
+                <div class="forcedelete" id = "globaldiv">
+                    <label>
+                        <input id="globaloverride" type="checkbox" class="value"/>
+                        <span class="translate" for="globaloverride">Apply to model</span>
+                    </label>
+                </div>
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
-            <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
-      </div>
 
-
-      <div id="modaldelete" class="modal">
+        <div id="modaldelete" class="modal">
             <div class="modal-content">
                 <h3 class="translate">Delete confirmation</h3>
                 <p>A bunch of text</p>
@@ -1253,8 +1155,8 @@
             </div>
             <div class="modal-footer">
                 <a name="IEEE" href="#!" class="modal-action waves-effect waves-red btn-flat left">Network</a>
-                <a name="endpairing" href="#!" class="modal-action  waves-effect waves-red btn red translate">Stop</a>
-                <a name="extendpairing" href="#!" class="modal-action waves-effect waves-green btn green translate">Extend</a>
+                <a name="endpairing" id="endpairing" href="#!" class="modal-action  waves-effect waves-red btn red translate">Stop</a>
+                <a name="extendpairing" id="extendpairing" href="#!" class="modal-action waves-effect waves-green btn green translate">Extend</a>
                 <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
             </div>
         </div>
@@ -1317,8 +1219,6 @@
                         <br><button id="regenerate" class="waves-effect center hoverable blue"><i class="material-icons medium border:0 icon-Black">map</i></button>
                         </div>
                     </div>
-<!--                        <a id="regenerate" class="waves-effect waves-light blue btn"><img class="img-btn" src="img/start_stop.png" title="start / stop" ></a>&nbsp;
-                        -->
                     <div class="input-field input-group col s12 m6 l6">
                         <p class="translate">Device map info</p>
                     </div>
@@ -1373,6 +1273,7 @@
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
+
         <div id="excludemodaledit" class="modal">
             <div class="modal-content">
                 <div class="row">
@@ -1391,6 +1292,7 @@
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>
         </div>
+
         <div id="modaldevinfo" class="modal modal-fixed-footer modal-fixed-header">
             <div class="modal-header">
                 <h3 class="translate">Device information</h3>
@@ -1434,5 +1336,4 @@
         </div>
     </div>
 </body>
-
 </html>
