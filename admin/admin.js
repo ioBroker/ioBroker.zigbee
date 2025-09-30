@@ -793,6 +793,7 @@ function editName(id, name) {
             }
             $('#modaledit').find('.endpoints_for_groups').html(html.join(''));
             for (const groupable of groupables) {
+                console.warn(`list 2 select called with ${groupable.ep.ID}, groups ${JSON.stringify(groups)}, groupable ${JSON.stringify(groupable)}`);
                 list2select(`#gk_${groupable.ep.ID || -1}`, groups, groupable.memberOf || []);
             }
         }
@@ -806,7 +807,7 @@ function editName(id, name) {
     if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
             if (ep.input_clusters.includes(4)) {
-                groupables.push({epid: EndPointIDfromEndPoint(ep), ep: ep, memberOf: []});
+                groupables.push({epid: EndPointIDfromEndPoint(ep), ep: ep, memberOf: dev.groups_by_ep[ep.ID] || []});
             }
         }
     }
