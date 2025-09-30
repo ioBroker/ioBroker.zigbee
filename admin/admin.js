@@ -189,134 +189,58 @@ function sanitizeModelParameter(parameter) {
 //
 ////
 
-function getLocalData() {
-    const localdata = {
-        models: {
-          Coordinator: {
-            instances: ['0x00124b00258f182e'],
-            options: []
-          },
-          Plug_01: {
-            instances: ['0x7cb03eaa00a715a9', '0xdeadeaa00a715a9'],
-            modelinfo: {
-                description:'none',
-                link:'http://blafasel',
-                icon:'http://LinkToIcon',
-                options: {
-                    power_calibration: {
-                        type:'numeric',
-                        min:0,
-                        max:100,
-                        default:50,
-                        description:'option desciption'
-                    },
-                    current_calibration: {
-                        type:'numeric',
-                        min:0,
-                        max:100,
-                        default:50,
-                        description:'option desciption'
-                    }
-                },
-            },
-            options: [{ key:'power_calibration', value: 20},],
-            overrides: [],
-          },
-          WXKG02LM_rev2: {
-            Instances: ['0x00158d0003165f60'],
-            modelinfo: {
-                description:'none',
-                link:'http://blafasel',
-                icon:'http://LinkToIcon',
-                options: {
-                    idle_time: {
-                        type:'numeric',
-                        min:0,
-                        max:100,
-                        default:50,
-                        description:'option desciption'
-                    },
-                    connected_mode: {
-                        type:'numeric',
-                        min:0,
-                        max:100,
-                        default:50,
-                        description:'option desciption'
-                    },
-                    left_mode: {
-                        type:'numeric',
-                        min:0,
-                        max:100,
-                        default:50,
-                        valueLimits:[0,10,20,30,40,50,60,70,80,90,100],
-                        description:'option desciption'
-                    },
-                    right_mode: {
-                        type:'string',
-                        default:'isolated',
-                        valueLimits:['isolated', 'dual', 'triple'],
-                        description:'option desciption'
-                    }
-                },
-            },
-            options: [{ key:'idle_time', value: 20},],
-            overrides: [],
-          },
-        },
-        devices: {
-            '0x00158d0003165f60': {
-                name: 'mmm',
-                model: 'WXKG02LM_rev2',
-                legacy: false,
-                options: [{ key:'idle_time', value: '30'},{ key:'right_mode', value: 'bla'},],
-                overrides: [],
-
-            },
-            '0x7cb03eaa00a715a9': {
-                name: 'nnnn',
-                model: 'Plug_01',
-                legacy: false,
-                options: [{ key:'keyname', value: 'bla'},{ key:'keyname', value: 'bla'},],
-                overrides: [{ key:'name', value: 'overridden'},],
-            },
-            '0xdead3eaa00a715a9': {
-                name: 'nnnn',
-                model: 'Plug_01',
-                legacy: false,
-                options: [{ key:'power_calibration', value: 100},{ key:'current_calibration', value: '0'},],
-                overrides: [],
-            }
-
-        },
-        options: [{ key:'keyname', value: 'bla'},{ key:'keyname', value: 'bla'},{ key:'keyname', value: 'bla'},]
-    };
-    return localdata;
-}
 
 function getModelData(data) {
+    console.warn(JSON.stringify(data));
+    const devicesByModel = {};
+    for (const dev of data) {
+        const modelID = dev.info?.mapped?.model || dev.info.device.modelZigbee || dev.info.device.name || 'unknown';
+        if (devicesByModel[modelID])
+            devicesByModel[modelID].devices.push(dev);
+        else devicesByModel[modelID] = {devices:[dev], icon:dev.common.icon};
+    }
+    console.warn(JSON.stringify(devicesByModel));
     const Html = [];
-    Html.push(`<ul class="collapsible">`);
-    Html.push(`<li>`);
-    Html.push(`<div class="collapsible-header"><img src="zigbee.png" alt="" class="circle" width="32" height="auto">Paired Models</div>`);
-    Html.push(`<div class="collapsile-body"<span>Nothing</span></div>`);
-    Html.push(`</li><li>`)
-    Html.push(`<div class="collapsible-header"><img src="zigbee.png" alt="" class="circle" width="40" height="auto">Paired Models</div>`);
-    Html.push(`<div class="collapsile-body"<span>Nothing</span></div>`);
-    Html.push(`</li><li>`)
-    Html.push(`<div class="collapsible-header"><img src="zigbee.png" alt="" class="circle" width="64" height="auto">Paired Models</div>`);
-    Html.push(`<div class="collapsile-body"<span>Nothing</span></div>`);
-    Html.push(`</li></ul>`);
-    return Html.join('');
+    // Html.push(`<ul class="collapsible">`);
+    Html.push(`<ul class="collection">`)
+    for (const key of Object.keys(devicesByModel)) {
+        const model = devicesByModel[key];
+        Html.push(`<li class="collection-item avatar>`);
+        //Html.push(`<li>`)
+        //Html.push(`<div class="collapsible-header"><img src=${model.iccon} alt="" class="circle" width="40" height="auto">&nbsp;Paired Models</div>`);
+        //Html.push(`<div class="collapsile-body"<span>${getDeviceData(model.devices)}</span></div>`);
+        Html.push(`<img src = ${model.iccon} alt="" class="circle" width="40" height="auto">`);
+        Html.push(`<span class=title></p>`);
+        Html.push(getDeviceData(model.devices).join('<br>'))
+        Html.push(`</p><a href="#!" class="secondary-content"><i class="material-icons">grade</i></a></li>`)
+    }
+    Html.push('</ul>');
+    return Html;
 }
-function getDeviceData(data, modelFilter) {
-    return 'No Data Yet'
+function getDeviceData(deviceList, withIcon) {
+    const Html = [`<div class="container">`];
+    for (const dev of deviceList) {
+        const iconLink = `<img src=${dev.common.icon} class="circle" width="40" height="auto">`;
+        Html.push(`<div="row"><div class="col s4">${withIcon ? iconLink : ''}<br>${dev.info.device.ieee}<br>connectedInfo</div>`)
+        Html.push(`<div class=col s4>Device Name:${dev.common.name}</div><div class=col s4>Connected: true</div></div>`);
+        if (dev.options) {
+            Html.push(`<div="row"><div class="col s3">Options</div>`)
+            for (const o of dev.options) {
+                Html.push(`<div class=col s4>${o.key}</div><div class=col s4>${o.value}</div><div>`);
+            }
+            Html.push(`</div>`);
+        }
+        Html.push(`</div>`)
+    }
+    Html.push(`</div>`)
+    return Html;
 }
 function getGlobalOptionData() {
-    return 'No Data Yet'
+    return ['No Data Yet'];
 }
 
 function showLocalData() {
-    const data = getLocalData();
+    return;
     const Html = [];
 
     Html.push(`<ul class="collapsible">`);
@@ -325,21 +249,21 @@ function showLocalData() {
                     Paired Models
                 </div>`);
     Html.push (`<div class="collapsible-body">
-                    <span>${getModelData(data)}</span>
+                    <span>${getModelData(devices).join('')}</span>
                 </div>`);
     Html.push ('</li><li>')
     Html.push (`<div class="collapsible-header">
                     Paired Devices
                 </div>`);
     Html.push (`<div class="collapsible-body">
-                    <span>${getDeviceData(data)}</span>
+                    <span>${getDeviceData(devices, true).join('')}</span>
                 </div>`);
     Html.push ('</li><li>')
     Html.push (`<div class="collapsible-header">
                    Global Options
                 </div>`);
     Html.push (`<div class="collapsible-body">
-                    <span>${getGlobalOptionData(data)}</span>
+                    <span>${getGlobalOptionData(devices).join('')}</span>
                 </div>`);
     Html.push ('</li>')
     Html.push (`</ul>`);
@@ -869,6 +793,7 @@ function editName(id, name) {
             }
             $('#modaledit').find('.endpoints_for_groups').html(html.join(''));
             for (const groupable of groupables) {
+                console.warn(`list 2 select called with ${groupable.ep.ID}, groups ${JSON.stringify(groups)}, groupable ${JSON.stringify(groupable)}`);
                 list2select(`#gk_${groupable.ep.ID || -1}`, groups, groupable.memberOf || []);
             }
         }
@@ -882,7 +807,7 @@ function editName(id, name) {
     if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
             if (ep.input_clusters.includes(4)) {
-                groupables.push({epid: EndPointIDfromEndPoint(ep), ep: ep, memberOf: []});
+                groupables.push({epid: EndPointIDfromEndPoint(ep), ep: ep, memberOf: dev.groups_by_ep[ep.ID] || []});
             }
         }
     }
@@ -1059,11 +984,15 @@ function showDevices() {
         $('.card.flipable').toggleClass('flipped');
     });
 
-    shuffleInstance = devices && devices.length ? new Shuffle($('#devices'), {
-        itemSelector: '.device',
-        sizer: '.js-shuffle-sizer',
-    }) : undefined;
-    doFilter();
+    const element = $('#devices');
+
+    if (element) {
+        shuffleInstance = devices && devices.length ? new Shuffle(element, {
+            itemSelector: '.device',
+            sizer: '.js-shuffle-sizer',
+        }) : undefined;
+        doFilter();
+    }
 
     const getDevName = function (dev_block) {
         return dev_block.find('#dName').text();
@@ -1793,18 +1722,17 @@ function getDevices() {
                     if (msg.error) {
                         errorData.push(msg.error);
                         isHerdsmanRunning = false;
-                        updateStartButton();
-                        showDevices();
                     } else {
                         isHerdsmanRunning = true;
-                        updateStartButton();
-                        showDevices();
                         if (!newDebugMessages) {
                             getDebugMessages();
                         }
                         //getExclude();
                         getBinding();
                     }
+                    updateStartButton();
+                    showDevices();
+                    showLocalData();
                     UpdateAdapterAlive(true)
                 }
             });
@@ -1941,7 +1869,6 @@ function load(settings, onChange) {
             groups = data.groups || {};
         //showGroups();
     });
-        showLocalData();
     })
 
     //getDebugMessages();
@@ -2097,6 +2024,10 @@ function load(settings, onChange) {
 
     $('#add_exclude').click(function () {
         addExcludeDialog();
+    });
+
+    $('#updateData').click(function () {
+        getDevices();
     });
 
     $('#add_binding').click(function () {
