@@ -241,6 +241,7 @@ function getGlobalOptionData() {
 
 function showLocalData() {
     return;
+    /*
     const Html = [];
 
     Html.push(`<ul class="collapsible">`);
@@ -269,6 +270,7 @@ function showLocalData() {
     Html.push (`</ul>`);
     $('#tab-overrides').html(Html.join(''));
     $('.collapsible').collapsible();
+    */
 }
 
 /////
@@ -1868,7 +1870,7 @@ function load(settings, onChange) {
         sendToWrapper(namespace, 'getGroups', {}, function (data) {
             groups = data.groups || {};
         //showGroups();
-    });
+        });
     })
 
     //getDebugMessages();
