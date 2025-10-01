@@ -191,7 +191,6 @@ function sanitizeModelParameter(parameter) {
 
 
 function getModelData(data) {
-    console.warn(JSON.stringify(data));
     const devicesByModel = {};
     for (const dev of data) {
         const modelID = dev.info?.mapped?.model || dev.info.device.modelZigbee || dev.info.device.name || 'unknown';
@@ -200,7 +199,6 @@ function getModelData(data) {
             devicesByModel[modelID].devices.push(dev);
         else devicesByModel[modelID] = {devices:[dev], icon:dev.common.icon};
     }
-    console.warn(JSON.stringify(devicesByModel));
     const Html = [];
     // Html.push(`<ul class="collapsible">`);
     for (const key of Object.keys(devicesByModel)) {
@@ -210,7 +208,7 @@ function getModelData(data) {
         const d_btn_name = `d_toggle_${key}`;
         const d_btn_tip = `fold / unfold devices of ${key}`;
         LocalDataDisplayValues.buttonSet.add(d_btn_name);
-        Html.push(`<tr><td rowspan="${numrows}"><img src = ${model.icon} alt="" class="circle" width="80" height="auto"></td><td colspan="2">Devices of Model ${key}</td><td>${toggleButton(d_btn_name, d_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle')}</td></tr>`)
+        Html.push(`<tr><td rowspan="${numrows}"><img src = ${model.icon} alt="" width="80" height="auto"></td><td colspan="2">Devices of Model ${key}</td><td>${toggleButton(d_btn_name, d_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle')}</td></tr>`)
         let cnt = 0;
         if (foldData.devices) {
             for (const dev of model.devices) {
@@ -242,7 +240,7 @@ function getDeviceData(deviceList, withIcon) {
     let cnt=0;
     for (const dev of deviceList) {
         const rowspan = dev.options ? Object.keys(dev.options).length + 2 : 2;
-        const iconLink = `<img src=${dev.common.icon} class="circle" width="80" height="auto">`;
+        const iconLink = `<img src=${dev.common.icon} width="80" height="auto">`;
         let devieee = dev.info?.device?.ieee;
         if (devieee == undefined) devieee = 'notset' + cnt++;
         const o_btn_name = `o_toggle_${devieee}`;
