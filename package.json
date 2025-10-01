@@ -39,7 +39,7 @@
     "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/testing": "^5.1.0",
     "chai": "^5.2.1",
-    "chai-as-promised": "^7.1.1",
+    "chai-as-promised": "^8.0.2",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.4",
