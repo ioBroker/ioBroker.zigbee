@@ -807,7 +807,7 @@ function editName(id, name) {
     if (dev && dev.info && dev.info.endpoints) {
         for (const ep of dev.info.endpoints) {
             if (ep.input_clusters.includes(4)) {
-                groupables.push({epid: EndPointIDfromEndPoint(ep), ep: ep, memberOf: dev.groups_by_ep[ep.ID] || []});
+                groupables.push({epid: EndPointIDfromEndPoint(ep), ep: ep, memberOf: dev.groups_by_ep ? dev.groups_by_ep[ep.ID] || [] : []});
             }
         }
     }
