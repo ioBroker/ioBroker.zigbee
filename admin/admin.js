@@ -195,6 +195,7 @@ function getModelData(data) {
     const devicesByModel = {};
     for (const dev of data) {
         const modelID = dev.info?.mapped?.model || dev.info.device.modelZigbee || dev.info.device.name || 'unknown';
+        if (modelID == 'group' || modelID == 'Coordinator') continue;
         if (devicesByModel[modelID])
             devicesByModel[modelID].devices.push(dev);
         else devicesByModel[modelID] = {devices:[dev], icon:dev.common.icon};
@@ -202,75 +203,117 @@ function getModelData(data) {
     console.warn(JSON.stringify(devicesByModel));
     const Html = [];
     // Html.push(`<ul class="collapsible">`);
-    Html.push(`<ul class="collection">`)
     for (const key of Object.keys(devicesByModel)) {
         const model = devicesByModel[key];
-        Html.push(`<li class="collection-item avatar>`);
-        //Html.push(`<li>`)
-        //Html.push(`<div class="collapsible-header"><img src=${model.iccon} alt="" class="circle" width="40" height="auto">&nbsp;Paired Models</div>`);
-        //Html.push(`<div class="collapsile-body"<span>${getDeviceData(model.devices)}</span></div>`);
-        Html.push(`<img src = ${model.iccon} alt="" class="circle" width="40" height="auto">`);
-        Html.push(`<span class=title></p>`);
-        Html.push(getDeviceData(model.devices).join('<br>'))
-        Html.push(`</p><a href="#!" class="secondary-content"><i class="material-icons">grade</i></a></li>`)
-    }
-    Html.push('</ul>');
-    return Html;
-}
-function getDeviceData(deviceList, withIcon) {
-    const Html = [`<div class="container">`];
-    for (const dev of deviceList) {
-        const iconLink = `<img src=${dev.common.icon} class="circle" width="40" height="auto">`;
-        Html.push(`<div="row"><div class="col s4">${withIcon ? iconLink : ''}<br>${dev.info.device.ieee}<br>connectedInfo</div>`)
-        Html.push(`<div class=col s4>Device Name:${dev.common.name}</div><div class=col s4>Connected: true</div></div>`);
-        if (dev.options) {
-            Html.push(`<div="row"><div class="col s3">Options</div>`)
-            for (const o of dev.options) {
-                Html.push(`<div class=col s4>${o.key}</div><div class=col s4>${o.value}</div><div>`);
+        const foldData = LocalDataDisplayValues.unfoldedModels[key] || { devices:model.devices.length, options:0};
+        const numrows = foldData.devices + 2; //foldData.options + 2; Options not implemented
+        const d_btn_name = `d_toggle_${key}`;
+        const d_btn_tip = `fold / unfold devices of ${key}`;
+        LocalDataDisplayValues.buttonSet.add(d_btn_name);
+        Html.push(`<tr><td rowspan="${numrows}"><img src = ${model.icon} alt="" class="circle" width="80" height="auto"></td><td colspan="2">Devices of Model ${key}</td><td>${toggleButton(d_btn_name, d_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle')}</td></tr>`)
+        let cnt = 0;
+        if (foldData.devices) {
+            for (const dev of model.devices) {
+                let devieee = dev.info?.device?.ieee;
+
+                if (devieee == undefined) devieee = 'unknown' + cnt++;
+                const bn = `d_edit_${devieee}`
+                Html.push(`<tr><td>${devieee}</td><td>${dev.common.name}</td><td>${toggleButton(bn, 'edit '+ devieee, 'edit')}</td></tr>`)
             }
-            Html.push(`</div>`);
         }
-        Html.push(`</div>`)
+        const o_btn_name = `o_toggle_${key}`;
+        const o_btn_tip = `fold / unfold options for Model ${key}`;
+        Html.push(`<tr></td><td colspan="2">Options for ${key}</td><td>${toggleButton(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle')}</td></tr>`)
+        if (foldData.options) {
+            // not yet implemented
+        }
+
     }
-    Html.push(`</div>`)
     return Html;
 }
-function getGlobalOptionData() {
-    return ['No Data Yet'];
+
+function toggleButton(id, tooltip, icon) {
+    return `<a id="${id}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="${tooltip}"><i class="material-icons large">${icon}</i></a>`;
+}
+
+
+function getDeviceData(deviceList, withIcon) {
+    const Html = [];
+    let cnt=0;
+    for (const dev of deviceList) {
+        const rowspan = dev.options ? Object.keys(dev.options).length + 2 : 2;
+        const iconLink = `<img src=${dev.common.icon} class="circle" width="80" height="auto">`;
+        let devieee = dev.info?.device?.ieee;
+        if (devieee == undefined) devieee = 'notset' + cnt++;
+        const o_btn_name = `o_toggle_${devieee}`;
+        const o_btn_tip = `fold / unfold options for ${devieee}`;
+        LocalDataDisplayValues.buttonSet.add(o_btn_name);
+        const bn = `f_edit_${devieee}`
+        LocalDataDisplayValues.buttonSet.add(bn);
+
+        Html.push(`<tr><td rowspan="${rowspan}">${iconLink}</td><td colspan="2">${dev.common.name} (${devieee})</td><td>${toggleButton(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedDevices ? 'do_not_disturb' : 'add_circle')}</td></tr>`);
+        Html.push(`<tr><td colspan="2">Device flags</td><td>${toggleButton(bn, 'edit flags','edit')}</td></tr>`);
+        if (dev.options) {
+            for (const o of dev.options) {
+                const bn = `o_edit_${devieee}.${o.key}`
+                LocalDataDisplayValues.buttonSet.add(bn);
+                Html.push(`<tr><td>${o.key}></td><td>${o.value}</td><td>${toggleButton(bn, 'edit flags','edit')}</td></tr>`);
+            }
+        }
+    }
+    return Html;
+}
+
+const LocalDataDisplayValues = {
+    unfoldedModels : {}, // { plug01: {devices: 0, options: 0}} Number = number of shown devices / options, 0= folded, != 0: unfolded, count
+    unfoldedDevices : {}, // { 0xdeadbeefdeadbeef: n} n = 0: folded, n>0: unfolded
+    buttonSet: new Set(),
+}
+
+
+function updateLocalDataFilter(id, val, fold) {
+    const ModelFoldUnfold = LocalDataDisplayValues.unfoldedModels[id];
+    if (ModelFoldUnfold) {
+        if (ModelFoldUnfold[fold] == 0) ModelFoldUnfold[fold] = val; else ModelFoldUnfold[fold] = 0;
+        return;
+    }
+    const DeviceFoldUnfold = LocalDataDisplayValues.unfoldedDevices[id];
+    if (DeviceFoldUnfold[id]==0) DeviceFoldUnfold[id] = val; else DeviceFoldUnfold[id] = 0;
+}
+
+function countModelRows(id) {
+    let cnt = 0;
+    for (const model of Object.keys(LocalDataDisplayValues.unfoldedModels).filter((entry) => id=== undefined || id===entry)) {
+        const m = LocalDataDisplayValues.unfoldedModels[model];
+        cnt += m ? (m.devices || 0) + (m.options || 0) : 0;
+    }
+}
+
+function countDeviceRows(id) {
+    let cnt = 0;
+    for (const device  of Object.keys(LocalDataDisplayValues.unfoldedDevices).filter((entry) => id=== undefined || id===entry)) {
+        const d = LocalDataDisplayValues.unfoldedDevices[device];
+        cnt += d ? d : 0;
+    }
+}
+
+function countAllRows() {
+    return countModelRows() + countDeviceRows();
 }
 
 function showLocalData() {
-    return;
-    /*
-    const Html = [];
 
-    Html.push(`<ul class="collapsible">`);
-    Html.push('<li>')
-    Html.push (`<li class="active"><div class="collapsible-header">
-                    Paired Models
-                </div>`);
-    Html.push (`<div class="collapsible-body">
-                    <span>${getModelData(devices).join('')}</span>
-                </div>`);
-    Html.push ('</li><li>')
-    Html.push (`<div class="collapsible-header">
-                    Paired Devices
-                </div>`);
-    Html.push (`<div class="collapsible-body">
-                    <span>${getDeviceData(devices, true).join('')}</span>
-                </div>`);
-    Html.push ('</li><li>')
-    Html.push (`<div class="collapsible-header">
-                   Global Options
-                </div>`);
-    Html.push (`<div class="collapsible-body">
-                    <span>${getGlobalOptionData(devices).join('')}</span>
-                </div>`);
-    Html.push ('</li>')
-    Html.push (`</ul>`);
+
+    const ModelHtml = getModelData(devices);
+    const DeviceHtml = getDeviceData(devices);
+
+    const RowSpan = ModelHtml.length + DeviceHtml.length + 2;
+    const Html = [`<table style="width:100%"><tr><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Model Data</th><th>${toggleButton('t_all_models', 'fold all models', 'do_not_disturb_on')}</th></tr>`]
+    Html.push(ModelHtml.join(''));
+    Html.push(`<tr><th colspan=3>Device Data</th><th>${toggleButton('t_all_models', 'fold all models', 'do_not_disturb_on')}</th></tr>`);
+    Html.push(DeviceHtml.join(''));
+    Html.push('</table>');
     $('#tab-overrides').html(Html.join(''));
-    $('.collapsible').collapsible();
-    */
 }
 
 /////
@@ -988,12 +1031,14 @@ function showDevices() {
 
     const element = $('#devices');
 
-    if (element) {
+    if ($('tab-main')) try {
         shuffleInstance = devices && devices.length ? new Shuffle(element, {
             itemSelector: '.device',
             sizer: '.js-shuffle-sizer',
         }) : undefined;
         doFilter();
+    } catch {
+        // empty.
     }
 
     const getDevName = function (dev_block) {
