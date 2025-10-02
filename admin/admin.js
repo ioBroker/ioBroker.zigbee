@@ -189,6 +189,13 @@ function sanitizeModelParameter(parameter) {
 //
 ////
 
+const LocalDataDisplayValues = {
+    unfoldedModels : {}, // { plug01: {devices: true/false, options: true/false}}
+    unfoldedDevices : {}, // { 0xdeadbeefdeadbeef: true/false}
+    buttonSet: new Set(),
+    showModels: true,
+}
+
 
 function getModelData(data) {
     const devicesByModel = {};
@@ -197,18 +204,25 @@ function getModelData(data) {
         if (modelID == 'group' || modelID == 'Coordinator') continue;
         if (devicesByModel[modelID])
             devicesByModel[modelID].devices.push(dev);
-        else devicesByModel[modelID] = {devices:[dev], icon:dev.common.icon};
+        else devicesByModel[modelID] = {devices:[dev], icon:dev.common.icon, options:dev?.info?.mapped?.modelSetOptions || []};
     }
     const Html = [];
     // Html.push(`<ul class="collapsible">`);
+    const s = new Set();
     for (const key of Object.keys(devicesByModel)) {
+        console.warn(`getmodeldata: model is ${key}`)
         const model = devicesByModel[key];
-        const foldData = LocalDataDisplayValues.unfoldedModels[key] || { devices:model.devices.length, options:0};
-        const numrows = foldData.devices + 2; //foldData.options + 2; Options not implemented
-        const d_btn_name = `d_toggle_${key}`;
+        const foldData = LocalDataDisplayValues.unfoldedModels[key] || { devices:false, options:false};
+        const numrows = (foldData.devices ? model.devices.length : 0) + (foldData.options ? model.options.length : 0) + 2;
+        const d_btn_name = `d_toggle_${sanitizeModelParameter(key)}`;
+        const e_btn_name = `m_edit_${sanitizeModelParameter(key)}`;
         const d_btn_tip = `fold / unfold devices of ${key}`;
+        const e_btn_tip = `edit model ${key}`;
+        const d_btn = toggleButton(d_btn_name, d_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle');
+        const e_btn = toggleButton(e_btn_name, e_btn_tip, 'edit', 'green')
         LocalDataDisplayValues.buttonSet.add(d_btn_name);
-        Html.push(`<tr><td rowspan="${numrows}"><img src = ${model.icon} alt="" width="80" height="auto"></td><td colspan="2">Devices of Model ${key}</td><td>${toggleButton(d_btn_name, d_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle')}</td></tr>`)
+        LocalDataDisplayValues.buttonSet.add(e_btn_name);
+        Html.push(`<tr id="datarowodd"><td rowspan="${numrows}"><img src = ${model.icon} alt="" width="80" height="auto"></td><td colspan="2">Devices of Model ${key}</td><td>${d_btn}${e_btn}</td></tr>`)
         let cnt = 0;
         if (foldData.devices) {
             for (const dev of model.devices) {
@@ -216,22 +230,26 @@ function getModelData(data) {
 
                 if (devieee == undefined) devieee = 'unknown' + cnt++;
                 const bn = `d_edit_${devieee}`
-                Html.push(`<tr><td>${devieee}</td><td>${dev.common.name}</td><td>${toggleButton(bn, 'edit '+ devieee, 'edit')}</td></tr>`)
+                Html.push(`<tr id="datarowopt"><td>${devieee}</td><td>${dev.common.name}</td><td>${toggleButton(bn, 'edit '+ devieee, 'edit', 'lime')}</td></tr>`)
             }
         }
-        const o_btn_name = `o_toggle_${key}`;
+        const o_btn_name = `o_toggle_${sanitizeModelParameter(key)}`;
         const o_btn_tip = `fold / unfold options for Model ${key}`;
-        Html.push(`<tr></td><td colspan="2">Options for ${key}</td><td>${toggleButton(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle')}</td></tr>`)
+        LocalDataDisplayValues.buttonSet.add(o_btn_name);
+        Html.push(`<tr id="dataroweven"></td><td colspan="2">Options for ${key}</td><td>${toggleButton(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle')}</td></tr>`)
         if (foldData.options) {
-            // not yet implemented
+            console.warn(`folddata.options: ${JSON.stringify(model.options)}`)
+            for (const option of model.options) {
+                Html.push(`<tr id="dataroweven"><td>${option.key}</td><td ${option.value === undefined ? 'id="datared">not set on model' : option.value}</td><td>&nbsp;</td></tr>`)
+            }
         }
 
     }
     return Html;
 }
 
-function toggleButton(id, tooltip, icon) {
-    return `<a id="${id}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="${tooltip}"><i class="material-icons large">${icon}</i></a>`;
+function toggleButton(id, tooltip, icon, color) {
+    return `<a id="${id}" class="btn-floating waves-effect waves-light ${color ? color : 'blue'} tooltipped center-align hoverable translateT" title="${tooltip}"><i class="material-icons large">${icon}</i></a>`;
 }
 
 
@@ -243,75 +261,86 @@ function getDeviceData(deviceList, withIcon) {
         const iconLink = `<img src=${dev.common.icon} width="80" height="auto">`;
         let devieee = dev.info?.device?.ieee;
         if (devieee == undefined) devieee = 'notset' + cnt++;
-        const o_btn_name = `o_toggle_${devieee}`;
+        const o_btn_name = `do_toggle_${devieee}`;
         const o_btn_tip = `fold / unfold options for ${devieee}`;
         LocalDataDisplayValues.buttonSet.add(o_btn_name);
         const bn = `f_edit_${devieee}`
         LocalDataDisplayValues.buttonSet.add(bn);
 
-        Html.push(`<tr><td rowspan="${rowspan}">${iconLink}</td><td colspan="2">${dev.common.name} (${devieee})</td><td>${toggleButton(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedDevices ? 'do_not_disturb' : 'add_circle')}</td></tr>`);
-        Html.push(`<tr><td colspan="2">Device flags</td><td>${toggleButton(bn, 'edit flags','edit')}</td></tr>`);
-        if (dev.options) {
+        Html.push(`<tr  id="datarowodd"><td rowspan="${rowspan}">${iconLink}</td><td colspan="2">${dev.common.name} (${devieee})</td><td>${toggleButton(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedDevices ? 'do_not_disturb' : 'add_circle')}</td></tr>`);
+        Html.push(`<tr id="dataroweven"><td colspan="2">Device flags</td><td>${toggleButton(bn, 'edit flags','edit')}</td></tr>`);
+        console.warn(`dev is ${JSON.stringify(dev)}`);
+        if (dev.options && LocalDataDisplayValues.unfoldedDevices[devieee]) {
             for (const o of dev.options) {
                 const bn = `o_edit_${devieee}.${o.key}`
                 LocalDataDisplayValues.buttonSet.add(bn);
-                Html.push(`<tr><td>${o.key}></td><td>${o.value}</td><td>${toggleButton(bn, 'edit flags','edit')}</td></tr>`);
+                Html.push(`<tr id="datarowopt"><td>${o.key}></td><td>${o.value}</td><td>${toggleButton(bn, 'edit flags','edit')}</td></tr>`);
             }
         }
     }
     return Html;
 }
 
-const LocalDataDisplayValues = {
-    unfoldedModels : {}, // { plug01: {devices: 0, options: 0}} Number = number of shown devices / options, 0= folded, != 0: unfolded, count
-    unfoldedDevices : {}, // { 0xdeadbeefdeadbeef: n} n = 0: folded, n>0: unfolded
-    buttonSet: new Set(),
-}
-
-
-function updateLocalDataFilter(id, val, fold) {
-    const ModelFoldUnfold = LocalDataDisplayValues.unfoldedModels[id];
-    if (ModelFoldUnfold) {
-        if (ModelFoldUnfold[fold] == 0) ModelFoldUnfold[fold] = val; else ModelFoldUnfold[fold] = 0;
-        return;
-    }
-    const DeviceFoldUnfold = LocalDataDisplayValues.unfoldedDevices[id];
-    if (DeviceFoldUnfold[id]==0) DeviceFoldUnfold[id] = val; else DeviceFoldUnfold[id] = 0;
-}
-
-function countModelRows(id) {
-    let cnt = 0;
-    for (const model of Object.keys(LocalDataDisplayValues.unfoldedModels).filter((entry) => id=== undefined || id===entry)) {
-        const m = LocalDataDisplayValues.unfoldedModels[model];
-        cnt += m ? (m.devices || 0) + (m.options || 0) : 0;
-    }
-}
-
-function countDeviceRows(id) {
-    let cnt = 0;
-    for (const device  of Object.keys(LocalDataDisplayValues.unfoldedDevices).filter((entry) => id=== undefined || id===entry)) {
-        const d = LocalDataDisplayValues.unfoldedDevices[device];
-        cnt += d ? d : 0;
-    }
-}
-
-function countAllRows() {
-    return countModelRows() + countDeviceRows();
-}
-
 function showLocalData() {
-
-
+    LocalDataDisplayValues.buttonSet.clear();
     const ModelHtml = getModelData(devices);
     const DeviceHtml = getDeviceData(devices);
+    const sm = LocalDataDisplayValues.showModels;
+    const dmtoggle = toggleButton('t_all_models', sm ? 'fold Models / show Devices' : 'fold Devices / show Models', !sm ? 'developer_board' : 'devices_other')
 
-    const RowSpan = ModelHtml.length + DeviceHtml.length + 2;
-    const Html = [`<table style="width:100%"><tr><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Model Data</th><th>${toggleButton('t_all_models', 'fold all models', 'do_not_disturb_on')}</th></tr>`]
-    Html.push(ModelHtml.join(''));
-    Html.push(`<tr><th colspan=3>Device Data</th><th>${toggleButton('t_all_models', 'fold all models', 'do_not_disturb_on')}</th></tr>`);
-    Html.push(DeviceHtml.join(''));
+    const RowSpan = sm ? ModelHtml.length +2 : DeviceHtml.length + 2;
+    const Html = [];
+    if (sm) {
+        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Model Data</th><th>${dmtoggle}</th></tr>`)
+        Html.push(ModelHtml.join(''));
+    }
+    else {
+        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Device Data</th><th>${dmtoggle}</th></tr>`)
+        Html.push(DeviceHtml.join(''));
+    }
+    Html.push(`<tr id="datatable"><td colspan="4">Statistics</td></tr>`)
     Html.push('</table>');
     $('#tab-overrides').html(Html.join(''));
+
+    $('#t_all_models').click(function () {
+        LocalDataDisplayValues.showModels = !LocalDataDisplayValues.showModels;
+        showLocalData();
+    });
+
+    console.warn(`lddv is ${JSON.stringify(LocalDataDisplayValues)}`)
+    for (const item of LocalDataDisplayValues.buttonSet) {
+        console.warn(`adding click to ${item}`)
+        if (item.startsWith('d_toggle_')) $(`#${item}`).click(function () {
+            const key = item.substring(9);
+            console.warn(`clicked ${item}`);
+            if (LocalDataDisplayValues.unfoldedModels.hasOwnProperty(key))
+                LocalDataDisplayValues.unfoldedModels[key].devices =! LocalDataDisplayValues.unfoldedModels[key].devices;
+            else
+                LocalDataDisplayValues.unfoldedModels[key] = { devices:true, options: false };
+            showLocalData();
+        });
+        if (item.startsWith('o_toggle_')) $(`#${item}`).click(function () {
+            console.warn(`clicked ${item}`);
+            const key = item.substring(9);
+            if (LocalDataDisplayValues.unfoldedModels.hasOwnProperty(key))
+                LocalDataDisplayValues.unfoldedModels[key].options = !LocalDataDisplayValues.unfoldedModels[key].options;
+            else
+                LocalDataDisplayValues.unfoldedModels[key] = { devices:false, options: true };
+            showLocalData();
+        })
+        if (item.startsWith('do_toggle_')) $(`#${item}`).click(function () {
+            console.warn(`clicked ${item}`);
+            const key = item.substring(10);
+            if (LocalDataDisplayValues.unfoldedDevices.hasOwnProperty(key))
+                LocalDataDisplayValues.unfoldedDevices[key] =! LocalDataDisplayValues.unfoldedDevices[key];
+            else
+                LocalDataDisplayValues.unfoldedDevices[key] = true;
+            showLocalData();
+        })
+
+    }
+
+
 }
 
 /////
@@ -1007,6 +1036,7 @@ function showDevices() {
             return room;
         }
     }).filter((item) => item != undefined));
+    console.warn(`rooms is ${JSON.stringify(allRooms)}`);
     const roomSelector = $('#room-filter');
     roomSelector.empty();
     roomSelector.append(`<li class="device-order-item" data-type="All" tabindex="0"><a class="translate" data-lang="All">All</a></li>`);
