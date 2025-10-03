@@ -763,7 +763,7 @@ class Zigbee extends utils.Adapter {
             if (this.zbController) {
                 chain.push(this.zbController.stop());
             }
-            Promise.all(chain);
+            await Promise.all(chain);
             this.log.info('cleanup successful');
             callback();
         } catch (error) {

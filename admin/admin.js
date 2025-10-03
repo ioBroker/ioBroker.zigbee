@@ -9,6 +9,7 @@ const Materialize = (typeof M !== 'undefined') ? M : Materialize,
     namespace = 'zigbee.' + instance,
     namespaceLen = namespace.length;
 let devices = [],
+    models = [],
     debugDevices = [],
     messages = [],
     map = {},
@@ -17,6 +18,7 @@ let devices = [],
     network,
     networkEvents,
     responseCodes = false,
+    localConfigData = {},
     groups = {},
     devGroups = {}, // eslint-disable-line prefer-const
     binding = [],
@@ -180,7 +182,11 @@ function getLQICls(value) {
 
 function sanitizeModelParameter(parameter) {
     const replaceByUnderscore = /[\s/]/g;
-    return parameter.replace(replaceByUnderscore, '_');
+    try {
+        return parameter.replace(replaceByUnderscore, '_');
+    }
+    catch {}
+    return parameter;
 }
 
 /////
@@ -197,50 +203,50 @@ const LocalDataDisplayValues = {
 }
 
 
-function getModelData(data) {
-    const devicesByModel = {};
-    for (const dev of data) {
-        const modelID = dev.info?.mapped?.model || dev.info.device.modelZigbee || dev.info.device.name || 'unknown';
-        if (modelID == 'group' || modelID == 'Coordinator') continue;
-        if (devicesByModel[modelID])
-            devicesByModel[modelID].devices.push(dev);
-        else devicesByModel[modelID] = {devices:[dev], icon:dev.common.icon, options:dev?.info?.mapped?.modelSetOptions || []};
-    }
+function getModelData(data, models) {
     const Html = [];
     // Html.push(`<ul class="collapsible">`);
     const s = new Set();
-    for (const key of Object.keys(devicesByModel)) {
-        console.warn(`getmodeldata: model is ${key}`)
-        const model = devicesByModel[key];
-        const foldData = LocalDataDisplayValues.unfoldedModels[key] || { devices:false, options:false};
-        const numrows = (foldData.devices ? model.devices.length : 0) + (foldData.options ? model.options.length : 0) + 2;
-        const d_btn_name = `d_toggle_${sanitizeModelParameter(key)}`;
-        const e_btn_name = `m_edit_${sanitizeModelParameter(key)}`;
+    for (const k of Object.keys(models)) {
+        const model = models[k];
+        const key = model.model.model;
+        console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
+        const numOptions = Object.keys(model.setOptions).length;
+        const foldData = LocalDataDisplayValues.unfoldedModels[k] || { devices:false, options:false};
+        let numrows = 1;
+        if (foldData.devices) numrows +=  model.devices.length;
+        if (numOptions > 0) numrows += 1;
+        if (foldData.options) numrows += numOptions;
+        //const numrows = (foldData.devices ? model.devices.length : 0) + (foldData.options ? numOptions : 0) + numOptions > 0 ? 2 : 1;
+        console.warn(`numrows is ${numrows} with ${model.devices.length} ${foldData.devices ? 'shown' : 'hidden'} devices and ${numOptions} options ${foldData.options ? 'shown' : 'hidden'}`);
+        const d_btn_name = `d_toggle_${k}`;
+        const e_btn_name = `m_edit_${k}`;
         const d_btn_tip = `fold / unfold devices of ${key}`;
         const e_btn_tip = `edit model ${key}`;
-        const d_btn = toggleButton(d_btn_name, d_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle');
-        const e_btn = toggleButton(e_btn_name, e_btn_tip, 'edit', 'green')
+        const d_btn = btnParam(d_btn_name, d_btn_tip, foldData.devices ? 'expand_less' : 'expand_more', false);
+        const e_btn = btnParam(e_btn_name, e_btn_tip, 'edit', 'green', false)
         LocalDataDisplayValues.buttonSet.add(d_btn_name);
         LocalDataDisplayValues.buttonSet.add(e_btn_name);
-        Html.push(`<tr id="datarowodd"><td rowspan="${numrows}"><img src = ${model.icon} alt="" width="80" height="auto"></td><td colspan="2">Devices of Model ${key}</td><td>${d_btn}${e_btn}</td></tr>`)
+        Html.push(`<tr id="datarowodd"><td rowspan="${numrows}"><img src = ${model.icon} alt="" width="80" height="auto"></td><td colspan="2">Devices of Model ${key}</td><td>${d_btn}&nbsp;${e_btn}</td></tr>`)
         let cnt = 0;
         if (foldData.devices) {
             for (const dev of model.devices) {
-                let devieee = dev.info?.device?.ieee;
+                let devieee = dev._id.replace(`${namespace}.`, '');
 
                 if (devieee == undefined) devieee = 'unknown' + cnt++;
                 const bn = `d_edit_${devieee}`
-                Html.push(`<tr id="datarowopt"><td>${devieee}</td><td>${dev.common.name}</td><td>${toggleButton(bn, 'edit '+ devieee, 'edit', 'lime')}</td></tr>`)
+                Html.push(`<tr id="datarowopt"><td>${devieee}</td><td>${dev.common.name}</td><td>${btnParam(bn, 'edit '+ devieee, 'edit', 'lime', true)}</td></tr>`)
             }
         }
-        const o_btn_name = `o_toggle_${sanitizeModelParameter(key)}`;
-        const o_btn_tip = `fold / unfold options for Model ${key}`;
-        LocalDataDisplayValues.buttonSet.add(o_btn_name);
-        Html.push(`<tr id="dataroweven"></td><td colspan="2">Options for ${key}</td><td>${toggleButton(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedModels.devices ? 'do_not_disturb' : 'add_circle')}</td></tr>`)
-        if (foldData.options) {
-            console.warn(`folddata.options: ${JSON.stringify(model.options)}`)
-            for (const option of model.options) {
-                Html.push(`<tr id="dataroweven"><td>${option.key}</td><td ${option.value === undefined ? 'id="datared">not set on model' : option.value}</td><td>&nbsp;</td></tr>`)
+        if (numOptions > 0) {
+            const o_btn_name = `o_toggle_${k}`;
+            const o_btn_tip = `fold / unfold options for Model ${key}`;
+            LocalDataDisplayValues.buttonSet.add(o_btn_name);
+            Html.push(`<tr id="dataroweven"></td><td colspan="2">Options for ${key}</td><td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}</td></tr>`)
+            if (foldData.options) {
+                for (const key of Object.keys(model.setOptions)) {
+                    Html.push(`<tr id="dataroweven"><td>${key}</td><td ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>&nbsp;</td></tr>`)
+                }
             }
         }
 
@@ -248,33 +254,31 @@ function getModelData(data) {
     return Html;
 }
 
-function toggleButton(id, tooltip, icon, color) {
-    return `<a id="${id}" class="btn-floating waves-effect waves-light ${color ? color : 'blue'} tooltipped center-align hoverable translateT" title="${tooltip}"><i class="material-icons large">${icon}</i></a>`;
+function btnParam(id, tooltip, icon, color, disabled) {
+    return `<a id="${id}" class="btn-floating waves-effect waves-light right ${color ? color : 'blue'} ${disabled ? 'disabled ' : ''}tooltipped center-align hoverable translateT" title="${tooltip}"><i class="material-icons large">${icon}</i></a>`;
 }
 
 
 function getDeviceData(deviceList, withIcon) {
     const Html = [];
-    let cnt=0;
     for (const dev of deviceList) {
         const rowspan = dev.options ? Object.keys(dev.options).length + 2 : 2;
-        const iconLink = `<img src=${dev.common.icon} width="80" height="auto">`;
-        let devieee = dev.info?.device?.ieee;
-        if (devieee == undefined) devieee = 'notset' + cnt++;
+        const iconLink = `<img src=${dev.common.icon} class="dev_list">`;
+        const devieee = dev._id.replace(`${namespace}.`, '');
         const o_btn_name = `do_toggle_${devieee}`;
         const o_btn_tip = `fold / unfold options for ${devieee}`;
         LocalDataDisplayValues.buttonSet.add(o_btn_name);
         const bn = `f_edit_${devieee}`
         LocalDataDisplayValues.buttonSet.add(bn);
 
-        Html.push(`<tr  id="datarowodd"><td rowspan="${rowspan}">${iconLink}</td><td colspan="2">${dev.common.name} (${devieee})</td><td>${toggleButton(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedDevices ? 'do_not_disturb' : 'add_circle')}</td></tr>`);
-        Html.push(`<tr id="dataroweven"><td colspan="2">Device flags</td><td>${toggleButton(bn, 'edit flags','edit')}</td></tr>`);
-        console.warn(`dev is ${JSON.stringify(dev)}`);
+        Html.push(`<tr id="datarowodd"><td rowspan="${rowspan}">${iconLink}</td><td colspan="2">${dev.common.name} (${devieee})</td><td>${btnParam(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedDevices ? 'do_not_disturb' : 'add_circle')}</td></tr>`);
+        Html.push(`<tr id="dataroweven"><td colspan="2">Device flags</td><td>${btnParam(bn, 'edit flags','edit')}</td></tr>`);
+        //console.warn(`dev is ${JSON.stringify(dev)}`);
         if (dev.options && LocalDataDisplayValues.unfoldedDevices[devieee]) {
             for (const o of dev.options) {
                 const bn = `o_edit_${devieee}.${o.key}`
                 LocalDataDisplayValues.buttonSet.add(bn);
-                Html.push(`<tr id="datarowopt"><td>${o.key}></td><td>${o.value}</td><td>${toggleButton(bn, 'edit flags','edit')}</td></tr>`);
+                Html.push(`<tr id="datarowopt"><td>${o.key}></td><td>${o.value}</td><td>${btnParam(bn, 'edit flags','edit')}</td></tr>`);
             }
         }
     }
@@ -283,19 +287,19 @@ function getDeviceData(deviceList, withIcon) {
 
 function showLocalData() {
     LocalDataDisplayValues.buttonSet.clear();
-    const ModelHtml = getModelData(devices);
+    const ModelHtml = getModelData(devices, models);
     const DeviceHtml = getDeviceData(devices);
     const sm = LocalDataDisplayValues.showModels;
-    const dmtoggle = toggleButton('t_all_models', sm ? 'fold Models / show Devices' : 'fold Devices / show Models', !sm ? 'developer_board' : 'devices_other')
+    const dmtoggle = btnParam('t_all_models', sm ? 'fold Models / show Devices' : 'fold Devices / show Models', !sm ? 'developer_board' : 'devices_other')
 
     const RowSpan = sm ? ModelHtml.length +2 : DeviceHtml.length + 2;
     const Html = [];
     if (sm) {
-        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Model Data</th><th>${dmtoggle}</th></tr>`)
+        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Model Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
         Html.push(ModelHtml.join(''));
     }
     else {
-        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Device Data</th><th>${dmtoggle}</th></tr>`)
+        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Device Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
         Html.push(DeviceHtml.join(''));
     }
     Html.push(`<tr id="datatable"><td colspan="4">Statistics</td></tr>`)
@@ -1765,54 +1769,30 @@ function getDevices() {
                 coordinatorinfo = msg;
                 updateStartButton()
             }
-            sendToWrapper(namespace, 'getDevices', {}, function (msg) {
-                if (msg) {
-                    devices = msg.devices ? msg.devices : [];
-                    // check if stashed error messages are sent alongside
-                    if (msg.clean)
-                        $('#state_cleanup_btn').removeClass('hide');
-                    else
-                        $('#state_cleanup_btn').addClass('hide');
-                    if (msg.errors && msg.errors.length > 0) {
-                        $('#show_errors_btn').removeClass('hide');
-                        errorData = msg.errors;
-                    }
-                    else {
-                        $('#show_errors_btn').addClass('hide');
-                    }
-                    let newDebugMessages = false;
-
-                    //check if debug messages are sent alongside
-                    if (msg && typeof (msg.debugDevices == 'array')) {
-                        debugDevices = msg.debugDevices;
-                    }
-                    else
-                        debugDevices = [];
-                    if (debugMessages.byId) {
-                        newDebugMessages = true;
-                        debugMessages.byId = msg;
-                        if (msg) displayDebugMessages(debugMessages)
-                    }
-                    lockout.isActive = false;
-                    if (msg.error) {
-                        errorData.push(msg.error);
-                        isHerdsmanRunning = false;
-                    } else {
-                        isHerdsmanRunning = true;
-                        if (!newDebugMessages) {
-                            getDebugMessages();
-                        }
-                        //getExclude();
-                        getBinding();
-                    }
-                    updateStartButton();
-                    showDevices();
-                    showLocalData();
-                    UpdateAdapterAlive(true)
+        });
+        sendToWrapper(namespace, 'getLocalConfigItems', {getAllData:true}, function(msg) {
+            if (msg.hasOwnProperty('by_id') && msg.hasOwnProperty('by_model'))
+                localConfigData = msg;
+        })
+        sendToWrapper(namespace, 'getDevices', {}, function (msg) {
+            if (msg) {
+                extractDevicesData(msg);
+                if (msg.error) {
+                    errorData.push(msg.error);
+                    isHerdsmanRunning = false;
+                } else {
+                    isHerdsmanRunning = true;
+                    getBinding();
                 }
-            });
+                updateStartButton();
+                showDevices();
+                showLocalData();
+                UpdateAdapterAlive(true)
+            }
         });
     }
+
+
 
     if (lockout.timeoutid) {
         clearTimeout(lockout.timeoutid);
@@ -1825,6 +1805,37 @@ function getDevices() {
     }, 100);
 
 }
+
+function extractDevicesData(msg) {
+    devices = msg.devices ? msg.devices : [];
+    // check if stashed error messages are sent alongside
+    if (msg.clean)
+        $('#state_cleanup_btn').removeClass('hide');
+    else
+        $('#state_cleanup_btn').addClass('hide');
+    if (msg.errors && msg.errors.length > 0) {
+        $('#show_errors_btn').removeClass('hide');
+        errorData = msg.errors;
+    }
+    else {
+        $('#show_errors_btn').addClass('hide');
+    }
+    //check if debug messages are sent alongside
+    if (msg && typeof (msg.debugDevices == 'array')) {
+        debugDevices = msg.debugDevices;
+    }
+    else
+        debugDevices = [];
+    if (debugMessages.byId) {
+        debugMessages.byId = msg;
+        if (msg) displayDebugMessages(debugMessages);
+    }
+    if (msg.models) models = msg.models;
+    lockout.isActive = false;
+
+}
+
+
 
 function getNamedColors() {
     sendToWrapper(namespace, 'getNamedColors', {}, function(msg) {
@@ -4024,20 +4035,22 @@ function sortByTitle(element) {
 
 
 function updateDevice(id) {
-    sendToWrapper(namespace, 'getDevice', {id: id}, function (msg) {
-        if (msg) {
-            const devs = msg.devices;
-            if (devs) {
-                if (devs.error) {
-                    showMessage(devs.error, _('Error'));
-                } else {
-                    removeDevice(id);
-                    devs.forEach(dev => devices.push(dev));
-                    showDevices();
+    if (devices.length > 0)
+        sendToWrapper(namespace, 'getDevice', {id: id}, function (msg) {
+            if (msg) {
+                const devs = msg.devices;
+                if (devs) {
+                    if (devs.error) {
+                        showMessage(devs.error, _('Error'));
+                    } else {
+                        removeDevice(id);
+                        devs.forEach(dev => devices.push(dev));
+                        showDevices();
+                    }
                 }
             }
-        }
-    });
+        });
+    else sendToWrapper(namespace, 'getDevices', {}, extractDevicesData)
 }
 
 function removeDevice(id) {
