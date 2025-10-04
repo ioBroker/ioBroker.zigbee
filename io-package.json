@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.1.5-alpha.2",
+    "version": "3.1.5",
     "news": {
+      "3.1.5": {
+        "en": "Bugfixes\nZHC25.36.0\nreduced stopTimeout to 5s",
+        "de": "Bugfixes\nZHC25.36.0\nreduzierter StopTimeout auf 5s",
+        "ru": "Багфиксы\nZHC25.36.0\nсокращение StopTimeout до 5",
+        "pt": "Correcções de Erros\nZHC25.36.0\ntempo de paragem reduzido para 5s",
+        "nl": "Bugfixes\nZHC25,36,0\nverminderde stopTimeout tot 5s",
+        "fr": "Fixes de bogue\nZHC25.36.0\ntemps d'arrêt réduit à 5s",
+        "it": "Bugfix\nZHC25.36.0\narresto ridottoTimeout a 5s",
+        "es": "Bugfixes\nZHC25.36.0\nstopTimeout reducido a 5s",
+        "pl": "Korekty błędów\nZHC25.36.0\nzmniejszony czas zatrzymania do 5 s",
+        "uk": "Помилки\nЗХК25.36.0\nзнижений припуск до 5s",
+        "zh-cn": "错误修正\nZHC25.36.0 (韩语)\n停止时间减少到 5s"
+      },
       "3.1.4": {
         "en": "Remove extra logging\nAdd extra configurations\nDo not read states from deactivated devices\nIgnore deactivated devices for group state updates\nChange display for deactivated devices in the object tree (gray, no connected icon)\nmore detailed device debug\ndevice debug UI improvements\nPairing and device Query buttons on router cards\nZHC 25.31.0, ZH 6.1.2 or newer\nOptions based on ZHC defined options",
         "de": "Entfernen Sie zusätzliche Protokollierung\nZusätzliche Konfigurationen hinzufügen\nNicht lesen von Zuständen aus deaktivierten Geräten\nDeaktivierte Geräte für Gruppenzustandsupdates ignorieren\nAnzeige für deaktivierte Geräte im Objektbaum ändern (grau, kein angeschlossenes Symbol)\ndetaillierte gerätedetails\ngerät debug UI Verbesserungen\nPaarung und Gerät Query-Tasten auf Routerkarten\nZHC 25.31.0, ZH 6.1.2 oder neuer\nOptionen basierend auf ZHC definierten Optionen",
@@ -80,19 +93,6 @@
         "pl": "Napraw dla definicji podnoszenie konfiguracji Ikea SOMRIG. Punkt końcowy nie jest błędem funkcji.\nDostęp do opcji 'zigbee2mqtt jako ustawień w adapterze zigbee (ALPHA Stage!)\nFix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)\nAktualizacja panelu konfiguracji sprzętowej - wymieniono przyciski tekstowe na przyciski z ikonami.\nOgraniczone stany na płytkach urządzenia do stanów, które są tylko odczytywane lub które mogą być modyfikowane w sposób rozsądny za pomocą płytki urządzenia.\n",
         "uk": "Виправлення для налаштування Ikea SOMRIG 'Визначення. кінцева точка не є помилкою функції.\nДоступ до опцій Zigbee2mqtt як налаштування адаптера Zigbee (ALPHA Stage !)\nВиправлення для 'error: zigbee.0 (1118300) zigbee.0 вже запущений' при запуску адаптера (Alpha Stage)\nОновлена панель конфігурації обладнання - обмінні текстові кнопки для гудзиків з іконками.\nОбмежені стани на плитці пристрою для станів, які читаються тільки або які можуть бути змінені, швидко через плитку пристрою.\n",
         "zh-cn": "修复Ikea SOMRIG 配置提升定义 。 结束点不是一个函数'错误.\n访问 'zigbee2mqtt 选项作为 Zigbee 适配器的设置( ALPHA stage !) \n在适配器启动( Alpha Stage)时为 'error: zigbee. 0 (1118300) zigbee. 0 已经运行' 进行修复\n更新的硬件配置面板 - 用图标交换文本按钮作为按钮.\n将设备瓦片的状态限制在只读或通过设备瓦片可敏感修改的状态.\n"
-      },
-      "3.0.0": {
-        "en": "Breaking change: Start of zigbee subsystem requires configuration entry !!!\nHardware configuration panel\nUpdate for external converter - detect /dist/ subfolder\nUpdate device image: use of icons defined in external converter (beta)\n",
-        "de": "Bruchänderung: Beginn des Zickbee Subsystems erfordert Konfigurationseintrag!!!\nHardware-Konfigurationspanel\nUpdate für externen Konverter - Erkennung /dist/ Unterordner\nGerätebild aktualisieren: Verwendung von Icons, die im externen Konverter (beta) definiert sind\n",
-        "ru": "Переломные изменения: Запуск подсистемы Zigbee требует ввода конфигурации!!!\nАппаратная конфигурационная панель\nОбновление внешнего конвертера - детектировать /dist/ подпапку\nОбновление изображения устройства: использование значков, определенных во внешнем конвертере (бета)\n",
-        "pt": "Mudança de ruptura: O início do subsistema zigbee requer entrada de configuração !!!\nPainel de configuração do hardware\nAtualização para conversor externo - detectar /dist / subpastas\nImagem do dispositivo de atualização: uso de ícones definidos no conversor externo (beta)\n",
-        "nl": "Verandering: Start van zigbee subsysteem vereist configuratie toegang !!!\nHardware configuratiepaneel\nUpdate voor externe converter - detecteer /dist/submap\nAfbeelding van het apparaat bijwerken: gebruik van pictogrammen gedefinieerd in externe converter (beta)\n",
-        "fr": "Briser le changement : Le démarrage du sous-système zigbee nécessite une entrée de configuration !!!\nPanneau de configuration du matériel\nMise à jour pour convertisseur externe - détecter /dist/ sous-dossier\nMise à jour de l'image du périphérique : utilisation d'icônes définies dans le convertisseur externe (beta)\n",
-        "it": "Cambiamento di rottura: L'avvio del sottosistema zigbee richiede l'ingresso di configurazione !!!\nPannello di configurazione hardware\nAggiornamento per convertitore esterno - rilevare /dist/ subfolder\nImmagine del dispositivo di aggiornamento: uso delle icone definite nel convertitore esterno (beta)\n",
-        "es": "Cambio de ruptura: Inicio del subsistema zigbee requiere entrada de configuración !!!\nPanel de configuración de hardware\nActualización para convertidor externo - detect /dist/ subfolder\nActualizar imagen del dispositivo: uso de iconos definidos en convertidor externo (beta)\n",
-        "pl": "Łamanie zmian: Rozpoczęcie podsystemu Zigbee wymaga wprowadzenia konfiguracji!!!\nPanel konfiguracji sprzętu\nAktualizacja konwertera zewnętrznego - wykryj / dist / subfolder\nAktualizacja obrazu urządzenia: użycie ikon zdefiniowanych w konwerterze zewnętrznym (beta)\n",
-        "uk": "Зміна розривів: Старт підсистеми zigbee вимагає введення конфігурації !!!\nПанель конфігурації обладнання\nОновлення для зовнішнього конвертера - виявлення /dist / підпалювач\nОновлення зображення пристрою: використання ікон, визначених у зовнішній конвертер (beta)\n",
-        "zh-cn": "中断更改 : Zigbee子系统的启动需要配置输入!!!!\n硬件配置面板\n外部转换器更新 - 检测/ dist/ 子文件夹\n更新设备图像: 使用外部转换器( β) 中定义的图标\n"
       }
     },
     "titleLang": {
@@ -159,7 +159,7 @@
       "tab": "materialize"
     },
     "messagebox": true,
-    "stopTimeout": 30000,
+    "stopTimeout": 5000,
     "stopBeforeUpdate": true,
     "dataFolder": "zigbee_%INSTANCE%",
     "compact": true,

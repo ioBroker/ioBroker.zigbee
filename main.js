@@ -274,7 +274,6 @@ class Zigbee extends utils.Adapter {
 
     SandboxRequire(sandbox, items) {
         if (!items) return true;
-        //let converterLoaded = true;
         for (const item of items) {
             const modulePath = item[2].replace(/['"]/gm, '');
 
@@ -350,9 +349,6 @@ class Zigbee extends utils.Adapter {
                     converterLoaded = false;
                     this.log.error(`converter does not export any converter array, please add 'module.exports' statement to ${mN}`);
                 }
-
-                //fs.writeFileSync(mN+'.tmp', modifiedCode)
-
                 if (converterLoaded) {
                     try {
                         this.log.warn('Trying to run sandbox for ' + mN);
@@ -422,7 +418,6 @@ class Zigbee extends utils.Adapter {
         }
         else try {
             await this.zbController.stopHerdsman();
-            //this.logToPairing('herdsman stopped !');
             this.sendTo(from, command, { status:true }, callback);
         } catch (error) {
             this.sendTo(from, command, { status:true, error }, callback);
@@ -458,12 +453,6 @@ class Zigbee extends utils.Adapter {
             this.setState('info.connection', false, true);
             this.logToPairing(`Failed to start Zigbee: ${error && error.message ? error.message : 'no message given'}`)
             this.log.error(`Failed to start Zigbee: ${error && error.message ? error.message : 'no message given'}`);
-            /* if (error.stack) {
-                this.log.error(error.stack);
-            } else {
-                this.log.error(error);
-            }
-            */
             this.sendError(error, `Failed to start Zigbee`);
             if (noReconnect) return false;
 
@@ -760,9 +749,7 @@ class Zigbee extends utils.Adapter {
             this.log.info('cleaning everything up');
             await this.callPluginMethod('stop');
             if (this.stController) chain.push(this.stController.stop());
-            if (this.zbController) {
-                chain.push(this.zbController.stop());
-            }
+            if (this.zbController) chain.push(this.zbController.stop());
             await Promise.all(chain);
             this.log.info('cleanup successful');
             callback();

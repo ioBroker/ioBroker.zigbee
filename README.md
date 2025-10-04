@@ -152,6 +152,11 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### 3.1.5 (2025-10-04)
+* (asgothian) Bugfixes
+* (asgothian) ZHC25.36.0
+* (asgothian) reduced stopTimeout to 5s
+
 ### 3.1.4 (2025-09-26)
 * (asgothian) Remove extra logging
 * (asgothian) Add extra configurations
