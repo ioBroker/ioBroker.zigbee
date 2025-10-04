@@ -227,25 +227,29 @@ function getModelData(data, models) {
         const e_btn = btnParam(e_btn_name, e_btn_tip, 'edit', 'green', false)
         LocalDataDisplayValues.buttonSet.add(d_btn_name);
         LocalDataDisplayValues.buttonSet.add(e_btn_name);
-        Html.push(`<tr id="datarowodd"><td rowspan="${numrows}"><img src = ${model.icon} alt="" width="80" height="auto"></td><td colspan="2">Devices of Model ${key}</td><td>${d_btn}&nbsp;${e_btn}</td></tr>`)
+        Html.push(`<tr id="datarowodd"><td rowspan="${numrows}" width="15%"><img src=${model.model.icon} class="dev_list"></td><td colspan="3">Devices of Model ${key} </td><td>${d_btn}&nbsp;${e_btn}</td></tr>`)
         let cnt = 0;
         if (foldData.devices) {
+            let isOdd = false;
             for (const dev of model.devices) {
                 let devieee = dev._id.replace(`${namespace}.`, '');
 
                 if (devieee == undefined) devieee = 'unknown' + cnt++;
                 const bn = `d_edit_${devieee}`
-                Html.push(`<tr id="datarowopt"><td>${devieee}</td><td>${dev.common.name}</td><td>${btnParam(bn, 'edit '+ devieee, 'edit', 'lime', true)}</td></tr>`)
+                Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">devices</i></td><td width="25%">${devieee}</td><td width="45%">${dev.common.name}</td><td>${btnParam(bn, 'edit '+ devieee, 'edit', 'lime', false)}</td></tr>`)
+                isOdd = !isOdd;
             }
         }
         if (numOptions > 0) {
             const o_btn_name = `o_toggle_${k}`;
             const o_btn_tip = `fold / unfold options for Model ${key}`;
             LocalDataDisplayValues.buttonSet.add(o_btn_name);
-            Html.push(`<tr id="dataroweven"></td><td colspan="2">Options for ${key}</td><td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}</td></tr>`)
+            Html.push(`<tr id="datarowodd"></td><td colspan="3">Options for ${key}</td><td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}</td></tr>`)
             if (foldData.options) {
+                let isOdd = false;
                 for (const key of Object.keys(model.setOptions)) {
-                    Html.push(`<tr id="dataroweven"><td>${key}</td><td ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>&nbsp;</td></tr>`)
+                    Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${key}</td><td width="45%" ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>&nbsp;</td></tr>`)
+                    isOdd = !isOdd;
                 }
             }
         }
@@ -295,14 +299,14 @@ function showLocalData() {
     const RowSpan = sm ? ModelHtml.length +2 : DeviceHtml.length + 2;
     const Html = [];
     if (sm) {
-        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Model Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
+        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4>Model Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
         Html.push(ModelHtml.join(''));
     }
     else {
-        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=3>Device Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
+        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4>Device Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
         Html.push(DeviceHtml.join(''));
     }
-    Html.push(`<tr id="datatable"><td colspan="4">Statistics</td></tr>`)
+    Html.push(`<tr id="datatable"><td colspan="5">Statistics</td></tr>`)
     Html.push('</table>');
     $('#tab-overrides').html(Html.join(''));
 
