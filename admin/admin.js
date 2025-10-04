@@ -1584,6 +1584,7 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
 }
 
 function displayDebugMessages(msg) {
+    console.warn('displayDebugMessages called with '+ JSON.stringify(msg));
     const buttonNames = [];
     const idButtons = [];
     if (msg.byId) {
@@ -1789,6 +1790,7 @@ function getDevices() {
                     getBinding();
                 }
                 updateStartButton();
+                displayDebugMessages(debugMessages);
                 showDevices();
                 showLocalData();
                 UpdateAdapterAlive(true)
@@ -1830,9 +1832,10 @@ function extractDevicesData(msg) {
     }
     else
         debugDevices = [];
-    if (debugMessages.byId) {
-        debugMessages.byId = msg;
-        if (msg) displayDebugMessages(debugMessages);
+
+    if (msg.deviceDebugData) {
+        debugMessages = { byId: msg.deviceDebugData };
+        displayDebugMessages(debugMessages);
     }
     if (msg.models) models = msg.models;
     lockout.isActive = false;
