@@ -152,6 +152,13 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+
+### **WORK IN PROGRESS ###
+* (asgothian) remove local overrides tab from config
+* (asgothian) establish local data tab in config to edit global and device level settings and options
+* (asgothian) remove the ability to set model level overrides from device tab.
+*
+
 ### 3.1.5 (2025-10-04)
 * (asgothian) Bugfixes
 * (asgothian) ZHC25.36.0
