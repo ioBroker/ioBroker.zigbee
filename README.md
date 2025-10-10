@@ -157,6 +157,7 @@ You can thank the authors by these links:
 * (asgothian) remove local overrides tab from config
 * (asgothian) establish local data tab in config to edit global and device level settings and options
 * (asgothian) remove the ability to set model level overrides from device tab.
+* (asgothian) fix errors for 'polling' devices with changed poll times.
 *
 
 ### 3.1.5 (2025-10-04)
