@@ -1288,7 +1288,7 @@
         </div>
     </div>
 
-    <div id="chooseimage" class="modal">
+    <div id="chooseimage" class="modal modal-fixed-footer">
         <div class="modal-content">
             <div class="row">
                 <h3 class="translate">Data override</h3>
@@ -1298,7 +1298,7 @@
                         <label for="d_name" class="translate">Name</label>
                     </div>
                 </div>
-                    <div class="row">
+                <div class="row">
                     <div class="col s9 input-field">
                         <select id="images" class="icons">
                         </select>
@@ -1307,15 +1307,26 @@
                     <div class="col s3 ">
                         <div class="currentIcon"><img src="img/unknown.png"></div>
                     </div>
+                    <div class="col options_grid s12">
+                        No Options available
+                    </div>
+                    <div class="new_options_available">
+                        <div class="input-field suffix col s10 m10 l10">
+                            <select id="option_Selector" class="materialSelect"></select class="value" />
+                                <label for="option_Selector">Available Options</label>
+                        </div>
+                        <div class="col">
+                            <a name="add_options" id="option_add_1084" class="waves-effect waves-green btn-large">
+                            <i class="material-icons large icon-green">add_circle</i></a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
             </div>
         </div>
         <div class="modal-footer">
             <div class="forcedelete" id = "globaldiv">
                 <label>
-                    <input id="globaloverride" type="checkbox" class="value"/>
+                    <input id="globaloverride" type="checkbox" class="value filled-in" checked="checked" disabled="disabled"/>
                     <span class="translate" for="globaloverride">Apply to model</span>
                 </label>
             </div>

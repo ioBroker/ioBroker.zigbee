@@ -315,12 +315,12 @@ function showLocalData() {
         showLocalData();
     });
 
-    console.warn(`lddv is ${JSON.stringify(LocalDataDisplayValues)}`)
+    //console.warn(`lddv is ${JSON.stringify(LocalDataDisplayValues)}`)
     for (const item of LocalDataDisplayValues.buttonSet) {
-        console.warn(`adding click to ${item}`)
+        //console.warn(`adding click to ${item}`)
         if (item.startsWith('d_toggle_')) $(`#${item}`).click(function () {
             const key = item.substring(9);
-            console.warn(`clicked ${item}`);
+            //console.warn(`clicked ${item}`);
             if (LocalDataDisplayValues.unfoldedModels.hasOwnProperty(key))
                 LocalDataDisplayValues.unfoldedModels[key].devices =! LocalDataDisplayValues.unfoldedModels[key].devices;
             else
@@ -328,7 +328,7 @@ function showLocalData() {
             showLocalData();
         });
         if (item.startsWith('o_toggle_')) $(`#${item}`).click(function () {
-            console.warn(`clicked ${item}`);
+            //console.warn(`clicked ${item}`);
             const key = item.substring(9);
             if (LocalDataDisplayValues.unfoldedModels.hasOwnProperty(key))
                 LocalDataDisplayValues.unfoldedModels[key].options = !LocalDataDisplayValues.unfoldedModels[key].options;
@@ -337,7 +337,7 @@ function showLocalData() {
             showLocalData();
         })
         if (item.startsWith('do_toggle_')) $(`#${item}`).click(function () {
-            console.warn(`clicked ${item}`);
+            //console.warn(`clicked ${item}`);
             const key = item.substring(10);
             if (LocalDataDisplayValues.unfoldedDevices.hasOwnProperty(key))
                 LocalDataDisplayValues.unfoldedDevices[key] =! LocalDataDisplayValues.unfoldedDevices[key];
@@ -345,6 +345,14 @@ function showLocalData() {
                 LocalDataDisplayValues.unfoldedDevices[key] = true;
             showLocalData();
         })
+        if (item.startsWith('m_edit_')) $(`#${item}`).click(function () {
+            //console.warn(`clicked ${item}`);
+            const key = item.substring(7);
+            selectImageOverride(models[key], true);
+        })
+
+
+
 
     }
 
@@ -1044,7 +1052,7 @@ function showDevices() {
             return room;
         }
     }).filter((item) => item != undefined));
-    console.warn(`rooms is ${JSON.stringify(allRooms)}`);
+    //console.warn(`rooms is ${JSON.stringify(allRooms)}`);
     const roomSelector = $('#room-filter');
     roomSelector.empty();
     roomSelector.append(`<li class="device-order-item" data-type="All" tabindex="0"><a class="translate" data-lang="All">All</a></li>`);
@@ -1108,7 +1116,7 @@ function showDevices() {
     $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = getDevId(dev_block);
-        selectImageOverride(id);
+        selectImageOverride(id, false);
     });
 
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
@@ -1315,13 +1323,15 @@ function updateLocalConfigItems(device, data, global) {
     });
 }
 
-async function selectImageOverride(id) {
+async function selectImageOverride(id, isModel) {
+    //console.warn(`selectImageOverride on ${JSON.stringify(id)}`);
 
     // start local functions
     function removeOption(k) {
+        const model = dialogData.model;
         if (k && device_options.hasOwnProperty(k)) {
-            if (dev.info.mapped && dev.info.mapped.options && dev.info.mapped.options.includes(device_options[k].key))
-                availableOptions.push(device_options[k].key)
+            if (model && model.options && model.options.includes(device_options[k].key) && !device_options[k].isCustom)
+                dialogData.availableOptions.push(device_options[k].key)
             delete device_options[k];
         }
     }
@@ -1334,12 +1344,14 @@ async function selectImageOverride(id) {
             key = `o${idx++}`;
         }
         while (device_options.hasOwnProperty(key));
-        device_options[key] = { key:optionName, value:''};
-        idx = availableOptions.indexOf(optionName);
-        if (idx > -1) availableOptions.splice(idx, 1);
+        device_options[key] = { key:optionName, value:'', isCustom:optionName==='custom'};
+        idx = dialogData.availableOptions.indexOf(optionName);
+        if (idx > -1 && !device_options[key].isCustom) dialogData.availableOptions.splice(idx, 1);
+        console.warn(`addOption added ${JSON.stringify(device_options)}`)
     }
 
     function updateOptions(candidates) {
+        console.warn(`update Options with ${JSON.stringify(candidates)}`)
         if (candidates.length > 0) {
             $('#chooseimage').find('.new_options_available').removeClass('hide');
             list2select('#option_Selector', candidates, [], (key, val) => { return val; }, (key, val) => { return val; })
@@ -1359,10 +1371,11 @@ async function selectImageOverride(id) {
         $('#chooseimage').find('.options_grid').html(html_options.join(''));
         if (html_options.length > 0) {
             for (const k of Object.keys(device_options)) {
+                if (device_options[k].isCustom) $(`#option_key_${k}`).removeClass('disable')
                 $(`#option_key_${k}`).val(device_options[k].key);
                 $(`#option_value_${k}`).val(device_options[k].value);
                 $(`#option_rem_${k}`).unbind('click');
-                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions(availableOptions) });
+                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions(dialogData.availableOptions) });
             }
         }
     }
@@ -1370,6 +1383,7 @@ async function selectImageOverride(id) {
     function getOptionsFromUI(_do, _so) {
         const _no = {};
         let changed = false;
+        console.warn(`${changed} : ${JSON.stringify(_do)} - ${JSON.stringify(_no)}`)
         for (const k of Object.keys(_do)) {
             const key =  $(`#option_key_${k}`).val();
             _do[k].key = key;
@@ -1391,11 +1405,11 @@ async function selectImageOverride(id) {
         return undefined;
     }
 
-    function updateImageSelection(dev, imagedata) {
-        const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
-        if (dev.legacyIcon) imagedata.unshift( { file:dev.legacyIcon, name:'legacy', data:dev.legacyIcon});
-        imagedata.unshift( { file:'none', name:'default', data:default_icon});
-        imagedata.unshift( { file:'current', name:'current', data:dev.common.icon || dev.icon});
+    function updateImageSelection(dData, imagedata) {
+        //        const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
+        if (dData.legacyIcon) imagedata.unshift( { file:dData.legacyIcon, name:'legacy', data:dData.legacyIcon});
+        imagedata.unshift( { file:'none', name:'default', data:dData.defaultIcon});
+        imagedata.unshift( { file:'current', name:'current', data:dData.icon});
 
         list2select('#images', imagedata, selectItems,
             function (key, image) {
@@ -1418,39 +1432,64 @@ async function selectImageOverride(id) {
     const device_options = {};
     const received_options = {};
 
-    const dev = devices.find((d) => d._id == id);
-    const availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
-    const imghtml = `<img src="${dev.common.icon || dev.icon}" width="80px">`
+    const dialogData = {};
+
+    if (isModel) {
+        const model = id.model;
+        dialogData.model = model;
+        dialogData.availableOptions = model.options.slice() || []
+        dialogData.availableOptions.push(...['legacy', 'custom']);
+        dialogData.setOptions = {};
+        for (const k in Object.keys(id.setOptions))
+            if (k == 'icon' || k == 'name') continue;
+            else dialogData.setOptions[k] = id.setOptions[k];
+        dialogData.name = id.setOptions.name, id.name || 'unset';
+        dialogData.icon = id.setOptions.icon || model.icon || 'img/dummyDevice.jpg';
+        dialogData.legacyIcon = id.devices[0].legacyIcon;
+        id = id.model.model;
+    } else
+    {
+        const dev = devices.find((d) => d._id == id);
+        dialogData.model = dev.info.mapped;
+        dialogData.availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
+        dialogData.name = dev.common.name;
+        dialogData.icon = dev.common.icon || dev.icon;
+        dialogData.default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
+        dialogData.legacyIcon = dev.legacyIcon;
+    }
+
+    const imghtml = `<img src="${dialogData.icon}" width="80px">`
     //console.error(imghtml)
     const selectItems= [''];
-    $('#chooseimage').find('input[id=\'d_name\']').val(dev.common.name);
+    $('#chooseimage').find('input[id=\'d_name\']').val(dialogData.name);
     $('#chooseimage').find('.currentIcon').html(imghtml);
     $('#option_add_1084').unbind('click');
     $('#option_add_1084').click(() => {
         getOptionsFromUI(device_options, received_options);
         addOption();
-        updateOptions(availableOptions)
+        updateOptions(dialogData.availableOptions)
     });
 
 
 
     sendToWrapper(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
-            updateImageSelection(dev, msg.imageData);
+            updateImageSelection(dialogData , msg.imageData);
 
             $('#chooseimage a.btn[name=\'save\']').unbind('click');
             $('#chooseimage a.btn[name=\'save\']').click(() => {
                 const image = $('#chooseimage').find('#images option:selected').val();
-                const global = $('#chooseimage').find('#globaloverride').prop('checked');
+                //const global = $('#chooseimage').find('#globaloverride').prop('checked');
                 const name = $('#chooseimage').find('input[id=\'d_name\']').val();
                 const data = {};
                 if (image != 'current') data.icon= image;
-                if (name != dev.common.name) data.name = name;
-                data.options = getOptionsFromUI(device_options, received_options)
+                if (name != dialogData.name) data.name = name;
+                const changedOptions = getOptionsFromUI(device_options, received_options);
+                if (changedOptions != undefined) data.options = changedOptions;
 
-                updateLocalConfigItems(id, data, global);
+                updateLocalConfigItems(id, data, isModel);
             });
-            sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:false, key:'options' }, function (msg) {
+            sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:isModel, key:'options' }, function (msg) {
                 if (msg) {
                     if (msg.error) showMessage(msg.error, '_Error');
                     Object.keys(device_options).forEach(key => delete device_options[key]);
@@ -1459,15 +1498,15 @@ async function selectImageOverride(id) {
                         let cnt = 1;
                         for (const key in msg.options)
                         {
-                            const idx = availableOptions.indexOf(key);
+                            const idx = dialogData.availableOptions.indexOf(key);
                             console.warn(`key ${key} : index : ${idx}`);
-                            if (idx > -1) availableOptions.splice(idx,1);
+                            if (idx > -1) dialogData.availableOptions.splice(idx,1);
                             received_options[key]=msg.options[key];
                             device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
                             cnt++;
                         }
                     }
-                    updateOptions(availableOptions);
+                    updateOptions(dialogData.availableOptions);
                 } else showMessage('callback without message');
                 $('#chooseimage').modal('open');
                 Materialize.updateTextFields();

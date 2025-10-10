@@ -37,7 +37,7 @@ const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
 const dns = require('dns');
 const net = require('net');
-const { getNetAddress } = require('./lib/utils')
+const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee } = require('./lib/utils')
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -625,7 +625,7 @@ class Zigbee extends utils.Adapter {
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
                 const idx = devicesFromObjects.indexOf(device.ieeeAddr);
                 if (idx > -1) devicesFromObjects.splice(idx, 1);
-                this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () =>
+                this.stController.updateDev(zbIdorIeeetoAdId(this.adapter, device.ieeeAddr, false), model, model, () =>
                     this.stController.syncDevStates(device, model));
             }
             else (this.log.warn('resolveEntity returned no entity'));
@@ -643,23 +643,27 @@ class Zigbee extends utils.Adapter {
     }
 
 
+    /*
     async checkIfModelUpdate(entity) {
         const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
         const device = entity.device;
-        const devId = device.ieeeAddr.substr(2);
+        const devId = zbIdorIeeetoAdId(this.adapter, device.ieeeAddr, false);//device.ieeeAddr.substr(2);
 
         const obj = await this.getObjectAsync(devId);
         if (obj && obj.common.type !== model) {
-            await this.stController.deleteObj(devId);
+            // await this.stController.deleteObj(devId);
             await this.stController.updateDev(devId, model, model);
             await this.stController.syncDevStates(device, model);
+            await this.stController.deleteOrphanedDeviceStates();
         }
     }
+    */
 
     acknowledgeState(deviceId, model, stateDesc, value) {
-        const stateId = (model === 'group' ?
+        const stateId = zbIdorIeeetoAdId(this, deviceId, true);
+        /*const stateId = (model === 'group' ?
             `${this.namespace}.group_${deviceId}.${stateDesc.id}` :
-            `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`);
+            `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`); */
         if (value === undefined) try {
             this.getState(stateId, (err, state) => { if (!err && state.hasOwnProperty('val')) this.setState(stateId,  state.val, true)});
         }
@@ -691,13 +695,13 @@ class Zigbee extends utils.Adapter {
         }
         await this.stController.AddModelFromHerdsman(entity.device, model)
         if (dev) {
-            this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
+            this.getObject(zbIdorIeeetoAdId(this.adapter, dev.ieeeAddr, false), (err, obj) => {
                 if (!obj) {
                     const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
                     if (this.debugActive) this.log.debug(`new device ${dev.ieeeAddr} ${dev.networkAddress} ${model} `);
 
                     this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${model}`, true);
-                    this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () =>
+                    this.stController.updateDev(zbIdorIeeetoAdId(this.adapter, dev.ieeeAddr, false), model, model, () =>
                         this.stController.syncDevStates(dev, model));
                 }
                 else if (this.debugActive) this.log.debug(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
@@ -708,7 +712,7 @@ class Zigbee extends utils.Adapter {
     leaveDevice(ieeeAddr) {
         if (this.debugActive) this.log.debug(`Leave device event: ${ieeeAddr}`);
         if (ieeeAddr) {
-            const devId = ieeeAddr.substr(2);
+            const devId = zbIdorIeeetoAdId(this.adapter, ieeeAddr, false);
             if (this.debugActive) this.log.debug(`Delete device ${devId} from iobroker.`);
             this.stController.deleteObj(devId);
         }
