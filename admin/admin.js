@@ -1344,11 +1344,12 @@ async function selectImageOverride(id, isModel) {
             key = `o${idx++}`;
         }
         while (device_options.hasOwnProperty(key));
-        device_options[key] = { key:optionName, value:'', isCustom:optionName==='custom'};
+        device_options[key] = { key:optionName, value:'', isCustom:optionName==='custom', expose:getExposeFromOptions(optionName)};
         idx = dialogData.availableOptions.indexOf(optionName);
         if (idx > -1 && !device_options[key].isCustom) dialogData.availableOptions.splice(idx, 1);
         console.warn(`addOption added ${JSON.stringify(device_options)}`)
     }
+
 
     function updateOptions(candidates) {
         console.warn(`update Options with ${JSON.stringify(candidates)}`)
@@ -1362,22 +1363,48 @@ async function selectImageOverride(id, isModel) {
         const html_options=[];
 
         for (const k of Object.keys(device_options)) {
+            const expose = device_options[k].expose === undefined ? getExposeFromOptions(device_options[k].key) : device_options[k].expose;
+            const disabled = device_options[k]?.isCustom ? '' : 'disabled ';
+            console.warn(`option for ${k} is ${JSON.stringify(device_options[k])}`);
             html_options.push(`<div class="row">`);
-            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input disabled id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
-            html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">Value</label></div>`)
+            switch (expose.type) {
+                case 'numeric':
+                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="number"${expose.value_min != undefined ? ' min="'+expose.value_min+'"' : ''}${expose.value_max != undefined ? ' max="'+expose.value_max+'"' : ''}${expose.value_step != undefined ? ' step="'+expose.value_step+'"' : ''} class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
+                    break;
+                case 'binary':
+                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="checkbox" class="value"/><span>${expose.label ? expose.label : '&nbsp;'}</span></div>`);
+                    break;
+                default:
+                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
+                    break;
+            }
             html_options.push(`<div class="col"><a id="option_rem_${k}" class="btn-large round red" ><i class="material-icons icon-red">remove_circle</i></a></div>`);
             html_options.push(`</div>`)
         }
         $('#chooseimage').find('.options_grid').html(html_options.join(''));
         if (html_options.length > 0) {
             for (const k of Object.keys(device_options)) {
-                if (device_options[k].isCustom) $(`#option_key_${k}`).removeClass('disable')
+                if (device_options[k].isCustom) $(`#option_key_${k}`).removeClass('disabled')
                 $(`#option_key_${k}`).val(device_options[k].key);
-                $(`#option_value_${k}`).val(device_options[k].value);
+                const value = $(`#option_value_${k}.value`);
+                if (value.attr('type') === 'checkbox')
+                    value.prop('checked', device_options[k].value);
+                else
+                    value.val(device_options[k].value);
                 $(`#option_rem_${k}`).unbind('click');
                 $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions(dialogData.availableOptions) });
             }
         }
+    }
+
+    function getExposeFromOptions(option) {
+        const rv = dialogData.model.optionExposes.find((expose) => expose.name === option);
+        console.warn(`GEFO: ${option} results in ${JSON.stringify(rv)}`);
+        if (rv) return rv;
+        return { type:option === 'use_legacy_model' ? 'binary' : 'string' };
     }
 
     function getOptionsFromUI(_do, _so) {
