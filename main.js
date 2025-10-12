@@ -662,7 +662,7 @@ class Zigbee extends utils.Adapter {
     */
 
     acknowledgeState(deviceId, model, stateDesc, value) {
-        const stateId = zbIdorIeeetoAdId(this, deviceId, true);
+        const stateId = `${zbIdorIeeetoAdId(this, deviceId, true)}.${stateDesc.id}`;
         /*const stateId = (model === 'group' ?
             `${this.namespace}.group_${deviceId}.${stateDesc.id}` :
             `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`); */
