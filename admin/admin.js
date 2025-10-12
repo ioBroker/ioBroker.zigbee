@@ -1401,10 +1401,14 @@ async function selectImageOverride(id, isModel) {
                         label>${expose.label ? expose.label : 'Value'}</label></div>`);
 */
                     html_options.push(`<div class="input-field col s5 m5 l5">
+                        <div class="switch input"><label>false<Input type="checkbox"/><span class="lever"</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;true</label></div>
+                        </div>`);
+                    break;
+                    /*html_options.push(`<div class="input-field col s5 m5 l5">
                         <input id="option_value_${k}" type="checkbox" class="value">
                         <span class="translate" for="option_value_${k}">${expose.label ? expose.label : 'Value'}</span>
                         </div>`);
-                    break;
+                    break;*/
                 default:
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
@@ -1501,7 +1505,7 @@ async function selectImageOverride(id, isModel) {
         dialogData.model = model;
         dialogData.availableOptions = model.options.slice() || []
         dialogData.availableOptions.push('custom');
-        if (model.hasLegacyDefinition) dialogData.availableOptions.push('legacy');
+        if (model.hasLegacyDef) dialogData.availableOptions.push('legacy');
         dialogData.setOptions = {};
         for (const k in Object.keys(id.setOptions))
             if (k == 'icon' || k == 'name') continue;
@@ -2064,6 +2068,10 @@ function load(settings, onChange) {
             groups = data.groups || {};
         //showGroups();
         });
+        sendToWrapper(namespace, 'getLibData', {key: 'cidList'}, function (data) {
+            cidList = data.list;
+        });
+
     })
 
     //getDebugMessages();
@@ -3782,7 +3790,7 @@ function genDevInfo(device) {
             if (item == 'model')
                 mappedInfo.push(genRow(item,modelUrl));
             else
-                mappedInfo.push(genRow(item,mapped[item]));
+                if (typeof mapped[item] != 'object') mappedInfo.push(genRow(item,mapped[item]));
         }
         mappedInfo.push(
             `            </ul>
