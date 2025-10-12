@@ -231,6 +231,8 @@ class Zigbee extends utils.Adapter {
         this.stController.on('changed', this.zbController.publishFromState.bind(this.zbController));
         this.stController.on('device_query', this.zbController.deviceQuery.bind(this.zbController));
         this.zbController.on('acknowledge_state', this.acknowledgeState.bind(this));
+        this.zbController.on('stash_error', this.stController.stashErrors.bind(this.stController));
+        this.zbController.on('stash_unknown_model', this.stController.stashUnknownModel.bind(this.stController));
 
         this.zbController.configure(zigbeeOptions);
         this.zbController.debugActive = this.debugActive;
