@@ -337,8 +337,30 @@
         #datarowodd  { background-color: #c0c0c0; color: #202020 !important; }
         #datarowopt  { background-color: #707070; color: #c0c0c0 !important; }
         #datatable   { background-color: #3090c0; color: #202020 !important; }
+        #dataroweven_red { background-color: #909090; color: #c00000 !important; }
+        #datarowodd_red  { background-color: #C0C0C0; color: #c00000 !important; }
+        #datarowopt_red  { background-color: #707070; color: #c00000 !important; }
         #datared     { color: #C00000 !important;}
         #datalime     { background-color: #cddc31; color: #c00000 !important;}
+
+        .m.react-dark #dataroweven_red {
+            background-color: #500000 !important;
+        }
+        .m.react-dark #datarowodd_red {
+            background-color: #400000 !important;
+        }
+        .m.react-dark #datarowopt_red {
+            background-color: #300000 !important;
+        }
+        .m.react-dark #datarowodd {
+            background-color: #303030 !important;
+        }
+        .m.react-dark #dataroweven {
+            background-color: #505050 !important;
+        }
+        .m.react-dark #datatable {
+            background-color: #202020 !important;
+        }
 
         .i.middle {
             vertical-align:middle;
@@ -1363,6 +1385,8 @@
             <div id="forcediv" class="hide forcedelete">
                 <input id="force" type="checkbox" class="value"/>
                 <label class="translate" for="force">Force delete (for lost devices)</label>
+                <input id="fulldelete" type="checkbox" class="value"/>
+                <label class="translate" for="fulldelete">Also delete local options</label>
             </div>
             <a name="yes" href="#!"
                class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>

@@ -205,13 +205,12 @@ const LocalDataDisplayValues = {
 
 function getModelData(data, models) {
     const Html = [];
-    // Html.push(`<ul class="collapsible">`);
     const s = new Set();
     for (const k of Object.keys(models)) {
         const model = models[k];
         const key = model.model.model;
         console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
-        const numOptions = Object.keys(model.setOptions).length;
+        const numOptions = Object.keys(model.setOptions).length + ((typeof model.setOptions.options === 'object' && model.setOptions.options != null) ? Object.keys(model.setOptions.options).length-1 : 0);
         const foldData = LocalDataDisplayValues.unfoldedModels[k] || { devices:false, options:false};
         let numrows = 1;
         if (foldData.devices) numrows +=  model.devices.length;
@@ -235,8 +234,14 @@ function getModelData(data, models) {
                 let devieee = dev._id.replace(`${namespace}.`, '');
 
                 if (devieee == undefined) devieee = 'unknown' + cnt++;
-                const bn = `d_edit_${devieee}`
-                Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">devices</i></td><td width="25%">${devieee}</td><td width="45%">${dev.common.name}</td><td>${btnParam(bn, 'edit '+ devieee, 'edit', 'lime', false)}</td></tr>`)
+                LocalDataDisplayValues.buttonSet.add(`d_delete_${devieee}`);
+                LocalDataDisplayValues.buttonSet.add(`d_delall_${devieee}`);
+                LocalDataDisplayValues.buttonSet.add(`d_disen_${devieee}`);
+
+                const bn = btnParam(`d_delete_${devieee}`, `delete device ${devieee}`, 'delete', 'red darken-4', false);
+                const bna = btnParam(`d_delall_${devieee}`, `completely delete device ${devieee}`, 'delete_forever', 'red accent-4', false);
+                const bta = !dev.common.deactivated ? btnParam(`d_disen_${devieee}`, `disable device ${devieee}`, 'power_settings_new', 'green accent-4', false) : btnParam(`d_disen_${devieee}`, `enable device ${devieee}`, 'power_settings_new', 'red accent-4', false);
+                Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}${dev.common.deactivated ? '_red' : ''}"><td width="1%"><i class="material-icons small">devices</i></td><td width="25%">${devieee}</td><td width="45%">${dev.common.name}</td><td width="10%">${bna}${bn}${bta}<td></tr>`)
                 isOdd = !isOdd;
             }
         }
@@ -248,8 +253,19 @@ function getModelData(data, models) {
             if (foldData.options) {
                 let isOdd = false;
                 for (const key of Object.keys(model.setOptions)) {
-                    Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${key}</td><td width="45%" ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>&nbsp;</td></tr>`)
-                    isOdd = !isOdd;
+                    if (typeof model.setOptions[key] === 'object') {
+                        const oo = model.setOptions[key];
+                        for (const ok of Object.keys(oo)) {
+                            const btn = btnParam(`o_delete_${model.model}.${oo}`, `delete option ${oo}`, 'delete', 'red darken-4', false);
+                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${ok}</td><td width="45%" ${oo[ok] === undefined ? 'id="datared">"not set on model"' : '>'+oo[ok]}</td><td>${btn}</td></tr>`)
+                            isOdd = !isOdd;
+                        }
+                    }
+                    else {
+                        const btn = btnParam(`l_delete_${model.model}.${key}`, `delete option ${key}`, 'delete', 'red darken-4', false);
+                        Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${key}</td><td width="45%" ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>${btn}</td></tr>`)
+                        isOdd = !isOdd;
+                    }
                 }
             }
         }
@@ -265,7 +281,8 @@ function btnParam(id, tooltip, icon, color, disabled) {
 
 function getDeviceData(deviceList, withIcon) {
     const Html = [];
-    for (const dev of deviceList) {
+    return Html;
+    /*for (const dev of deviceList) {
         const rowspan = dev.options ? Object.keys(dev.options).length + 2 : 2;
         const iconLink = `<img src=${dev.common.icon} class="dev_list">`;
         const devieee = dev._id.replace(`${namespace}.`, '');
@@ -286,7 +303,7 @@ function getDeviceData(deviceList, withIcon) {
             }
         }
     }
-    return Html;
+    return Html;*/
 }
 
 function showLocalData() {
@@ -311,7 +328,7 @@ function showLocalData() {
     $('#tab-overrides').html(Html.join(''));
 
     $('#t_all_models').click(function () {
-        LocalDataDisplayValues.showModels = !LocalDataDisplayValues.showModels;
+        //LocalDataDisplayValues.showModels = !LocalDataDisplayValues.showModels;
         showLocalData();
     });
 
@@ -1330,7 +1347,7 @@ async function selectImageOverride(id, isModel) {
     function removeOption(k) {
         const model = dialogData.model;
         if (k && device_options.hasOwnProperty(k)) {
-            if (model && model.options && model.options.includes(device_options[k].key) && !device_options[k].isCustom)
+            if (device_options[k].key === 'legacy' || (model && model.options && model.options.includes(device_options[k].key)) && !device_options[k].isCustom)
                 dialogData.availableOptions.push(device_options[k].key)
             delete device_options[k];
         }
@@ -1369,16 +1386,28 @@ async function selectImageOverride(id, isModel) {
             html_options.push(`<div class="row">`);
             switch (expose.type) {
                 case 'numeric':
-                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
-                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="number"${expose.value_min != undefined ? ' min="'+expose.value_min+'"' : ''}${expose.value_max != undefined ? ' max="'+expose.value_max+'"' : ''}${expose.value_step != undefined ? ' step="'+expose.value_step+'"' : ''} class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
+                    html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+                    html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="number"${expose.value_min != undefined ? ' min="'+expose.value_min+'"' : ''}${expose.value_max != undefined ? ' max="'+expose.value_max+'"' : ''}${expose.value_step != undefined ? ' step="'+expose.value_step+'"' : ''} class="value" /><label>${expose.label ? expose.label : 'Value'}</label></div>`)
                     break;
                 case 'binary':
-                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
-                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="checkbox" class="value"/><span>${expose.label ? expose.label : '&nbsp;'}</span></div>`);
+                    html_options.push(`<div class="input-field col s5 m5 l5">
+                        <input ${disabled}id="option_key_${k}" type="text" class="value" />
+                        <label for="option_key_${k}">Option</label></div>`);
+/*                    html_options.push(`<div class="input-field  col s5 m5 l5">
+                        <select id="option_value_${k}" class="browser-default">
+                        <optgroup label="team 1"><option value="true" selected class="translate">true</option></optgroup>
+                        <optgroup label="team 1"><option value="false" class="translate">false</option></optgroup>
+                        </select><
+                        label>${expose.label ? expose.label : 'Value'}</label></div>`);
+*/
+                    html_options.push(`<div class="input-field col s5 m5 l5">
+                        <input id="option_value_${k}" type="checkbox" class="value">
+                        <span class="translate" for="option_value_${k}">${expose.label ? expose.label : 'Value'}</span>
+                        </div>`);
                     break;
                 default:
-                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
-                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
+                    html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+                    html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
                     break;
             }
             html_options.push(`<div class="col"><a id="option_rem_${k}" class="btn-large round red" ><i class="material-icons icon-red">remove_circle</i></a></div>`);
@@ -1390,12 +1419,17 @@ async function selectImageOverride(id, isModel) {
                 if (device_options[k].isCustom) $(`#option_key_${k}`).removeClass('disabled')
                 $(`#option_key_${k}`).val(device_options[k].key);
                 const value = $(`#option_value_${k}.value`);
-                if (value.attr('type') === 'checkbox')
-                    value.prop('checked', device_options[k].value);
+                if (value.attr('type') === 'checkbox') {
+                    console.warn(`oval for ${k} : ${device_options[k].value}`);
+                    value.prop('checked', Boolean(device_options[k].value));
+                }
                 else
                     value.val(device_options[k].value);
                 $(`#option_rem_${k}`).unbind('click');
-                $(`#option_rem_${k}`).click(() => { removeOption(k); updateOptions(dialogData.availableOptions) });
+                $(`#option_rem_${k}`).click(() => {
+                    removeOption(k);
+                    updateOptions(dialogData.availableOptions);
+                });
             }
         }
     }
@@ -1404,7 +1438,7 @@ async function selectImageOverride(id, isModel) {
         const rv = dialogData.model.optionExposes.find((expose) => expose.name === option);
         console.warn(`GEFO: ${option} results in ${JSON.stringify(rv)}`);
         if (rv) return rv;
-        return { type:option === 'use_legacy_model' ? 'binary' : 'string' };
+        return { type:option === 'legacy' ? 'binary' : 'string' };
     }
 
     function getOptionsFromUI(_do, _so) {
@@ -1414,7 +1448,8 @@ async function selectImageOverride(id, isModel) {
         for (const k of Object.keys(_do)) {
             const key =  $(`#option_key_${k}`).val();
             _do[k].key = key;
-            const val = $(`#option_value_${k}`).val();
+            const valobj = $(`#option_value_${k}.value`);
+            const val = valobj.attr('type')==='checkbox' ? valobj.prop('checked') : $(`#option_value_${k}`).val();
             try {
                 _do[k].value = JSON.parse(val);
             }
@@ -1465,7 +1500,8 @@ async function selectImageOverride(id, isModel) {
         const model = id.model;
         dialogData.model = model;
         dialogData.availableOptions = model.options.slice() || []
-        dialogData.availableOptions.push(...['legacy', 'custom']);
+        dialogData.availableOptions.push('custom');
+        if (model.hasLegacyDefinition) dialogData.availableOptions.push('legacy');
         dialogData.setOptions = {};
         for (const k in Object.keys(id.setOptions))
             if (k == 'icon' || k == 'name') continue;
@@ -1494,7 +1530,7 @@ async function selectImageOverride(id, isModel) {
     $('#option_add_1084').click(() => {
         getOptionsFromUI(device_options, received_options);
         addOption();
-        updateOptions(dialogData.availableOptions)
+        updateOptions(dialogData.availableOptions);
     });
 
 
