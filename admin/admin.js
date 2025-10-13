@@ -196,10 +196,22 @@ function sanitizeModelParameter(parameter) {
 ////
 
 const LocalDataDisplayValues = {
-    unfoldedModels : {}, // { plug01: {devices: true/false, options: true/false}}
-    unfoldedDevices : {}, // { 0xdeadbeefdeadbeef: true/false}
+    unfoldedModels : [], // [{ model:plug01, devices: true/false, options: true/false}]
+    unfoldedDevices : [], // [{ device:0xdeadbeefdeadbeef, show: true/false}]
     buttonSet: new Set(),
     showModels: true,
+}
+
+function updateFoldModel(model, devices, options) {
+    const m = LocalDataDisplayValues.unfoldedModels.find((c) => c.model === model);
+    if (!m) {
+        const ml = {model, devices: (devices === undefined ? false: devices), options: (options === undefined ? false : options)}
+        LocalDataDisplayValues.unfoldedModels.push(ml)
+        return ml;;
+    }
+    if (devices) m.devices = !m.devices;
+    if (options) m.options = !m.options;
+    return m;
 }
 
 
@@ -209,15 +221,15 @@ function getModelData(data, models) {
     for (const k of Object.keys(models)) {
         const model = models[k];
         const key = model.model.model;
-        console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
+        //console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
         const numOptions = Object.keys(model.setOptions).length + ((typeof model.setOptions.options === 'object' && model.setOptions.options != null) ? Object.keys(model.setOptions.options).length-1 : 0);
-        const foldData = LocalDataDisplayValues.unfoldedModels[k] || { devices:false, options:false};
+        const foldData = updateFoldModel(key, undefined, undefined);
         let numrows = 1;
         if (foldData.devices) numrows +=  model.devices.length;
         if (numOptions > 0) numrows += 1;
         if (foldData.options) numrows += numOptions;
         //const numrows = (foldData.devices ? model.devices.length : 0) + (foldData.options ? numOptions : 0) + numOptions > 0 ? 2 : 1;
-        console.warn(`numrows is ${numrows} with ${model.devices.length} ${foldData.devices ? 'shown' : 'hidden'} devices and ${numOptions} options ${foldData.options ? 'shown' : 'hidden'}`);
+        //console.warn(`numrows is ${numrows} with ${model.devices.length} ${foldData.devices ? 'shown' : 'hidden'} devices and ${numOptions} options ${foldData.options ? 'shown' : 'hidden'}`);
         const d_btn_name = `d_toggle_${k}`;
         const e_btn_name = `m_edit_${k}`;
         const d_btn_tip = `fold / unfold devices of ${key}`;
@@ -234,14 +246,14 @@ function getModelData(data, models) {
                 let devieee = dev._id.replace(`${namespace}.`, '');
 
                 if (devieee == undefined) devieee = 'unknown' + cnt++;
-                LocalDataDisplayValues.buttonSet.add(`d_delete_${devieee}`);
-                LocalDataDisplayValues.buttonSet.add(`d_delall_${devieee}`);
-                LocalDataDisplayValues.buttonSet.add(`d_disen_${devieee}`);
+                //LocalDataDisplayValues.buttonSet.add(`d_delete_${devieee}`);
+                LocalDataDisplayValues.buttonSet.add(`d_delall_${k}-${devieee}`);
+                LocalDataDisplayValues.buttonSet.add(`d_disen_${k}-${devieee}`);
 
-                const bn = btnParam(`d_delete_${devieee}`, `delete device ${devieee}`, 'delete', 'red darken-4', false);
-                const bna = btnParam(`d_delall_${devieee}`, `completely delete device ${devieee}`, 'delete_forever', 'red accent-4', false);
-                const bta = !dev.common.deactivated ? btnParam(`d_disen_${devieee}`, `disable device ${devieee}`, 'power_settings_new', 'green accent-4', false) : btnParam(`d_disen_${devieee}`, `enable device ${devieee}`, 'power_settings_new', 'red accent-4', false);
-                Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}${dev.common.deactivated ? '_red' : ''}"><td width="1%"><i class="material-icons small">devices</i></td><td width="25%">${devieee}</td><td width="45%">${dev.common.name}</td><td width="10%">${bna}${bn}${bta}<td></tr>`)
+                //const bn = btnParam(`d_delete_${devieee}`, `delete device ${devieee}`, 'delete', 'red darken-4', false);
+                const bna = btnParam(`d_delall_${k}-${devieee}`, `completely delete device ${devieee}`, 'delete_forever', 'red accent-4', false);
+                const bta = !dev.common.deactivated ? btnParam(`d_disen_${k}-${devieee}`, `disable device ${devieee}`, 'power_settings_new', 'green accent-4', false) : btnParam(`d_disen_${k}-${devieee}`, `enable device ${devieee}`, 'power_settings_new', 'red accent-4', false);
+                Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}${dev.common.deactivated ? '_red' : ''}"><td width="1%"><i class="material-icons small">devices</i></td><td width="25%">${devieee}</td><td width="45%">${dev.common.name}</td><td width="10%">${bna}${bta}<td></tr>`)
                 isOdd = !isOdd;
             }
         }
@@ -256,7 +268,7 @@ function getModelData(data, models) {
                     if (typeof model.setOptions[key] === 'object') {
                         const oo = model.setOptions[key];
                         for (const ok of Object.keys(oo)) {
-                            const btn = btnParam(`o_delete_${model.model}.${oo}`, `delete option ${oo}`, 'delete', 'red darken-4', false);
+                            const btn = btnParam(`o_delete_${model.model.model}.${ok}`, `delete option ${ok}`, 'delete', 'red darken-4', false);
                             Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${ok}</td><td width="45%" ${oo[ok] === undefined ? 'id="datared">"not set on model"' : '>'+oo[ok]}</td><td>${btn}</td></tr>`)
                             isOdd = !isOdd;
                         }
@@ -311,7 +323,7 @@ function showLocalData() {
     const ModelHtml = getModelData(devices, models);
     const DeviceHtml = getDeviceData(devices);
     const sm = LocalDataDisplayValues.showModels;
-    const dmtoggle = btnParam('t_all_models', sm ? 'fold Models / show Devices' : 'fold Devices / show Models', !sm ? 'developer_board' : 'devices_other')
+    const dmtoggle = btnParam('t_all_models', 'Refresh models', 'developer_board')
 
     const RowSpan = sm ? ModelHtml.length +2 : DeviceHtml.length + 2;
     const Html = [];
@@ -329,28 +341,21 @@ function showLocalData() {
 
     $('#t_all_models').click(function () {
         //LocalDataDisplayValues.showModels = !LocalDataDisplayValues.showModels;
-        showLocalData();
+        getDevices();
     });
 
     //console.warn(`lddv is ${JSON.stringify(LocalDataDisplayValues)}`)
     for (const item of LocalDataDisplayValues.buttonSet) {
-        //console.warn(`adding click to ${item}`)
         if (item.startsWith('d_toggle_')) $(`#${item}`).click(function () {
-            const key = item.substring(9);
+            const key = item.replace('d_toggle_',  '');
             //console.warn(`clicked ${item}`);
-            if (LocalDataDisplayValues.unfoldedModels.hasOwnProperty(key))
-                LocalDataDisplayValues.unfoldedModels[key].devices =! LocalDataDisplayValues.unfoldedModels[key].devices;
-            else
-                LocalDataDisplayValues.unfoldedModels[key] = { devices:true, options: false };
+            updateFoldModel(models[key].model.model, true, false)
             showLocalData();
         });
         if (item.startsWith('o_toggle_')) $(`#${item}`).click(function () {
             //console.warn(`clicked ${item}`);
             const key = item.substring(9);
-            if (LocalDataDisplayValues.unfoldedModels.hasOwnProperty(key))
-                LocalDataDisplayValues.unfoldedModels[key].options = !LocalDataDisplayValues.unfoldedModels[key].options;
-            else
-                LocalDataDisplayValues.unfoldedModels[key] = { devices:false, options: true };
+            updateFoldModel(models[key].model.model, false, true)
             showLocalData();
         })
         if (item.startsWith('do_toggle_')) $(`#${item}`).click(function () {
@@ -367,13 +372,50 @@ function showLocalData() {
             const key = item.substring(7);
             selectImageOverride(models[key], true);
         })
+        if (item.startsWith('o_delete_'))  $(`#${item}`).click(function () {
+            console.warn(`clicked ${item}`);
+            const keys = item.replace('o_delete_', '').split('.');
+            const model = keys[0];
+            const option = keys[1];
+            delete models[model].setOptions.options[option];
+            updateLocalConfigItems(model, models[model])
+            showLocalData();
+        })
+        if (item.startsWith('l_delete_'))  $(`#${item}`).click(function () {
+            console.warn(`clicked ${item}`);
+            const keys = item.replace('l_delete_', '').split('.');
+            const model = keys[0];
+            const option = keys[1];
+            delete models[model].setOptions[option];
+            showLocalData();
+            updateLocalConfigItems(model, models[model])
+        })
+        if (item.startsWith('d_disen_'))  {
+            console.warn(`adding click to ${item}`)
+            $(`#${item}`).click(function () {
+                console.warn(`clicked ${item}`);
+                const keys = item.replace('d_disen_', '').split('-');
+                const model = models[keys[0]];
+                const ieeeAddr = `0x${keys[1]}`;
+                const device = model.devices.find( (d) => d.native.id === keys[1]);
+                swapActive(keys[1]);
+                device.common.deactivated = !device.common.deactivated
+                showLocalData();
 
 
-
-
+            });
+        }
+        if (item.startsWith('d_delall_')) {
+            console.warn(`adding click to ${item}`)
+            $(`#${item}`).click(function () {
+                console.warn(`clicked ${item}`);
+                const keys = item.replace('d_delall_', '').split('-');
+                const model = models[keys[0]];
+                const device = model.devices.find( (d) => d.native.id === keys[1]);
+                deleteConfirmation(keys[1], device.common.name);
+            });
+        }
     }
-
-
 }
 
 /////
@@ -963,7 +1005,7 @@ function deleteZigbeeDevice(id, force) {
             }
         }
     });
-    showWaitingDialog('Device is being removed', 10);
+    showWaitingDialog('Device is being removed', 30);
 }
 
 
@@ -1399,16 +1441,15 @@ async function selectImageOverride(id, isModel) {
                         <optgroup label="team 1"><option value="false" class="translate">false</option></optgroup>
                         </select><
                         label>${expose.label ? expose.label : 'Value'}</label></div>`);
-*/
                     html_options.push(`<div class="input-field col s5 m5 l5">
                         <div class="switch input"><label>false<Input type="checkbox"/><span class="lever"</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;true</label></div>
                         </div>`);
-                    break;
-                    /*html_options.push(`<div class="input-field col s5 m5 l5">
+                    break;*/
+                    html_options.push(`<div class="input-field col s5 m5 l5">
                         <input id="option_value_${k}" type="checkbox" class="value">
                         <span class="translate" for="option_value_${k}">${expose.label ? expose.label : 'Value'}</span>
                         </div>`);
-                    break;*/
+                    break;
                 default:
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
@@ -2421,6 +2462,9 @@ socket.on('stateChange', function (id, state) {
                     isHerdsmanRunning = false;
                     updateStartButton();
                 }
+                if (state.val === 'Closing network.') {
+                    getDevices();
+                }
             }
         } else {
             const devId = getDevId(id);
@@ -2525,7 +2569,7 @@ function showNetworkMap(devices, map) {
             node.label = 'Coordinator';
             // delete node.color;
         }
-        console.warn(`node for device ${JSON.stringify(node)}`)
+        //console.warn(`node for device ${JSON.stringify(node)}`)
         return node;
     };
 
@@ -4181,7 +4225,8 @@ function removeDevice(id) {
 }
 
 function swapActive(id) {
-    const dev = getDeviceByID(id);
+    const dev = getDeviceByID(id) || getDeviceByIEEE(`0x${id}`);
+    console.warn(`swap_active for ${id} -> ${JSON.stringify(dev)}`);
     if (dev && dev.common) {
         dev.common.deactivated = !(dev.common.deactivated);
         sendToWrapper(namespace, 'setDeviceActivated', {id: id, deactivated: dev.common.deactivated}, function () {
