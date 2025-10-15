@@ -94,12 +94,13 @@ function keepAlive(callback) {
 }
 
 function startKeepalive() {
-    return setInterval(keepAlive, 10000);
+//    return setInterval(keepAlive, 10000);
+    return setInterval(UpdateAdapterAlive(false), 120000);
 }
 
 function UpdateAdapterAlive(state) {
-    if (connectionStatus.connected === state) return;
     connectionStatus.time = Date.now();
+    if (connectionStatus.connected === state) return;
     if (state) {
         $('#adapterStopped_btn').addClass('hide');
         $('#code_pairing').removeClass('disabled');
@@ -268,14 +269,22 @@ function getModelData(data, models) {
                     if (typeof model.setOptions[key] === 'object') {
                         const oo = model.setOptions[key];
                         for (const ok of Object.keys(oo)) {
-                            const btn = btnParam(`o_delete_${model.model.model}.${ok}`, `delete option ${ok}`, 'delete', 'red darken-4', false);
+                            LocalDataDisplayValues.buttonSet.add(`o_delete_${k}-${ok}`);
+                            const btn = btnParam(`o_delete_${k}-${ok}`, `delete option ${ok}`, 'delete', 'red darken-4', false);
                             Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${ok}</td><td width="45%" ${oo[ok] === undefined ? 'id="datared">"not set on model"' : '>'+oo[ok]}</td><td>${btn}</td></tr>`)
                             isOdd = !isOdd;
                         }
                     }
                     else {
-                        const btn = btnParam(`l_delete_${model.model}.${key}`, `delete option ${key}`, 'delete', 'red darken-4', false);
-                        Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${key}</td><td width="45%" ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>${btn}</td></tr>`)
+                        LocalDataDisplayValues.buttonSet.add(`l_delete_${k}-${key}`);
+                        const btn = btnParam(`l_delete_${k}-${key}`, `delete option ${key}`, 'delete', 'red darken-4', false);
+                        if (key==='icon') {
+                            const icontext = model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : `>${model.setOptions[key]}`;
+                            const icon = model.setOptions[key]=== undefined ? '' : `<img src=${model.setOptions[key]} height="32px" class="sml_list">`;
+                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${key}</td><td valign="middle" width="45%" ${icontext}</td><td>${btn}${icon}</td></tr>`)
+                        }
+                        else
+                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${key}</td><td width="45%" ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>${btn}</td></tr>`)
                         isOdd = !isOdd;
                     }
                 }
@@ -372,23 +381,32 @@ function showLocalData() {
             const key = item.substring(7);
             selectImageOverride(models[key], true);
         })
-        if (item.startsWith('o_delete_'))  $(`#${item}`).click(function () {
-            console.warn(`clicked ${item}`);
-            const keys = item.replace('o_delete_', '').split('.');
-            const model = keys[0];
-            const option = keys[1];
-            delete models[model].setOptions.options[option];
-            updateLocalConfigItems(model, models[model])
-            showLocalData();
-        })
+        if (item.startsWith('o_delete_'))  {
+            console.warn(`adding click to ${item}`)
+            $(`#${item}`).click(function () {
+                console.warn(`clicked ${item}`);
+                const keys = item.replace('o_delete_', '').split('-');
+                const model = models[keys[0]]?.model.model;
+                const option = keys[1];
+                const sOptions = models[keys[0]]?.setOptions || {};
+                const options = models[keys[0]]?.setOptions?.options || {};
+                //options[option] = '##REMOVE##';
+                console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
+                delete options[option];
+                updateLocalConfigItems(model, sOptions || {}, true)
+                showLocalData();
+            })
+        }
         if (item.startsWith('l_delete_'))  $(`#${item}`).click(function () {
-            console.warn(`clicked ${item}`);
-            const keys = item.replace('l_delete_', '').split('.');
-            const model = keys[0];
+            const keys = item.replace('l_delete_', '').split('-');
+            const model = models[keys[0]]?.model.model;
             const option = keys[1];
-            delete models[model].setOptions[option];
+            const options = models[keys[0]].setOptions;
+            options[option] = '##REMOVE##';
+            console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
+            updateLocalConfigItems(model, options || {}, true)
+            delete options[option];
             showLocalData();
-            updateLocalConfigItems(model, models[model])
         })
         if (item.startsWith('d_disen_'))  {
             console.warn(`adding click to ${item}`)
@@ -1374,12 +1392,13 @@ async function toggleDebugDevice(id) {
 }
 
 function updateLocalConfigItems(device, data, global) {
-    sendToWrapper(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
-        if (msg && msg.hasOwnProperty.error) {
-            showMessage(msg.error, _('Error'));
-        }
-        getDevices();
-    });
+    if (data != {})
+        sendToWrapper(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
+            if (msg && msg.hasOwnProperty.error) {
+                showMessage(msg.error, _('Error'));
+            }
+            getDevices();
+        });
 }
 
 async function selectImageOverride(id, isModel) {
@@ -1420,6 +1439,7 @@ async function selectImageOverride(id, isModel) {
             $('#chooseimage').find('.new_options_available').addClass('hide');
         }
         const html_options=[];
+        const checkboxButtons = [];
 
         for (const k of Object.keys(device_options)) {
             const expose = device_options[k].expose === undefined ? getExposeFromOptions(device_options[k].key) : device_options[k].expose;
@@ -1431,7 +1451,7 @@ async function selectImageOverride(id, isModel) {
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="number"${expose.value_min != undefined ? ' min="'+expose.value_min+'"' : ''}${expose.value_max != undefined ? ' max="'+expose.value_max+'"' : ''}${expose.value_step != undefined ? ' step="'+expose.value_step+'"' : ''} class="value" /><label>${expose.label ? expose.label : 'Value'}</label></div>`)
                     break;
-                case 'binary':
+                case 'binary': {
                     html_options.push(`<div class="input-field col s5 m5 l5">
                         <input ${disabled}id="option_key_${k}" type="text" class="value" />
                         <label for="option_key_${k}">Option</label></div>`);
@@ -1444,32 +1464,55 @@ async function selectImageOverride(id, isModel) {
                     html_options.push(`<div class="input-field col s5 m5 l5">
                         <div class="switch input"><label>false<Input type="checkbox"/><span class="lever"</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;true</label></div>
                         </div>`);
-                    break;*/
+                    break;
                     html_options.push(`<div class="input-field col s5 m5 l5">
                         <input id="option_value_${k}" type="checkbox" class="value">
                         <span class="translate" for="option_value_${k}">${expose.label ? expose.label : 'Value'}</span>
                         </div>`);
+                    break;*/
+                    const dok = device_options[k];
+                    if (dok.vOn=== undefined) dok.vOn = (expose.value_on === undefined ? 'true' : String(expose.value_on));
+                    if (dok.vOff=== undefined) dok.vOff = (expose.value_off === undefined ? 'false' : String(expose.value_off));
+                    if (dok.value != dok.vOn) dok.value = dok.vOff;
+                    html_options.push(`<div class="col s5 m5 l5"><a id="option_value_${k}" class="btn-large value">${dok.value}</a></div>`);
+                    checkboxButtons.push(`option_value_${k}`);
                     break;
+                }
                 default:
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
                     break;
             }
-            html_options.push(`<div class="col"><a id="option_rem_${k}" class="btn-large round red" ><i class="material-icons icon-red">remove_circle</i></a></div>`);
+            html_options.push(`<div class="col"><a id="option_rem_${k}" class="btn-large round red " ><i class="material-icons icon-red">remove_circle</i></a></div>`);
             html_options.push(`</div>`)
         }
         $('#chooseimage').find('.options_grid').html(html_options.join(''));
+        for (const item of checkboxButtons) {
+            $(`#${item}`).unbind('click');
+            $(`#${item}`).click(() => {
+                const key = item.replace('option_value_', '');
+                const dok = device_options[key];
+                const oval = $(`#option_value_${key}`).html();
+                const val = $(`#option_value_${key}`).html()=== dok.vOn ? dok.vOff : dok.vOn;
+                dok.value = val;
+                console.warn(`${item} clicked: ${JSON.stringify(dok)} => ${val} from ${oval}`);
+                $(`#${item}`).html(val);
+            });
+        }
+
         if (html_options.length > 0) {
             for (const k of Object.keys(device_options)) {
                 if (device_options[k].isCustom) $(`#option_key_${k}`).removeClass('disabled')
                 $(`#option_key_${k}`).val(device_options[k].key);
-                const value = $(`#option_value_${k}.value`);
-                if (value.attr('type') === 'checkbox') {
+                if (device_options[k].expose?.type != 'binary') {
+                    const value = $(`#option_value_${k}.value`);
+                    /*                if (value.attr('type') === 'checkbox') {
                     console.warn(`oval for ${k} : ${device_options[k].value}`);
                     value.prop('checked', Boolean(device_options[k].value));
-                }
-                else
+                    }
+                    else*/
                     value.val(device_options[k].value);
+                }
                 $(`#option_rem_${k}`).unbind('click');
                 $(`#option_rem_${k}`).click(() => {
                     removeOption(k);
@@ -1492,22 +1535,33 @@ async function selectImageOverride(id, isModel) {
         console.warn(`${changed} : ${JSON.stringify(_do)} - ${JSON.stringify(_no)}`)
         for (const k of Object.keys(_do)) {
             const key =  $(`#option_key_${k}`).val();
-            _do[k].key = key;
-            const valobj = $(`#option_value_${k}.value`);
-            const val = valobj.attr('type')==='checkbox' ? valobj.prop('checked') : $(`#option_value_${k}`).val();
-            try {
-                _do[k].value = JSON.parse(val);
+            if (_do[k].isCustom) _do[k].key = key;
+            else if (_do[k].key != key) {
+                console.warn(`_illegal Keys: ${key}, ${_do[k].key}`)
+                continue;
             }
-            catch {
-                _do[k].value = val;
+            console.warn(`_legal Keys: ${key}, ${_do[k].key}`)
+            if (_do[k].expose?.type === 'binary') {
+                _do[k].value = $(`#option_value_${k}`).html();
             }
-            if (device_options[k].key.length > 0) {
-                _no[key] = device_options[k].value;
-                changed |= _no[key] != _so[key];
+            else
+            {
+                const val = $(`#option_value_${k}`).val();
+                try {
+                    _do[k].value = JSON.parse(val);
+                }
+                catch {
+                    _do[k].value = val;
+                }
+            }
+            if (_do[k].key.length > 0) {
+                console.warn(`dok: ${_do[k].key} : ${_do[k].value}`);
+                _no[key] = _do[k].value;
+                changed |= (_no[key] != _so[key]);
             }
         }
         changed |= (Object.keys(_no).length != Object.keys(_so).length);
-        console.warn(`${changed} : ${JSON.stringify(_do)} - ${JSON.stringify(_no)}`)
+        console.warn(`${changed ? 'changed': 'unchanged'} : ${JSON.stringify(_so)} - ${JSON.stringify(_no)}`)
         if (changed) return _no;
         return undefined;
     }
@@ -2100,7 +2154,7 @@ function load(settings, onChange) {
     getComPorts(onChange);
 
     //dialog = new MatDialog({EndingTop: '50%'});
-    const keepAliveHandle = startKeepalive();
+    //const keepAliveHandle = startKeepalive();
     keepAlive(() => {
         getDevices();
         getNamedColors();
@@ -2427,6 +2481,7 @@ socket.emit('subscribeObjects', namespace + '.*');
 
 // react to changes
 socket.on('stateChange', function (id, state) {
+    UpdateAdapterAlive(true);
     // only watch our own states
     if (id.substring(0, namespaceLen) !== namespace) return;
     if (state) {
@@ -2492,6 +2547,7 @@ socket.on('stateChange', function (id, state) {
 
 
 socket.on('objectChange', function (id, obj) {
+    UpdateAdapterAlive(true);
     if (id.substring(0, namespaceLen) !== namespace) return;
     if (obj && obj.type == 'device') { // && obj.common.type !== 'group') {
         updateDevice(id);
@@ -2502,6 +2558,7 @@ socket.on('objectChange', function (id, obj) {
         if (elems.length === 3) {
             removeDevice(id);
             showDevices();
+            showLocalData();
         }
     }
 });
