@@ -461,6 +461,7 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
+    const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
@@ -486,7 +487,14 @@ function getCard(dev) {
                 </div>`,
         deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
         debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'Automatic by '+debugDevices[isDebug-1]: 'Disable Debug' : 'Enable Debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
-        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '';
+        infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
+        reconfigureButton = dev.info.mapped.hasConfigure ? `<button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
+                                    <i class="material-icons icon-red">sync</i>
+                                </button>` : ``,
+        groupButton = dev.info?.device?.isGroupable ? `                                <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit group membership">
+                                    <i class="material-icons icon-black">group_work</i>
+                                </button>
+` : ``;
 
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
@@ -496,6 +504,7 @@ function getCard(dev) {
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
+                                ${NoInterviewIcon}
                                 ${battery}
                                 <!--${lq}-->
                                 ${status}
@@ -510,20 +519,15 @@ function getCard(dev) {
                         <div class="card-action">
                             <div class="card-reveal-buttons">
                                 ${infoBtn}
-
                                 <span class="left fw_info"></span>
                                 <button name="delete" class="right btn-flat btn-small tooltipped" title="Delete">
                                     <i class="material-icons icon-red">delete</i>
                                 </button>
-                                <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit">
-                                    <i class="material-icons icon-black">edit</i>
-                                </button>
+                                ${groupButton}
                                 <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Select Image">
                                     <i class="material-icons icon-black">image</i>
                                 </button>
-                                <button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
-                                    <i class="material-icons icon-red">sync</i>
-                                </button>
+                                ${reconfigureButton}
                                 ${deactBtn}
                                 ${debugBtn}
                             </div>
@@ -669,10 +673,11 @@ function getDashCard(dev, groupImage, groupstatus) {
         rooms = [],
         lang = systemLang || 'en';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    const permitJoinBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
-    const device_queryBtn = dev.battery || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">play_for_work</i></button></div>`;
+    const permitJoinBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
+    const device_queryBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">play_for_work</i></button></div>`;
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
         battery_cls = getBatteryCls(dev.battery),
@@ -737,6 +742,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             </span>
             <div  class="flip">
             <span class="top right small" style="border-radius: 50%">
+                ${NoInterviewIcon}
                 ${idleTime}
                 ${battery}
                 ${lq}
@@ -1214,12 +1220,6 @@ function showDevices() {
         sendTo(namespace, 'setState', {id: `${getDevId(dev_block)}.device_query`, val: true}, function (data) {
             //console.log(data);
         });    });
-    $('#modalpairing a.btn[name=\'extendpairing\']').click(function () {
-        openNetwork();
-    });
-    $('#modalpairing a.btn[name=\'endpairing\']').click(function () {
-        stopPairing();
-    });
     $('.card-reveal-buttons button[name=\'info\']').click(function () {
         const dev_block = $(this).parents('div.device');
         showDevInfo(getDevId(dev_block));
@@ -1312,22 +1312,22 @@ function letsPairingWithCode(code) {
 }
 
 function openNetwork() {
-    messages = [];
     sendToWrapper(namespace, 'letsPairing', {stop:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
-        else showPairingProcess();
+        //else showPairingProcess();
     });
 }
 
 function stopPairing() {
-    messages = [];
     sendToWrapper(namespace, 'letsPairing', {stop:true}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
     });
+    $('#pairing').html('<i class="material-icons">leak_add</i>');
+
 }
 
 function touchlinkReset() {
@@ -2220,8 +2220,10 @@ function load(settings, onChange) {
     });
     $('#pairing').click(function () {
         if (!$('#pairing').hasClass('pulse')) {
+            messages = [];
             openNetwork();
-        } else showPairingProcess();
+        }
+        showPairingProcess();
     });
 
     $('#refresh').click(function () {
@@ -2354,6 +2356,14 @@ function showPairingProcess(noextrabuttons) {
         dismissible: false
     });
 
+    $('#modalpairing a.btn[name=\'extendpairing\']').unbind('click');
+    $('#modalpairing a.btn[name=\'extendpairing\']').click(function () {
+        openNetwork();
+    });
+    $('#modalpairing a.btn[name=\'endpairing\']').unbind('click');
+    $('#modalpairing a.btn[name=\'endpairing\']').click(function () {
+        stopPairing();
+    });
     if (noextrabuttons) {
         $('#modalpairing').find('.endpairing').addClass('hide');
         $('#modalpairing').find('.extendpairing').addClass('hide');
