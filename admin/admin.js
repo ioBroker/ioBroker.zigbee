@@ -186,7 +186,7 @@ function sanitizeModelParameter(parameter) {
     try {
         return parameter.replace(replaceByUnderscore, '_');
     }
-    catch {}
+    catch { /* intentionally empty*/ }
     return parameter;
 }
 
@@ -201,6 +201,9 @@ const LocalDataDisplayValues = {
     unfoldedDevices : [], // [{ device:0xdeadbeefdeadbeef, show: true/false}]
     buttonSet: new Set(),
     showModels: true,
+    sortedKeys : [],
+    sortMethod: function (a, b) { return 0 },
+    filterMethod: function (a) { return true },
 }
 
 function updateFoldModel(model, devices, options) {
@@ -219,7 +222,7 @@ function updateFoldModel(model, devices, options) {
 function getModelData(data, models) {
     const Html = [];
     const s = new Set();
-    for (const k of Object.keys(models)) {
+    for (const k of LocalDataDisplayValues.sortedKeys) {
         const model = models[k];
         const key = model.model.model;
         //console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
@@ -229,8 +232,6 @@ function getModelData(data, models) {
         if (foldData.devices) numrows +=  model.devices.length;
         if (numOptions > 0) numrows += 1;
         if (foldData.options) numrows += numOptions;
-        //const numrows = (foldData.devices ? model.devices.length : 0) + (foldData.options ? numOptions : 0) + numOptions > 0 ? 2 : 1;
-        //console.warn(`numrows is ${numrows} with ${model.devices.length} ${foldData.devices ? 'shown' : 'hidden'} devices and ${numOptions} options ${foldData.options ? 'shown' : 'hidden'}`);
         const d_btn_name = `d_toggle_${k}`;
         const e_btn_name = `m_edit_${k}`;
         const d_btn_tip = `fold / unfold devices of ${key}`;
@@ -239,7 +240,11 @@ function getModelData(data, models) {
         const e_btn = btnParam(e_btn_name, e_btn_tip, 'edit', 'green', false)
         LocalDataDisplayValues.buttonSet.add(d_btn_name);
         LocalDataDisplayValues.buttonSet.add(e_btn_name);
-        Html.push(`<tr id="datarowodd"><td rowspan="${numrows}" width="15%"><img src=${model.model.icon} class="dev_list"></td><td colspan="3">Devices of Model ${key} </td><td>${d_btn}&nbsp;${e_btn}</td></tr>`)
+        const devtxt = (model.devices.length && !foldData.devices) ? `${model.devices.length} device${model.devices.length > 1 ? 's' : ''}` : '';
+        Html.push(`<tr id="datarowodd">
+            <td rowspan="${numrows}" width="15%"><img src=${model.model.icon} class="dev_list"></td>
+            <td colspan="2">Model ${key}</td><td>${devtxt}</td>
+            <td>${d_btn}&nbsp;${e_btn}</td></tr>`)
         let cnt = 0;
         if (foldData.devices) {
             let isOdd = false;
@@ -262,7 +267,10 @@ function getModelData(data, models) {
             const o_btn_name = `o_toggle_${k}`;
             const o_btn_tip = `fold / unfold options for Model ${key}`;
             LocalDataDisplayValues.buttonSet.add(o_btn_name);
-            Html.push(`<tr id="datarowodd"></td><td colspan="3">Options for ${key}</td><td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}</td></tr>`)
+            const opttxt = (numOptions > 0 && !(foldData.options)) ? `${numOptions} global option${numOptions > 1 ? 's' : ''}` :''
+            Html.push(`<tr id="datarowodd">
+                <td colspan="2">Model ${key}</td><td>${opttxt}</td>
+                <td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}</td></tr>`)
             if (foldData.options) {
                 let isOdd = false;
                 for (const key of Object.keys(model.setOptions)) {
@@ -327,6 +335,17 @@ function getDeviceData(deviceList, withIcon) {
     return Html;*/
 }
 
+function sortAndFilter(filter, sort) {
+    const fFun = filter || LocalDataDisplayValues.filterMethod;
+    if (LocalDataDisplayValues.searchval && LocalDataDisplayValues.searchval.length) LocalDataDisplayValues.sortedKeys = Object.keys(models).filter((a) => models[a].model.model.toLower().includes(LocalDataDisplayValues.searchval));
+    else LocalDataDisplayValues.sortedKeys = Object.keys(models);
+    if (typeof fFun == 'function') LocalDataDisplayValues.sortedKeys = LocalDataDisplayValues.sortedKeys.filter(fFun);
+    const sFun = sort || LocalDataDisplayValues.sortMethod;
+    if (typeof sFun == 'function') LocalDataDisplayValues.sortedKeys = LocalDataDisplayValues.sortedKeys.sort(sFun);
+    if (typeof filter == 'function') LocalDataDisplayValues.filterMethod = filter;
+    if (typeof sort == 'function') LocalDataDisplayValues.sortMethod = sort;
+}
+
 function showLocalData() {
     LocalDataDisplayValues.buttonSet.clear();
     const ModelHtml = getModelData(devices, models);
@@ -336,17 +355,22 @@ function showLocalData() {
 
     const RowSpan = sm ? ModelHtml.length +2 : DeviceHtml.length + 2;
     const Html = [];
+
     if (sm) {
-        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4>Model Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
+        sortAndFilter(undefined, undefined);
+        //Html.push(`<div row><div class="col m12 s12 l12>`);
+        //Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4>Model Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`);
+        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4></th><th></th><th rowspan="${RowSpan}">&nbsp;</th></tr>`);
         Html.push(ModelHtml.join(''));
     }
-    else {
+    /*else {
         Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4>Device Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
         Html.push(DeviceHtml.join(''));
-    }
-    Html.push(`<tr id="datatable"><td colspan="5">Statistics</td></tr>`)
+    }*/
+    Html.push(`<tr id="datatable"><td colspan="5"></td></tr>`)
     Html.push('</table>');
-    $('#tab-overrides').html(Html.join(''));
+    //Html.push('</div></div>');
+    $('#tab-overrides-content').html(Html.join(''));
 
     $('#t_all_models').click(function () {
         //LocalDataDisplayValues.showModels = !LocalDataDisplayValues.showModels;
@@ -430,7 +454,7 @@ function showLocalData() {
                 const keys = item.replace('d_delall_', '').split('-');
                 const model = models[keys[0]];
                 const device = model.devices.find( (d) => d.native.id === keys[1]);
-                deleteConfirmation(keys[1], device.common.name);
+                deleteConfirmation(keys[1], device.common.name, keys[1], models[keys[0]].devices.count <=1 ? models[keys[0]]?.model.model : undefined);
             });
         }
     }
@@ -493,8 +517,7 @@ function getCard(dev) {
                                 </button>` : ``,
         groupButton = dev.info?.device?.isGroupable ? `                                <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit group membership">
                                     <i class="material-icons icon-black">group_work</i>
-                                </button>
-` : ``;
+                                </button>` : ``;
 
     const dashCard = getDashCard(dev);
     const card = `<div id="${id}" class="device">
@@ -677,7 +700,7 @@ function getDashCard(dev, groupImage, groupstatus) {
     const device_queryBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">play_for_work</i></button></div>`;
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
-    const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
+    const NoInterviewIcon = (dev.info?.device?.interviewstate != 'SUCCESSFUL' && dev.common.type != 'group') ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
         nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
         battery_cls = getBatteryCls(dev.battery),
@@ -888,7 +911,7 @@ function showDevInfo(id) {
 // section Confirmations
 //
 ////
-function deleteConfirmation(id, name) {
+function deleteConfirmation(id, name, dev, model) {
     const text = translateWord('Do you really want to delete device') + ' "' + name + '" (' + id + ')?';
     $('#modaldelete').find('p').text(text);
     $('#force').prop('checked', false);
@@ -896,7 +919,7 @@ function deleteConfirmation(id, name) {
     $('#modaldelete a.btn[name=\'yes\']').unbind('click');
     $('#modaldelete a.btn[name=\'yes\']').click(() => {
         const force = $('#force').prop('checked');
-        deleteZigbeeDevice(id, force);
+        deleteZigbeeDevice(id, force, dev, model);
     });
     $('#modaldelete').modal('open');
     Materialize.updateTextFields();
@@ -1018,8 +1041,8 @@ function GenerateGroupChange(oldmembers, newmembers) {
     return grpchng;
 }
 
-function deleteZigbeeDevice(id, force) {
-    sendToWrapper(namespace, 'deleteZigbeeDevice', {id: id, force: force}, function (msg) {
+function deleteZigbeeDevice(id, force, devOpts, modelOpts) {
+    sendToWrapper(namespace, 'deleteZigbeeDevice', {id: id, force: force, dev:devOpts, model:modelOpts}, function (msg) {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
@@ -1455,21 +1478,6 @@ async function selectImageOverride(id, isModel) {
                     html_options.push(`<div class="input-field col s5 m5 l5">
                         <input ${disabled}id="option_key_${k}" type="text" class="value" />
                         <label for="option_key_${k}">Option</label></div>`);
-/*                    html_options.push(`<div class="input-field  col s5 m5 l5">
-                        <select id="option_value_${k}" class="browser-default">
-                        <optgroup label="team 1"><option value="true" selected class="translate">true</option></optgroup>
-                        <optgroup label="team 1"><option value="false" class="translate">false</option></optgroup>
-                        </select><
-                        label>${expose.label ? expose.label : 'Value'}</label></div>`);
-                    html_options.push(`<div class="input-field col s5 m5 l5">
-                        <div class="switch input"><label>false<Input type="checkbox"/><span class="lever"</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;true</label></div>
-                        </div>`);
-                    break;
-                    html_options.push(`<div class="input-field col s5 m5 l5">
-                        <input id="option_value_${k}" type="checkbox" class="value">
-                        <span class="translate" for="option_value_${k}">${expose.label ? expose.label : 'Value'}</span>
-                        </div>`);
-                    break;*/
                     const dok = device_options[k];
                     if (dok.vOn=== undefined) dok.vOn = (expose.value_on === undefined ? 'true' : String(expose.value_on));
                     if (dok.vOff=== undefined) dok.vOff = (expose.value_off === undefined ? 'false' : String(expose.value_off));
@@ -1993,6 +2001,7 @@ function getDevices() {
                 updateStartButton();
                 displayDebugMessages(debugMessages);
                 showDevices();
+                LocalDataDisplayValues.sortedKeys = Object.keys(models);
                 showLocalData();
                 UpdateAdapterAlive(true)
             }
@@ -2304,6 +2313,46 @@ function load(settings, onChange) {
         $('#device-filter a').click(function () {
             $('#device-filter-btn').text($(this).text());
             doFilter();
+        });
+        $('#model-search').keyup(function (event) {
+            LocalDataDisplayValues.searchVal = event.target.value.toLowerCase();
+            if (!LocalDataDisplayValues.searchTimeout)
+                LocalDataDisplayValues.searchTimeout = setTimeout(showLocalData(), 1000);
+        });
+        $('#model-sort a').click(function () {
+            const t = $(this).text();
+            $('#model-sort-btn').text(t);
+            switch (t) {
+                case 'by type':
+                    LocalDataDisplayValues.sortMethod = function(a,b) {
+                        if (models[a].model?.type == models[b].model?.type) return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+                        return (models[a].model?.type > models[b].model?.type ? 1 : -1);
+                    };
+                    break;
+
+                case 'by device count':
+                    LocalDataDisplayValues.sortMethod = function(a,b) {
+                        if (models[a].setOptions?.length == models[b].setOptions?.length) return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+                        return (models[a].setOptions?.length > models[b].setOptions?.length?1:-1);
+                    };
+                    break;
+                case 'by option count':
+                    LocalDataDisplayValues.sortMethod = function(a,b) {
+                        if (models[a].devices?.length == models[b].devices?.length) return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+                        return (models[a].devices?.length > models[b].devices?.length ? 1 : -1);
+                    };
+                    break;
+                default:
+                    LocalDataDisplayValues.sortMethod = function(a,b) {
+                        return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+                    };
+            }
+            showLocalData();
+        });
+        $('#model-filter a').click(function () {
+            $('#model-filter-btn').text($(this).text());
+            const fun = $('#model-filter-btn').attr('data-type');
+            console.warn(`model filter func ${fun}`)
         });
     });
 
