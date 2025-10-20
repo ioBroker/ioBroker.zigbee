@@ -67,11 +67,6 @@ jobs:
         run: npm test
           # install-command: 'npm install'
 
-  # TODO: To enable automatic npm releases, create a token on npmjs.org
-  # Enter this token as a GitHub secret (with name NPM_TOKEN) in the repository options
-  # Then uncomment the following block:
-
-  # Deploys the final package to NPM
   # Deploys the final package to NPM and Github Actions
   deploy:
    # Define which jobst must succeed before the release
@@ -82,10 +77,16 @@ jobs:
       contains(github.event.head_commit.message, '[skip ci]') == false &&
       github.event_name == 'push' &&
       startsWith(github.ref, 'refs/tags/v')
+      
     runs-on: ubuntu-latest
+    
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
+        
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
       - name: Checkout code
@@ -113,35 +114,13 @@ jobs:
             echo "TAG=--tag next" >> $GITHUB_OUTPUT
           fi
 
-      # If you are using TypeScript, additional build steps might be necessary
-      # Run them here, e.g.:
-      # - name: Install dependencies
-      #   run: npm ci
-      # - name: Create a clean build
-      #   run: npx gulp build
-
       - name: Install Dependencies
         run: npm ci
-      # How to release packages to npm depends on the package type.
-      # Choose one of these possibilities and or comment out the others:
-      # a) For normal packages (no monorepo):
+
       - name: Publish package to npm
         run: |
-          npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm whoami
           npm publish
-      # b) For monorepos managed with lerna (requires lerna to be installed globally)
-      #- name: Publish packages to npm
-      #  run: |
-      #    npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
-      #    npm whoami
-      #    lerna publish from-package --yes
-      # c) For monorepos managed with yarn v3.1+ (no lerna)
-      #- name: Publish packages to npm
-      #  run: |
-      #    yarn config set npmAuthToken "${{ secrets.NPM_TOKEN }}"
-      #    yarn npm whoami
-      #    yarn workspaces foreach -vti --no-private npm publish --tolerate-republish
 
       - name: Create Github Release
         uses: actions/create-release@v1
