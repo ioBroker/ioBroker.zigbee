@@ -152,6 +152,10 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### 3.1.6 (2025-10-21)
+* (asgothian) Bugfixes
+*
+
 ### 3.1.5 (2025-10-04)
 * (asgothian) Bugfixes
 * (asgothian) ZHC25.36.0

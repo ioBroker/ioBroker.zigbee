@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.1.5",
+    "version": "3.1.6",
     "news": {
+      "3.1.6": {
+        "en": "Bugfixes\n",
+        "de": "Bugfixes\n",
+        "ru": "Багфиксы\n",
+        "pt": "Correcções de Erros\n",
+        "nl": "Bugfixes\n",
+        "fr": "Fixes de bogue\n",
+        "it": "Bugfix\n",
+        "es": "Bugfixes\n",
+        "pl": "Korekty błędów\n",
+        "uk": "Помилки\n",
+        "zh-cn": "错误修正\n"
+      },
       "3.1.5": {
         "en": "Bugfixes\nZHC25.36.0\nreduced stopTimeout to 5s",
         "de": "Bugfixes\nZHC25.36.0\nreduzierter StopTimeout auf 5s",
@@ -80,19 +93,6 @@
         "pl": "poprawianie obrazów",
         "uk": "фіксувати зображення",
         "zh-cn": "修正图像"
-      },
-      "3.0.1": {
-        "en": "Fix for Ikea SOMRIG configuration raising 'definition.endpoint is not a function' error.\nAccess to 'zigbee2mqtt options as settings in zigbee adapter (ALPHA Stage !)\nFix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)\nUpdated hardware configuration panel - exchanged text buttons for buttons with icons.\nLimited states on device tiles to states which are read only or which can be modified sensibly via the device tile.\n",
-        "de": "Fix für Ikea SOMRIG Konfiguration erhöhen 'Definition. Endpoint ist kein Funktionsfehler.\nZugriff auf 'zigbee2mqtt Optionen als Einstellungen im Zickbee Adapter (ALPHA Stage!)\nFix für 'error: zigbee.0 (1118300) zigbee.0 bereits läuft' bei Adapterstart (Alpha Stage)\nAktualisiertes Hardware-Konfigurationsfeld - ausgetauschte Texttasten für Tasten mit Symbolen.\nBegrenzte Zustände auf Gerätefliesen zu Zuständen, die nur gelesen werden oder über die Gerätefliese sensibel modifiziert werden können.\n",
-        "ru": "Исправьте конфигурацию IKEA SOMRIG, повысив «определение». Конечная точка не является ошибкой функции.\nДоступ к опциям Zigbee2mqtt в качестве настроек в адаптере Zigbee (стадия ALPHA!)\nИсправьте ошибку: zigbee.0 (1118300) zigbee.0 уже работает на старте адаптера\nОбновленная аппаратная панель конфигурации - обмен текстовыми кнопками на кнопки с иконками.\nОграниченные состояния на плитках устройства к состояниям, которые читаются только или которые могут быть изменены чувственно через плитку устройства.\n",
-        "pt": "Corrigir para configuração Ikea SOMRIG elevando 'definição. endpoint não é um erro de função.\nAcesso às opções \"zigbee2mqttt como configurações no adaptador zigbee (Estação LAPHA!)\nFix for 'error: zigbee.0 (1118300) zigbee.0 já em execução' no início do adaptador (Alpha Stage)\nPainel de configuração de hardware atualizado - botões de texto trocados para botões com ícones.\nEstados limitados em telhas de dispositivo para estados que são lidos apenas ou que podem ser modificados sensivelmente através da telha do dispositivo.\n",
-        "nl": "Fix voor Ikea SOMRIG configuratie verhogen 'definitie. eindpunt is geen functiefout.\nToegang tot 'zigbee2mqtt opties als instellingen in zigbee adapter (ALPHA Stage !)\nFix voor 'fout: zigbee.0 (1118300) zigbee.0 al actief' bij adapterstart (Alpha Stage)\nBijgewerkt hardware configuratiepaneel - uitgewisselde tekstknoppen voor knoppen met pictogrammen.\nBeperkte toestanden op apparaattegels naar toestanden die alleen worden gelezen of die verstandig kunnen worden gewijzigd via de apparaattegel.\n",
-        "fr": "Correction pour la configuration Ikea SOMRIG augmentant la définition. le paramètre n'est pas une erreur de fonction.\nAccès aux options 'zigbee2mqtt comme réglages dans l'adaptateur zigbee (ALPHA Stage !)\nCorrection pour 'erreur: zigbee.0 (1118300) zigbee.0 déjà en cours d'exécution' au démarrage de l'adaptateur (Alpha Stage)\nPanneau de configuration du matériel mis à jour - boutons texte échangés pour les boutons avec des icônes.\nLes états limités sur les tuiles de l'appareil aux états qui sont lus seulement ou qui peuvent être modifiés de façon sensible via la tuile de l'appareil.\n",
-        "it": "Fissare per Ikea SOMRIG configurazione aumentando 'definizione. endpoint non è un errore di funzione.\nAccesso alle opzioni 'zigbee2mqtt come impostazioni nell'adattatore zigbee (ALPHA Stage !)\nCorrezione per 'error: zigbee.0 (1118300) zigbee.0 già in esecuzione' all'inizio dell'adattatore (Alpha Stage)\nPannello di configurazione hardware aggiornato - pulsanti di testo scambiati per pulsanti con icone.\nStati limitati su piastrelle di dispositivo a stati che sono letti solo o che possono essere modificati sensibilmente tramite la piastrella del dispositivo.\n",
-        "es": "Arregla para la configuración de Ikea SOMRIG criando 'definición. endpoint no es un error de función.\nAcceso a las opciones 'zigbee2mqtt como configuración en el adaptador de zigbee (ALPHA Stage !)\nFijación para 'error: zigbee.0 (1118300) zigbee.0 ya funcionando en el inicio del adaptador (Alpha Stage)\nPanel de configuración de hardware actualizado - botones de texto intercambiados para botones con iconos.\nEstados limitados en fichas de dispositivo a estados que se leen solamente o que pueden ser modificados de forma sensata a través de la ficha del dispositivo.\n",
-        "pl": "Napraw dla definicji podnoszenie konfiguracji Ikea SOMRIG. Punkt końcowy nie jest błędem funkcji.\nDostęp do opcji 'zigbee2mqtt jako ustawień w adapterze zigbee (ALPHA Stage!)\nFix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)\nAktualizacja panelu konfiguracji sprzętowej - wymieniono przyciski tekstowe na przyciski z ikonami.\nOgraniczone stany na płytkach urządzenia do stanów, które są tylko odczytywane lub które mogą być modyfikowane w sposób rozsądny za pomocą płytki urządzenia.\n",
-        "uk": "Виправлення для налаштування Ikea SOMRIG 'Визначення. кінцева точка не є помилкою функції.\nДоступ до опцій Zigbee2mqtt як налаштування адаптера Zigbee (ALPHA Stage !)\nВиправлення для 'error: zigbee.0 (1118300) zigbee.0 вже запущений' при запуску адаптера (Alpha Stage)\nОновлена панель конфігурації обладнання - обмінні текстові кнопки для гудзиків з іконками.\nОбмежені стани на плитці пристрою для станів, які читаються тільки або які можуть бути змінені, швидко через плитку пристрою.\n",
-        "zh-cn": "修复Ikea SOMRIG 配置提升定义 。 结束点不是一个函数'错误.\n访问 'zigbee2mqtt 选项作为 Zigbee 适配器的设置( ALPHA stage !) \n在适配器启动( Alpha Stage)时为 'error: zigbee. 0 (1118300) zigbee. 0 已经运行' 进行修复\n更新的硬件配置面板 - 用图标交换文本按钮作为按钮.\n将设备瓦片的状态限制在只读或通过设备瓦片可敏感修改的状态.\n"
       }
     },
     "titleLang": {
