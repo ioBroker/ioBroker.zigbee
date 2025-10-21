@@ -1237,7 +1237,7 @@
             <nav class="resposHeight" style="margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
                 <ul id="nav-mobile-2" class="left">
                     <li>
-                        <a id="refresh_btn" class="btn-floating waves-effect waves-light tooltipped center-align hoverable translateT" title="refresh data">
+                        <a id="refresh_models_btn" class="btn-floating waves-effect waves-light tooltipped center-align hoverable translateT" title="refresh data">
                             <i class="material-icons large">refresh</i>
                         </a>
                     </li>
@@ -1254,7 +1254,7 @@
                             <a id="model-sort-btn" class="dropdown-trigger btn" href="#" data-target="model-sort">all</a>
                             <ul id="model-sort" class="dropdown-content" tabindex="0">
                                 <li class="model-sort-item" data-type="function(a,b) { return true }" tabindex="0">
-                                    <a class="translate" data-lang="withoutoptions">all</a></li>
+                                    <a class="translate" data-lang="default">default</a></li>
                                 <li class="model-sort-item" data-type="by type" tabindex="0">
                                     <a class="translate" data-lang="by type">by type</a></li>
                                 <li class="model-sort-item" data-type="by device count" tabindex="0">
@@ -1269,12 +1269,12 @@
                             <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">filter_list</i>
                             <a id="model-filter-btn" class="dropdown-trigger btn" href="#" data-target="model-filter">all</a>
                             <ul id="model-filter" class="dropdown-content" tabindex="0">
-                                <li class="model-filter-item" data-type="function(a) { return !(LocalDisplayDataValues[a].setOptions?.length > 0) }" tabindex="0"><a class="translate" data-lang="with options">without options</a></li>
-                                <li class="model-filter-item" data-type="function(a) { return LocalDisplayDataValues[a].setOptions?.length > 0 }" tabindex="0"><a class="translate" data-lang="with options">with options</a></li>
-                                <li class="model-filter-item" data-type="function(a) { return LocalDisplayDataValues[a].type == 'Router' }" tabindex="0"><a class="translate" data-lang="Routers">Routers</a></li>
-                                <li class="model-filter-item" data-type="function(a) { return LocalDisplayDataValues[a].type == 'EndDevice' }" tabindex="0"><a class="translate" data-lang="End Devices">End Devices</a></li>
-                                <li class="model-filter-item" data-type="function(a) { return LocalDisplayDataValues[a].type == 'group' }" tabindex="0"><a class="translate" data-lang="Groups">Groups</a></li>
-                                <li class="model-filter-item" data-type="function(a) { return true }" tabindex="0"><a class="translate" data-lang="all">all</a></li>
+                                <li class="model-filter-item" data-type="with options" tabindex="0"><a class="translate" data-lang="without options">without options</a></li>
+                                <li class="model-filter-item" data-type="without options" tabindex="0"><a class="translate" data-lang="with options">with options</a></li>
+                                <li class="model-filter-item" data-type="routers" tabindex="0"><a class="translate" data-lang="Routers">Routers</a></li>
+                                <li class="model-filter-item" data-type="end devices" tabindex="0"><a class="translate" data-lang="End Devices">End Devices</a></li>
+                                <li class="model-filter-item" data-type="groups" tabindex="0"><a class="translate" data-lang="Groups">Groups</a></li>
+                                <li class="model-filter-item" data-type="all" tabindex="0"><a class="translate" data-lang="all">all</a></li>
                             </ul>
                         </div>
                     </li>

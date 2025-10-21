@@ -219,10 +219,10 @@ function updateFoldModel(model, devices, options) {
 }
 
 
-function getModelData(data, models) {
+function getModelData(data, models, keys) {
     const Html = [];
     const s = new Set();
-    for (const k of LocalDataDisplayValues.sortedKeys) {
+    for (const k of keys) {
         const model = models[k];
         const key = model.model.model;
         //console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
@@ -240,7 +240,7 @@ function getModelData(data, models) {
         const e_btn = btnParam(e_btn_name, e_btn_tip, 'edit', 'green', false)
         LocalDataDisplayValues.buttonSet.add(d_btn_name);
         LocalDataDisplayValues.buttonSet.add(e_btn_name);
-        const devtxt = (model.devices.length && !foldData.devices) ? `${model.devices.length} device${model.devices.length > 1 ? 's' : ''}` : '';
+        const devtxt = (model.devices.length && !foldData.devices) ? `${model.devices.length} ${model.model.type}${model.devices.length > 1 ? 's' : ''}` : '';
         Html.push(`<tr id="datarowodd">
             <td rowspan="${numrows}" width="15%"><img src=${model.model.icon} class="dev_list"></td>
             <td colspan="2">Model ${key}</td><td>${devtxt}</td>
@@ -337,18 +337,35 @@ function getDeviceData(deviceList, withIcon) {
 
 function sortAndFilter(filter, sort) {
     const fFun = filter || LocalDataDisplayValues.filterMethod;
-    if (LocalDataDisplayValues.searchval && LocalDataDisplayValues.searchval.length) LocalDataDisplayValues.sortedKeys = Object.keys(models).filter((a) => models[a].model.model.toLower().includes(LocalDataDisplayValues.searchval));
-    else LocalDataDisplayValues.sortedKeys = Object.keys(models);
-    if (typeof fFun == 'function') LocalDataDisplayValues.sortedKeys = LocalDataDisplayValues.sortedKeys.filter(fFun);
+    console.warn('once:='+JSON.stringify(models['m_0'].setOptions))
+    console.warn('twice:='+ JSON.stringify(models['m_1'].setOptions))
+    let filterMap = LocalDataDisplayValues.sortedKeys = Object.keys(models);
+    if (LocalDataDisplayValues.searchVal && LocalDataDisplayValues.searchVal.length) {
+        filterMap = filterMap.filter((a) => {
+            return models[a]?.model?.model?.toLowerCase().includes(LocalDataDisplayValues.searchVal)
+        });
+        console.warn(`${JSON.stringify(LocalDataDisplayValues.searchVal)} - ${JSON.stringify(models['m_1'].model)}`);
+    }
+    if (typeof fFun == 'function')  {
+        console.warn(`${JSON.stringify(filterMap)} - ${JSON.stringify(models['m_1'].model)}`);
+        filterMap = filterMap.filter(fFun);
+    }
+    console.warn(JSON.stringify(filterMap));
     const sFun = sort || LocalDataDisplayValues.sortMethod;
-    if (typeof sFun == 'function') LocalDataDisplayValues.sortedKeys = LocalDataDisplayValues.sortedKeys.sort(sFun);
+    if (typeof sFun == 'function') {
+        console.warn(`${JSON.stringify(filterMap)} - ${JSON.stringify(models['m_1'].model)}`);
+        filterMap = filterMap.sort(sFun);
+    }
+    console.warn(JSON.stringify(filterMap));
     if (typeof filter == 'function') LocalDataDisplayValues.filterMethod = filter;
     if (typeof sort == 'function') LocalDataDisplayValues.sortMethod = sort;
+    return filterMap;
 }
 
 function showLocalData() {
     LocalDataDisplayValues.buttonSet.clear();
-    const ModelHtml = getModelData(devices, models);
+    ;
+    const ModelHtml = getModelData(devices, models, sortAndFilter(undefined, undefined));
     const DeviceHtml = getDeviceData(devices);
     const sm = LocalDataDisplayValues.showModels;
     const dmtoggle = btnParam('t_all_models', 'Refresh models', 'developer_board')
@@ -357,9 +374,6 @@ function showLocalData() {
     const Html = [];
 
     if (sm) {
-        sortAndFilter(undefined, undefined);
-        //Html.push(`<div row><div class="col m12 s12 l12>`);
-        //Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4>Model Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`);
         Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4></th><th></th><th rowspan="${RowSpan}">&nbsp;</th></tr>`);
         Html.push(ModelHtml.join(''));
     }
@@ -372,10 +386,10 @@ function showLocalData() {
     //Html.push('</div></div>');
     $('#tab-overrides-content').html(Html.join(''));
 
-    $('#t_all_models').click(function () {
+    /*$('#t_all_models').click(function () {
         //LocalDataDisplayValues.showModels = !LocalDataDisplayValues.showModels;
         getDevices();
-    });
+    });*/
 
     //console.warn(`lddv is ${JSON.stringify(LocalDataDisplayValues)}`)
     for (const item of LocalDataDisplayValues.buttonSet) {
@@ -548,7 +562,7 @@ function getCard(dev) {
                                 </button>
                                 ${groupButton}
                                 <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Select Image">
-                                    <i class="material-icons icon-black">image</i>
+                                    <i class="material-icons icon-black">edit</i>
                                 </button>
                                 ${reconfigureButton}
                                 ${deactBtn}
@@ -638,6 +652,7 @@ function getGroupCard(dev) {
     ;
     info = info.concat(`              ${roomInfo}</ul>
                 </div>`);
+    const infoBtn = `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>`;
     const image = `<img src="${dev.common.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
     const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
     const card = `<div id="${id}" class="device group">
@@ -659,6 +674,7 @@ function getGroupCard(dev) {
                         </div>
                         <div class="card-action">
                             <div class="card-reveal-buttons">
+                                ${infoBtn}
                                 <button name="deletegrp" class="right btn-flat btn-small">
                                     <i class="material-icons icon-black">delete</i>
                                 </button>
@@ -666,7 +682,7 @@ function getGroupCard(dev) {
                                     <i class="material-icons icon-green">edit</i>
                                 </button>
                                 <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Edit">
-                                    <i class="material-icons icon-black">image</i>
+                                    <i class="material-icons icon-black">edit</i>
                                 </button>
                             </div>
                         </div>
@@ -2317,7 +2333,7 @@ function load(settings, onChange) {
         $('#model-search').keyup(function (event) {
             LocalDataDisplayValues.searchVal = event.target.value.toLowerCase();
             if (!LocalDataDisplayValues.searchTimeout)
-                LocalDataDisplayValues.searchTimeout = setTimeout(showLocalData(), 1000);
+                LocalDataDisplayValues.searchTimeout = setTimeout(() => { LocalDataDisplayValues.searchTimeout = null; showLocalData(); }, 250);
         });
         $('#model-sort a').click(function () {
             const t = $(this).text();
@@ -2343,16 +2359,35 @@ function load(settings, onChange) {
                     };
                     break;
                 default:
-                    LocalDataDisplayValues.sortMethod = function(a,b) {
-                        return (models[a].model?.model > models[b].model?.model ? 1 : -1);
-                    };
+                    LocalDataDisplayValues.sortMethod = undefined;
             }
             showLocalData();
         });
+        $('#refresh_models_btn').click(function () {
+            getDevices();
+        });
         $('#model-filter a').click(function () {
-            $('#model-filter-btn').text($(this).text());
-            const fun = $('#model-filter-btn').attr('data-type');
-            console.warn(`model filter func ${fun}`)
+            const t = $(this).text();
+            $('#model-filter-btn').text(t);
+            switch (t) {
+                case 'Groups':
+                    LocalDataDisplayValues.filterMethod = function(a) { return models[a].model.model== 'group'};
+                    break;
+                case 'Routers':
+                    LocalDataDisplayValues.filterMethod = function(a) { return models[a].model.type == 'Router'};
+                    break;
+                case 'End Devices':
+                    LocalDataDisplayValues.filterMethod = function(a) { return models[a].model.type == 'EndDevice'};
+                    break;
+                case 'with options':
+                    LocalDataDisplayValues.filterMethod = function(a) { return models[a].setOptions && Object.keys(models[a].setOptions).length > 0 };
+                    break;
+                case 'without options':
+                    LocalDataDisplayValues.filterMethod = function(a) { return !(models[a].setOptions && Object.keys(models[a].setOptions).length > 0) };
+                    break;
+                default: LocalDataDisplayValues.filterMethod = undefined;
+            }
+            showLocalData();
         });
     });
 

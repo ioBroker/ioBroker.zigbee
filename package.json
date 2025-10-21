@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "3.1.6-alpha.2",
+  "version": "3.1.99-alpha.0",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -39,12 +39,10 @@
     "@alcalzone/release-script-plugin-manual-review": "^3.7.0",
     "@iobroker/testing": "^5.1.1",
     "chai": "^5.2.1",
-    "chai-as-promised": "^7.1.1",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.4",
     "mixin-deep": "^2.0.1",
-    "mocha": "^11.7.1",
     "@iobroker/dev-server": "^0.7.8"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
