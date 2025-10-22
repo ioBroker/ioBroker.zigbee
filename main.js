@@ -37,7 +37,7 @@ const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
 const dns = require('dns');
 const net = require('net');
-const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee } = require('./lib/utils')
+const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee , removeFromArray } = require('./lib/utils')
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -304,6 +304,7 @@ class Zigbee extends utils.Adapter {
 
     * getExternalDefinition() {
 
+
         if (this.config.external === undefined) {
             return;
         }
@@ -355,20 +356,22 @@ class Zigbee extends utils.Adapter {
                     try {
                         this.log.warn('Trying to run sandbox for ' + mN);
                         vm.runInNewContext(modifiedCode, sandbox);
-                        const converter = sandbox.module.exports;
+                        const sandboxResult = sandbox.module.exports;
+                        const converter = Array.isArray(sandboxResult) ? sandboxResult : [sandboxResult];
 
-                        if (Array.isArray(converter)) for (const item of converter) {
-                            this.log.info('Model ' + item.model + ' defined in external converter ' + mN);
+                        for (const item of converter) {
                             if (item.hasOwnProperty('icon')) {
                                 if (!item.icon.toLowerCase().startsWith('http') && !item.useadaptericon)
                                     item.icon = path.join(path.dirname(mN), item.icon);
                             }
-                            yield item;
+                            const rtz = removeFromArray(item.toZigbee);
+                            const rfz = removeFromArray(item.fromZigbee);
+                            const rtzfzmsg = []
+                            if (rtz) rtzfzmsg.push(`${rtz} unknown entr${rtz>1?'ies' : 'y'} in toZigbee`);
+                            if (rfz) rtzfzmsg.push(`${rfz} unknown entr${rtz>1?'ies' : 'y'} in fromZigbee`);
+                            this.log.info(`Model ${item.model} defined ${rtz+rfz ? 'with '+ rtzfzmsg.join(' and ') + ' ' : ''}in external converter ${mN}`);
                         }
-                        else {
-                            this.log.info('Model ' + converter.model + ' defined in external converter ' + mN);
-                            yield converter;
-                        }
+                        yield converter;
                     }
                     catch (e) {
                         this.log.error(`Unable to apply converter from module: ${mN} - the code does not run: ${e}`);
@@ -383,17 +386,19 @@ class Zigbee extends utils.Adapter {
 
     applyExternalConverters() {
         for (const definition of this.getExternalDefinition()) {
-            const toAdd = {...definition};
-            delete toAdd['homeassistant'];
+            const toAdd = definition;
             try {
-                const t = Date.now();
-                if (zigbeeHerdsmanConverters.hasOwnProperty('addExternalDefinition')) {
-                    zigbeeHerdsmanConverters.addExternalDefinition(toAdd);
-                    this.log.info(`added external converter using addExternalDefinition (${Date.now()-t} ms)`)
-                }
-                else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
-                    zigbeeHerdsmanConverters.addDefinition(toAdd);
-                    this.log.info(`added external converter using addDefinition (${Date.now()-t} ms)`);
+                for (const item of toAdd) {
+                    delete item['homeassistant'];
+                    const t = Date.now();
+                    if (zigbeeHerdsmanConverters.hasOwnProperty('addExternalDefinition')) {
+                        zigbeeHerdsmanConverters.addExternalDefinition(item);
+                        this.log.info(`added external converter using addExternalDefinition (${Date.now()-t} ms)`)
+                    }
+                    else if (zigbeeHerdsmanConverters.hasOwnProperty('addDefinition')) {
+                        zigbeeHerdsmanConverters.addDefinition(item);
+                        this.log.info(`added external converter using addDefinition (${Date.now()-t} ms)`);
+                    }
                 }
             } catch (e) {
                 this.log.error(`unable to apply external converter for ${JSON.stringify(toAdd.model)}: ${e && e.message ? e.message : 'no error message available'}`);
