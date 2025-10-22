@@ -166,6 +166,10 @@ You can thank the authors by these links:
 * (asgothian) bugfix: open network on router
 * (asgothian) ZHC 25.x latest, ZH 6.1.3,
 
+### 3.1.6 (2025-10-21)
+* (asgothian) Bugfixes
+*
+
 ### 3.1.5 (2025-10-04)
 * (asgothian) Bugfixes
 * (asgothian) ZHC25.36.0
