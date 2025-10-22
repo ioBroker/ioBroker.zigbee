@@ -12,7 +12,6 @@ on:
       # pre-releases
       - "v[0-9]+.[0-9]+.[0-9]+-**"
   pull_request: {}
-  workflow_dispatch: {}
 
 # Cancel previous PR/branch runs when a new commit is pushed
 concurrency:
@@ -31,21 +30,16 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - uses: actions/checkout@v5
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ matrix.node-version }}
-
-
-      - name: Install Dependencies
-        run: npm ci
+        - uses: ioBroker/testing-action-check@v1
+          with:
+              node-version: '22.x'
+              # Uncomment the following line if your adapter cannot be installed using 'npm ci'
+              # install-command: 'npm install'
+              lint: false
 
   # Runs adapter tests on all supported node versions and OSes
   adapter-tests:
     if: contains(github.event.head_commit.message, '[skip ci]') == false
-
-    needs: [check-and-lint]
 
     runs-on: ${{ matrix.os }}
     strategy:
@@ -54,18 +48,10 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - uses: actions/checkout@v5
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Run local tests
-        run: npm test
-          # install-command: 'npm install'
+            - uses: ioBroker/testing-action-adapter@v1
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  os: ${{ matrix.os }}
   deploy:
       needs: [check-and-lint, adapter-tests]
 
