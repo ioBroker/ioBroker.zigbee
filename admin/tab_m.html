@@ -943,11 +943,11 @@
 
         <div id="modaledit" class="modal">
             <div class="modal-content">
-                <h3 class="translate">Rename / Group device</h3>
+                <h3 class="translate">Group device</h3>
                 <div class="row">
                     <div class="col s12">
                         <div class="input-field">
-                            <input id="d_name" type="text" class="value validate">
+                            <input disabled id="d_name" type="text" class="value validate">
                             <label for="d_name" class="translate">Name</label>
                         </div>
                     </div>
@@ -1087,11 +1087,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="forcedelete" id = "globaldiv">
+                <div class="forcedelete hide" id = "globaldiv">
                     <label>
                         <input id="globaloverride" type="checkbox" class="value"/>
                         <span class="translate" for="globaloverride">Apply to model</span>
-                    </label>
                 </div>
                 <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
@@ -1153,7 +1152,7 @@
             </div>
             <div class="modal-footer">
                 <a name="IEEE" href="#!" class="modal-action waves-effect waves-red btn-flat left">Network</a>
-                <a name="endpairing" id="endpairing" href="#!" class="modal-action  waves-effect waves-red btn red translate">Stop</a>
+                <a name="endpairing" id="endpairing" href="#!" class="waves-effect waves-red btn red translate">Stop</a>
                 <a name="extendpairing" id="extendpairing" href="#!" class="modal-action waves-effect waves-green btn green translate">Extend</a>
                 <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
             </div>

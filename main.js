@@ -37,7 +37,7 @@ const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
 const dns = require('dns');
 const net = require('net');
-const { getNetAddress } = require('./lib/utils')
+const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee } = require('./lib/utils')
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -231,6 +231,8 @@ class Zigbee extends utils.Adapter {
         this.stController.on('changed', this.zbController.publishFromState.bind(this.zbController));
         this.stController.on('device_query', this.zbController.deviceQuery.bind(this.zbController));
         this.zbController.on('acknowledge_state', this.acknowledgeState.bind(this));
+        this.zbController.on('stash_error', this.stController.stashErrors.bind(this.stController));
+        this.zbController.on('stash_unknown_model', this.stController.stashUnknownModel.bind(this.stController));
 
         this.zbController.configure(zigbeeOptions);
         this.zbController.debugActive = this.debugActive;
@@ -401,6 +403,8 @@ class Zigbee extends utils.Adapter {
 
     async testConnect(from, command, message, callback) {
         const response = {};
+        if (this.reconnectTimer) this.clearTimeout(this.reconnectTimer);
+        this.reconnectTimer = null;
         if (message.start) {
             try {
                 this.logToPairing(`overriding zigbee options with:`);
@@ -425,6 +429,7 @@ class Zigbee extends utils.Adapter {
     }
 
     async doConnect(noReconnect) {
+
         let debugversion = '';
         try {
             const DebugIdentify = require('./debugidentify');
@@ -625,7 +630,7 @@ class Zigbee extends utils.Adapter {
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
                 const idx = devicesFromObjects.indexOf(device.ieeeAddr);
                 if (idx > -1) devicesFromObjects.splice(idx, 1);
-                this.stController.updateDev(device.ieeeAddr.substr(2), model, model, () =>
+                this.stController.updateDev(zbIdorIeeetoAdId(this.adapter, device.ieeeAddr, false), model, model, () =>
                     this.stController.syncDevStates(device, model));
             }
             else (this.log.warn('resolveEntity returned no entity'));
@@ -643,25 +648,29 @@ class Zigbee extends utils.Adapter {
     }
 
 
+    /*
     async checkIfModelUpdate(entity) {
         const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
         const device = entity.device;
-        const devId = device.ieeeAddr.substr(2);
+        const devId = zbIdorIeeetoAdId(this.adapter, device.ieeeAddr, false);//device.ieeeAddr.substr(2);
 
         const obj = await this.getObjectAsync(devId);
         if (obj && obj.common.type !== model) {
-            await this.stController.deleteObj(devId);
+            // await this.stController.deleteObj(devId);
             await this.stController.updateDev(devId, model, model);
             await this.stController.syncDevStates(device, model);
+            await this.stController.deleteOrphanedDeviceStates();
         }
     }
+    */
 
     acknowledgeState(deviceId, model, stateDesc, value) {
-        const stateId = (model === 'group' ?
+        const stateId = `${zbIdorIeeetoAdId(this, deviceId, true)}.${stateDesc.id}`;
+        /*const stateId = (model === 'group' ?
             `${this.namespace}.group_${deviceId}.${stateDesc.id}` :
-            `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`);
+            `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`); */
         if (value === undefined) try {
-            this.getState(stateId, (err, state) => { if (!err && state.hasOwnProperty('val')) this.setState(stateId,  state.val, true)});
+            this.getState(stateId, (err, state) => { if (!err && state?.hasOwnProperty('val')) this.setState(stateId,  state.val, true)});
         }
         catch (error) {
             this.log.warn(`Error acknowledging ${stateId} without value: ${error && error.message ? error.message : 'no reason given'}`);
@@ -691,13 +700,13 @@ class Zigbee extends utils.Adapter {
         }
         await this.stController.AddModelFromHerdsman(entity.device, model)
         if (dev) {
-            this.getObject(dev.ieeeAddr.substr(2), (err, obj) => {
+            this.getObject(zbIdorIeeetoAdId(this.adapter, dev.ieeeAddr, false), (err, obj) => {
                 if (!obj) {
                     const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
                     if (this.debugActive) this.log.debug(`new device ${dev.ieeeAddr} ${dev.networkAddress} ${model} `);
 
                     this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${model}`, true);
-                    this.stController.updateDev(dev.ieeeAddr.substr(2), model, model, () =>
+                    this.stController.updateDev(zbIdorIeeetoAdId(this.adapter, dev.ieeeAddr, false), model, model, () =>
                         this.stController.syncDevStates(dev, model));
                 }
                 else if (this.debugActive) this.log.debug(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
@@ -708,7 +717,7 @@ class Zigbee extends utils.Adapter {
     leaveDevice(ieeeAddr) {
         if (this.debugActive) this.log.debug(`Leave device event: ${ieeeAddr}`);
         if (ieeeAddr) {
-            const devId = ieeeAddr.substr(2);
+            const devId = zbIdorIeeetoAdId(this.adapter, ieeeAddr, false);
             if (this.debugActive) this.log.debug(`Delete device ${devId} from iobroker.`);
             this.stController.deleteObj(devId);
         }
@@ -808,6 +817,7 @@ class Zigbee extends utils.Adapter {
             dbDir: dbDir,
             dbPath: 'shepherd.db',
             backupPath: 'nvbackup.json',
+            localConfigPath: 'LocalOverrides.json',
             disableLed: this.config.disableLed,
             disablePing: (this.config.pingCluster=='off'),
             transmitPower: this.config.transmitPower,
