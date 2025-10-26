@@ -417,7 +417,7 @@ function showLocalData() {
         if (item.startsWith('m_edit_')) $(`#${item}`).click(function () {
             //console.warn(`clicked ${item}`);
             const key = item.substring(7);
-            selectImageOverride(models[key], true);
+            editDeviceOptions(models[key], true);
         })
         if (item.startsWith('o_delete_'))  {
             console.warn(`adding click to ${item}`)
@@ -523,13 +523,13 @@ function getCard(dev) {
                         ${roomInfo}
                     </ul>
                 </div>`,
-        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'Deactivate' : 'Activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
-        debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'Automatic by '+debugDevices[isDebug-1]: 'Disable Debug' : 'Enable Debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
+        deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'deactivate' : 'activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
+        debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'automatic by '+debugDevices[isDebug-1]: 'disable debug' : 'enable debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
-        reconfigureButton = dev.info.mapped.hasConfigure ? `<button name="reconfigure" class="right btn-flat btn-small tooltipped" title="Reconfigure">
+        reconfigureButton = dev.info.mapped.hasConfigure ? `<button name="reconfigure" class="right btn-flat btn-small tooltipped" title="reconfigure">
                                     <i class="material-icons icon-red">sync</i>
                                 </button>` : ``,
-        groupButton = dev.info?.device?.isGroupable ? `                                <button name="edit" class="right btn-flat btn-small tooltipped" title="Edit group membership">
+        groupButton = dev.info?.device?.isGroupable ? `                                <button name="edit" class="right btn-flat btn-small tooltipped" title="edit group membership">
                                     <i class="material-icons icon-black">group_work</i>
                                 </button>` : ``;
 
@@ -557,11 +557,11 @@ function getCard(dev) {
                             <div class="card-reveal-buttons">
                                 ${infoBtn}
                                 <span class="left fw_info"></span>
-                                <button name="delete" class="right btn-flat btn-small tooltipped" title="Delete">
+                                <button name="delete" class="right btn-flat btn-small tooltipped" title="delete device">
                                     <i class="material-icons icon-red">delete</i>
                                 </button>
                                 ${groupButton}
-                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Select Image">
+                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="edit device options">
                                     <i class="material-icons icon-black">edit</i>
                                 </button>
                                 ${reconfigureButton}
@@ -599,7 +599,7 @@ function getCoordinatorCard(dev) {
                         <li><span class="label">ZHC / ZH:</span><span>${coordinatorinfo.converters} / ${coordinatorinfo.herdsman}</span></li>
                     </ul>
                 </div>`,
-        permitJoinBtn = '<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>',
+        permitJoinBtn = '<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="open network"><i class="material-icons icon-green">leak_add</i></button></div>',
         //permitJoinBtn = `<div class="col tool"><button name="join" class="btn-floating-sml waves-effect waves-light right hoverable green><i class="material-icons">leak_add</i></button></div>`,
         card = `<div id="${id}" class="device">
                   <div class="card hoverable">
@@ -675,13 +675,13 @@ function getGroupCard(dev) {
                         <div class="card-action">
                             <div class="card-reveal-buttons">
                                 ${infoBtn}
-                                <button name="deletegrp" class="right btn-flat btn-small">
-                                    <i class="material-icons icon-black">delete</i>
+                                <button name="deletegrp" class="right btn-flat btn-small tooltipped" title="delete group">
+                                    <i class="material-icons icon-red">delete</i>
                                 </button>
-                                <button name="editgrp" class="right btn-flat btn-small">
-                                    <i class="material-icons icon-green">edit</i>
+                                <button name="editgrp" class="right btn-flat btn-small tooltipped" title="edit group members">
+                                    <i class="material-icons">group_work</i>
                                 </button>
-                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="Edit">
+                                <button name="swapimage" class="right btn-flat btn-small tooltipped" title="edit group options">
                                     <i class="material-icons icon-black">edit</i>
                                 </button>
                             </div>
@@ -712,8 +712,8 @@ function getDashCard(dev, groupImage, groupstatus) {
         rooms = [],
         lang = systemLang || 'en';
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    const permitJoinBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">leak_add</i></button></div>`;
-    const device_queryBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green"><i class="material-icons icon-green">play_for_work</i></button></div>`;
+    const permitJoinBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="open network on device"><i class="material-icons icon-green">leak_add</i></button></div>`;
+    const device_queryBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="trigger device query"><i class="material-icons icon-green">play_for_work</i></button></div>`;
     const rid = id.split('.').join('_');
     const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
     const NoInterviewIcon = (dev.info?.device?.interviewstate != 'SUCCESSFUL' && dev.common.type != 'group') ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
@@ -990,7 +990,7 @@ function EndPointIDfromEndPoint(ep) {
 
 
 
-function editName(id, name) {
+function editGroupMembers(id, name) {
 
     function updateGroupables(groupables) {
         const html = [];
@@ -1226,7 +1226,7 @@ function showDevices() {
         const dev_block = $(this).parents('div.device');
         const id = getDevId(dev_block);
         const name = getDevName(dev_block);
-        editName(id, name);
+        editGroupMembers(id, name);
     });
     $('.card-reveal-buttons button[name=\'swapdebug\']').click(function () {
         const dev_block = $(this).parents('div.device');
@@ -1238,7 +1238,7 @@ function showDevices() {
     $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = getDevId(dev_block);
-        selectImageOverride(id, false);
+        editDeviceOptions(id, false);
     });
 
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
@@ -1440,7 +1440,7 @@ function updateLocalConfigItems(device, data, global) {
         });
 }
 
-async function selectImageOverride(id, isModel) {
+async function editDeviceOptions(id, isModel) {
     //console.warn(`selectImageOverride on ${JSON.stringify(id)}`);
 
     // start local functions
@@ -2261,6 +2261,10 @@ function load(settings, onChange) {
 
     $('#reset-btn').click(function () {
         resetConfirmation();
+    });
+
+    $('#restore-backup-btn').click(function () {
+        selectBackup();
     });
 
     $('#deleteNVRam-btn').click(function () {
@@ -3569,6 +3573,23 @@ function resetConfirmation() {
     });
 }
 
+
+function selectBackup() {
+    sendToWrapper(namespace, 'listbackups', {}, function(msg) {
+        const candidates = {};
+        for (const fn of msg.files) {
+            const m = fn.matchAll(/backup_([0-9]+)_([0-9]+)_([0-9]+)-([0-9]+)_([0-9]+)_([0-9]+)/gm);
+            console.warn(`m is ${JSON.stringify(m)}`);
+            if (m) {
+                candidates[`${m[3]}.${m[2]}.${m[1]} ${m[4]}:${m[5]}`] = fn;
+            }
+        }
+        console.warn('candidates is ' + JSON.stringify(candidates));
+        list2select('#backup_Selector', msg.files, [], (key, val) => { return val; }, (key, val) => { return val; })
+        $('#modalrestore').modal('open');
+    })
+
+}
 function showViewConfig() {
     $('#modalviewconfig').modal('open');
 }
@@ -3955,14 +3976,13 @@ function genDevInfo(device) {
         if (value === undefined) {
             return '';
         } else {
-            return `<li><span class="label">${name.replace('_',' ')}:</span><span>${value}</span></li>`;
+            const label = `${name=='' ? '&nbsp;' : name + ':'}`;
+            return `<li><span class="label">${label.replace('_',' ')}</span><span>${value}</span></li>`;
         }
     };
     const genRowValues = function (name, value) {
-        if (value === undefined) {
-            return '';
-        } else {
-            let label = `${name}:`;
+        if (Array.isArray(value)) {
+            let label = `${name=='' ? '&nbsp;' : name + ':'}`;
             try {
                 return value.map((val) => {
                     const row = `<li><span class="label">${label}</span><span>${val}</span></li>`;
@@ -3974,6 +3994,7 @@ function genDevInfo(device) {
                 return `<li><span class="label">${label}</span><span>${JSON.stringify(value)}</span></li>`
             }
         }
+        else return '';
     };
     const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(mapped.model)}.html" target="_blank" rel="noopener noreferrer">${mapped.model}</a>`;
     const mappedInfo = [];
@@ -4007,7 +4028,7 @@ function genDevInfo(device) {
     const imgSrc = device.icon || device.common.icon;
     const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px' onerror="this.onerror=null;this.src='img/unavailable.png';"><div class="divider"></div>` : '';
     const info =[
-        `<div class="col s12 m6 l6 xl6">
+        `<div class="col ${device.memberinfo != undefined ? 's12 m12 l12 xl12':'s12 m6 l6 xl6'}">
             ${imgInfo}
             ${mappedInfo.join('')}
             <div class="divider"></div>
@@ -4016,8 +4037,19 @@ function genDevInfo(device) {
     for (const item in dev) {
         info.push(genRow(item, dev[item]));
     }
-    info.push(`                ${genRow('configured', (device.isConfigured), true)}
-                </ul>
+    if (device.memberinfo != undefined) {
+        const memberCount = (device.memberinfo.length);
+        if (memberCount != 1) info.push(genRow(`Members`, `${memberCount}`));
+        for (let m = 0; m < device.memberinfo.length; m++) {
+            const dev =  getDeviceByIEEE(device.memberinfo[m].ieee);
+            const epid = device.memberinfo[m].epid;
+            const epname = Array.isArray(dev.info.endpoints) ? `:${dev.info.endpoints.find((item) => item.ID == epid)?.epName}` : undefined;
+            info.push(genRow(`Member${memberCount > 1 ?  ' ' + (m+1) : ''}`, `${device.memberinfo[m].device}${epname ? epname : ''} - ${device.memberinfo[m].ieee}.${epid}`));
+        }
+        info.push(`</div>
+        </div>`);
+    }
+    else info.push(`${genRow('configured', (device.isConfigured), true)}</ul>
             </div>
         </div>
         <div class="col s12 m6 l6 xl6">
