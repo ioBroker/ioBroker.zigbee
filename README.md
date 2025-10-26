@@ -154,8 +154,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-
-### **WORK IN PROGRESS**
+### 3.2.0 (2025-10-26)
 * (asgothian) remove local overrides tab from config
 * (asgothian) establish local data tab in config to edit global and device level settings and options
 * (asgothian) remove the local overrides tab
