@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.2.0",
+    "version": "3.2.1",
     "news": {
+      "3.2.1": {
+        "en": "fix bug #2640\n",
+        "de": "fehler beheben #2640\n",
+        "ru": "исправить ошибку #2640\n",
+        "pt": "corrigir o erro # 2640\n",
+        "nl": "fix bug #2640\n",
+        "fr": "correction du bug #2640\n",
+        "it": "fix bug #2640\n",
+        "es": "corrección de error #2640\n",
+        "pl": "fix bug # 2640\n",
+        "uk": "виправлення помилки #2640\n",
+        "zh-cn": "修复错误 # 2640\n"
+      },
       "3.2.0": {
         "en": "remove local overrides tab from config\nestablish local data tab in config to edit global and device level settings and options\nremove the local overrides tab\nremove the ability to set model level overrides from device tab.\nfix errors for 'polling' devices with changed poll times.\nwarning icon for devices which are not completely interviewed.\nimproved router detection for opening the network\nbugfix: open network on router\nZHC 25.x latest, ZH 6.1.3,\nrestore from in-adapter backup",
         "de": "entfernen sie lokale overrides tab von config\nlokale daten tab erstellen, um globale und geräteebene einstellungen und optionen zu bearbeiten\nentfernen der lokalen overrides tab\nentfernen sie die fähigkeit, modellebene überschrieben von der geräte-tab.\nfehler für \"polling\"-geräte mit veränderten abfragezeiten beheben.\nwarnsymbol für geräte, die nicht vollständig interviewt werden.\nverbesserte routererkennung zum öffnen des netzwerks\nbugfix: offenes netzwerk auf router\nZHC 25.x neueste, ZH 6.1.3,\nwiederherstellung von in-adapter-backup",
@@ -80,19 +93,6 @@
         "pl": "naprawić błąd losowy w przypadku gdy urządzenia nie są wyświetlane z powodu nielegalnych grup\nobsługa zrzutu dla węzła 18\nWymagany węzeł Wersje Węzeł 20.19.0 lub 22.11.0 lub nowszy (uprzejmość ZH 4.4.1 / ZHC 24.8.0)",
         "uk": "виправити випадкові помилки, де пристрої не відображаються через незаконні групи\nпідтримка крапель для вузла 18 років\nПотрібні версії вузла Node 20.19.0 або 22.11.0 або новачка (кількість ЗЗ 4.4.1 / ЗЖК 24.8.0)",
         "zh-cn": "在设备因非法组而未显示时修复随机错误\n放弃节点支持 第 18 条\n要求的节点版本为20.19.0或22.11.0或更新(礼仪为ZH 4.4.1 / ZHC 24.8.0)"
-      },
-      "3.0.3": {
-        "en": "fix 'icon' error for unknown devices\nfix state for level.color.rgb role (hex_color, accepts only #rrggbb values\nZH 4.4.1\nZHC 23.72.1\npreparation for breaking change in ZHC 24.0.0",
-        "de": "'icon' fehler für unbekannte geräte beheben\nfix zustand für level.color.rgb rolle (hex_color, akzeptiert nur #rrggbb werte\nZH 4.4.1\nZHC 23.72.1\nvorbereitung auf den Bruchwechsel in ZHC 24.0.0",
-        "ru": "исправьте ошибку «икона» для неизвестных устройств\nисправить состояние для роли level.color.rgb (hex_color, принимает только значения #rrggbb)\nZH 4.4.1\nZHC 23.72.1\nподготовка к нарушению изменений в ZHC 24.0.0",
-        "pt": "corrigir erro 'icon' para dispositivos desconhecidos\nestado de correção para papel level.color.rgb (hex_color, aceita apenas valores #rrggbb\nZH 4.4.1\nZHC 23.72.1\npreparação para quebrar a mudança em ZHC 24.0.0",
-        "nl": "fix 'icon' fout voor onbekende apparaten\nfix status voor level.color.rgb role (hex_color, accepteert alleen #rrggbb waarden\nZH 4.4.1\nZHC 23,72,1\nvoorbereiding voor het breken van verandering in ZHC 24.0.0",
-        "fr": "correction de l'erreur 'icon' pour les périphériques inconnus\nfixer l'état pour le rôle level.color.rgb (hex_color, accepte uniquement les valeurs #rrggbb\nZH 4.4.1\nZHC 23,72.1\npréparation pour briser le changement dans ZHC 24.0.0",
-        "it": "correzione di errore 'icon' per dispositivi sconosciuti\nfix stato per livello.color.rgb ruolo (hex_color, accetta solo valori #rrrggbb\nZH 4.4.1\n23.7.2.1\npreparazione per rompere il cambiamento in ZHC 24.0.0",
-        "es": "corregir el error 'icon' para dispositivos desconocidos\nfijar estado para el nivel.color.rgb papel (hex_color, acepta sólo #rrggbb valores\nZH 4.4.1\nZHC 23.72.1\npreparación para romper el cambio en ZHC 24.0.0",
-        "pl": "naprawić błąd 'icon' dla nieznanych urządzeń\nfix state for level.color.rgb role (hex _ color, akceptuje tylko # rrggbb values\nZH 4.4.1\nZHC 23.72.1\nprzygotowanie do złamania zmian w ZHC 24.0.0",
-        "uk": "виправлено помилку 'icon' для невідомих пристроїв\nвиправити стан для рівня.color.rgb роль (hex_color, приймає тільки значення #rrggbb\nЗХ 4.4.1\nЗХК 23.72.1\nпідготовка до зміни розриву в ЗЖК 24.0.0",
-        "zh-cn": "修复未知设备的“ icon” 错误\n级的固定状态.color.rgb 角色(hex_color,只接受#rrggbb值)\n兹哈4.4.1\nZHC 23.72.1 电话\n准备打破ZHC 24.0"
       }
     },
     "titleLang": {
