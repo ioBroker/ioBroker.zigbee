@@ -165,6 +165,7 @@ You can thank the authors by these links:
 * (asgothian) improved router detection for opening the network
 * (asgothian) bugfix: open network on router
 * (asgothian) ZHC 25.x latest, ZH 6.1.3,
+* (asgothian) restore from in-adapter backup
 
 ### 3.1.6 (2025-10-21)
 * (asgothian) Bugfixes
