@@ -2263,6 +2263,10 @@ function load(settings, onChange) {
         resetConfirmation();
     });
 
+    $('#restore-backup-btn').click(function () {
+        selectBackup();
+    });
+
     $('#deleteNVRam-btn').click(function () {
         deleteNvBackupConfirmation();
     });
@@ -3569,6 +3573,23 @@ function resetConfirmation() {
     });
 }
 
+
+function selectBackup() {
+    sendToWrapper(namespace, 'listbackups', {}, function(msg) {
+        const candidates = {};
+        for (const fn of msg.files) {
+            const m = fn.matchAll(/backup_([0-9]+)_([0-9]+)_([0-9]+)-([0-9]+)_([0-9]+)_([0-9]+)/gm);
+            console.warn(`m is ${JSON.stringify(m)}`);
+            if (m) {
+                candidates[`${m[3]}.${m[2]}.${m[1]} ${m[4]}:${m[5]}`] = fn;
+            }
+        }
+        console.warn('candidates is ' + JSON.stringify(candidates));
+        list2select('#backup_Selector', msg.files, [], (key, val) => { return val; }, (key, val) => { return val; })
+        $('#modalrestore').modal('open');
+    })
+
+}
 function showViewConfig() {
     $('#modalviewconfig').modal('open');
 }
