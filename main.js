@@ -406,30 +406,34 @@ class Zigbee extends utils.Adapter {
         }
     }
 
-    async testConnect(from, command, message, callback) {
+    async testConnect(message) {
         const response = {};
         if (this.reconnectTimer) this.clearTimeout(this.reconnectTimer);
         this.reconnectTimer = null;
+        const zo = message.zigbeeOptions || {};
         if (message.start) {
             try {
-                this.logToPairing(`overriding zigbee options with:`);
-                for (const k of Object.keys(message.zigbeeOptions)) {
-                    this.logToPairing(`${k} : ${message.zigbeeOptions[k]}`)
+                const keys = Object.keys(zo);
+                if (zo.length) {
+                    this.logToPairing(`overriding zigbee options with:`);
+                    for (const k of Object.keys(zo)) {
+                        this.logToPairing(`${k} : ${zo}`)
+                    }
                 }
-                this.zbController.configure(this.getZigbeeOptions(message.zigbeeOptions));
+                this.zbController.configure(this.getZigbeeOptions(zo));
                 response.status = await this.doConnect(true);
                 if (!response.status) response.error = { message: 'Unable to start the Zigbee Network. Please check the previous messages.'}
-                this.sendTo(from, command, response, callback);
+                return response;
             }
             catch (error) {
-                this.sendTo(from, command, { status:false, error }, callback);
+                return { status:false, error };
             }
         }
         else try {
             await this.zbController.stopHerdsman();
-            this.sendTo(from, command, { status:true }, callback);
+            return { status:true };
         } catch (error) {
-            this.sendTo(from, command, { status:true, error }, callback);
+            return { status:true, error };
         }
     }
 

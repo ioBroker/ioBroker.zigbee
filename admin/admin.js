@@ -3587,6 +3587,25 @@ function selectBackup() {
         console.warn('candidates is ' + JSON.stringify(candidates));
         list2select('#backup_Selector', msg.files, [], (key, val) => { return val; }, (key, val) => { return val; })
         $('#modalrestore').modal('open');
+        const btn = $('#modalrestore .modal-content a.btn-large');
+        btn.unbind('click')
+        btn.click(function (e) {
+            const name = $('#backup_Selector').val();
+            console.warn(` filename is ${name}`);
+            $('#modalrestore').modal('close');
+            showWaitingDialog(`Attempting to restore the backup from ${name}`, 180000);
+            const start = Date.now();
+            sendToWrapper(namespace, 'restore', {name}, function(msg) {
+                closeWaitingDialog();
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'))
+                }
+                else {
+                    const duration = Date.now() - start;
+                    showMessage(`Restored configuration from backup after ${duration / 1000} s`, 'Restore successful');
+                }
+            })
+        })
     })
 
 }
