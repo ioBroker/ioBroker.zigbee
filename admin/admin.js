@@ -94,8 +94,7 @@ function keepAlive(callback) {
 }
 
 function startKeepalive() {
-//    return setInterval(keepAlive, 10000);
-    return setInterval(UpdateAdapterAlive(false), 120000);
+    return setInterval(() => UpdateAdapterAlive(false), 120000);
 }
 
 function UpdateAdapterAlive(state) {
@@ -368,7 +367,7 @@ function showLocalData() {
     const ModelHtml = getModelData(devices, models, sortAndFilter(undefined, undefined));
     const DeviceHtml = getDeviceData(devices);
     const sm = LocalDataDisplayValues.showModels;
-    const dmtoggle = btnParam('t_all_models', 'Refresh models', 'developer_board')
+    //const dmtoggle = btnParam('t_all_models', 'Refresh models', 'developer_board');
 
     const RowSpan = sm ? ModelHtml.length +2 : DeviceHtml.length + 2;
     const Html = [];
@@ -431,7 +430,7 @@ function showLocalData() {
                 //options[option] = '##REMOVE##';
                 console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
                 delete options[option];
-                updateLocalConfigItems(model, sOptions || {}, true)
+                updateLocalConfigItems(model, sOptions || {}, true);
                 showLocalData();
             })
         }
@@ -452,7 +451,6 @@ function showLocalData() {
                 console.warn(`clicked ${item}`);
                 const keys = item.replace('d_disen_', '').split('-');
                 const model = models[keys[0]];
-                const ieeeAddr = `0x${keys[1]}`;
                 const device = model.devices.find( (d) => d.native.id === keys[1]);
                 swapActive(keys[1]);
                 device.common.deactivated = !device.common.deactivated
@@ -1622,14 +1620,14 @@ async function editDeviceOptions(id, isModel) {
     if (isModel) {
         const model = id.model;
         dialogData.model = model;
-        dialogData.availableOptions = model.options.slice() || []
+        dialogData.availableOptions = model.options.slice() || [];
         dialogData.availableOptions.push('custom');
         if (model.hasLegacyDef) dialogData.availableOptions.push('legacy');
         dialogData.setOptions = {};
         for (const k in Object.keys(id.setOptions))
             if (k == 'icon' || k == 'name') continue;
             else dialogData.setOptions[k] = id.setOptions[k];
-        dialogData.name = id.setOptions.name, id.name || 'unset';
+        dialogData.name = id.setOptions.name || id.name || 'unset';
         dialogData.icon = id.setOptions.icon || model.icon || 'img/dummyDevice.jpg';
         dialogData.legacyIcon = id.devices[0].legacyIcon;
         id = id.model.model;
@@ -1644,7 +1642,7 @@ async function editDeviceOptions(id, isModel) {
         dialogData.legacyIcon = dev.legacyIcon;
     }
 
-    const imghtml = `<img src="${dialogData.icon}" width="80px">`
+    const imghtml = `<img src="${dialogData.icon}" width="80px">`;
     //console.error(imghtml)
     const selectItems= [''];
     $('#chooseimage').find('input[id=\'d_name\']').val(dialogData.name);

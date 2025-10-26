@@ -37,7 +37,7 @@ const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
 const dns = require('dns');
 const net = require('net');
-const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee , removeFromArray } = require('./lib/utils')
+const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee , removeFromArray } = require('./lib/utils');
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -366,7 +366,7 @@ class Zigbee extends utils.Adapter {
                             }
                             const rtz = removeFromArray(item.toZigbee);
                             const rfz = removeFromArray(item.fromZigbee);
-                            const rtzfzmsg = []
+                            const rtzfzmsg = [];
                             if (rtz) rtzfzmsg.push(`${rtz} unknown entr${rtz>1?'ies' : 'y'} in toZigbee`);
                             if (rfz) rtzfzmsg.push(`${rfz} unknown entr${rtz>1?'ies' : 'y'} in fromZigbee`);
                             this.log.info(`Model ${item.model} defined ${rtz+rfz ? 'with '+ rtzfzmsg.join(' and ') + ' ' : ''}in external converter ${mN}`);
@@ -414,10 +414,10 @@ class Zigbee extends utils.Adapter {
         if (message.start) {
             try {
                 const keys = Object.keys(zo);
-                if (zo.length) {
+                if (keys) {
                     this.logToPairing(`overriding zigbee options with:`);
-                    for (const k of Object.keys(zo)) {
-                        this.logToPairing(`${k} : ${zo}`)
+                    for (const k of keys) {
+                        this.logToPairing(`${k} : ${zo[k]}`)
                     }
                 }
                 this.zbController.configure(this.getZigbeeOptions(zo));
