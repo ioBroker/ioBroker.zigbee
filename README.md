@@ -154,6 +154,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (asgothian) Bugfix on delete object.
+
 ### 3.2.1 (2025-10-26)
 * (asgothian) fix bug #2640
 *
