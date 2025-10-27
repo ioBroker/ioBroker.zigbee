@@ -154,8 +154,14 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (asgothian) Bugfix on delete object.
 
-### **WORK IN PROGRESS ###
+### 3.2.1 (2025-10-26)
+* (asgothian) fix bug #2640
+*
+
+### 3.2.0 (2025-10-26)
 * (asgothian) remove local overrides tab from config
 * (asgothian) establish local data tab in config to edit global and device level settings and options
 * (asgothian) remove the local overrides tab
@@ -165,6 +171,7 @@ You can thank the authors by these links:
 * (asgothian) improved router detection for opening the network
 * (asgothian) bugfix: open network on router
 * (asgothian) ZHC 25.x latest, ZH 6.1.3,
+* (asgothian) restore from in-adapter backup
 
 ### 3.1.6 (2025-10-21)
 * (asgothian) Bugfixes
