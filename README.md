@@ -154,7 +154,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.2.2 (2025-10-27)
 * (asgothian) Bugfix on delete object.
 * (asgothian) improved device query.
 * (asgothain) fixed delete device with local overrides.
