@@ -466,7 +466,8 @@ function showLocalData() {
                 const keys = item.replace('d_delall_', '').split('-');
                 const model = models[keys[0]];
                 const device = model.devices.find( (d) => d.native.id === keys[1]);
-                deleteConfirmation(keys[1], device.common.name, keys[1], models[keys[0]].devices.count <=1 ? models[keys[0]]?.model.model : undefined);
+                console.warn(`setting delete confirmation with ${keys[1]} ${models[keys[0]].devices?.length} ${models[keys[0]]?.model.model} `);
+                deleteConfirmation(keys[1], device.common.name, keys[1], models[keys[0]]?.devices?.length <=1 ? models[keys[0]]?.model?.model : undefined);
             });
         }
     }
@@ -497,6 +498,7 @@ function getCard(dev) {
             rooms.push(dev.rooms[r]);
         }
     }
+
     const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
@@ -1835,7 +1837,7 @@ function displayDebugMessages(msg) {
                 const modelUrl = (type_url === 'unknown') ? 'unknown' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${image}</a>`;
                 const devName = (dev && dev.common && dev.common.name) ? dev.common.name : 'unnamed';
                 const button = `<a id="e_${devID}" class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons large">sync_problem</i></a>`
-                const dbutton = `<a id="d_${devID}" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT" title="Update debug messages"><i class="material-icons icon-yellow large">delete_forever</i></a>`;
+                const dbutton = `<a id="d_${devID}" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT" title="Delete debug messages"><i class="material-icons icon-yellow large">delete_forever</i></a>`;
                 buttonNames.push(devID);
                 Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">${devName} (ID: ${devID} Model: ${dev && dev.common ? dev.common.name : 'unknown'})</td><td>${modelUrl}</td><td>${button}</td><td>${dbutton}</td></tr></thead><tbody>`);
                 if (dbgData[devID].IN.length > 0) {
