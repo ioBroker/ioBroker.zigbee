@@ -156,6 +156,12 @@ You can thank the authors by these links:
 ## Changelog
 ### **WORK IN PROGRESS**
 * (asgothian) Bugfix on delete object.
+* (asgothian) Improvements on debug UI
+* (asgothian) Option 'resend_states' to publish state values to device on reconnect
+* (asgothian) Improved group card
+* (asgothian) Improved group info
+* (asgothian) Modified coordinator card (2 sides)
+*
 
 ### 3.2.1 (2025-10-26)
 * (asgothian) fix bug #2640

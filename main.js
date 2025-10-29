@@ -216,8 +216,6 @@ class Zigbee extends utils.Adapter {
         const zigbeeOptions = this.getZigbeeOptions();
         this.zbController = new ZigbeeController(this);
 
-
-
         this.zbController.on('log', this.onLog.bind(this));
         this.zbController.on('ready', this.onZigbeeAdapterReady.bind(this));
         this.zbController.on('disconnect', this.onZigbeeAdapterDisconnected.bind(this));
@@ -229,6 +227,7 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('publish', this.stController.publishToState.bind(this.stController));
         this.stController.on('send_payload', this.zbController.publishPayload.bind(this.zbController));
         this.stController.on('changed', this.zbController.publishFromState.bind(this.zbController));
+        this.zbController.on('resend_states', this.stController.handleStateReset.bind(this.stController));
         this.stController.on('device_query', this.zbController.deviceQuery.bind(this.zbController));
         this.zbController.on('acknowledge_state', this.acknowledgeState.bind(this));
         this.zbController.on('stash_error', this.stController.stashErrors.bind(this.stController));
@@ -833,6 +832,7 @@ class Zigbee extends utils.Adapter {
             disableBackup: this.config.disableBackup,
             extPanIdFix: extPanIdFix,
             startWithInconsistent: override.startWithInconsistent ? override.startWithInconsistent: this.config.startWithInconsistent || false,
+            availableUpdateTime:this.config.availableUpdateTime,
         };
     }
 
