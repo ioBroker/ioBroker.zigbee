@@ -162,7 +162,7 @@ You can thank the authors by these links:
 * (asgothian) Modified coordinator card (2 sides)
 * (asgothian) retry on error 25
 * (asgothian) clear stashed error messages
-* 
+* (asgothian) ZHC 25.50.0 or newer
 
 ### 3.2.2 (2025-10-27)
 * (asgothian) Bugfix on delete object.
