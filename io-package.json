@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.2.1",
+    "version": "3.2.2",
     "news": {
+      "3.2.2": {
+        "en": "Bugfix on delete object.\nimproved device query.\nfixed delete device with local overrides.\n",
+        "de": "Bugfix auf Löschobjekt.\nverbesserte geräteabfrage.\nfeste löschvorrichtung mit lokalen overrides.\n",
+        "ru": "Bugfix для удаления объекта.\nулучшенный запрос устройства.\nфиксированное устройство удаления с локальными переопределениями.\n",
+        "pt": "Correcção de erros ao apagar o objecto.\npesquisa de dispositivos melhorada.\ndispositivo de exclusão fixo com substituições locais.\n",
+        "nl": "Bugfix bij verwijderen van object.\nverbeterde apparaatquery.\nvast delete apparaat met lokale overrides.\n",
+        "fr": "Correction sur objet de suppression.\nrequête de périphérique améliorée.\ndispositif de suppression fixe avec redéfinitions locales.\n",
+        "it": "Bugfix su delete object.\nmigliore query del dispositivo.\ndispositivo di cancellazione fisso con override locali.\n",
+        "es": "Bugfix en el objeto borrado.\nmejorada consulta de dispositivos.\ndispositivo de eliminación fijo con anulas locales.\n",
+        "pl": "Bugfix na usunąć obiekt.\nulepszone zapytanie urządzenia.\nnaprawione urządzenie usuwające z lokalnymi przekroczeniami.\n",
+        "uk": "Виправлення помилок при видаленні об'єкта.\nпокращений пристрій запиту.\nфіксований пристрій видалення з локальними перенаряддями.\n",
+        "zh-cn": "删除对象上的错误修正 .\n改进设备查询 .\n有本地覆盖的固定删除设备 .\n"
+      },
       "3.2.1": {
         "en": "fix bug #2640\n",
         "de": "fehler beheben #2640\n",
@@ -80,19 +93,6 @@
         "pl": "ZHC 25.x\nZH 6.x\nNapraw błąd parowania\nDodaj wiadomości ping do debugowania urządzenia, aby zweryfikować przyczyny niepowodzenia pingu\n",
         "uk": "ЗХК 25.x\nЗХ 6.х\nВиправлено помилку з'єднання\nдодано повідомлення ping до відлагодження пристрою для перевірки причин невдачі ping\n",
         "zh-cn": "ZHC 25.x\nZH 6.x (英语)\n修复配对问题\n将ping消息添加到设备调试中，以验证ping失败的原因\n"
-      },
-      "3.0.5": {
-        "en": "fix random error where devices are not shown due to illegal groups\ndrop support for node 18\nRequired node Versions Node 20.19.0 or 22.11.0 or newer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
-        "de": "fehler beheben, bei denen geräte wegen illegaler gruppen nicht angezeigt werden\ndrop-unterstützung für knoten 183\nErforderliche Knotenversionen Nr. 20.19.0 oder 22.11.0 oder neuer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
-        "ru": "исправить случайную ошибку, когда устройства не отображаются из-за незаконных групп\nподдержка drop для node 18\nТребуемый узел Версии Узел 20.19.0 или 22.11.0 или новее (документ ZH 4.4.1 / ZHC 24.8.0)",
-        "pt": "corrigir erro aleatório onde os dispositivos não são mostrados devido a grupos ilegais\nsuporte de gota para o nó 18\nNó necessário Versões Node 20.19.0 ou 22.11.0 ou mais recente (cortesia de ZH 4.4.1 / ZHC 24.8.0)",
-        "nl": "fix willekeurige fout wanneer apparaten niet worden getoond als gevolg van illegale groepen\ndrop ondersteuning voor knooppunt 18\nVereiste node Versies Node 20.19.0 of 22.11.0 of nieuwer (met dank aan ZH 4.4.1 / ZHC 24.8.0)",
-        "fr": "corriger une erreur aléatoire lorsque les appareils ne sont pas montrés en raison de groupes illégaux\nsupport de chute pour noeud 18\nVersion requise Node 20.19.0 ou 22.11.0 ou plus récent (avec la permission de ZH 4.4.1 / ZHC 248.0)",
-        "it": "correggere errore casuale in cui i dispositivi non vengono visualizzati a causa di gruppi illegali\nsupporto a goccia per nodo 18\nNodo richiesto Versioni Nodo 20.19.0 o 22.11.0 o più recente (cortesia di ZH 4.4.1 / ZHC 24.8.0)",
-        "es": "corregir errores aleatorios donde no se muestran dispositivos debido a grupos ilegales\napoyo a los nodos 18\nNodo requerido Versiones Nodo 20.19.0 o 22.11.0 o nuevo (cortesía de ZH 4.4.1 / ZHC 24.8.0)",
-        "pl": "naprawić błąd losowy w przypadku gdy urządzenia nie są wyświetlane z powodu nielegalnych grup\nobsługa zrzutu dla węzła 18\nWymagany węzeł Wersje Węzeł 20.19.0 lub 22.11.0 lub nowszy (uprzejmość ZH 4.4.1 / ZHC 24.8.0)",
-        "uk": "виправити випадкові помилки, де пристрої не відображаються через незаконні групи\nпідтримка крапель для вузла 18 років\nПотрібні версії вузла Node 20.19.0 або 22.11.0 або новачка (кількість ЗЗ 4.4.1 / ЗЖК 24.8.0)",
-        "zh-cn": "在设备因非法组而未显示时修复随机错误\n放弃节点支持 第 18 条\n要求的节点版本为20.19.0或22.11.0或更新(礼仪为ZH 4.4.1 / ZHC 24.8.0)"
       }
     },
     "titleLang": {
