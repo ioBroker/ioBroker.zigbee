@@ -246,7 +246,7 @@ class Zigbee extends utils.Adapter {
             this.log.info('Autostart Zigbee subsystem');
             this.doConnect();
         }
-        else this.log.warn('Zigbee autostart option not set - omitting start of zigbee substystem!');
+        else this.log.warn('Zigbee autostart option not set - omitting start of zigbee subsystem!');
     }
     updateDebugLevel(state) {
         const dbActive = state === 'debug';

@@ -36,7 +36,7 @@ let devices = [],
     },
     cidList,
     shuffleInstance,
-    errorData = [],
+    errorData = { errors:{}, unknownModels: {}},
     debugMessages = {},
     debugInLog = true,
     nvRamBackup = {},
@@ -2070,7 +2070,7 @@ function extractDevicesData(msg) {
         $('#state_cleanup_btn').removeClass('hide');
     else
         $('#state_cleanup_btn').addClass('hide');
-    if (msg.errors && msg.errors.errors || msg.errors.unknownModels) {
+    if (msg.errors?.hasData) {
         $('#show_errors_btn').removeClass('hide');
         errorData = msg.errors;
     }
@@ -2257,19 +2257,33 @@ function load(settings, onChange) {
     });
     $('#show_errors_btn').click(function () {
         const errMsgTable = [];
-        if (errorData.errors) {
+        console.warn(JSON.stringify(errorData));
+        if (Object.keys(errorData.errors).length > 0) {
             errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>last seen</th></tr>`)
             for (const err of Object.values(errorData.errors))
-                errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+                if (err) errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
             errMsgTable.push('</table>');
         }
-        if (errorData.unknownModels) {
+        if (Object.keys(errorData.unknownModels).length > 0) {
             errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>last seen</th></tr>`)
             for (const err of Object.values(errorData.unknownModels))
                 errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
             errMsgTable.push('</table>');
         }
-        showMessage(errMsgTable.join(''), 'Stashed error messages');
+        console.warn(JSON.stringify(errMsgTable));
+        showMessage(errMsgTable.join(''), 'Stashed error messages', '<a id="delete_errors_btn" class="btn-floating waves-effect waves-light tooltipped center-align hoverable translateT" title="delete Errors"></i class="material-icons icon-black">delete_sweep</i></a>');
+        $('#delete_errors_btn').unbind('click')
+        $('#delete_errors_btn').click(function () {
+            sendToWrapper(namespace, 'clearErrors', {}, function(msg) {
+                if (msg) {
+                    console.warn('msg is ' + JSON.stringify(msg));
+                    errorData = msg;
+                    $('#show_errors_btn').addClass('hide');
+                }
+                $('#dialog-message').modal('close');
+
+            })
+        })
     });
     $('#download_icons_btn').click(function () {
         showMessage(downloadIcons());
@@ -2657,6 +2671,26 @@ socket.on('stateChange', function (id, state) {
                     getDevices();
                 }
             }
+        } else if (id.match(/\.info\.lasterror$/)) {
+            try {
+                console.warn(`lasterror is ${JSON.stringify(state)}`)
+                const errobj = JSON.parse(state.val);
+                let changed = false;
+                if (errobj.error) {
+                    errorData.errors[errobj.error] = errobj.data;
+                    changed = true;
+                }
+                if (errobj.model) {
+                    errorData.unknownModels[errobj.model] = errobj.data;
+                    changed = true;
+                }
+                errorData.hasData |= changed;
+                if (changed) {
+                    $('#show_errors_btn').removeClass('hide');
+                }
+            }
+            catch { console.error('JSON didnt parse') }
+
         } else {
             const devId = getDevId(id);
             putEventToNode(devId);
