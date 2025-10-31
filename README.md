@@ -154,6 +154,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (asgothian) changed setState for lasterror
+
 ### 3.2.4 (2025-10-31)
 * (asgothian) added missing state
 
