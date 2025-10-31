@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.2.4",
+    "version": "3.2.5",
     "news": {
+      "3.2.5": {
+        "en": "changed setState for lasterror",
+        "de": "geändert setState für lasterror",
+        "ru": "измененный setState for lasterror",
+        "pt": "alterado setState for lasterror",
+        "nl": "veranderd setState for lasterror",
+        "fr": "changement de setState pour lasterror",
+        "it": "set modificatoStata per lasterror",
+        "es": "cambio de Estado para el último terror",
+        "pl": "zmieniony setState for lasterror",
+        "uk": "змінено setState for lasterror",
+        "zh-cn": "更新的设置状态"
+      },
       "3.2.4": {
         "en": "added missing state",
         "de": "fehlender zustand",
@@ -80,19 +93,6 @@
         "pl": "Korekty błędów\n",
         "uk": "Помилки\n",
         "zh-cn": "错误修正\n"
-      },
-      "3.1.5": {
-        "en": "Bugfixes\nZHC25.36.0\nreduced stopTimeout to 5s",
-        "de": "Bugfixes\nZHC25.36.0\nreduzierter StopTimeout auf 5s",
-        "ru": "Багфиксы\nZHC25.36.0\nсокращение StopTimeout до 5",
-        "pt": "Correcções de Erros\nZHC25.36.0\ntempo de paragem reduzido para 5s",
-        "nl": "Bugfixes\nZHC25,36,0\nverminderde stopTimeout tot 5s",
-        "fr": "Fixes de bogue\nZHC25.36.0\ntemps d'arrêt réduit à 5s",
-        "it": "Bugfix\nZHC25.36.0\narresto ridottoTimeout a 5s",
-        "es": "Bugfixes\nZHC25.36.0\nstopTimeout reducido a 5s",
-        "pl": "Korekty błędów\nZHC25.36.0\nzmniejszony czas zatrzymania do 5 s",
-        "uk": "Помилки\nЗХК25.36.0\nзнижений припуск до 5s",
-        "zh-cn": "错误修正\nZHC25.36.0 (韩语)\n停止时间减少到 5s"
       }
     },
     "titleLang": {
