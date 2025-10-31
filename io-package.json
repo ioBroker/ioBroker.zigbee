@@ -327,7 +327,8 @@
     "pingTimeout": 300,
     "pingCluster": "",
     "listDevicesAtStart": true,
-    "useNewCompositeStates": false
+    "useNewCompositeStates": false,
+    "availableUpdateTime": 30
   },
   "instanceObjects": [
     {

@@ -154,6 +154,16 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (asgothian) Improvements on debug UI
+* (asgothian) Option 'resend_states' to publish state values to device on reconnect
+* (asgothian) Improved group card
+* (asgothian) Improved group info
+* (asgothian) Modified coordinator card (2 sides)
+* (asgothian) retry on error 25
+* (asgothian) clear stashed error messages
+* 
+
 ### 3.2.2 (2025-10-27)
 * (asgothian) Bugfix on delete object.
 * (asgothian) improved device query.

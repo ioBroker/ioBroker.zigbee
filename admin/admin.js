@@ -36,7 +36,7 @@ let devices = [],
     },
     cidList,
     shuffleInstance,
-    errorData = [],
+    errorData = { errors:{}, unknownModels: {}},
     debugMessages = {},
     debugInLog = true,
     nvRamBackup = {},
@@ -64,7 +64,7 @@ const networkOptions = {
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower','useNewCompositeStates',
     'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
-    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster'
+    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster','availableUpdateTime'
 ];
 const lockout = {
     timeoutid:undefined,
@@ -588,32 +588,59 @@ function getCoordinatorCard(dev) {
         lq = (dev && dev.link_quality) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : '',
         info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
                     <ul>
-                        <li><span class="label">type:</span><span>${coordinatorinfo.type}</span></li>
-                        <li><span class="label">version:</span><span>${coordinatorinfo.version}</span></li>
-                        <li><span class="label">revision:</span><span>${coordinatorinfo.revision}</span></li>
-                        <li><span class="label">port:</span><span>${coordinatorinfo.port}</span></li>
-                        <li><span class="label">channel:</span><span>${coordinatorinfo.channel}</span></li>
-                        <li><span class="label">------------</span><span>Software versions </span></li>
-                        <li><span class="label">adapter:</span><span>${coordinatorinfo.installedVersion}</span></li>
-                        <li><span class="label">installed from:</span><span>${coordinatorinfo.installSource}</span></li>
-                        <li><span class="label">ZHC / ZH:</span><span>${coordinatorinfo.converters} / ${coordinatorinfo.herdsman}</span></li>
+                        <li><span class="label coordinator">type:</span><span>${coordinatorinfo.type}</span></li>
+                        <li><span class="label coordinator">version:</span><span>${coordinatorinfo.version}</span></li>
+                        <li><span class="label coordinator">revision:</span><span>${coordinatorinfo.revision}</span></li>
+                        <li><span class="label coordinator">port:</span><span>${coordinatorinfo.port}</span></li>
+                        <li><span class="label coordinator">channel:</span><span>${coordinatorinfo.channel}</span></li>
                     </ul>
                 </div>`,
         permitJoinBtn = '<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="open network"><i class="material-icons icon-green">leak_add</i></button></div>',
         //permitJoinBtn = `<div class="col tool"><button name="join" class="btn-floating-sml waves-effect waves-light right hoverable green><i class="material-icons">leak_add</i></button></div>`,
         card = `<div id="${id}" class="device">
-                  <div class="card hoverable">
-                    <div class="card-content zcard">
-                        <span class="top right small" style="border-radius: 50%">
-                            ${lq}
-                            ${status}
-                            ${permitJoinBtn}
-                        </span>
-                        <!--/a--!>
-                        <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
-                        <i class="left">${image}</i>
-                        ${info}
-                        <div class="footer right-align"></div>
+                  <div class="card hoverable flipable">
+                    <div class="front face">
+                        <div class="card-content zcard">
+                          <div class="flip" style="cursor: pointer">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${lq}
+                                ${status}
+                                ${permitJoinBtn}
+                            </span>
+                            <!--/a--!>
+                            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                          </div>
+                          <i class="left">${image}</i>
+                          ${info}
+                          <div class="footer right-align">
+                            <div class="flip" style="cursor: pointer"><i class="material-icons">rotate_left</i></div>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="back face">
+                        <div class="card-content zcard">
+                          <div class="flip" style="cursor: pointer">
+                            <span class="top right small" style="border-radius: 50%">
+                                ${lq}
+                                ${status}
+                                ${permitJoinBtn}
+                            </span>
+                            <!--/a--!>
+                            <span id="dName" class="card-title truncate">${title}</span><!--${paired}--!>
+                          </div>
+                          <i class="left">${image}</i>
+                          <div style="min-height:88px; font-size: 0.8em" class="truncate">
+                            <ul>
+                                <li><span class="label coordinator">Adapter:</span><span>${coordinatorinfo.installedVersion}</span></li>
+                                <li><span class="label coordinator">Installed:</span><span>${coordinatorinfo.installSource}</span></li>
+                                <li><span class="label coordinator">Herdsman:</span><span>${coordinatorinfo.herdsman}</span></li>
+                                <li><span class="label coordinator">Converters:</span><span>${coordinatorinfo.converters}</span></li>
+                            </ul>
+                          </div>
+                          <div class="footer right-align">
+                            <div class="flip" style="cursor: pointer"><i class="material-icons">rotate_left</i></div>
+                          </div>
+                        </div>
                     </div>
                   </div>
                 </div>`;
@@ -638,19 +665,18 @@ function getGroupCard(dev) {
     const roomInfo = rooms.length ? `<li><span class="labelinfo">rooms:</span><span>${rooms.join(',') || ''}</span></li>` : '';
     const room = rooms.join(',') || '&nbsp';
     let memberCount = 0;
-    let info = `<div style="min-height:88px; font-size: 0.8em; overflow-y: auto" class="truncate">
-                <ul>`;
-    info = info.concat(`<li><span class="labelinfo">Group ${numid}</span></li>`);
+    const info = [`<div style="min-height:88px; font-size: 0.8em; height: 90px; width: 220px; overflow-y: auto" class="truncate"><ul>`];
+    info.push(`<li><span class="labelinfo">Group ${numid}</span></li>`);
     if (dev.memberinfo === undefined) {
-        info = info.concat(`<li><span class="labelinfo">No devices in group</span></li>`);
+        info.push(`<li><span class="labelinfo">No devices in group</span></li>`);
     } else {
         for (let m = 0; m < dev.memberinfo.length; m++) {
-            info = info.concat(`<li><span align:"left">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid}</span><span align:"right"> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
+            info.push(`<li><span align:"left">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid}</span><span align:"right"> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
         }
         memberCount = (dev.memberinfo.length < 8 ? dev.memberinfo.length : 7);
     }
     ;
-    info = info.concat(`              ${roomInfo}</ul>
+    info.push(`              ${roomInfo}</ul>
                 </div>`);
     const infoBtn = `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>`;
     const image = `<img src="${dev.common.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
@@ -668,7 +694,7 @@ function getGroupCard(dev) {
                             <span id="dName" class="card-title truncate">${title}</span><!----!>
                             </div>
                             <i class="left">${image}</i>
-                            ${info}
+                            ${info.join('')}
 
                             <div class="footer right-align"></div>
                         </div>
@@ -1391,7 +1417,7 @@ function getCoordinatorInfo() {
     sendToWrapper(namespace, 'getCoordinatorInfo', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                errorData.push(msg.error);
+                //errorData.push(msg.error);
                 delete msg.error;
                 isHerdsmanRunning = false;
             } else {
@@ -1570,13 +1596,7 @@ async function editDeviceOptions(id, isModel) {
             }
             else
             {
-                const val = $(`#option_value_${k}`).val();
-                try {
-                    _do[k].value = JSON.parse(val);
-                }
-                catch {
-                    _do[k].value = val;
-                }
+                _do[k].value = $(`#option_value_${k}`).val();
             }
             if (_do[k].key.length > 0) {
                 console.warn(`dok: ${_do[k].key} : ${_do[k].value}`);
@@ -1619,11 +1639,14 @@ async function editDeviceOptions(id, isModel) {
 
     const dialogData = {};
 
+    const adapterDefinedOptions = ['resend_states']
+
     if (isModel) {
         const model = id.model;
         dialogData.model = model;
         dialogData.availableOptions = model.options.slice() || [];
         dialogData.availableOptions.push('custom');
+        dialogData.availableOptions.push(...adapterDefinedOptions)
         if (model.hasLegacyDef) dialogData.availableOptions.push('legacy');
         dialogData.setOptions = {};
         for (const k in Object.keys(id.setOptions))
@@ -1638,6 +1661,7 @@ async function editDeviceOptions(id, isModel) {
         const dev = devices.find((d) => d._id == id);
         dialogData.model = dev.info.mapped;
         dialogData.availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
+        dialogData.availableOptions.push(...adapterDefinedOptions)
         dialogData.name = dev.common.name;
         dialogData.icon = dev.common.icon || dev.icon;
         dialogData.default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
@@ -1733,6 +1757,7 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
     const filterSet = new Set();
     let isodd = true;
     const buttonList = [];
+    const idRed = ' id="dbgred"'
     if (dbgMsghide.has('i_'+devID)) {
         console.warn('in all filtered out')
         Html.push('&nbsp;')
@@ -1744,7 +1769,7 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
             let fs = '';
             for (const state of item.states) {
                 fs = fs+state.id+'.'+fne(item);
-                const redText = (item.errors && item.errors.length > 0 ? ' id="dbgred"' : '');
+                const redText = (item.errors && item.errors.length > 0 ? idRed : '');
                 idx--;
                 const LHtml = [(`<tr id="${isodd ? 'dbgrowodd' : 'dbgroweven'}">`)];
                 if (idx==0) {
@@ -1752,7 +1777,7 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
                     buttonList.push(item.dataID)
                     LHtml.push(`<td${rowspan}>${msgbutton}</td><td${rowspan}>${safestring(item.payload)}</td>`);
                 }
-                LHtml.push(`<td></td><td${redText}>${safestring(state.payload)}</td><td${redText}>${state.id}</td><td${redText}>${state.value}</td><td${redText}>${fne(item)}</td></tr>`);
+                LHtml.push(`<td></td><td${redText}>${safestring(state.payload)}</td><td${state.inError ? idRed: redText}>${state.id}</td><td${state.inError ? idRed : redText}>${state.value}</td><td${redText}>${fne(item)}</td></tr>`);
                 IHtml.unshift(...LHtml)
             }
             if (filter)
@@ -1990,7 +2015,7 @@ function getDevices() {
         sendToWrapper(namespace, 'getCoordinatorInfo', {}, function (msg) {
             if (msg) {
                 if (msg.error) {
-                    errorData.push(msg.error);
+                    //errorData.push(msg.error);
                     delete msg.error;
                     isHerdsmanRunning = false;
                 } else {
@@ -2008,7 +2033,7 @@ function getDevices() {
             if (msg) {
                 extractDevicesData(msg);
                 if (msg.error) {
-                    errorData.push(msg.error);
+                    //errorData.push(msg.error);
                     isHerdsmanRunning = false;
                 } else {
                     isHerdsmanRunning = true;
@@ -2045,7 +2070,7 @@ function extractDevicesData(msg) {
         $('#state_cleanup_btn').removeClass('hide');
     else
         $('#state_cleanup_btn').addClass('hide');
-    if (msg.errors && msg.errors.length > 0) {
+    if (msg.errors?.hasData) {
         $('#show_errors_btn').removeClass('hide');
         errorData = msg.errors;
     }
@@ -2086,14 +2111,14 @@ function getMap(rebuild) {
             $('#refresh').removeClass('disabled');
             if (msg) {
                 if (msg.error) {
-                    errorData.push(msg.error);
+                    //errorData.push(msg.error);
                     isHerdsmanRunning = false;
                     updateStartButton();
                 } else {
                     isHerdsmanRunning = true;
                     updateStartButton();
                     if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
-                        showMessage(msg.errors.join('<p>'), 'Map generation messages');
+                        showMessage(msg.errors.join('<br>'), 'Map generation messages');
                     }
                     map = msg;
                     showNetworkMap(devices, map);
@@ -2231,7 +2256,34 @@ function load(settings, onChange) {
         cleanConfirmation();
     });
     $('#show_errors_btn').click(function () {
-        showMessage(errorData.join('<br>'), 'Stashed error messages');
+        const errMsgTable = [];
+        console.warn(JSON.stringify(errorData));
+        if (Object.keys(errorData.errors).length > 0) {
+            errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>last seen</th></tr>`)
+            for (const err of Object.values(errorData.errors))
+                if (err) errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+            errMsgTable.push('</table>');
+        }
+        if (Object.keys(errorData.unknownModels).length > 0) {
+            errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>last seen</th></tr>`)
+            for (const err of Object.values(errorData.unknownModels))
+                errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+            errMsgTable.push('</table>');
+        }
+        console.warn(JSON.stringify(errMsgTable));
+        showMessage(errMsgTable.join(''), 'Stashed error messages', '<a id="delete_errors_btn" class="btn-floating waves-effect waves-light tooltipped center-align hoverable translateT" title="delete Errors"></i class="material-icons icon-black">delete_sweep</i></a>');
+        $('#delete_errors_btn').unbind('click')
+        $('#delete_errors_btn').click(function () {
+            sendToWrapper(namespace, 'clearErrors', {}, function(msg) {
+                if (msg) {
+                    console.warn('msg is ' + JSON.stringify(msg));
+                    errorData = msg;
+                    $('#show_errors_btn').addClass('hide');
+                }
+                $('#dialog-message').modal('close');
+
+            })
+        })
     });
     $('#download_icons_btn').click(function () {
         showMessage(downloadIcons());
@@ -2619,6 +2671,26 @@ socket.on('stateChange', function (id, state) {
                     getDevices();
                 }
             }
+        } else if (id.match(/\.info\.lasterror$/)) {
+            try {
+                console.warn(`lasterror is ${JSON.stringify(state)}`)
+                const errobj = JSON.parse(state.val);
+                let changed = false;
+                if (errobj.error) {
+                    errorData.errors[errobj.error] = errobj.data;
+                    changed = true;
+                }
+                if (errobj.model) {
+                    errorData.unknownModels[errobj.model] = errobj.data;
+                    changed = true;
+                }
+                errorData.hasData |= changed;
+                if (changed) {
+                    $('#show_errors_btn').removeClass('hide');
+                }
+            }
+            catch { console.error('JSON didnt parse') }
+
         } else {
             const devId = getDevId(id);
             putEventToNode(devId);
@@ -4022,7 +4094,7 @@ function genDevInfo(device) {
             `<div style="font-size: 0.9em">
                 <ul>`);
         for (const item in mapped) {
-            if (item == 'model')
+            if (item == 'model' && mapped.model != 'group')
                 mappedInfo.push(genRow(item,modelUrl));
             else
                 if (typeof mapped[item] != 'object') mappedInfo.push(genRow(item,mapped[item]));
@@ -4044,7 +4116,7 @@ function genDevInfo(device) {
                 </ul>
             </div>`;
     }
-    const imgSrc = device.icon || device.common.icon;
+    const imgSrc = mapped?.model == 'group' ? mapped.icon : device.icon || device.common.icon;
     const imgInfo = (imgSrc) ? `<img src=${imgSrc} width='150px' onerror="this.onerror=null;this.src='img/unavailable.png';"><div class="divider"></div>` : '';
     const info =[
         `<div class="col ${device.memberinfo != undefined ? 's12 m12 l12 xl12':'s12 m6 l6 xl6'}">
