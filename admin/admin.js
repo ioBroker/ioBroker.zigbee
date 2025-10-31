@@ -1417,7 +1417,7 @@ function getCoordinatorInfo() {
     sendToWrapper(namespace, 'getCoordinatorInfo', {}, function (msg) {
         if (msg) {
             if (msg.error) {
-                errorData.push(msg.error);
+                //errorData.push(msg.error);
                 delete msg.error;
                 isHerdsmanRunning = false;
             } else {
@@ -2015,7 +2015,7 @@ function getDevices() {
         sendToWrapper(namespace, 'getCoordinatorInfo', {}, function (msg) {
             if (msg) {
                 if (msg.error) {
-                    errorData.push(msg.error);
+                    //errorData.push(msg.error);
                     delete msg.error;
                     isHerdsmanRunning = false;
                 } else {
@@ -2033,7 +2033,7 @@ function getDevices() {
             if (msg) {
                 extractDevicesData(msg);
                 if (msg.error) {
-                    errorData.push(msg.error);
+                    //errorData.push(msg.error);
                     isHerdsmanRunning = false;
                 } else {
                     isHerdsmanRunning = true;
@@ -2070,7 +2070,7 @@ function extractDevicesData(msg) {
         $('#state_cleanup_btn').removeClass('hide');
     else
         $('#state_cleanup_btn').addClass('hide');
-    if (msg.errors && msg.errors.length > 0) {
+    if (msg.errors && msg.errors.errors || msg.errors.unknownModels) {
         $('#show_errors_btn').removeClass('hide');
         errorData = msg.errors;
     }
@@ -2111,14 +2111,14 @@ function getMap(rebuild) {
             $('#refresh').removeClass('disabled');
             if (msg) {
                 if (msg.error) {
-                    errorData.push(msg.error);
+                    //errorData.push(msg.error);
                     isHerdsmanRunning = false;
                     updateStartButton();
                 } else {
                     isHerdsmanRunning = true;
                     updateStartButton();
                     if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
-                        showMessage(msg.errors.join('<p>'), 'Map generation messages');
+                        showMessage(msg.errors.join('<br>'), 'Map generation messages');
                     }
                     map = msg;
                     showNetworkMap(devices, map);
@@ -2256,7 +2256,20 @@ function load(settings, onChange) {
         cleanConfirmation();
     });
     $('#show_errors_btn').click(function () {
-        showMessage(errorData.join('<br>'), 'Stashed error messages');
+        const errMsgTable = [];
+        if (errorData.errors) {
+            errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>last seen</th></tr>`)
+            for (const err of Object.values(errorData.errors))
+                errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+            errMsgTable.push('</table>');
+        }
+        if (errorData.unknownModels) {
+            errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>last seen</th></tr>`)
+            for (const err of Object.values(errorData.unknownModels))
+                errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+            errMsgTable.push('</table>');
+        }
+        showMessage(errMsgTable.join(''), 'Stashed error messages');
     });
     $('#download_icons_btn').click(function () {
         showMessage(downloadIcons());
