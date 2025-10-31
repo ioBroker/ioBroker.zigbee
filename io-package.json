@@ -366,6 +366,19 @@
       "native": {}
     },
     {
+      "_id": "info.lasterror",
+      "type": "state",
+      "common": {
+        "role": "indicator",
+        "name": "Last stashed error",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
       "_id": "info.pairingCountdown",
       "type": "state",
       "common": {
