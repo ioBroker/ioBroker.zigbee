@@ -154,7 +154,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.2.3 (2025-10-31)
 * (asgothian) Improvements on debug UI
 * (asgothian) Option 'resend_states' to publish state values to device on reconnect
 * (asgothian) Improved group card

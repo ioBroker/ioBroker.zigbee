@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.2.2",
+    "version": "3.2.3",
     "news": {
+      "3.2.3": {
+        "en": "Improvements on debug UI\nOption 'resend_states' to publish state values to device on reconnect\nImproved group card\nImproved group info\nModified coordinator card (2 sides)\nretry on error 25\nclear stashed error messages\nZHC 25.50.0 or newer",
+        "de": "Verbesserungen bei debug UI\nOption 'resend_states' zum Veröffentlichen von Zustandswerten auf das Gerät auf dem Reconnect\nVerbesserte Gruppenkarte\nVerbesserte Gruppeninformationen\nModifizierte Koordinatorkarte (2 Seiten)\nretry auf fehler 25\nklare stashed fehlermeldungen\nZHC 25.50.0 oder neuer",
+        "ru": "Улучшения в Debug UI\nВариант «resend_states» для публикации значений состояния на устройстве при повторном подключении\nУлучшенная групповая карта\nУлучшенная групповая информация\nИзмененная карта координатора (2 стороны)\nвозвращение к ошибке 25\nскрытые сообщения об ошибках\nZHC 25.50.0 или новее",
+        "pt": "Melhorias na interface de depuração\nOpção 'resend_states' para publicar valores de estado para o dispositivo ao religar\nCartão de grupo melhorado\nInformação melhorada do grupo\nCartão coordenador modificado (2 lados)\ntentar novamente no erro 25\nlimpar mensagens de erro escondidas\nZHC 25.50.0 ou mais recente",
+        "nl": "Verbeteringen op debug UI\nOptie 'resend_states' om statuswaarden naar apparaat te publiceren bij opnieuw verbinden\nVerbeterde groepskaart\nVerbeterde groepsinfo\nGewijzigde coördinatiekaart (2 zijden)\nopnieuw proberen bij fout 25\nfoutmeldingen wissen\nZHC 25.50.0 of nieuwer",
+        "fr": "Amélioration de l'assurance-chômage de débogage\nOption 'resend_states' pour publier les valeurs d'état sur le périphérique sur la connexion\nCarte de groupe améliorée\nInformations de groupe améliorées\nCarte de coordonnateur modifiée (2 côtés)\nréessayer sur l'erreur 25\nmessages d'erreur clairs et cachés\nZHC 25.50.0 ou plus récent",
+        "it": "Miglioramenti sul debug UI\nOpzione 'resend_states' per pubblicare i valori di stato sul dispositivo sulla riconnessione\nScheda di gruppo migliorata\nInformazioni di gruppo migliorate\nCarta coordinatrice modificata (2 lati)\nriprovare sull'errore 25\nchiari messaggi di errore stanti\nZHC 25.50.0 o più recente",
+        "es": "Mejoras en el depuro UI\nOpción 'resend_states' para publicar valores estatales al dispositivo en la reconexión\nTarjeta de grupo mejorada\nInformación de grupo mejorada\nTarjeta de coordinación modificada (2 lados)\nretry on error 25\nmensajes de error claros\nZHC 25.50.0 o más",
+        "pl": "Ulepszenia dotyczące debugowania interfejsu użytkownika\nOpcja \"resend _ states\" do publikowania wartości stanu dla urządzenia przy ponownym połączeniu\nUlepszona karta grupowa\nUlepszone informacje grupowe\nZmodyfikowana karta koordynatora (2 strony)\nponowna próba błędu 25\njasne komunikaty błędów ukryte\nZHC 25.50.0 lub nowsze",
+        "uk": "Удосконалення на дебурзі UI\nВаріант 'resend_states' для публікації державних значень для пристрою на відключенні\nПокращена групова карта\nПокращена інформація групи\nЗмінена карта координатора (2 сторони)\nптиця по помилки 25\nчіткі повідомлення про помилку\nZHC 25.50.0 або новачок",
+        "zh-cn": "调试 UI 的改进\n选项“ resend_ states ” 以在重新连接时发布状态值以设备\n改进组卡\n改进组信息\n修改的协调员卡(2面)\n重试错误 25\n清除隐藏的错误消息\nZHC 25.50.0或更新"
+      },
       "3.2.2": {
         "en": "Bugfix on delete object.\nimproved device query.\nfixed delete device with local overrides.\n",
         "de": "Bugfix auf Löschobjekt.\nverbesserte geräteabfrage.\nfeste löschvorrichtung mit lokalen overrides.\n",
@@ -80,19 +93,6 @@
         "pl": "Usuń dodatkowe logowanie\nDodaj dodatkowe konfiguracje\nNie czytaj stanów z wyłączonych urządzeń\nIgnoruj dezaktywowane urządzenia dla aktualizacji stanu grupy\nZmień wyświetlacz dla dezaktywowanych urządzeń w drzewie obiektu (szary, bez połączonej ikony)\nbardziej szczegółowe debugowanie urządzenia\ndebug urządzenia UI ulepszenia\nParowanie i urządzenie Przyciski zapytania na kartach routera\nZHC 25.31.0, ZH 6.1.2 lub nowsze\nOpcje oparte na opcjach zdefiniowanych przez ZHC",
         "uk": "Видалення додаткового входу\nДодати додаткові конфігурації\nНе читати стани від деактивованих пристроїв\nІгноровані пристрої для оновлення групового стану\nЗміна відображення для деактивованих пристроїв в дереві об'єкта (сірий, не підключений значок)\nдокладніше пристрій debug\nпристрій Debug UI удосконалення\nПірсинг і пристрій Query гудзики на маршрутизаторних картках\nZHC 25.31.0, ZH 6.1.2 або новачок\nВаріанти, засновані на визначених параметрах ZHC",
         "zh-cn": "删除额外的日志\n添加额外的配置\n不读取已关闭设备的状态\n忽略组状态更新的已关闭设备\n更改对象树上已关闭设备的显示( gray, 无连接图标)\n更详细的设备调试\n设备调试 UI 改进\n路由器卡上的对齐和设备查询按钮\nZHC 25.31.0,ZH 6.1.2或更新\n基于 ZHC 定义选项的选项"
-      },
-      "3.1.2": {
-        "en": "ZHC 25.x\nZH 6.x\nFix pairing bug\nadd ping messages to device debug to verify ping failure reasons\n",
-        "de": "ZHC 25.x\nZH 6.x\nBehebung des Kopplungsfehlers\nFügen Sie Ping-Nachrichten zum Geräte-Debugging hinzu, um die Gründe für Ping-Ausfälle zu überprüfen.\n",
-        "ru": "ZHC 25.x\nZH 6.x\nИсправлена ошибка сопряжения.\nдобавьте сообщения ping в отладке устройства для проверки причин отказа ping\n",
-        "pt": "ZHC 25.x\nZH 6.x\nCorrigir bug de emparelhamento\nAdicionar mensagens de ping ao debug do dispositivo para verificar os motivos da falha no ping\n",
-        "nl": "ZHC 25.x\nZH 6.x\nRepareer koppelingsfout\nVoeg pingberichten toe aan apparaatdebug om pingfoutredenen te controleren\n",
-        "fr": "ZHC 25.x\nZH 6.x\nCorriger le bogue de couplage\najouter des messages de ping au débogage des appareils pour vérifier les raisons des échecs de ping\n",
-        "it": "ZHC 25.x\nZH 6.x\nRisoluzione bug di accoppiamento\nAggiungi messaggi ping al debug del dispositivo per verificare le cause del fallimento del ping\n",
-        "es": "ZHC 25.x\nZH 6.x\nCorregir error de emparejamiento\nañadir mensajes de ping al depurador del dispositivo para verificar las razones de fallo del ping\n",
-        "pl": "ZHC 25.x\nZH 6.x\nNapraw błąd parowania\nDodaj wiadomości ping do debugowania urządzenia, aby zweryfikować przyczyny niepowodzenia pingu\n",
-        "uk": "ЗХК 25.x\nЗХ 6.х\nВиправлено помилку з'єднання\nдодано повідомлення ping до відлагодження пристрою для перевірки причин невдачі ping\n",
-        "zh-cn": "ZHC 25.x\nZH 6.x (英语)\n修复配对问题\n将ping消息添加到设备调试中，以验证ping失败的原因\n"
       }
     },
     "titleLang": {
