@@ -154,7 +154,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.2.4 (2025-10-31)
 * (asgothian) added missing state
 
 ### 3.2.3 (2025-10-31)

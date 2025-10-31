@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.2.3",
+    "version": "3.2.4",
     "news": {
+      "3.2.4": {
+        "en": "added missing state",
+        "de": "fehlender zustand",
+        "ru": "отсутствующее государство",
+        "pt": "estado em falta adicionado",
+        "nl": "ontbrekende status toevoegen",
+        "fr": "état manquant ajouté",
+        "it": "aggiunto stato mancante",
+        "es": "estado desaparecido",
+        "pl": "dodany brakujący stan",
+        "uk": "додано відсутній стан",
+        "zh-cn": "添加缺失状态"
+      },
       "3.2.3": {
         "en": "Improvements on debug UI\nOption 'resend_states' to publish state values to device on reconnect\nImproved group card\nImproved group info\nModified coordinator card (2 sides)\nretry on error 25\nclear stashed error messages\nZHC 25.50.0 or newer",
         "de": "Verbesserungen bei debug UI\nOption 'resend_states' zum Veröffentlichen von Zustandswerten auf das Gerät auf dem Reconnect\nVerbesserte Gruppenkarte\nVerbesserte Gruppeninformationen\nModifizierte Koordinatorkarte (2 Seiten)\nretry auf fehler 25\nklare stashed fehlermeldungen\nZHC 25.50.0 oder neuer",
@@ -80,19 +93,6 @@
         "pl": "Korekty błędów\nZHC25.36.0\nzmniejszony czas zatrzymania do 5 s",
         "uk": "Помилки\nЗХК25.36.0\nзнижений припуск до 5s",
         "zh-cn": "错误修正\nZHC25.36.0 (韩语)\n停止时间减少到 5s"
-      },
-      "3.1.4": {
-        "en": "Remove extra logging\nAdd extra configurations\nDo not read states from deactivated devices\nIgnore deactivated devices for group state updates\nChange display for deactivated devices in the object tree (gray, no connected icon)\nmore detailed device debug\ndevice debug UI improvements\nPairing and device Query buttons on router cards\nZHC 25.31.0, ZH 6.1.2 or newer\nOptions based on ZHC defined options",
-        "de": "Entfernen Sie zusätzliche Protokollierung\nZusätzliche Konfigurationen hinzufügen\nNicht lesen von Zuständen aus deaktivierten Geräten\nDeaktivierte Geräte für Gruppenzustandsupdates ignorieren\nAnzeige für deaktivierte Geräte im Objektbaum ändern (grau, kein angeschlossenes Symbol)\ndetaillierte gerätedetails\ngerät debug UI Verbesserungen\nPaarung und Gerät Query-Tasten auf Routerkarten\nZHC 25.31.0, ZH 6.1.2 oder neuer\nOptionen basierend auf ZHC definierten Optionen",
-        "ru": "Удалить дополнительную рубку\nДобавьте дополнительные конфигурации\nНе считывать состояния с деактивированных устройств\nИгнорировать деактивированные устройства для обновления состояния группы\nИзменение дисплея для деактивированных устройств в дереве объектов (серый, не подключенный значок)\nболее подробная отладка устройства\nобновление UI Device Debug\nПарирование и кнопки запроса устройства на карточках маршрутизатора\nZHC 25.31.0, ZH 6.1.2 или новее\nОпционы, основанные на опционах ZHC",
-        "pt": "Remover registro extra\nAdicionar configurações extras\nNão ler os estados dos dispositivos desactivados\nIgnorar os dispositivos desactivados para as actualizações do estado do grupo\nMudar a visualização dos dispositivos desativados na árvore de objetos (cinzento, sem ícone conectado)\ndepuração mais detalhada do dispositivo\nmelhorias na interface de depuração do dispositivo\nEmparelhamento e dispositivo Botões de consulta nas cartas de roteador\nZHC 25.31.0, ZH 6.1.2 ou mais recente\nOpções baseadas nas opções definidas pelo ZHC",
-        "nl": "Extra loggen verwijderen\nExtra configuraties toevoegen\nNiet lezen van toestanden van gedeactiveerde apparaten\nUitgeschakelde apparaten negeren voor updates van groepstoestand\nWeergave wijzigen voor gedeactiveerde apparaten in de objectboom (grijze, geen verbonden pictogram)\ngedetailleerder apparaat debuggen\napparaat debug UI verbeteringen\nKoppeling en apparaat Query-knoppen op routerkaarten\nZHC 25.31.0, ZH 6.1.2 of nieuwer\nOpties op basis van ZHC gedefinieerde opties",
-        "fr": "Supprimer l'enregistrement supplémentaire\nAjouter des configurations supplémentaires\nNe pas lire les états des dispositifs désactivés\nIgnorer les dispositifs désactivés pour les mises à jour de l'état du groupe\nModifier l'affichage des périphériques désactivés dans l'arborescence des objets (gris, aucune icône connectée)\ndebug périphérique plus détaillé\namélioration de l'interface utilisateur de débogage\nJumelage et dispositif Boutons de requête sur les cartes routeurs\nZHC 25.31.0, ZH 6.1.2 ou plus récent\nOptions basées sur des options définies par ZHC",
-        "it": "Rimuovere la registrazione extra\nAggiungi ulteriori configurazioni\nNon leggere gli stati da dispositivi disattivati\nIgnora dispositivi disattivati per gli aggiornamenti di stato di gruppo\nModificare la visualizzazione per dispositivi disattivati nell'albero dell'oggetto (gray, nessuna icona collegata)\ndebug dispositivo più dettagliato\ndispositivo debug UI miglioramenti\nCoppia e dispositivo Pulsanti di coda su schede router\nZHC 25.31.0, ZH 6.1.2 o più recente\nOpzioni basate su opzioni definite ZHC",
-        "es": "Quitar la tala extra\nAñadir configuraciones adicionales\nNo lea estados de dispositivos desactivados\nIgnorar dispositivos desactivados para actualizaciones de estado de grupo\nCambiar la pantalla para dispositivos desactivados en el árbol del objeto (gray, no icono conectado)\nmás detallado dispositivo depuración\ndepuración del dispositivo UI mejoras\nBotones de búsqueda en tarjetas de router\nZHC 25.31.0, ZH 6.1.2 o newer\nOpciones basadas en opciones definidas ZHC",
-        "pl": "Usuń dodatkowe logowanie\nDodaj dodatkowe konfiguracje\nNie czytaj stanów z wyłączonych urządzeń\nIgnoruj dezaktywowane urządzenia dla aktualizacji stanu grupy\nZmień wyświetlacz dla dezaktywowanych urządzeń w drzewie obiektu (szary, bez połączonej ikony)\nbardziej szczegółowe debugowanie urządzenia\ndebug urządzenia UI ulepszenia\nParowanie i urządzenie Przyciski zapytania na kartach routera\nZHC 25.31.0, ZH 6.1.2 lub nowsze\nOpcje oparte na opcjach zdefiniowanych przez ZHC",
-        "uk": "Видалення додаткового входу\nДодати додаткові конфігурації\nНе читати стани від деактивованих пристроїв\nІгноровані пристрої для оновлення групового стану\nЗміна відображення для деактивованих пристроїв в дереві об'єкта (сірий, не підключений значок)\nдокладніше пристрій debug\nпристрій Debug UI удосконалення\nПірсинг і пристрій Query гудзики на маршрутизаторних картках\nZHC 25.31.0, ZH 6.1.2 або новачок\nВаріанти, засновані на визначених параметрах ZHC",
-        "zh-cn": "删除额外的日志\n添加额外的配置\n不读取已关闭设备的状态\n忽略组状态更新的已关闭设备\n更改对象树上已关闭设备的显示( gray, 无连接图标)\n更详细的设备调试\n设备调试 UI 改进\n路由器卡上的对齐和设备查询按钮\nZHC 25.31.0,ZH 6.1.2或更新\n基于 ZHC 定义选项的选项"
       }
     },
     "titleLang": {
