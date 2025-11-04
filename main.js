@@ -638,7 +638,7 @@ class Zigbee extends utils.Adapter {
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
                 const idx = devicesFromObjects.indexOf(device.ieeeAddr);
                 if (idx > -1) devicesFromObjects.splice(idx, 1);
-                this.stController.updateDev(zbIdorIeeetoAdId(this.adapter, device.ieeeAddr, false), model, model, () =>
+                this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
                     this.stController.syncDevStates(device, model));
             }
             else (this.log.warn('resolveEntity returned no entity'));
@@ -708,13 +708,13 @@ class Zigbee extends utils.Adapter {
         }
         await this.stController.AddModelFromHerdsman(entity.device, model)
         if (dev) {
-            this.getObject(zbIdorIeeetoAdId(this.adapter, dev.ieeeAddr, false), (err, obj) => {
+            this.getObject(zbIdorIeeetoAdId(this, dev.ieeeAddr, false), (err, obj) => {
                 if (!obj) {
                     const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
                     if (this.debugActive) this.log.debug(`new device ${dev.ieeeAddr} ${dev.networkAddress} ${model} `);
 
                     this.logToPairing(`New device joined '${dev.ieeeAddr}' model ${model}`, true);
-                    this.stController.updateDev(zbIdorIeeetoAdId(this.adapter, dev.ieeeAddr, false), model, model, () =>
+                    this.stController.updateDev(zbIdorIeeetoAdId(this, dev.ieeeAddr, false), model, model, () =>
                         this.stController.syncDevStates(dev, model));
                 }
                 else if (this.debugActive) this.log.debug(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
@@ -725,7 +725,7 @@ class Zigbee extends utils.Adapter {
     leaveDevice(ieeeAddr) {
         if (this.debugActive) this.log.debug(`Leave device event: ${ieeeAddr}`);
         if (ieeeAddr) {
-            const devId = zbIdorIeeetoAdId(this.adapter, ieeeAddr, false);
+            const devId = zbIdorIeeetoAdId(this, ieeeAddr, false);
             if (this.debugActive) this.log.debug(`Delete device ${devId} from iobroker.`);
             this.stController.deleteObj(devId);
         }
