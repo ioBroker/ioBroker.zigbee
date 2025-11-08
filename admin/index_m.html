@@ -733,10 +733,16 @@
                         <i class="material-icons large icon-blue">feedback</i></a>
                     </li>
                     <li>
-                    <a id="download_icons_btn"
+                        <a id="download_icons_btn"
                         class="btn-floating disabled waves-effect waves-light blue tooltipped center-align hoverable translateT"
                         title="Download missing icons">
                         <i class="material-icons large">cloud_download</i></a>
+                    </li>
+                    <li>
+                        <a id="rebuild_states_btn"
+                        class="btn-floating disabled waves-effect waves-light blue tooltipped center-align hoverable translateT"
+                        title="Rebuild states">
+                        <i class="material-icons large">low_priority</i></a>
                     </li>
                     <li>
                         <a id="pairing"
@@ -1286,37 +1292,6 @@
             </nav>
         </div>
         <div class="row">
-            <!--
-            <div class="col s1 l1 m1"><a id="modelnamefilter" class="btn-large blue left" ><i class="material-icons icon-blue">filter_list</i></a></div>
-            <div class="col s5 l5 m5 input-field" style="line-height: 24px;"><input id="Filter" type="text" /><label class="translate">Search</div>
-            <div class="col s1 l1 m1"><a id="modelsetfilter" class="btn-large blue left" ><i class="material-icons icon-blue">reorder</i></a></div>
-            <div class="input-field suffix col s2 m2 l2">
-                <select id="channel" class="value">
-                    <option value="function(a) { return true }" selected>All</option>
-                    <option value="function(a) { return LocalDisplayDataValues[a].type == 'group' }">Groups</option>
-                    <option value="function(a) { return LocalDisplayDataValues[a].type == 'Router' }">Routers</option>
-                    <option value="function(a) { return LocalDisplayDataValues[a].type == 'Router' }">EndDevices</option>
-                    <option value="function(a) { return LocalDisplayDataValues[a].setOptions?.length > 0 }">with Options</option>
-                    <option value="function(a) { return !(LocalDisplayDataValues[a].setOptions?.length > 0) }">without Options</option>
-                    <label class="translate">Filter</label>
-                </select>
-            </div>
-            <div class="col s1 l1 m1"><a id="modelnamefilter" class="btn-large blue left" ><i class="material-icons icon-blue">sort</i></a></div>
-            <div class="input-field suffix col s2 m2 l2">
-                <select id="channel" class="value">
-                    <option value="function(a,b) { return 0 }" selected>noSort</option>
-                    <option value="function(a,b) { return LocalDisplayDataValues[a].type > LocalDisplayDataValues[b].type }">by type</option>
-                    <option value="function(a,b) { return LocalDisplayDataValues[a].devices?.length > LocalDisplayDataValues[b].devices?.length }">by device counttype</option>
-                    <option value="function(a,b) { return LocalDisplayDataValues[a].setOptions?.length > LocalDisplayDataValues[b].setOptions?.length }">by option count</option>
-                    <label class="translate">Sort</label>
-                </select>
-            </div></div>
-            <div class="fixed-action-btn" style="margin-bottom: 100px">
-                <a id="updateData"
-                    class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
-                    title="update Data"><i class="material-icons large">replay</i></a>
-            </div>
-            -->
             <div id="tab-overrides-content" row>
                 Nothing to see yet.
             </div>
@@ -1485,6 +1460,20 @@
             <div id="cforcediv" class="forcedelete">
                 <input id="cforce" type="checkbox" class="value"/>
                 <label class="translate" for="cforce">Force removed states with custom configuration (history, upnp, etc.)</label>
+            </div>
+            <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+        </div>
+    </div>
+    <div id="modalrebuild" class="modal">
+        <div class="modal-content">
+            <h3 class="translate">State rebuild confirmation</h3>
+            <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+            <div id="cforcediv" class="forcedelete">
+                <input id="cforce_rebuild" type="checkbox" class="value"/>
+                <label class="translate" for="cforce_rebuild">Force update all roles to adapter defined roles</label>
             </div>
             <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
             <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
