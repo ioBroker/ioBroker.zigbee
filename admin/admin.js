@@ -2264,15 +2264,21 @@ function load(settings, onChange) {
         const errMsgTable = [];
         //console.warn(JSON.stringify(errorData));
         if (Object.keys(errorData.errors).length > 0) {
-            errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>last seen</th></tr>`)
+            errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>first seen</th><th>last seen</th></tr>`)
             for (const err of Object.values(errorData.errors))
-                if (err) errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+                if (err && err.ts && err.count) {
+                    const erridx = err.ts.length > 1 ? 1 : 0
+                    errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[erridx]).toLocaleTimeString()}</td></tr>`)
+                }
             errMsgTable.push('</table>');
         }
         if (Object.keys(errorData.unknownModels).length > 0) {
-            errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>last seen</th></tr>`)
+            errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>first seen</th><th>last seen</th></tr>`)
             for (const err of Object.values(errorData.unknownModels))
-                errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+                if (err && err.tx && err.count) {
+                    const erridx = err.ts.length > 1 ? 1 : 0
+                    errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td></tr>`)
+                }
             errMsgTable.push('</table>');
         }
         //console.warn(JSON.stringify(errMsgTable));
