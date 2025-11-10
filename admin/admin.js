@@ -2069,6 +2069,7 @@ function getDevices() {
 }
 
 function extractDevicesData(msg) {
+    console.warn(JSON.stringify(msg.errors));
     devices = msg.devices ? msg.devices : [];
     // check if stashed error messages are sent alongside
     if (msg.clean)
@@ -2275,9 +2276,9 @@ function load(settings, onChange) {
         if (Object.keys(errorData.unknownModels).length > 0) {
             errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>first seen</th><th>last seen</th></tr>`)
             for (const err of Object.values(errorData.unknownModels))
-                if (err && err.tx && err.count) {
+                if (err && err.ts && err.count) {
                     const erridx = err.ts.length > 1 ? 1 : 0
-                    errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td></tr>`)
+                    errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[erridx]).toLocaleTimeString()}</td></tr>`)
                 }
             errMsgTable.push('</table>');
         }

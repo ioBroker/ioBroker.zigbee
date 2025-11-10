@@ -702,7 +702,7 @@ class Zigbee extends utils.Adapter {
             this.log.warn(msg);
             this.logToPairing(msg, true);
         }
-        const modelDefinition = await this.stController.AddModelFromHerdsman(entity.device, model)
+        await this.stController.AddModelFromHerdsman(entity.device, model)
         if (device) {
             this.getObject(zbIdorIeeetoAdId(this, device.ieeeAddr, false), (err, obj) => {
                 if (!obj) {
