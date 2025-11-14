@@ -1092,7 +1092,7 @@ function deleteZigbeeDevice(id, force, devOpts, modelOpts) {
     sendToWrapper(namespace, 'deleteZigbeeDevice', {id: id, force: force, dev:devOpts, model:modelOpts}, function (msg) {
         closeWaitingDialog();
         if (msg) {
-            if (msg.error) {
+            if (msg.error && msg.error.length) {
                 showMessage(msg.error, _('Error'));
             } else {
                 getDevices();
@@ -2069,7 +2069,7 @@ function getDevices() {
 }
 
 function extractDevicesData(msg) {
-    console.warn(JSON.stringify(msg.errors));
+    //console.warn(JSON.stringify(msg.errors));
     devices = msg.devices ? msg.devices : [];
     // check if stashed error messages are sent alongside
     if (msg.clean)

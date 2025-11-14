@@ -630,7 +630,7 @@ class Zigbee extends utils.Adapter {
 
         for (const id of await this.syncAllDeviceStates(false)) {
             try {
-                this.log.warn(`removing object for device ${id} - it is no longer in the zigbee database`);
+                this.log.info(`removing object for device ${id} - it is no longer in the zigbee database`);
                 await this.delObjectAsync(id.substring(2), { recursive:true })
             }
             catch {
@@ -841,7 +841,7 @@ class Zigbee extends utils.Adapter {
             this.setState('info.pairingMode', false, true);
         }
         if (data) {
-            this.logToPairing(`${message}: ${data.toString()}`);
+            this.logToPairing(`${message}: ${typeof data === 'string' ? data: data.toString()}`);
         } else {
             this.logToPairing(`${message}`);
         }
