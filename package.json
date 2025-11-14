@@ -24,7 +24,7 @@
     "@iobroker/adapter-core": "^3.3.2",
     "@iobroker/dm-utils": "^1.0.13",
     "humanize-duration": "^3.33.1",
-    "tar": "^7.4.3",
+    "tar": "^7.5.2",
     "ajv": "^8.17.1",
     "uri-js": "^4.4.1",
     "typescript": "^5.9.3",
