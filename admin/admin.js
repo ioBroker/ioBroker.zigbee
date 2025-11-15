@@ -1659,6 +1659,7 @@ async function editDeviceOptions(id, isModel) {
             else dialogData.setOptions[k] = id.setOptions[k];
         dialogData.name = id.setOptions.name || id.name || 'unset';
         dialogData.icon = id.setOptions.icon || model.icon || 'img/dummyDevice.jpg';
+        dialogData.defaultIcon = model.icon || `img/${model.model.replace(/\//g, '-')}.png`;
         dialogData.legacyIcon = id.devices[0].legacyIcon;
         id = id.model.model;
     } else
@@ -1669,7 +1670,7 @@ async function editDeviceOptions(id, isModel) {
         dialogData.availableOptions.push(...adapterDefinedOptions)
         dialogData.name = dev.common.name;
         dialogData.icon = dev.common.icon || dev.icon;
-        dialogData.default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
+        dialogData.defaultIcon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
         dialogData.legacyIcon = dev.legacyIcon;
     }
 
