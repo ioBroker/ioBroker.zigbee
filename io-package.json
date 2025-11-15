@@ -369,7 +369,7 @@
       "_id": "info.lasterror",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "state",
         "name": "Last stashed error",
         "type": "string",
         "read": true,
@@ -382,7 +382,7 @@
       "_id": "info.pairingCountdown",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "Pairing countdown",
         "type": "number",
         "read": true,
@@ -395,7 +395,7 @@
       "_id": "info.pairingMessage",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "state",
         "name": "Pairing message",
         "type": "string",
         "read": true,

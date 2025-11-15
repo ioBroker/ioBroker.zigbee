@@ -109,6 +109,7 @@ function UpdateAdapterAlive(state) {
         $('#ErrorNotificationBtn').removeClass('disabled');
         $('#show_errors_btn').removeClass('disabled');
         $('#download_icons_btn').removeClass('disabled');
+        $('#rebuild_states_btn').removeClass('disabled');
         $('#pairing').removeClass('disabled');
     }
     else {
@@ -121,6 +122,7 @@ function UpdateAdapterAlive(state) {
         $('#show_errors_btn').addClass('disabled');
         $('#pairing').addClass('disabled');
         $('#download_icons_btn').addClass('disabled');
+        $('#rebuild_states_btn').addClass('disabled');
     }
     connectionStatus.connected = state;
 }
@@ -237,12 +239,15 @@ function getModelData(data, models, keys) {
         const e_btn_tip = `edit model ${key}`;
         const d_btn = btnParam(d_btn_name, d_btn_tip, foldData.devices ? 'expand_less' : 'expand_more', false);
         const e_btn = btnParam(e_btn_name, e_btn_tip, 'edit', 'green', false)
+        const legacy = model.setOptions?.options?.legacy ? 'Legacy' : 'Exposed'
+
         LocalDataDisplayValues.buttonSet.add(d_btn_name);
         LocalDataDisplayValues.buttonSet.add(e_btn_name);
-        const devtxt = (model.devices.length && !foldData.devices) ? `${model.devices.length} ${model.model.type}${model.devices.length > 1 ? 's' : ''}` : '';
+        const devtxt = (model.devices.length) ? `${model.devices.length} ${model.model.type}${model.devices.length > 1 ? 's' : ''}` : '';
         Html.push(`<tr id="datarowodd">
-            <td rowspan="${numrows}" width="15%"><img src=${model.model.icon} class="dev_list"></td>
-            <td colspan="2">Model ${key}</td><td>${devtxt}</td>
+            <td rowspan="${numrows}" width="10%"><img src=${model.model.icon} class="dev_list"></td>
+            <td rowspan="${numrows}" width="15%">${legacy} model<br>${key}</td>
+            <td colspan="3">${devtxt}</td>
             <td>${d_btn}&nbsp;${e_btn}</td></tr>`)
         let cnt = 0;
         if (foldData.devices) {
@@ -258,7 +263,7 @@ function getModelData(data, models, keys) {
                 //const bn = btnParam(`d_delete_${devieee}`, `delete device ${devieee}`, 'delete', 'red darken-4', false);
                 const bna = btnParam(`d_delall_${k}-${devieee}`, `completely delete device ${devieee}`, 'delete_forever', 'red accent-4', false);
                 const bta = !dev.common.deactivated ? btnParam(`d_disen_${k}-${devieee}`, `disable device ${devieee}`, 'power_settings_new', 'green accent-4', false) : btnParam(`d_disen_${k}-${devieee}`, `enable device ${devieee}`, 'power_settings_new', 'red accent-4', false);
-                Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}${dev.common.deactivated ? '_red' : ''}"><td width="1%"><i class="material-icons small">devices</i></td><td width="25%">${devieee}</td><td width="45%">${dev.common.name}</td><td width="10%">${bna}${bta}<td></tr>`)
+                Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}${dev.common.deactivated ? '_red' : ''}"><td width="1%"><i class="material-icons small">devices</i></td><td>${devieee}</td><td>${dev.common.name}</td><td width="10%">${bna}${bta}</td></tr>`)
                 isOdd = !isOdd;
             }
         }
@@ -266,10 +271,10 @@ function getModelData(data, models, keys) {
             const o_btn_name = `o_toggle_${k}`;
             const o_btn_tip = `fold / unfold options for Model ${key}`;
             LocalDataDisplayValues.buttonSet.add(o_btn_name);
-            const opttxt = (numOptions > 0 && !(foldData.options)) ? `${numOptions} global option${numOptions > 1 ? 's' : ''}` :''
+            const opttxt = (numOptions > 0) ? `${numOptions} global option${numOptions > 1 ? 's' : ''}` :''
             Html.push(`<tr id="datarowodd">
-                <td colspan="2">Model ${key}</td><td>${opttxt}</td>
-                <td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}</td></tr>`)
+                <td colspan="3">${opttxt}</td>
+                <td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}&nbsp;${e_btn}</td></tr>`)
             if (foldData.options) {
                 let isOdd = false;
                 for (const key of Object.keys(model.setOptions)) {
@@ -278,7 +283,7 @@ function getModelData(data, models, keys) {
                         for (const ok of Object.keys(oo)) {
                             LocalDataDisplayValues.buttonSet.add(`o_delete_${k}-${ok}`);
                             const btn = btnParam(`o_delete_${k}-${ok}`, `delete option ${ok}`, 'delete', 'red darken-4', false);
-                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${ok}</td><td width="45%" ${oo[ok] === undefined ? 'id="datared">"not set on model"' : '>'+oo[ok]}</td><td>${btn}</td></tr>`)
+                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${ok}</td><td${oo[ok] === undefined ? 'id="datared">"not set on model"' : '>'+oo[ok]}</td><td width="10%">${btn}</td></tr>`)
                             isOdd = !isOdd;
                         }
                     }
@@ -288,10 +293,10 @@ function getModelData(data, models, keys) {
                         if (key==='icon') {
                             const icontext = model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : `>${model.setOptions[key]}`;
                             const icon = model.setOptions[key]=== undefined ? '' : `<img src=${model.setOptions[key]} height="32px" class="sml_list">`;
-                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${key}</td><td valign="middle" width="45%" ${icontext}</td><td>${btn}${icon}</td></tr>`)
+                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${key}</td><td valign="middle" ${icontext}</td><td width="10%">${btn}${icon}</td></tr>`)
                         }
                         else
-                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td width="25%">${key}</td><td width="45%" ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>${btn}</td></tr>`)
+                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${key}</td><td ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>${btn}</td></tr>`)
                         isOdd = !isOdd;
                     }
                 }
@@ -336,26 +341,26 @@ function getDeviceData(deviceList, withIcon) {
 
 function sortAndFilter(filter, sort) {
     const fFun = filter || LocalDataDisplayValues.filterMethod;
-    console.warn('once:='+JSON.stringify(models['m_0'].setOptions))
-    console.warn('twice:='+ JSON.stringify(models['m_1'].setOptions))
+    //console.warn('once:='+JSON.stringify(models['m_0'].setOptions))
+    //console.warn('twice:='+ JSON.stringify(models['m_1'].setOptions))
     let filterMap = LocalDataDisplayValues.sortedKeys = Object.keys(models);
     if (LocalDataDisplayValues.searchVal && LocalDataDisplayValues.searchVal.length) {
         filterMap = filterMap.filter((a) => {
             return models[a]?.model?.model?.toLowerCase().includes(LocalDataDisplayValues.searchVal)
         });
-        console.warn(`${JSON.stringify(LocalDataDisplayValues.searchVal)} - ${JSON.stringify(models['m_1'].model)}`);
+        //console.warn(`${JSON.stringify(LocalDataDisplayValues.searchVal)} - ${JSON.stringify(models['m_1'].model)}`);
     }
     if (typeof fFun == 'function')  {
-        console.warn(`${JSON.stringify(filterMap)} - ${JSON.stringify(models['m_1'].model)}`);
+        //console.warn(`${JSON.stringify(filterMap)} - ${JSON.stringify(models['m_1'].model)}`);
         filterMap = filterMap.filter(fFun);
     }
-    console.warn(JSON.stringify(filterMap));
+    //console.warn(JSON.stringify(filterMap));
     const sFun = sort || LocalDataDisplayValues.sortMethod;
     if (typeof sFun == 'function') {
-        console.warn(`${JSON.stringify(filterMap)} - ${JSON.stringify(models['m_1'].model)}`);
+        //console.warn(`${JSON.stringify(filterMap)} - ${JSON.stringify(models['m_1'].model)}`);
         filterMap = filterMap.sort(sFun);
     }
-    console.warn(JSON.stringify(filterMap));
+    //console.warn(JSON.stringify(filterMap));
     if (typeof filter == 'function') LocalDataDisplayValues.filterMethod = filter;
     if (typeof sort == 'function') LocalDataDisplayValues.sortMethod = sort;
     return filterMap;
@@ -373,7 +378,7 @@ function showLocalData() {
     const Html = [];
 
     if (sm) {
-        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4></th><th></th><th rowspan="${RowSpan}">&nbsp;</th></tr>`);
+        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}" width="10px">&nbsp;</th><th colspan=5></th><th></th><th rowspan="${RowSpan}" width="10px"">&nbsp;</th></tr>`);
         Html.push(ModelHtml.join(''));
     }
     /*else {
@@ -419,16 +424,16 @@ function showLocalData() {
             editDeviceOptions(models[key], true);
         })
         if (item.startsWith('o_delete_'))  {
-            console.warn(`adding click to ${item}`)
+            //console.warn(`adding click to ${item}`)
             $(`#${item}`).click(function () {
-                console.warn(`clicked ${item}`);
+                //console.warn(`clicked ${item}`);
                 const keys = item.replace('o_delete_', '').split('-');
                 const model = models[keys[0]]?.model.model;
                 const option = keys[1];
                 const sOptions = models[keys[0]]?.setOptions || {};
                 const options = models[keys[0]]?.setOptions?.options || {};
                 //options[option] = '##REMOVE##';
-                console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
+                //console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
                 delete options[option];
                 updateLocalConfigItems(model, sOptions || {}, true);
                 showLocalData();
@@ -440,15 +445,15 @@ function showLocalData() {
             const option = keys[1];
             const options = models[keys[0]].setOptions;
             options[option] = '##REMOVE##';
-            console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
+            //console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
             updateLocalConfigItems(model, options || {}, true)
             delete options[option];
             showLocalData();
         })
         if (item.startsWith('d_disen_'))  {
-            console.warn(`adding click to ${item}`)
+            //console.warn(`adding click to ${item}`)
             $(`#${item}`).click(function () {
-                console.warn(`clicked ${item}`);
+                //console.warn(`clicked ${item}`);
                 const keys = item.replace('d_disen_', '').split('-');
                 const model = models[keys[0]];
                 const device = model.devices.find( (d) => d.native.id === keys[1]);
@@ -460,13 +465,13 @@ function showLocalData() {
             });
         }
         if (item.startsWith('d_delall_')) {
-            console.warn(`adding click to ${item}`)
+            //console.warn(`adding click to ${item}`)
             $(`#${item}`).click(function () {
-                console.warn(`clicked ${item}`);
+                //console.warn(`clicked ${item}`);
                 const keys = item.replace('d_delall_', '').split('-');
                 const model = models[keys[0]];
                 const device = model.devices.find( (d) => d.native.id === keys[1]);
-                console.warn(`setting delete confirmation with ${keys[1]} ${models[keys[0]].devices?.length} ${models[keys[0]]?.model.model} `);
+                //console.warn(`setting delete confirmation with ${keys[1]} ${models[keys[0]].devices?.length} ${models[keys[0]]?.model.model} `);
                 deleteConfirmation(keys[1], device.common.name, keys[1], models[keys[0]]?.devices?.length <=1 ? models[keys[0]]?.model?.model : undefined);
             });
         }
@@ -1002,7 +1007,7 @@ function cleanConfirmation() {
     $('#modalclean a.btn[name=\'yes\']').unbind('click');
     $('#modalclean a.btn[name=\'yes\']').click(() => {
         const force = $('#cforce').prop('checked');
-        cleanDeviceStates(force);
+        modifyDeviceStates('clean', force, `${force ? 'Completely r' : 'R'}emoving orphaned states.`);
     });
     $('#modalclean').modal('open');
     Materialize.updateTextFields();
@@ -1029,7 +1034,7 @@ function editGroupMembers(id, name) {
             }
             $('#modaledit').find('.endpoints_for_groups').html(html.join(''));
             for (const groupable of groupables) {
-                console.warn(`list 2 select called with ${groupable.ep.ID}, groups ${JSON.stringify(groups)}, groupable ${JSON.stringify(groupable)}`);
+                //console.warn(`list 2 select called with ${groupable.ep.ID}, groups ${JSON.stringify(groups)}, groupable ${JSON.stringify(groupable)}`);
                 list2select(`#gk_${groupable.ep.ID || -1}`, groups, groupable.memberOf || []);
             }
         }
@@ -1087,7 +1092,7 @@ function deleteZigbeeDevice(id, force, devOpts, modelOpts) {
     sendToWrapper(namespace, 'deleteZigbeeDevice', {id: id, force: force, dev:devOpts, model:modelOpts}, function (msg) {
         closeWaitingDialog();
         if (msg) {
-            if (msg.error) {
+            if (msg.error && msg.error.length) {
                 showMessage(msg.error, _('Error'));
             } else {
                 getDevices();
@@ -1098,8 +1103,8 @@ function deleteZigbeeDevice(id, force, devOpts, modelOpts) {
 }
 
 
-function cleanDeviceStates(force) {
-    sendToWrapper(namespace, 'cleanDeviceStates', {force: force}, function (msg) {
+function modifyDeviceStates(action, force, message, timeout) {
+    sendToWrapper(namespace, 'modifyDeviceStates', { action, force}, function (msg) {
         closeWaitingDialog();
         if (msg) {
             if (msg.error) {
@@ -1112,7 +1117,7 @@ function cleanDeviceStates(force) {
             }
         }
     });
-    showWaitingDialog('Orphaned states are being removed', 10);
+    showWaitingDialog(message, timeout);
 }
 
 function renameDevice(id, name) {
@@ -1490,12 +1495,12 @@ async function editDeviceOptions(id, isModel) {
         device_options[key] = { key:optionName, value:'', isCustom:optionName==='custom', expose:getExposeFromOptions(optionName)};
         idx = dialogData.availableOptions.indexOf(optionName);
         if (idx > -1 && !device_options[key].isCustom) dialogData.availableOptions.splice(idx, 1);
-        console.warn(`addOption added ${JSON.stringify(device_options)}`)
+        //console.warn(`addOption added ${JSON.stringify(device_options)}`)
     }
 
 
     function updateOptions(candidates) {
-        console.warn(`update Options with ${JSON.stringify(candidates)}`)
+        //console.warn(`update Options with ${JSON.stringify(candidates)}`)
         if (candidates.length > 0) {
             $('#chooseimage').find('.new_options_available').removeClass('hide');
             list2select('#option_Selector', candidates, [], (key, val) => { return val; }, (key, val) => { return val; })
@@ -1509,7 +1514,7 @@ async function editDeviceOptions(id, isModel) {
         for (const k of Object.keys(device_options)) {
             const expose = device_options[k].expose === undefined ? getExposeFromOptions(device_options[k].key) : device_options[k].expose;
             const disabled = device_options[k]?.isCustom ? '' : 'disabled ';
-            console.warn(`option for ${k} is ${JSON.stringify(device_options[k])}`);
+            //console.warn(`option for ${k} is ${JSON.stringify(device_options[k])}`);
             html_options.push(`<div class="row">`);
             switch (expose.type) {
                 case 'numeric':
@@ -1545,7 +1550,7 @@ async function editDeviceOptions(id, isModel) {
                 const oval = $(`#option_value_${key}`).html();
                 const val = $(`#option_value_${key}`).html()=== dok.vOn ? dok.vOff : dok.vOn;
                 dok.value = val;
-                console.warn(`${item} clicked: ${JSON.stringify(dok)} => ${val} from ${oval}`);
+                //console.warn(`${item} clicked: ${JSON.stringify(dok)} => ${val} from ${oval}`);
                 $(`#${item}`).html(val);
             });
         }
@@ -1557,7 +1562,7 @@ async function editDeviceOptions(id, isModel) {
                 if (device_options[k].expose?.type != 'binary') {
                     const value = $(`#option_value_${k}.value`);
                     /*                if (value.attr('type') === 'checkbox') {
-                    console.warn(`oval for ${k} : ${device_options[k].value}`);
+                    //console.warn(`oval for ${k} : ${device_options[k].value}`);
                     value.prop('checked', Boolean(device_options[k].value));
                     }
                     else*/
@@ -1574,7 +1579,7 @@ async function editDeviceOptions(id, isModel) {
 
     function getExposeFromOptions(option) {
         const rv = dialogData.model.optionExposes.find((expose) => expose.name === option);
-        console.warn(`GEFO: ${option} results in ${JSON.stringify(rv)}`);
+        //console.warn(`GEFO: ${option} results in ${JSON.stringify(rv)}`);
         if (rv) return rv;
         return { type:option === 'legacy' ? 'binary' : 'string' };
     }
@@ -1582,15 +1587,15 @@ async function editDeviceOptions(id, isModel) {
     function getOptionsFromUI(_do, _so) {
         const _no = {};
         let changed = false;
-        console.warn(`${changed} : ${JSON.stringify(_do)} - ${JSON.stringify(_no)}`)
+        //console.warn(`${changed} : ${JSON.stringify(_do)} - ${JSON.stringify(_no)}`)
         for (const k of Object.keys(_do)) {
             const key =  $(`#option_key_${k}`).val();
             if (_do[k].isCustom) _do[k].key = key;
             else if (_do[k].key != key) {
-                console.warn(`_illegal Keys: ${key}, ${_do[k].key}`)
+                //console.warn(`_illegal Keys: ${key}, ${_do[k].key}`)
                 continue;
             }
-            console.warn(`_legal Keys: ${key}, ${_do[k].key}`)
+            //console.warn(`_legal Keys: ${key}, ${_do[k].key}`)
             if (_do[k].expose?.type === 'binary') {
                 _do[k].value = $(`#option_value_${k}`).html();
             }
@@ -1599,13 +1604,13 @@ async function editDeviceOptions(id, isModel) {
                 _do[k].value = $(`#option_value_${k}`).val();
             }
             if (_do[k].key.length > 0) {
-                console.warn(`dok: ${_do[k].key} : ${_do[k].value}`);
+                //console.warn(`dok: ${_do[k].key} : ${_do[k].value}`);
                 _no[key] = _do[k].value;
                 changed |= (_no[key] != _so[key]);
             }
         }
         changed |= (Object.keys(_no).length != Object.keys(_so).length);
-        console.warn(`${changed ? 'changed': 'unchanged'} : ${JSON.stringify(_so)} - ${JSON.stringify(_no)}`)
+        //console.warn(`${changed ? 'changed': 'unchanged'} : ${JSON.stringify(_so)} - ${JSON.stringify(_no)}`)
         if (changed) return _no;
         return undefined;
     }
@@ -1654,6 +1659,7 @@ async function editDeviceOptions(id, isModel) {
             else dialogData.setOptions[k] = id.setOptions[k];
         dialogData.name = id.setOptions.name || id.name || 'unset';
         dialogData.icon = id.setOptions.icon || model.icon || 'img/dummyDevice.jpg';
+        dialogData.defaultIcon = model.icon || `img/${model.model.replace(/\//g, '-')}.png`;
         dialogData.legacyIcon = id.devices[0].legacyIcon;
         id = id.model.model;
     } else
@@ -1664,7 +1670,7 @@ async function editDeviceOptions(id, isModel) {
         dialogData.availableOptions.push(...adapterDefinedOptions)
         dialogData.name = dev.common.name;
         dialogData.icon = dev.common.icon || dev.icon;
-        dialogData.default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
+        dialogData.defaultIcon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
         dialogData.legacyIcon = dev.legacyIcon;
     }
 
@@ -1709,7 +1715,7 @@ async function editDeviceOptions(id, isModel) {
                         for (const key in msg.options)
                         {
                             const idx = dialogData.availableOptions.indexOf(key);
-                            console.warn(`key ${key} : index : ${idx}`);
+                            //console.warn(`key ${key} : index : ${idx}`);
                             if (idx > -1) dialogData.availableOptions.splice(idx,1);
                             received_options[key]=msg.options[key];
                             device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
@@ -1759,7 +1765,7 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
     const buttonList = [];
     const idRed = ' id="dbgred"'
     if (dbgMsghide.has('i_'+devID)) {
-        console.warn('in all filtered out')
+        //console.warn('in all filtered out')
         Html.push('&nbsp;')
     } else for (const item of messages) {
         if (item.states.length > 0) {
@@ -1798,7 +1804,7 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
     let isodd=true;
     const buttonList = [];
     if (dbgMsghide.has('o_'+devID)) {
-        console.warn('out all filtered out')
+        //console.warn('out all filtered out')
         Html.push('&nbsp;')
     }
     else for (const item of messages) {
@@ -1834,7 +1840,7 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
 }
 
 function displayDebugMessages(msg) {
-    console.warn('displayDebugMessages called with '+ JSON.stringify(msg));
+    //console.warn('displayDebugMessages called with '+ JSON.stringify(msg));
     const buttonNames = [];
     const idButtons = [];
     if (msg.byId) {
@@ -2064,6 +2070,7 @@ function getDevices() {
 }
 
 function extractDevicesData(msg) {
+    //console.warn(JSON.stringify(msg.errors));
     devices = msg.devices ? msg.devices : [];
     // check if stashed error messages are sent alongside
     if (msg.clean)
@@ -2257,26 +2264,32 @@ function load(settings, onChange) {
     });
     $('#show_errors_btn').click(function () {
         const errMsgTable = [];
-        console.warn(JSON.stringify(errorData));
+        //console.warn(JSON.stringify(errorData));
         if (Object.keys(errorData.errors).length > 0) {
-            errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>last seen</th></tr>`)
+            errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>first seen</th><th>last seen</th></tr>`)
             for (const err of Object.values(errorData.errors))
-                if (err) errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+                if (err && err.ts && err.count) {
+                    const erridx = err.ts.length > 1 ? 1 : 0
+                    errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[erridx]).toLocaleTimeString()}</td></tr>`)
+                }
             errMsgTable.push('</table>');
         }
         if (Object.keys(errorData.unknownModels).length > 0) {
-            errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>last seen</th></tr>`)
+            errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>first seen</th><th>last seen</th></tr>`)
             for (const err of Object.values(errorData.unknownModels))
-                errMsgTable.push(`<tr><td>${err.message}</td><td>${err.ts.length}</td><td>${new Date(err.ts[err.ts.length-1]).toLocaleTimeString()}</td></tr>`)
+                if (err && err.ts && err.count) {
+                    const erridx = err.ts.length > 1 ? 1 : 0
+                    errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[erridx]).toLocaleTimeString()}</td></tr>`)
+                }
             errMsgTable.push('</table>');
         }
-        console.warn(JSON.stringify(errMsgTable));
+        //console.warn(JSON.stringify(errMsgTable));
         showMessage(errMsgTable.join(''), 'Stashed error messages', '<a id="delete_errors_btn" class="btn-floating waves-effect waves-light tooltipped center-align hoverable translateT" title="delete Errors"></i class="material-icons icon-black">delete_sweep</i></a>');
         $('#delete_errors_btn').unbind('click')
         $('#delete_errors_btn').click(function () {
             sendToWrapper(namespace, 'clearErrors', {}, function(msg) {
                 if (msg) {
-                    console.warn('msg is ' + JSON.stringify(msg));
+                    //console.warn('msg is ' + JSON.stringify(msg));
                     errorData = msg;
                     $('#show_errors_btn').addClass('hide');
                 }
@@ -2287,6 +2300,20 @@ function load(settings, onChange) {
     });
     $('#download_icons_btn').click(function () {
         showMessage(downloadIcons());
+    });
+    $('#rebuild_states_btn').click(function () {
+        const text = translateWord('Do you really want to recreate all states ?');
+        $('#modalrebuild').find('p').text(text);
+        $('#cforce_rebuild').prop('checked', true);
+        $('#cforce_rebuild').removeClass('hide');
+        $('#cforcediv').removeClass('hide');
+        $('#modalrebuild a.btn[name=\'yes\']').unbind('click');
+        $('#modalrebuild a.btn[name=\'yes\']').click(() => {
+            const force = $('#cforce_rebuild').prop('checked');
+            modifyDeviceStates('rebuild', force, `${force ? 'Completely r':'R'}ebuilding all device states`, 10);
+        });
+        $('#modalrebuild').modal('open');
+        Materialize.updateTextFields();
     });
     $('#fw_check_btn').click(function () {
         checkFwUpdate();
@@ -2673,7 +2700,7 @@ socket.on('stateChange', function (id, state) {
             }
         } else if (id.match(/\.info\.lasterror$/)) {
             try {
-                console.warn(`lasterror is ${JSON.stringify(state)}`)
+                //console.warn(`lasterror is ${JSON.stringify(state)}`)
                 const errobj = JSON.parse(state.val);
                 let changed = false;
                 if (errobj.error) {
@@ -3651,19 +3678,19 @@ function selectBackup() {
         const candidates = {};
         for (const fn of msg.files) {
             const m = fn.matchAll(/backup_([0-9]+)_([0-9]+)_([0-9]+)-([0-9]+)_([0-9]+)_([0-9]+)/gm);
-            console.warn(`m is ${JSON.stringify(m)}`);
+            //console.warn(`m is ${JSON.stringify(m)}`);
             if (m) {
                 candidates[`${m[3]}.${m[2]}.${m[1]} ${m[4]}:${m[5]}`] = fn;
             }
         }
-        console.warn('candidates is ' + JSON.stringify(candidates));
+        //console.warn('candidates is ' + JSON.stringify(candidates));
         list2select('#backup_Selector', msg.files, [], (key, val) => { return val; }, (key, val) => { return val; })
         $('#modalrestore').modal('open');
         const btn = $('#modalrestore .modal-content a.btn-large');
         btn.unbind('click')
         btn.click(function (e) {
             const name = $('#backup_Selector').val();
-            console.warn(` filename is ${name}`);
+            //console.warn(` filename is ${name}`);
             $('#modalrestore').modal('close');
             showWaitingDialog(`Attempting to restore the backup from ${name}`, 180000);
             const start = Date.now();
@@ -4164,7 +4191,7 @@ function showWaitingDialog(text, timeout) {
         clearTimeout(waitingTimeout);
         $('#modalWaiting').modal('close');
     }, timeout * 1000);
-    $('#waiting_message').text(text);
+    $('#waiting_message').text(translateWord(text));
     $('#modalWaiting').modal('open');
 }
 
@@ -4500,7 +4527,7 @@ function removeDevice(id) {
 
 function swapActive(id) {
     const dev = getDeviceByID(id) || getDeviceByIEEE(`0x${id}`);
-    console.warn(`swap_active for ${id} -> ${JSON.stringify(dev)}`);
+    //console.warn(`swap_active for ${id} -> ${JSON.stringify(dev)}`);
     if (dev && dev.common) {
         dev.common.deactivated = !(dev.common.deactivated);
         sendToWrapper(namespace, 'setDeviceActivated', {id: id, deactivated: dev.common.deactivated}, function () {
