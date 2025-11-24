@@ -2697,6 +2697,20 @@ socket.on('stateChange', function (id, state) {
                 if (state.val === 'Closing network.') {
                     getDevices();
                 }
+                if (state.val.startsWith('Map')) {
+                    const numDev = Number(state.val.split(':').pop());
+                    const colorArr = ['_o', '_y', '_o'];
+                    if (numDev > 0) {
+                        $(`#map_generating_btn${colorArr[numDev%2]}`).removeClass('hide');
+                        $(`#map_generating_btn${colorArr[numDev%2+1]}`).addClass('hide');
+                        $(`#map_generating_btn${colorArr[numDev%2]}`).html(`<i class="material-icons large icon-blue">${numDev > 9 ? 'filter_9_plus' : 'filter_'+numDev}</i>`);
+
+                    }
+                    else {
+                        $('#map_generating_btn_o').addClass('hide');
+                        $('#map_generating_btn_y').addClass('hide');
+                    }
+                }
             }
         } else if (id.match(/\.info\.lasterror$/)) {
             try {
