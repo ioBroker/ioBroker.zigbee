@@ -2110,25 +2110,35 @@ function getNamedColors() {
     });
 }
 
-
+let map_errors = [];
 function getMap(rebuild) {
-    $('#refresh').addClass('disabled');
-    if (isHerdsmanRunning) {
+    if (rebuild) $('#refresh').addClass('disabled');
+    if (isHerdsmanRunning || !rebuild) {
         sendToWrapper(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
             $('#refresh').removeClass('disabled');
             if (msg) {
-                if (msg.error) {
-                    //errorData.push(msg.error);
-                    isHerdsmanRunning = false;
-                    updateStartButton();
-                } else {
-                    isHerdsmanRunning = true;
-                    updateStartButton();
-                    if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
-                        showMessage(msg.errors.join('<br>'), 'Map generation messages');
+                if (!msg.hasMap) $('#refresh').removeClass('hide');
+                else {
+                    $('#refresh').addClass('hide');
+                    if (msg.error) {
+                        //errorData.push(msg.error);
+                        isHerdsmanRunning = false;
+                        updateStartButton();
+                    } else {
+                        isHerdsmanRunning = true;
+                        updateStartButton();
+                        if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
+                            $('#map_errors_btn').removeClass('hide');
+                            $('#map_errors_btn').unbind('click');
+                            map_errors=msg.errors;
+                            $('#map_errors_btn').click(() => {
+                                showMessage(map_errors.join('<br>'), 'Map generation messages');
+                                $('#map_errors_btn').addClass('hide');
+                            })
+                        }
+                        map = msg;
+                        showNetworkMap(devices, map);
                     }
-                    map = msg;
-                    showNetworkMap(devices, map);
                 }
             }
         });
@@ -2214,6 +2224,7 @@ function load(settings, onChange) {
     //const keepAliveHandle = startKeepalive();
     keepAlive(() => {
         getDevices();
+        getMap(false);
         getNamedColors();
         readNVRamBackup(false);
         sendToWrapper(namespace, 'getGroups', {}, function (data) {
@@ -2331,7 +2342,7 @@ function load(settings, onChange) {
     });
 
     $('#refresh').click(function () {
-        getMap(false);
+        getMap(true);
     });
     $('#regenerate').click(function () {
         getMap(true);
@@ -2698,17 +2709,17 @@ socket.on('stateChange', function (id, state) {
                     getDevices();
                 }
                 if (state.val.startsWith('Map')) {
-                    const numDev = Number(state.val.split(':').pop());
-                    const colorArr = ['_o', '_y', '_o'];
+                    if (state.val === 'Map invalidated.') {
+                        $('#refresh').removeClass('hide');
+                        return;
+                    }
+                    const numDev = Number(state.val.split(':').pop()) || 0;
                     if (numDev > 0) {
-                        $(`#map_generating_btn${colorArr[numDev%2]}`).removeClass('hide');
-                        $(`#map_generating_btn${colorArr[numDev%2+1]}`).addClass('hide');
-                        $(`#map_generating_btn${colorArr[numDev%2]}`).html(`<i class="material-icons large icon-blue">${numDev > 9 ? 'filter_9_plus' : 'filter_'+numDev}</i>`);
-
+                        $(`#map_generating_btn`).removeClass('hide');
+                        $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">${numDev > 9 ? 'filter_9_plus' : 'filter_'+numDev}</i>`);
                     }
                     else {
-                        $('#map_generating_btn_o').addClass('hide');
-                        $('#map_generating_btn_y').addClass('hide');
+                        $('#map_generating_btn').addClass('hide');
                     }
                 }
             }
