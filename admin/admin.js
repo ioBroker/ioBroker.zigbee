@@ -19,6 +19,7 @@ let devices = [],
     networkEvents,
     responseCodes = false,
     localConfigData = {},
+    shownMap = Date().now,
     groups = {},
     devGroups = {}, // eslint-disable-line prefer-const
     binding = [],
@@ -2136,8 +2137,9 @@ function getMap(rebuild) {
                                 $('#map_errors_btn').addClass('hide');
                             })
                         }
-                        map = msg;
-                        showNetworkMap(devices, map);
+                        if (map?.timestamp != msg?.timestamp)
+                            map = msg;
+                        if (rebuild) showNetworkMap(devices, map);
                     }
                 }
             }
@@ -2716,7 +2718,8 @@ socket.on('stateChange', function (id, state) {
                     const numDev = Number(state.val.split(':').pop()) || 0;
                     if (numDev > 0) {
                         $(`#map_generating_btn`).removeClass('hide');
-                        $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">${numDev > 9 ? 'filter_9_plus' : 'filter_'+numDev}</i>`);
+                        if (numDev < 2) $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">filter_${numDev}</i>`);
+                        else $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">${numDev%2 ? 'filter_9_plus' : 'queue'}</i>`);
                     }
                     else {
                         $('#map_generating_btn').addClass('hide');
@@ -2820,94 +2823,147 @@ function showNetworkMap(devices, map) {
     // create an array with edges
     const edges = [];
 
-    if (map.lqis == undefined || map.lqis.length === 0) { // first init
-        $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh, #physicsOn').change(function () {
-            updateMapFilter();
-        });
-    }
+    //    if (map.lqis == undefined || map.lqis.length === 0) { // first init
+    $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh, #physicsOn').unbind('change');
+    $('#filterParent, #filterSibl, #filterPrvChild, #filterMesh, #physicsOn').change(function () {
+        updateMapFilter();
+    });
+    //    }
 
-    const createNode = function (dev, mapEntry) {
-        if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) return undefined;
-        const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
-        const t = dev._id.replace(namespace + '.', '');
-        const node = {
-            id: dev._id,
-            label: (dev.link_quality > 0 ? dev.common.name : `${dev.common.name}\n(disconnected)`),
-            title: `${t} ${extInfo}`,
-            shape: 'circularImage',
-            image: dev.common.icon || dev.icon,
-            imagePadding: {top: 5, bottom: 5, left: 5, right: 5},
-            color: {background: '#cccccc', highlight: {background: 'white'}},
-            font: {color: '#00bb00'},
-            borderWidth: 1,
-            borderWidthSelected: 4,
+    console.warn(`showNetwork Map (previous: ${shownMap} - new: ${map.timestamp} for ${devices.length} devices.`);
+    if (devices.length == 0) return;
+    if (shownMap != map.timestamp) {
+        shownMap = map.timestamp;
+
+        const createNode = function (dev, mapEntry) {
+            if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) return undefined;
+            const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
+            const t = dev._id.replace(namespace + '.', '');
+            const node = {
+                id: dev._id,
+                label: (dev.link_quality > 0 ? dev.common.name : `${dev.common.name}\n(disconnected)`),
+                title: `${t} ${extInfo}`,
+                shape: 'circularImage',
+                image: dev.common.icon || dev.icon,
+                imagePadding: {top: 5, bottom: 5, left: 5, right: 5},
+                color: {background: '#cccccc', highlight: {background: 'white'}},
+                font: {color: '#00bb00'},
+                borderWidth: 1,
+                borderWidthSelected: 4,
+            };
+            if (dev.common && dev.common.type === 'Coordinator') {
+                // node.shape = 'star';
+                node.image = 'zigbee.png';
+                node.label = 'Coordinator';
+                // delete node.color;
+            }
+            //console.warn(`node for device ${JSON.stringify(node)}`)
+            return node;
         };
-        if (dev.common && dev.common.type === 'Coordinator') {
-            // node.shape = 'star';
-            node.image = 'zigbee.png';
-            node.label = 'Coordinator';
-            // delete node.color;
-        }
-        //console.warn(`node for device ${JSON.stringify(node)}`)
-        return node;
-    };
 
-    if (map.lqis) {
-        map.lqis.forEach((mapEntry) => {
-            const dev = getDeviceByIEEE(mapEntry.ieeeAddr);
-            if (!dev) {
-                return;
-            }
+        if (map.lqis) {
+            map.lqis.forEach((mapEntry) => {
+                const dev = getDeviceByIEEE(mapEntry.ieeeAddr);
+                if (!dev) {
+                    return;
+                }
 
-            let node;
-            if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
-                node = createNode(dev, mapEntry);
+                let node;
+                if (!nodes.hasOwnProperty(mapEntry.ieeeAddr)) { // add node only once
+                    node = createNode(dev, mapEntry);
+                    if (node) {
+                        nodes[mapEntry.ieeeAddr] = node;
+                    }
+                } else {
+                    node = nodes[mapEntry.ieeeAddr];
+                }
                 if (node) {
-                    nodes[mapEntry.ieeeAddr] = node;
-                }
-            } else {
-                node = nodes[mapEntry.ieeeAddr];
-            }
-            if (node) {
-                const parentDev = getDeviceByIEEE(mapEntry.parent);
-                const to = parentDev ? parentDev._id : undefined;
-                const from = dev._id;
-                let label = mapEntry.lqi.toString();
-                let linkColor = '#0000ff';
-                let edge = edges.find((edge) => {
-                    return (edge.to == to && edge.from == from);
-                });
-                const reverse = edges.find((edge) => {
-                    return (edge.to == from && edge.from == to);
-                });
+                    const parentDev = getDeviceByIEEE(mapEntry.parent);
+                    const to = parentDev ? parentDev._id : undefined;
+                    const from = dev._id;
+                    let label = mapEntry.lqi.toString();
+                    let linkColor = '#0000ff';
+                    let edge = edges.find((edge) => {
+                        return (edge.to == to && edge.from == from);
+                    });
+                    const reverse = edges.find((edge) => {
+                        return (edge.to == from && edge.from == to);
+                    });
 
-                if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
-                    // // parent/child
-                    if (mapEntry.status !== 'online') {
-                        label = label + ' (off)';
-                        linkColor = '#660000';
+                    if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
+                        // // parent/child
+                        if (mapEntry.status !== 'online') {
+                            label = label + ' (off)';
+                            linkColor = '#660000';
+                        }
+                        if (mapEntry.lqi < 10) {
+                            linkColor = '#ff0000';
+                        }
+                    } else if (mapEntry.relationship === 2) { // sibling
+                        linkColor = '#00bb00';
+                    } else if (mapEntry.relationship === 3 && !reverse) { // unknown
+                        linkColor = '#aaaaff';
+                    } else if (mapEntry.relationship === 4) { // previous child
+                        linkColor = '#555555';
                     }
-                    if (mapEntry.lqi < 10) {
-                        linkColor = '#ff0000';
+                    if (reverse) {
+                        // update reverse edge
+                        edge = reverse;
+                        edge.label += '\n' + label;
+                        edge.arrows.from = {enabled: false, scaleFactor: 0.5}; // start hidden if node is not selected
+                        if (mapEntry.relationship == 1) { //
+                            edge.color.color = linkColor;
+                            edge.color.highlight = linkColor;
+                        }
+                    } else if (!edge) {
+                        edge = {
+                            from: from,
+                            to: to,
+                            label: label,
+                            font: {
+                                align: 'middle',
+                                size: 0, // start hidden
+                                color: linkColor
+                            },
+                            arrows: {to: {enabled: false, scaleFactor: 0.5}},
+                            //arrowStrikethrough: false,
+                            color: {
+                                color: linkColor,
+                                opacity: 0, // start hidden
+                                highlight: linkColor
+                            },
+                            chosen: {
+                                edge: (values) => {
+                                    values.opacity = 1.0;
+                                    values.toArrow = true; // always existing
+                                    values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
+                                },
+                                label: () => {
+                                    // see onMapSelect workaround
+                                    //                        values.size = 10;
+                                }
+                            },
+                            selectionWidth: 0,
+                            physics: mapEntry.relationship === 1 ? true : false,
+                            relationship: mapEntry.relationship
+                        };
+                        edges.push(edge);
                     }
-                } else if (mapEntry.relationship === 2) { // sibling
-                    linkColor = '#00bb00';
-                } else if (mapEntry.relationship === 3 && !reverse) { // unknown
-                    linkColor = '#aaaaff';
-                } else if (mapEntry.relationship === 4) { // previous child
-                    linkColor = '#555555';
                 }
-                if (reverse) {
-                    // update reverse edge
-                    edge = reverse;
-                    edge.label += '\n' + label;
-                    edge.arrows.from = {enabled: false, scaleFactor: 0.5}; // start hidden if node is not selected
-                    if (mapEntry.relationship == 1) { //
-                        edge.color.color = linkColor;
-                        edge.color.highlight = linkColor;
-                    }
-                } else if (!edge) {
-                    edge = {
+            });
+        }
+        /*
+        if (map.routing) {
+            map.routing.forEach((route)=>{
+                if (!route.nextHop) return;
+                const routeSource = getDeviceByNetwork(route.nextHop);
+                const routeDest = getDeviceByNetwork(route.destination);
+                if (routeSource && routeDest) {
+                    const to = routeDest._id;
+                    const from = routeSource._id;
+                    const label = route.status;
+                    const linkColor = '#ff55ff';
+                    const edge = {
                         from: from,
                         to: to,
                         label: label,
@@ -2916,13 +2972,14 @@ function showNetworkMap(devices, map) {
                             size: 0, // start hidden
                             color: linkColor
                         },
-                        arrows: {to: {enabled: false, scaleFactor: 0.5}},
+                        arrows: { to: { enabled: false, scaleFactor: 0.5 }},
                         //arrowStrikethrough: false,
                         color: {
                             color: linkColor,
-                            opacity: 0, // start hidden
+                            //opacity: 0, // start hidden
                             highlight: linkColor
                         },
+                        dashes: true,
                         chosen: {
                             edge: (values) => {
                                 values.opacity = 1.0;
@@ -2930,129 +2987,82 @@ function showNetworkMap(devices, map) {
                                 values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
                             },
                             label: () => {
-                                // see onMapSelect workaround
+                            // see onMapSelect workaround
                                 //                        values.size = 10;
                             }
                         },
                         selectionWidth: 0,
-                        physics: mapEntry.relationship === 1 ? true : false,
-                        relationship: mapEntry.relationship
+                        physics: false,
                     };
                     edges.push(edge);
                 }
-            }
-        });
-    }
-    /*
-    if (map.routing) {
-        map.routing.forEach((route)=>{
-            if (!route.nextHop) return;
-            const routeSource = getDeviceByNetwork(route.nextHop);
-            const routeDest = getDeviceByNetwork(route.destination);
-            if (routeSource && routeDest) {
-                const to = routeDest._id;
-                const from = routeSource._id;
-                const label = route.status;
-                const linkColor = '#ff55ff';
-                const edge = {
-                    from: from,
-                    to: to,
-                    label: label,
-                    font: {
-                        align: 'middle',
-                        size: 0, // start hidden
-                        color: linkColor
-                    },
-                    arrows: { to: { enabled: false, scaleFactor: 0.5 }},
-                    //arrowStrikethrough: false,
-                    color: {
-                        color: linkColor,
-                        //opacity: 0, // start hidden
-                        highlight: linkColor
-                    },
-                    dashes: true,
-                    chosen: {
-                        edge: (values) => {
-                            values.opacity = 1.0;
-                            values.toArrow = true; // always existing
-                            values.fromArrow = values.fromArrowScale != 1 ? true : false; // simplified, arrow existing if scale is not default value
-                        },
-                        label: () => {
-                        // see onMapSelect workaround
-                            //                        values.size = 10;
-                        }
-                    },
-                    selectionWidth: 0,
-                    physics: false,
-                };
-                edges.push(edge);
-            }
-        });
-    }
-    */
-
-    const nodesArray = Object.values(nodes);
-    // add devices without network links to map
-    devices.forEach((dev) => {
-        const node = nodesArray.find((node) => {
-            return node.id == dev._id;
-        });
-        if (!node) {
-            const node = createNode(dev);
-
-            if (node) {
-                node.font = {color: '#ff0000'};
-                if (dev.info && dev.info.device && dev.info.device.type == 'Coordinator') {
-                    node.font = {color: '#00ff00'};
-                }
-                nodesArray.push(node);
-            }
-        }
-    });
-
-    // create a network
-    const container = document.getElementById('map');
-    mapEdges = new vis.DataSet(edges);
-    const data = {
-        nodes: nodesArray,
-        edges: mapEdges
-    };
-
-    network = new vis.Network(container, data, networkOptions);
-
-    const onMapSelect = function (event) {
-        // workaround for https://github.com/almende/vis/issues/4112
-        // may be moved to edge.chosen.label if fixed
-        function doSelection(select, edges, data) {
-            edges.forEach((edgeId => {
-                const id = (typeof edgeId === 'string') ? edgeId : edgeId.id;
-                const options = data.edges._data.get(id);
-                if (select) {
-                    options.font.size = 15;
-                } else {
-                    options.font.size = 0;
-                }
-                network.clustering.updateEdge(id, options);
-            }));
-        }
-
-        if (event.hasOwnProperty('previousSelection')) { // unselect previous selected
-            doSelection(false, event.previousSelection.edges, this.body.data);
-        }
-        doSelection(true, event.edges, this.body.data);
-        /*
-        if (event.nodes) {
-            event.nodes.forEach((node)=>{
-                //const options = network.clustering.findNode[node];
-                 network.clustering.updateClusteredNode(
-                    node, {size: 50}
-                );
             });
         }
         */
-    };
-    network.on('selectNode', onMapSelect);
-    network.on('deselectNode', onMapSelect);
+
+        const nodesArray = Object.values(nodes);
+        // add devices without network links to map
+        devices.forEach((dev) => {
+            const node = nodesArray.find((node) => {
+                return node.id == dev._id;
+            });
+            if (!node) {
+                const node = createNode(dev);
+
+                if (node) {
+                    node.font = {color: '#ff0000'};
+                    if (dev.info && dev.info.device && dev.info.device.type == 'Coordinator') {
+                        node.font = {color: '#00ff00'};
+                    }
+                    nodesArray.push(node);
+                }
+            }
+        });
+
+        // create a network
+        const container = document.getElementById('map');
+        mapEdges = new vis.DataSet(edges);
+        const data = {
+            nodes: nodesArray,
+            edges: mapEdges
+        };
+
+        network = new vis.Network(container, data, networkOptions);
+
+        const onMapSelect = function (event) {
+            // workaround for https://github.com/almende/vis/issues/4112
+            // may be moved to edge.chosen.label if fixed
+            function doSelection(select, edges, data) {
+                edges.forEach((edgeId => {
+                    const id = (typeof edgeId === 'string') ? edgeId : edgeId.id;
+                    const options = data.edges._data.get(id);
+                    if (select) {
+                        options.font.size = 15;
+                    } else {
+                        options.font.size = 0;
+                    }
+                    network.clustering.updateEdge(id, options);
+                }));
+            }
+
+            if (event.hasOwnProperty('previousSelection')) { // unselect previous selected
+                doSelection(false, event.previousSelection.edges, this.body.data);
+            }
+            doSelection(true, event.edges, this.body.data);
+            /*
+            if (event.nodes) {
+                event.nodes.forEach((node)=>{
+                    //const options = network.clustering.findNode[node];
+                    network.clustering.updateClusteredNode(
+                        node, {size: 50}
+                    );
+                });
+            }
+            */
+        };
+        network.on('selectNode', onMapSelect);
+        network.on('deselectNode', onMapSelect);
+    }
     redrawMap();
     updateMapFilter();
 
