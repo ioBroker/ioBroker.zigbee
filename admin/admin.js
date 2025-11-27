@@ -2718,7 +2718,7 @@ socket.on('stateChange', function (id, state) {
                     const numDev = Number(state.val.split(':').pop()) || 0;
                     if (numDev > 0) {
                         $(`#map_generating_btn`).removeClass('hide');
-                        if (numDev < 2) $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">filter_${numDev}</i>`);
+                        if (numDev < 10) $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">filter_${numDev}</i>`);
                         else $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">${numDev%2 ? 'filter_9_plus' : 'queue'}</i>`);
                     }
                     else {
