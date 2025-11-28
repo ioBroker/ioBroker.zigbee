@@ -1,98 +1,98 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.1.4-alpha.2",
+    "version": "3.2.5",
     "news": {
-      "3.1.4": {
-        "en": "Remove extra logging\nAdd extra configurations\nDo not read states from deactivated devices\nIgnore deactivated devices for group state updates\nChange display for deactivated devices in the object tree (gray, no connected icon)\nmore detailed device debug\ndevice debug UI improvements\nPairing and device Query buttons on router cards\nZHC 25.31.0, ZH 6.1.2 or newer\nOptions based on ZHC defined options",
-        "de": "Entfernen Sie zusätzliche Protokollierung\nZusätzliche Konfigurationen hinzufügen\nNicht lesen von Zuständen aus deaktivierten Geräten\nDeaktivierte Geräte für Gruppenzustandsupdates ignorieren\nAnzeige für deaktivierte Geräte im Objektbaum ändern (grau, kein angeschlossenes Symbol)\ndetaillierte gerätedetails\ngerät debug UI Verbesserungen\nPaarung und Gerät Query-Tasten auf Routerkarten\nZHC 25.31.0, ZH 6.1.2 oder neuer\nOptionen basierend auf ZHC definierten Optionen",
-        "ru": "Удалить дополнительную рубку\nДобавьте дополнительные конфигурации\nНе считывать состояния с деактивированных устройств\nИгнорировать деактивированные устройства для обновления состояния группы\nИзменение дисплея для деактивированных устройств в дереве объектов (серый, не подключенный значок)\nболее подробная отладка устройства\nобновление UI Device Debug\nПарирование и кнопки запроса устройства на карточках маршрутизатора\nZHC 25.31.0, ZH 6.1.2 или новее\nОпционы, основанные на опционах ZHC",
-        "pt": "Remover registro extra\nAdicionar configurações extras\nNão ler os estados dos dispositivos desactivados\nIgnorar os dispositivos desactivados para as actualizações do estado do grupo\nMudar a visualização dos dispositivos desativados na árvore de objetos (cinzento, sem ícone conectado)\ndepuração mais detalhada do dispositivo\nmelhorias na interface de depuração do dispositivo\nEmparelhamento e dispositivo Botões de consulta nas cartas de roteador\nZHC 25.31.0, ZH 6.1.2 ou mais recente\nOpções baseadas nas opções definidas pelo ZHC",
-        "nl": "Extra loggen verwijderen\nExtra configuraties toevoegen\nNiet lezen van toestanden van gedeactiveerde apparaten\nUitgeschakelde apparaten negeren voor updates van groepstoestand\nWeergave wijzigen voor gedeactiveerde apparaten in de objectboom (grijze, geen verbonden pictogram)\ngedetailleerder apparaat debuggen\napparaat debug UI verbeteringen\nKoppeling en apparaat Query-knoppen op routerkaarten\nZHC 25.31.0, ZH 6.1.2 of nieuwer\nOpties op basis van ZHC gedefinieerde opties",
-        "fr": "Supprimer l'enregistrement supplémentaire\nAjouter des configurations supplémentaires\nNe pas lire les états des dispositifs désactivés\nIgnorer les dispositifs désactivés pour les mises à jour de l'état du groupe\nModifier l'affichage des périphériques désactivés dans l'arborescence des objets (gris, aucune icône connectée)\ndebug périphérique plus détaillé\namélioration de l'interface utilisateur de débogage\nJumelage et dispositif Boutons de requête sur les cartes routeurs\nZHC 25.31.0, ZH 6.1.2 ou plus récent\nOptions basées sur des options définies par ZHC",
-        "it": "Rimuovere la registrazione extra\nAggiungi ulteriori configurazioni\nNon leggere gli stati da dispositivi disattivati\nIgnora dispositivi disattivati per gli aggiornamenti di stato di gruppo\nModificare la visualizzazione per dispositivi disattivati nell'albero dell'oggetto (gray, nessuna icona collegata)\ndebug dispositivo più dettagliato\ndispositivo debug UI miglioramenti\nCoppia e dispositivo Pulsanti di coda su schede router\nZHC 25.31.0, ZH 6.1.2 o più recente\nOpzioni basate su opzioni definite ZHC",
-        "es": "Quitar la tala extra\nAñadir configuraciones adicionales\nNo lea estados de dispositivos desactivados\nIgnorar dispositivos desactivados para actualizaciones de estado de grupo\nCambiar la pantalla para dispositivos desactivados en el árbol del objeto (gray, no icono conectado)\nmás detallado dispositivo depuración\ndepuración del dispositivo UI mejoras\nBotones de búsqueda en tarjetas de router\nZHC 25.31.0, ZH 6.1.2 o newer\nOpciones basadas en opciones definidas ZHC",
-        "pl": "Usuń dodatkowe logowanie\nDodaj dodatkowe konfiguracje\nNie czytaj stanów z wyłączonych urządzeń\nIgnoruj dezaktywowane urządzenia dla aktualizacji stanu grupy\nZmień wyświetlacz dla dezaktywowanych urządzeń w drzewie obiektu (szary, bez połączonej ikony)\nbardziej szczegółowe debugowanie urządzenia\ndebug urządzenia UI ulepszenia\nParowanie i urządzenie Przyciski zapytania na kartach routera\nZHC 25.31.0, ZH 6.1.2 lub nowsze\nOpcje oparte na opcjach zdefiniowanych przez ZHC",
-        "uk": "Видалення додаткового входу\nДодати додаткові конфігурації\nНе читати стани від деактивованих пристроїв\nІгноровані пристрої для оновлення групового стану\nЗміна відображення для деактивованих пристроїв в дереві об'єкта (сірий, не підключений значок)\nдокладніше пристрій debug\nпристрій Debug UI удосконалення\nПірсинг і пристрій Query гудзики на маршрутизаторних картках\nZHC 25.31.0, ZH 6.1.2 або новачок\nВаріанти, засновані на визначених параметрах ZHC",
-        "zh-cn": "删除额外的日志\n添加额外的配置\n不读取已关闭设备的状态\n忽略组状态更新的已关闭设备\n更改对象树上已关闭设备的显示( gray, 无连接图标)\n更详细的设备调试\n设备调试 UI 改进\n路由器卡上的对齐和设备查询按钮\nZHC 25.31.0,ZH 6.1.2或更新\n基于 ZHC 定义选项的选项"
+      "3.2.5": {
+        "en": "changed setState for lasterror",
+        "de": "geändert setState für lasterror",
+        "ru": "измененный setState for lasterror",
+        "pt": "alterado setState for lasterror",
+        "nl": "veranderd setState for lasterror",
+        "fr": "changement de setState pour lasterror",
+        "it": "set modificatoStata per lasterror",
+        "es": "cambio de Estado para el último terror",
+        "pl": "zmieniony setState for lasterror",
+        "uk": "змінено setState for lasterror",
+        "zh-cn": "更新的设置状态"
       },
-      "3.1.2": {
-        "en": "ZHC 25.x\nZH 6.x\nFix pairing bug\nadd ping messages to device debug to verify ping failure reasons\n",
-        "de": "ZHC 25.x\nZH 6.x\nBehebung des Kopplungsfehlers\nFügen Sie Ping-Nachrichten zum Geräte-Debugging hinzu, um die Gründe für Ping-Ausfälle zu überprüfen.\n",
-        "ru": "ZHC 25.x\nZH 6.x\nИсправлена ошибка сопряжения.\nдобавьте сообщения ping в отладке устройства для проверки причин отказа ping\n",
-        "pt": "ZHC 25.x\nZH 6.x\nCorrigir bug de emparelhamento\nAdicionar mensagens de ping ao debug do dispositivo para verificar os motivos da falha no ping\n",
-        "nl": "ZHC 25.x\nZH 6.x\nRepareer koppelingsfout\nVoeg pingberichten toe aan apparaatdebug om pingfoutredenen te controleren\n",
-        "fr": "ZHC 25.x\nZH 6.x\nCorriger le bogue de couplage\najouter des messages de ping au débogage des appareils pour vérifier les raisons des échecs de ping\n",
-        "it": "ZHC 25.x\nZH 6.x\nRisoluzione bug di accoppiamento\nAggiungi messaggi ping al debug del dispositivo per verificare le cause del fallimento del ping\n",
-        "es": "ZHC 25.x\nZH 6.x\nCorregir error de emparejamiento\nañadir mensajes de ping al depurador del dispositivo para verificar las razones de fallo del ping\n",
-        "pl": "ZHC 25.x\nZH 6.x\nNapraw błąd parowania\nDodaj wiadomości ping do debugowania urządzenia, aby zweryfikować przyczyny niepowodzenia pingu\n",
-        "uk": "ЗХК 25.x\nЗХ 6.х\nВиправлено помилку з'єднання\nдодано повідомлення ping до відлагодження пристрою для перевірки причин невдачі ping\n",
-        "zh-cn": "ZHC 25.x\nZH 6.x (英语)\n修复配对问题\n将ping消息添加到设备调试中，以验证ping失败的原因\n"
+      "3.2.4": {
+        "en": "added missing state",
+        "de": "fehlender zustand",
+        "ru": "отсутствующее государство",
+        "pt": "estado em falta adicionado",
+        "nl": "ontbrekende status toevoegen",
+        "fr": "état manquant ajouté",
+        "it": "aggiunto stato mancante",
+        "es": "estado desaparecido",
+        "pl": "dodany brakujący stan",
+        "uk": "додано відсутній стан",
+        "zh-cn": "添加缺失状态"
       },
-      "3.0.5": {
-        "en": "fix random error where devices are not shown due to illegal groups\ndrop support for node 18\nRequired node Versions Node 20.19.0 or 22.11.0 or newer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
-        "de": "fehler beheben, bei denen geräte wegen illegaler gruppen nicht angezeigt werden\ndrop-unterstützung für knoten 183\nErforderliche Knotenversionen Nr. 20.19.0 oder 22.11.0 oder neuer (courtesy of ZH 4.4.1 / ZHC 24.8.0)",
-        "ru": "исправить случайную ошибку, когда устройства не отображаются из-за незаконных групп\nподдержка drop для node 18\nТребуемый узел Версии Узел 20.19.0 или 22.11.0 или новее (документ ZH 4.4.1 / ZHC 24.8.0)",
-        "pt": "corrigir erro aleatório onde os dispositivos não são mostrados devido a grupos ilegais\nsuporte de gota para o nó 18\nNó necessário Versões Node 20.19.0 ou 22.11.0 ou mais recente (cortesia de ZH 4.4.1 / ZHC 24.8.0)",
-        "nl": "fix willekeurige fout wanneer apparaten niet worden getoond als gevolg van illegale groepen\ndrop ondersteuning voor knooppunt 18\nVereiste node Versies Node 20.19.0 of 22.11.0 of nieuwer (met dank aan ZH 4.4.1 / ZHC 24.8.0)",
-        "fr": "corriger une erreur aléatoire lorsque les appareils ne sont pas montrés en raison de groupes illégaux\nsupport de chute pour noeud 18\nVersion requise Node 20.19.0 ou 22.11.0 ou plus récent (avec la permission de ZH 4.4.1 / ZHC 248.0)",
-        "it": "correggere errore casuale in cui i dispositivi non vengono visualizzati a causa di gruppi illegali\nsupporto a goccia per nodo 18\nNodo richiesto Versioni Nodo 20.19.0 o 22.11.0 o più recente (cortesia di ZH 4.4.1 / ZHC 24.8.0)",
-        "es": "corregir errores aleatorios donde no se muestran dispositivos debido a grupos ilegales\napoyo a los nodos 18\nNodo requerido Versiones Nodo 20.19.0 o 22.11.0 o nuevo (cortesía de ZH 4.4.1 / ZHC 24.8.0)",
-        "pl": "naprawić błąd losowy w przypadku gdy urządzenia nie są wyświetlane z powodu nielegalnych grup\nobsługa zrzutu dla węzła 18\nWymagany węzeł Wersje Węzeł 20.19.0 lub 22.11.0 lub nowszy (uprzejmość ZH 4.4.1 / ZHC 24.8.0)",
-        "uk": "виправити випадкові помилки, де пристрої не відображаються через незаконні групи\nпідтримка крапель для вузла 18 років\nПотрібні версії вузла Node 20.19.0 або 22.11.0 або новачка (кількість ЗЗ 4.4.1 / ЗЖК 24.8.0)",
-        "zh-cn": "在设备因非法组而未显示时修复随机错误\n放弃节点支持 第 18 条\n要求的节点版本为20.19.0或22.11.0或更新(礼仪为ZH 4.4.1 / ZHC 24.8.0)"
+      "3.2.3": {
+        "en": "Improvements on debug UI\nOption 'resend_states' to publish state values to device on reconnect\nImproved group card\nImproved group info\nModified coordinator card (2 sides)\nretry on error 25\nclear stashed error messages\nZHC 25.50.0 or newer",
+        "de": "Verbesserungen bei debug UI\nOption 'resend_states' zum Veröffentlichen von Zustandswerten auf das Gerät auf dem Reconnect\nVerbesserte Gruppenkarte\nVerbesserte Gruppeninformationen\nModifizierte Koordinatorkarte (2 Seiten)\nretry auf fehler 25\nklare stashed fehlermeldungen\nZHC 25.50.0 oder neuer",
+        "ru": "Улучшения в Debug UI\nВариант «resend_states» для публикации значений состояния на устройстве при повторном подключении\nУлучшенная групповая карта\nУлучшенная групповая информация\nИзмененная карта координатора (2 стороны)\nвозвращение к ошибке 25\nскрытые сообщения об ошибках\nZHC 25.50.0 или новее",
+        "pt": "Melhorias na interface de depuração\nOpção 'resend_states' para publicar valores de estado para o dispositivo ao religar\nCartão de grupo melhorado\nInformação melhorada do grupo\nCartão coordenador modificado (2 lados)\ntentar novamente no erro 25\nlimpar mensagens de erro escondidas\nZHC 25.50.0 ou mais recente",
+        "nl": "Verbeteringen op debug UI\nOptie 'resend_states' om statuswaarden naar apparaat te publiceren bij opnieuw verbinden\nVerbeterde groepskaart\nVerbeterde groepsinfo\nGewijzigde coördinatiekaart (2 zijden)\nopnieuw proberen bij fout 25\nfoutmeldingen wissen\nZHC 25.50.0 of nieuwer",
+        "fr": "Amélioration de l'assurance-chômage de débogage\nOption 'resend_states' pour publier les valeurs d'état sur le périphérique sur la connexion\nCarte de groupe améliorée\nInformations de groupe améliorées\nCarte de coordonnateur modifiée (2 côtés)\nréessayer sur l'erreur 25\nmessages d'erreur clairs et cachés\nZHC 25.50.0 ou plus récent",
+        "it": "Miglioramenti sul debug UI\nOpzione 'resend_states' per pubblicare i valori di stato sul dispositivo sulla riconnessione\nScheda di gruppo migliorata\nInformazioni di gruppo migliorate\nCarta coordinatrice modificata (2 lati)\nriprovare sull'errore 25\nchiari messaggi di errore stanti\nZHC 25.50.0 o più recente",
+        "es": "Mejoras en el depuro UI\nOpción 'resend_states' para publicar valores estatales al dispositivo en la reconexión\nTarjeta de grupo mejorada\nInformación de grupo mejorada\nTarjeta de coordinación modificada (2 lados)\nretry on error 25\nmensajes de error claros\nZHC 25.50.0 o más",
+        "pl": "Ulepszenia dotyczące debugowania interfejsu użytkownika\nOpcja \"resend _ states\" do publikowania wartości stanu dla urządzenia przy ponownym połączeniu\nUlepszona karta grupowa\nUlepszone informacje grupowe\nZmodyfikowana karta koordynatora (2 strony)\nponowna próba błędu 25\njasne komunikaty błędów ukryte\nZHC 25.50.0 lub nowsze",
+        "uk": "Удосконалення на дебурзі UI\nВаріант 'resend_states' для публікації державних значень для пристрою на відключенні\nПокращена групова карта\nПокращена інформація групи\nЗмінена карта координатора (2 сторони)\nптиця по помилки 25\nчіткі повідомлення про помилку\nZHC 25.50.0 або новачок",
+        "zh-cn": "调试 UI 的改进\n选项“ resend_ states ” 以在重新连接时发布状态值以设备\n改进组卡\n改进组信息\n修改的协调员卡(2面)\n重试错误 25\n清除隐藏的错误消息\nZHC 25.50.0或更新"
       },
-      "3.0.3": {
-        "en": "fix 'icon' error for unknown devices\nfix state for level.color.rgb role (hex_color, accepts only #rrggbb values\nZH 4.4.1\nZHC 23.72.1\npreparation for breaking change in ZHC 24.0.0",
-        "de": "'icon' fehler für unbekannte geräte beheben\nfix zustand für level.color.rgb rolle (hex_color, akzeptiert nur #rrggbb werte\nZH 4.4.1\nZHC 23.72.1\nvorbereitung auf den Bruchwechsel in ZHC 24.0.0",
-        "ru": "исправьте ошибку «икона» для неизвестных устройств\nисправить состояние для роли level.color.rgb (hex_color, принимает только значения #rrggbb)\nZH 4.4.1\nZHC 23.72.1\nподготовка к нарушению изменений в ZHC 24.0.0",
-        "pt": "corrigir erro 'icon' para dispositivos desconhecidos\nestado de correção para papel level.color.rgb (hex_color, aceita apenas valores #rrggbb\nZH 4.4.1\nZHC 23.72.1\npreparação para quebrar a mudança em ZHC 24.0.0",
-        "nl": "fix 'icon' fout voor onbekende apparaten\nfix status voor level.color.rgb role (hex_color, accepteert alleen #rrggbb waarden\nZH 4.4.1\nZHC 23,72,1\nvoorbereiding voor het breken van verandering in ZHC 24.0.0",
-        "fr": "correction de l'erreur 'icon' pour les périphériques inconnus\nfixer l'état pour le rôle level.color.rgb (hex_color, accepte uniquement les valeurs #rrggbb\nZH 4.4.1\nZHC 23,72.1\npréparation pour briser le changement dans ZHC 24.0.0",
-        "it": "correzione di errore 'icon' per dispositivi sconosciuti\nfix stato per livello.color.rgb ruolo (hex_color, accetta solo valori #rrrggbb\nZH 4.4.1\n23.7.2.1\npreparazione per rompere il cambiamento in ZHC 24.0.0",
-        "es": "corregir el error 'icon' para dispositivos desconocidos\nfijar estado para el nivel.color.rgb papel (hex_color, acepta sólo #rrggbb valores\nZH 4.4.1\nZHC 23.72.1\npreparación para romper el cambio en ZHC 24.0.0",
-        "pl": "naprawić błąd 'icon' dla nieznanych urządzeń\nfix state for level.color.rgb role (hex _ color, akceptuje tylko # rrggbb values\nZH 4.4.1\nZHC 23.72.1\nprzygotowanie do złamania zmian w ZHC 24.0.0",
-        "uk": "виправлено помилку 'icon' для невідомих пристроїв\nвиправити стан для рівня.color.rgb роль (hex_color, приймає тільки значення #rrggbb\nЗХ 4.4.1\nЗХК 23.72.1\nпідготовка до зміни розриву в ЗЖК 24.0.0",
-        "zh-cn": "修复未知设备的“ icon” 错误\n级的固定状态.color.rgb 角色(hex_color,只接受#rrggbb值)\n兹哈4.4.1\nZHC 23.72.1 电话\n准备打破ZHC 24.0"
+      "3.2.2": {
+        "en": "Bugfix on delete object.\nimproved device query.\nfixed delete device with local overrides.\n",
+        "de": "Bugfix auf Löschobjekt.\nverbesserte geräteabfrage.\nfeste löschvorrichtung mit lokalen overrides.\n",
+        "ru": "Bugfix для удаления объекта.\nулучшенный запрос устройства.\nфиксированное устройство удаления с локальными переопределениями.\n",
+        "pt": "Correcção de erros ao apagar o objecto.\npesquisa de dispositivos melhorada.\ndispositivo de exclusão fixo com substituições locais.\n",
+        "nl": "Bugfix bij verwijderen van object.\nverbeterde apparaatquery.\nvast delete apparaat met lokale overrides.\n",
+        "fr": "Correction sur objet de suppression.\nrequête de périphérique améliorée.\ndispositif de suppression fixe avec redéfinitions locales.\n",
+        "it": "Bugfix su delete object.\nmigliore query del dispositivo.\ndispositivo di cancellazione fisso con override locali.\n",
+        "es": "Bugfix en el objeto borrado.\nmejorada consulta de dispositivos.\ndispositivo de eliminación fijo con anulas locales.\n",
+        "pl": "Bugfix na usunąć obiekt.\nulepszone zapytanie urządzenia.\nnaprawione urządzenie usuwające z lokalnymi przekroczeniami.\n",
+        "uk": "Виправлення помилок при видаленні об'єкта.\nпокращений пристрій запиту.\nфіксований пристрій видалення з локальними перенаряддями.\n",
+        "zh-cn": "删除对象上的错误修正 .\n改进设备查询 .\n有本地覆盖的固定删除设备 .\n"
       },
-      "3.0.2": {
-        "en": "fix images",
-        "de": "bilder",
-        "ru": "фиксировать изображения",
-        "pt": "corrigir imagens",
-        "nl": "afbeeldingen herstellen",
-        "fr": "réparer les images",
-        "it": "fissare le immagini",
-        "es": "fijar imágenes",
-        "pl": "poprawianie obrazów",
-        "uk": "фіксувати зображення",
-        "zh-cn": "修正图像"
+      "3.2.1": {
+        "en": "fix bug #2640\n",
+        "de": "fehler beheben #2640\n",
+        "ru": "исправить ошибку #2640\n",
+        "pt": "corrigir o erro # 2640\n",
+        "nl": "fix bug #2640\n",
+        "fr": "correction du bug #2640\n",
+        "it": "fix bug #2640\n",
+        "es": "corrección de error #2640\n",
+        "pl": "fix bug # 2640\n",
+        "uk": "виправлення помилки #2640\n",
+        "zh-cn": "修复错误 # 2640\n"
       },
-      "3.0.1": {
-        "en": "Fix for Ikea SOMRIG configuration raising 'definition.endpoint is not a function' error.\nAccess to 'zigbee2mqtt options as settings in zigbee adapter (ALPHA Stage !)\nFix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)\nUpdated hardware configuration panel - exchanged text buttons for buttons with icons.\nLimited states on device tiles to states which are read only or which can be modified sensibly via the device tile.\n",
-        "de": "Fix für Ikea SOMRIG Konfiguration erhöhen 'Definition. Endpoint ist kein Funktionsfehler.\nZugriff auf 'zigbee2mqtt Optionen als Einstellungen im Zickbee Adapter (ALPHA Stage!)\nFix für 'error: zigbee.0 (1118300) zigbee.0 bereits läuft' bei Adapterstart (Alpha Stage)\nAktualisiertes Hardware-Konfigurationsfeld - ausgetauschte Texttasten für Tasten mit Symbolen.\nBegrenzte Zustände auf Gerätefliesen zu Zuständen, die nur gelesen werden oder über die Gerätefliese sensibel modifiziert werden können.\n",
-        "ru": "Исправьте конфигурацию IKEA SOMRIG, повысив «определение». Конечная точка не является ошибкой функции.\nДоступ к опциям Zigbee2mqtt в качестве настроек в адаптере Zigbee (стадия ALPHA!)\nИсправьте ошибку: zigbee.0 (1118300) zigbee.0 уже работает на старте адаптера\nОбновленная аппаратная панель конфигурации - обмен текстовыми кнопками на кнопки с иконками.\nОграниченные состояния на плитках устройства к состояниям, которые читаются только или которые могут быть изменены чувственно через плитку устройства.\n",
-        "pt": "Corrigir para configuração Ikea SOMRIG elevando 'definição. endpoint não é um erro de função.\nAcesso às opções \"zigbee2mqttt como configurações no adaptador zigbee (Estação LAPHA!)\nFix for 'error: zigbee.0 (1118300) zigbee.0 já em execução' no início do adaptador (Alpha Stage)\nPainel de configuração de hardware atualizado - botões de texto trocados para botões com ícones.\nEstados limitados em telhas de dispositivo para estados que são lidos apenas ou que podem ser modificados sensivelmente através da telha do dispositivo.\n",
-        "nl": "Fix voor Ikea SOMRIG configuratie verhogen 'definitie. eindpunt is geen functiefout.\nToegang tot 'zigbee2mqtt opties als instellingen in zigbee adapter (ALPHA Stage !)\nFix voor 'fout: zigbee.0 (1118300) zigbee.0 al actief' bij adapterstart (Alpha Stage)\nBijgewerkt hardware configuratiepaneel - uitgewisselde tekstknoppen voor knoppen met pictogrammen.\nBeperkte toestanden op apparaattegels naar toestanden die alleen worden gelezen of die verstandig kunnen worden gewijzigd via de apparaattegel.\n",
-        "fr": "Correction pour la configuration Ikea SOMRIG augmentant la définition. le paramètre n'est pas une erreur de fonction.\nAccès aux options 'zigbee2mqtt comme réglages dans l'adaptateur zigbee (ALPHA Stage !)\nCorrection pour 'erreur: zigbee.0 (1118300) zigbee.0 déjà en cours d'exécution' au démarrage de l'adaptateur (Alpha Stage)\nPanneau de configuration du matériel mis à jour - boutons texte échangés pour les boutons avec des icônes.\nLes états limités sur les tuiles de l'appareil aux états qui sont lus seulement ou qui peuvent être modifiés de façon sensible via la tuile de l'appareil.\n",
-        "it": "Fissare per Ikea SOMRIG configurazione aumentando 'definizione. endpoint non è un errore di funzione.\nAccesso alle opzioni 'zigbee2mqtt come impostazioni nell'adattatore zigbee (ALPHA Stage !)\nCorrezione per 'error: zigbee.0 (1118300) zigbee.0 già in esecuzione' all'inizio dell'adattatore (Alpha Stage)\nPannello di configurazione hardware aggiornato - pulsanti di testo scambiati per pulsanti con icone.\nStati limitati su piastrelle di dispositivo a stati che sono letti solo o che possono essere modificati sensibilmente tramite la piastrella del dispositivo.\n",
-        "es": "Arregla para la configuración de Ikea SOMRIG criando 'definición. endpoint no es un error de función.\nAcceso a las opciones 'zigbee2mqtt como configuración en el adaptador de zigbee (ALPHA Stage !)\nFijación para 'error: zigbee.0 (1118300) zigbee.0 ya funcionando en el inicio del adaptador (Alpha Stage)\nPanel de configuración de hardware actualizado - botones de texto intercambiados para botones con iconos.\nEstados limitados en fichas de dispositivo a estados que se leen solamente o que pueden ser modificados de forma sensata a través de la ficha del dispositivo.\n",
-        "pl": "Napraw dla definicji podnoszenie konfiguracji Ikea SOMRIG. Punkt końcowy nie jest błędem funkcji.\nDostęp do opcji 'zigbee2mqtt jako ustawień w adapterze zigbee (ALPHA Stage!)\nFix for 'error: zigbee.0 (1118300) zigbee.0 already running' at adapter start (Alpha Stage)\nAktualizacja panelu konfiguracji sprzętowej - wymieniono przyciski tekstowe na przyciski z ikonami.\nOgraniczone stany na płytkach urządzenia do stanów, które są tylko odczytywane lub które mogą być modyfikowane w sposób rozsądny za pomocą płytki urządzenia.\n",
-        "uk": "Виправлення для налаштування Ikea SOMRIG 'Визначення. кінцева точка не є помилкою функції.\nДоступ до опцій Zigbee2mqtt як налаштування адаптера Zigbee (ALPHA Stage !)\nВиправлення для 'error: zigbee.0 (1118300) zigbee.0 вже запущений' при запуску адаптера (Alpha Stage)\nОновлена панель конфігурації обладнання - обмінні текстові кнопки для гудзиків з іконками.\nОбмежені стани на плитці пристрою для станів, які читаються тільки або які можуть бути змінені, швидко через плитку пристрою.\n",
-        "zh-cn": "修复Ikea SOMRIG 配置提升定义 。 结束点不是一个函数'错误.\n访问 'zigbee2mqtt 选项作为 Zigbee 适配器的设置( ALPHA stage !) \n在适配器启动( Alpha Stage)时为 'error: zigbee. 0 (1118300) zigbee. 0 已经运行' 进行修复\n更新的硬件配置面板 - 用图标交换文本按钮作为按钮.\n将设备瓦片的状态限制在只读或通过设备瓦片可敏感修改的状态.\n"
+      "3.2.0": {
+        "en": "remove local overrides tab from config\nestablish local data tab in config to edit global and device level settings and options\nremove the local overrides tab\nremove the ability to set model level overrides from device tab.\nfix errors for 'polling' devices with changed poll times.\nwarning icon for devices which are not completely interviewed.\nimproved router detection for opening the network\nbugfix: open network on router\nZHC 25.x latest, ZH 6.1.3,\nrestore from in-adapter backup",
+        "de": "entfernen sie lokale overrides tab von config\nlokale daten tab erstellen, um globale und geräteebene einstellungen und optionen zu bearbeiten\nentfernen der lokalen overrides tab\nentfernen sie die fähigkeit, modellebene überschrieben von der geräte-tab.\nfehler für \"polling\"-geräte mit veränderten abfragezeiten beheben.\nwarnsymbol für geräte, die nicht vollständig interviewt werden.\nverbesserte routererkennung zum öffnen des netzwerks\nbugfix: offenes netzwerk auf router\nZHC 25.x neueste, ZH 6.1.3,\nwiederherstellung von in-adapter-backup",
+        "ru": "удалить локальную вкладку overrided из конфигураций\nустановить локальную вкладку данных в конфигурацию для редактирования глобальных настроек и параметров уровня устройства\nудалить вкладку local overrides\nудалить возможность установки переопределений уровня модели из вкладки устройства.\nисправление ошибок для «опросных» устройств с измененным временем опроса.\nиконка предупреждения для устройств, которые не были полностью опрошены.\nулучшенное обнаружение маршрутизатора для открытия сети\nbugfix: открытая сеть на маршрутизаторе\nZHC 25.x, ZH 6.1.3,\nвосстановление из in-adapter backup",
+        "pt": "remover a página de substituições locais da configuração\nestabelecer a página de dados locais na configuração para editar as configurações e opções globais e de nível do dispositivo\nremover a página de sobreposições locais\nremover a capacidade de definir os comandos de nível do modelo da aba do dispositivo.\ncorrigir erros para dispositivos de 'polling' com tempos de votação alterados.\nícone de aviso para dispositivos que não são completamente entrevistados.\ndetecção de roteador melhorada para abrir a rede\ncorreção de erros: abrir rede no roteador\nZHC 25.x mais recente, ZH 6.1.3,\nrestaurar a partir de backup no adaptador",
+        "nl": "tabblad overrides verwijderen uit config\nlokale datatabblad instellen in config om instellingen en opties voor het niveau van het apparaat en de globale instellingen te bewerken\nhet tabblad lokale overrides verwijderen\nverwijder de mogelijkheid om modelniveau overrides van apparaat tab.\nfouten te herstellen voor 'polling' apparaten met veranderde polltijden.\nwaarschuwingspictogram voor apparaten die niet volledig zijn geïnterviewd.\nverbeterde routerdetectie voor het openen van het netwerk\nbugfix: open netwerk op router\nZHC 25.x laatste, ZH 6.1.3,\nherstellen van in-adapter back-up",
+        "fr": "supprimer l'onglet local de la configuration\ncréer un onglet local de données dans la configuration pour modifier les paramètres et les options de niveau global et périphérique\nsupprimer l'onglet local de remplacement\nsupprimer la possibilité de définir les dépassements de niveau du modèle de l'onglet périphérique.\ncorriger les erreurs pour les dispositifs 'polling' avec des temps de sondage modifiés.\nicône d'avertissement pour les appareils qui ne sont pas complètement interviewés.\namélioration de la détection du routeur pour l'ouverture du réseau\nbugfix: ouvrir le réseau sur le routeur\nZHC 25.x dernier, ZH 6.1.3,\nrestaurer à partir de la sauvegarde dans l'adaptateur",
+        "it": "rimuovere la scheda override locale da config\nstabilire la scheda dati locale in configurazione per modificare le impostazioni e le opzioni del livello globale e del dispositivo\nrimuovere la scheda override locale\nrimuovere la capacità di impostare override di livello del modello dalla scheda del dispositivo.\ncorreggere gli errori per i dispositivi 'polling' con tempi di sondaggio modificati.\nicona di avviso per dispositivi che non sono completamente intervistati.\nmiglioramento del rilevamento del router per l'apertura della rete\nbugfix: aprire la rete sul router\nZHC 25.x ultimo, ZH 6.1.3,\nripristino da backup in-adapter",
+        "es": "eliminar la pestaña de anulaciones locales de config\nestablecer la ficha de datos local en config para editar ajustes y opciones a nivel global y de dispositivos\neliminar la ficha de anulación local\neliminar la capacidad de establecer el nivel de modelo anula de la pestaña dispositivo.\ncorrige errores para dispositivos 'polling' con tiempos de votación cambiados.\nicono de advertencia para dispositivos que no son entrevistados por completo.\nmejor detección de router para abrir la red\nbugfix: red abierta en router\nZHC 25.x más reciente, ZH 6.1.3,\nrestaurar de la copia de seguridad en el equipo",
+        "pl": "usuń lokalne nadjazdy z zakładki config\ntworzy lokalną kartę danych w konfigu, aby edytować globalne i na poziomie urządzenia ustawienia i opcje\nusuń kartę lokalnych nadwozi\nusuń możliwość ustawiania nadwyżek poziomu modelu z zakładki urządzenia.\nnaprawić błędy urządzeń 'sondażowych' ze zmienionymi okresami ankiety.\nikona ostrzegawcza dla urządzeń, które nie są w pełni przesłuchane.\nulepszone wykrywanie routerów w celu otwarcia sieci\nbugfix: otwarta sieć na routerze\nZHC 25.x najnowszy, ZH 6.1.3,\nprzywracanie z kopii zapasowej in- adaptera",
+        "uk": "видалити локальну вкладку overrides з налаштування\nвстановити локальну вкладку даних в конфігурацію для редагування параметрів рівня глобального та пристрою та параметрів\nвидалити локальну вкладку\nприбрати можливість встановити рівень моделі перенаряддя з вкладки пристрою.\nфіксувати помилки для пристроїв «запилення» з змінними термінами опитування.\nзначок попередження для пристроїв, які не повністю опитуються.\nполіпшення виявлення маршрутизатора для відкриття мережі\nвиправлення помилок: відкрита мережа на маршрутизаторі\nZHC 25.x останнє, ZH 6.1.3,\nвідновлення з резервної копії",
+        "zh-cn": "从配置中删除本地覆盖标签\n在配置中建立本地数据标签以编辑全局和设备级别设置和选项\n删除本地覆盖标签\n从设备标签中删除设置模型级别覆盖的能力 .\n修正“ 投票” 设备的错误, 并更改投票时间 .\n警告未完全访问设备的图标.\n为打开网络改进路由器检测\n错误修正: 在路由器上打开网络\nZHC 25.x最新版,ZH 6.1.3,\n从适应中备份恢复"
       },
-      "3.0.0": {
-        "en": "Breaking change: Start of zigbee subsystem requires configuration entry !!!\nHardware configuration panel\nUpdate for external converter - detect /dist/ subfolder\nUpdate device image: use of icons defined in external converter (beta)\n",
-        "de": "Bruchänderung: Beginn des Zickbee Subsystems erfordert Konfigurationseintrag!!!\nHardware-Konfigurationspanel\nUpdate für externen Konverter - Erkennung /dist/ Unterordner\nGerätebild aktualisieren: Verwendung von Icons, die im externen Konverter (beta) definiert sind\n",
-        "ru": "Переломные изменения: Запуск подсистемы Zigbee требует ввода конфигурации!!!\nАппаратная конфигурационная панель\nОбновление внешнего конвертера - детектировать /dist/ подпапку\nОбновление изображения устройства: использование значков, определенных во внешнем конвертере (бета)\n",
-        "pt": "Mudança de ruptura: O início do subsistema zigbee requer entrada de configuração !!!\nPainel de configuração do hardware\nAtualização para conversor externo - detectar /dist / subpastas\nImagem do dispositivo de atualização: uso de ícones definidos no conversor externo (beta)\n",
-        "nl": "Verandering: Start van zigbee subsysteem vereist configuratie toegang !!!\nHardware configuratiepaneel\nUpdate voor externe converter - detecteer /dist/submap\nAfbeelding van het apparaat bijwerken: gebruik van pictogrammen gedefinieerd in externe converter (beta)\n",
-        "fr": "Briser le changement : Le démarrage du sous-système zigbee nécessite une entrée de configuration !!!\nPanneau de configuration du matériel\nMise à jour pour convertisseur externe - détecter /dist/ sous-dossier\nMise à jour de l'image du périphérique : utilisation d'icônes définies dans le convertisseur externe (beta)\n",
-        "it": "Cambiamento di rottura: L'avvio del sottosistema zigbee richiede l'ingresso di configurazione !!!\nPannello di configurazione hardware\nAggiornamento per convertitore esterno - rilevare /dist/ subfolder\nImmagine del dispositivo di aggiornamento: uso delle icone definite nel convertitore esterno (beta)\n",
-        "es": "Cambio de ruptura: Inicio del subsistema zigbee requiere entrada de configuración !!!\nPanel de configuración de hardware\nActualización para convertidor externo - detect /dist/ subfolder\nActualizar imagen del dispositivo: uso de iconos definidos en convertidor externo (beta)\n",
-        "pl": "Łamanie zmian: Rozpoczęcie podsystemu Zigbee wymaga wprowadzenia konfiguracji!!!\nPanel konfiguracji sprzętu\nAktualizacja konwertera zewnętrznego - wykryj / dist / subfolder\nAktualizacja obrazu urządzenia: użycie ikon zdefiniowanych w konwerterze zewnętrznym (beta)\n",
-        "uk": "Зміна розривів: Старт підсистеми zigbee вимагає введення конфігурації !!!\nПанель конфігурації обладнання\nОновлення для зовнішнього конвертера - виявлення /dist / підпалювач\nОновлення зображення пристрою: використання ікон, визначених у зовнішній конвертер (beta)\n",
-        "zh-cn": "中断更改 : Zigbee子系统的启动需要配置输入!!!!\n硬件配置面板\n外部转换器更新 - 检测/ dist/ 子文件夹\n更新设备图像: 使用外部转换器( β) 中定义的图标\n"
+      "3.1.6": {
+        "en": "Bugfixes\n",
+        "de": "Bugfixes\n",
+        "ru": "Багфиксы\n",
+        "pt": "Correcções de Erros\n",
+        "nl": "Bugfixes\n",
+        "fr": "Fixes de bogue\n",
+        "it": "Bugfix\n",
+        "es": "Bugfixes\n",
+        "pl": "Korekty błędów\n",
+        "uk": "Помилки\n",
+        "zh-cn": "错误修正\n"
       }
     },
     "titleLang": {
@@ -159,7 +159,7 @@
       "tab": "materialize"
     },
     "messagebox": true,
-    "stopTimeout": 30000,
+    "stopTimeout": 5000,
     "stopBeforeUpdate": true,
     "dataFolder": "zigbee_%INSTANCE%",
     "compact": true,
@@ -327,7 +327,8 @@
     "pingTimeout": 300,
     "pingCluster": "",
     "listDevicesAtStart": true,
-    "useNewCompositeStates": false
+    "useNewCompositeStates": false,
+    "availableUpdateTime": 30
   },
   "instanceObjects": [
     {
@@ -365,10 +366,23 @@
       "native": {}
     },
     {
+      "_id": "info.lasterror",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Last stashed error",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
       "_id": "info.pairingCountdown",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "value",
         "name": "Pairing countdown",
         "type": "number",
         "read": true,
@@ -381,7 +395,7 @@
       "_id": "info.pairingMessage",
       "type": "state",
       "common": {
-        "role": "indicator",
+        "role": "state",
         "name": "Pairing message",
         "type": "string",
         "read": true,

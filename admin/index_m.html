@@ -326,6 +326,50 @@
         #map {
             margin: 0px;
         }
+        .dev_list {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80px;
+        }
+        .sml_list {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #dataroweven { background-color: #909090; color: #c0c0c0 !important; }
+        #datarowodd  { background-color: #c0c0c0; color: #202020 !important; }
+        #datarowopt  { background-color: #707070; color: #c0c0c0 !important; }
+        #datatable   { background-color: #3090c0; color: #202020 !important; }
+        #dataroweven_red { background-color: #909090; color: #c00000 !important; }
+        #datarowodd_red  { background-color: #C0C0C0; color: #c00000 !important; }
+        #datarowopt_red  { background-color: #707070; color: #c00000 !important; }
+        #datared     { color: #C00000 !important;}
+        #datalime     { background-color: #cddc31; color: #c00000 !important;}
+
+        .m.react-dark #dataroweven_red {
+            background-color: #500000 !important;
+        }
+        .m.react-dark #datarowodd_red {
+            background-color: #400000 !important;
+        }
+        .m.react-dark #datarowopt_red {
+            background-color: #300000 !important;
+        }
+        .m.react-dark #datarowodd {
+            background-color: #303030 !important;
+        }
+        .m.react-dark #dataroweven {
+            background-color: #505050 !important;
+        }
+        .m.react-dark #datatable {
+            background-color: #202020 !important;
+        }
+
+        .i.middle {
+            vertical-align:middle;
+        }
 
         #tab-main .main-toolbar-table .filter-input {
             display: inline-table;
@@ -633,6 +677,7 @@
 
             }
 
+
             .move-label-up {
                 position: absolute !important;
                 top: -60px !important;
@@ -671,54 +716,37 @@
                     </div>
                     <ul id="nav-mobile" class="right">
                     <li>
+                        <a id="adapterStopped_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Adapter not running">
+                        <i class="material-icons large">grid_off</i></a>
+                        </li>
+                    <li>
+                    <li>
                         <a id="ErrorNotificationBtn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Zigbee not running">
                         <i id="ErrorNotificationIcon" class="material-icons large">error</i></a>
                     </li>
-                    <!--
-                        <li>
+                    <li>
                         <a id="state_cleanup_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="State Cleanup">
                         <i class="material-icons large icon-blue">delete_sweep</i></a>
-                        </li>
-                    -->
+                    </li>
                     <li>
-                        <a id="show_errors_btn" class="btn-floating waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Show Errors">
+                        <a id="show_errors_btn" class="btn-floating disabled waves-effect waves-light red tooltipped center-align hoverable translateT hide" title="Show Errors">
                         <i class="material-icons large icon-blue">feedback</i></a>
                     </li>
                     <li>
-                    <a id="download_icons_btn"
-                        class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
+                        <a id="download_icons_btn"
+                        class="btn-floating disabled waves-effect waves-light blue tooltipped center-align hoverable translateT"
                         title="Download missing icons">
                         <i class="material-icons large">cloud_download</i></a>
                     </li>
-                    <!--
-                        <li>
-                        <a id="fw_check_btn"
-                           class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
-                           title="Check firmware updates">
-                            <i class="material-icons large icon-blue">system_update</i></a>
-                        </li>
-                        <li>
-                            <a id="add_grp_btn"
-                            class="btn-floating waves-effect waves-light brown tooltipped center-align hoverable translateT"
-                            title="Add Group">
-                                <i class="material-icons large">group_work</i></a>
-                        </li>
-                        <li>
-                            <a id="touchlink_btn"
-                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
-                            title="Touchlink reset and pairing">
-                                <i class="material-icons large">wifi_tethering</i></a>
-                        </li>
-                        <li>
-                            <a id="code_pairing"
-                            class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
-                            title="Pairing with QR Code">
-                            <i class="material-icons large">select_all</i></a>
-                        </li>
-                    -->
+                    <li>
+                        <a id="rebuild_states_btn"
+                        class="btn-floating disabled waves-effect waves-light blue tooltipped center-align hoverable translateT"
+                        title="Rebuild states">
+                        <i class="material-icons large">low_priority</i></a>
+                    </li>
                     <li>
                         <a id="pairing"
-                           class="btn-floating waves-effect waves-light green tooltipped center-align hoverable translateT"
+                           class="btn-floating disabled waves-effect waves-light green tooltipped center-align hoverable translateT"
                            title="Let's pairing!">
                             <i class="material-icons large">leak_add</i></a>
                     </li>
@@ -730,7 +758,8 @@
                     <li class="tab col s2"><a href="#tab-herdsman" id="hardware" class="translate tooltipped">Hardware</a></li>
                     <!--<li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a></li> -->
                     <!--<li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li> -->
-                    <li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>
+                    <!--<li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>-->
+                    <li class="tab col s2"><a href="#tab-overrides" class="translate tooltipped">Local Data</a></li>
                     <!--<li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>-->
                     <li class="tab col s2"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
                     <!--<li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>-->
@@ -834,6 +863,10 @@
                 <div class="input-field col s12 m6 l4 col-useNewCompositeStates">
                     <input id="useNewCompositeStates" type="checkbox" class="value"/>
                     <label class="translate" for="useNewCompositeStates">use channel for complex exposes</label>
+                </div>
+                <div class="input-field col s12 m6 l4">
+                    <input id="availableUpdateTime" type="number" min="0" max="120" class="value"/>
+                    <label class="translate" for="availableUpdateTime">Min. Available update timeout.</label>
                 </div>
                 <div class="input-field col s12 m12 l12 col-startWithInconsistent">
                     <input id="startWithInconsistent" type="checkbox" class="value"/>
@@ -943,7 +976,8 @@
                     <a id="show_test_run" class="waves-effect waves-light blue btn"><img class="img-btn" src="img/start_stop.png" title="start / stop" ></a>&nbsp;
                     <a id="readNVRam-btn" class="waves-effect waves-light btn"><img class="img-btn" src="img/nvram_read.png" title="read nvram backup" ></a>&nbsp;
                     <a id="deleteNVRam-btn" class="waves-effect waves-light btn"><img class="img-btn" src="img/nvram_delete.png" title="remove nvram backup" ></a>&nbsp;
-                    <a id="reset-btn" class="waves-effect waves-light white-text btn translate"><img class="img-btn" src="img/reset.png" title="reset..." ></a>&nbsp;
+                    <a id="reset-btn" class="waves-effect waves-light white-text btn translate"><img class="img-btn" src="img/reset.png" title="reset adapter" ></a>&nbsp;
+                    <a id="restore-backup-btn" class="waves-effect waves-light white-text btn translate"><img class="img-btn" src="img/restore_backup.png" title="restore adapter from backup" ></a>&nbsp;
                 </div>
             </div>
             <div class="row textarea">
@@ -1208,6 +1242,60 @@
             <ul id="dbg_data_list">
             </ul>
         </div>
+        <div id="tab-overrides" class="col s12 page">
+        <div class="navbar-fixed" style="height: 56px;">
+            <nav class="resposHeight" style="margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
+                <ul id="nav-mobile-2" class="left">
+                    <li>
+                        <a id="refresh_models_btn" class="btn-floating waves-effect waves-light tooltipped center-align hoverable translateT" title="refresh data">
+                            <i class="material-icons large">refresh</i>
+                        </a>
+                    </li>
+                    <li>
+                        <div class="col main-toolbar-table-types-tools main-toolbar-table-filter input-field" style="line-height: 24px;">
+                            <i class="material-icons prefix" style="line-height: 24px;">search</i>
+                            <input id="model-search" class="filter-input translateP" placeholder="" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Sort">
+                            <a class="model-filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="col input-field" style="line-height: 24px;">
+                            <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
+                            <a id="model-sort-btn" class="dropdown-trigger btn" href="#" data-target="model-sort">all</a>
+                            <ul id="model-sort" class="dropdown-content" tabindex="0">
+                                <li class="model-sort-item" data-type="function(a,b) { return true }" tabindex="0">
+                                    <a class="translate" data-lang="default">default</a></li>
+                                <li class="model-sort-item" data-type="by type" tabindex="0">
+                                    <a class="translate" data-lang="by type">by type</a></li>
+                                <li class="model-sort-item" data-type="by device count" tabindex="0">
+                                    <a class="translate" data-lang="by device count">by device count</a></li>
+                                <li class="model-sort-item" data-type="by option count" tabindex="0">
+                                    <a class="translate" data-lang="by option count">by option count</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="col input-field" style="line-height: 24px;">
+                            <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">filter_list</i>
+                            <a id="model-filter-btn" class="dropdown-trigger btn" href="#" data-target="model-filter">all</a>
+                            <ul id="model-filter" class="dropdown-content" tabindex="0">
+                                <li class="model-filter-item" data-type="with options" tabindex="0"><a class="translate" data-lang="without options">without options</a></li>
+                                <li class="model-filter-item" data-type="without options" tabindex="0"><a class="translate" data-lang="with options">with options</a></li>
+                                <li class="model-filter-item" data-type="routers" tabindex="0"><a class="translate" data-lang="Routers">Routers</a></li>
+                                <li class="model-filter-item" data-type="end devices" tabindex="0"><a class="translate" data-lang="End Devices">End Devices</a></li>
+                                <li class="model-filter-item" data-type="groups" tabindex="0"><a class="translate" data-lang="Groups">Groups</a></li>
+                                <li class="model-filter-item" data-type="all" tabindex="0"><a class="translate" data-lang="all">all</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="row">
+            <div id="tab-overrides-content" row>
+                Nothing to see yet.
+            </div>
+        </div>
     </div>
 </div>
 
@@ -1216,130 +1304,16 @@
         <div class="modal-content">
             <h3 class="translate">Rename / Group device</h3>
             <div class="row">
-                <div class="col1">
+                <div class="col s12 m12 l12">
                     <div class="input-field">
                         <input id="d_name" type="text" class="value validate">
                         <label for="d_name" class="translate">Name</label>
                     </div>
                 </div>
             </div>
-            <div class="groups_available">
-            <div class="row">
-              <h6>Groups</h6>
+            <div class="row endpoints_for_groups">
             </div>
-              <div class="row epid0">
-                  <div class="col">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Main Endpoint</p>
-                      </div>
-                  </div>
-                  <div class="col1">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep0" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep0" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid1">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 1</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep1" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep1" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid2">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 2</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep2" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep2" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid3">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 3</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep3" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep3" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid4">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 4</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep4" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep4" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid5">
-                  <div class="col epid">
-                      <div class=endpointid>
-                          <p class="translate device_with_endpoint">Sub Endpoint 5</p>
-                      </div>
-                  </div>
-                  <div class="col">
-                      <div class="input-field groups">
-                          <select id="d_groups_ep5" class="materialSelect" multiple>
-                              <option value="1">select</option>
-                          </select>
-                          <label for="d_groups_ep5" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-              <div class="row epid6">
-              <div class="col epid">
-                  <div class=endpointid>
-                      <p class="translate device_with_endpoint">Sub Endpoint 6</p>
-                  </div>
-              </div>
-              <div class="col">
-                  <div class="input-field groups">
-                      <select id="d_groups_ep6" class="materialSelect" multiple>
-                          <option value="1">select</option>
-                      </select>
-                      <label for="d_groups_ep6" class="translate">Groups</label>
-                      </div>
-                  </div>
-              </div>
-            </div>
-            <div class="options_available">
-              <div class="row">
-                  <h6>Options</h6>
-              </div>
-              <div class="row options">
-
-              </div>
+            <div class="row options">
             </div>
         </div>
         <div class="modal-footer">
@@ -1396,17 +1370,17 @@
         </div>
     </div>
 
-    <div id="chooseimage" class="modal">
+    <div id="chooseimage" class="modal modal-fixed-footer">
         <div class="modal-content">
             <div class="row">
-                <h3 class="translate">Data override</h3>
+                <h3 class="translate">Edit model options</h3>
                 <div class="row">
                     <div class="col s12 input-field">
                         <input id="d_name" type="text" class="value validate">
                         <label for="d_name" class="translate">Name</label>
                     </div>
                 </div>
-                    <div class="row">
+                <div class="row">
                     <div class="col s9 input-field">
                         <select id="images" class="icons">
                         </select>
@@ -1415,15 +1389,26 @@
                     <div class="col s3 ">
                         <div class="currentIcon"><img src="img/unknown.png"></div>
                     </div>
+                    <div class="col options_grid s12">
+                        No Options available
+                    </div>
+                    <div class="new_options_available">
+                        <div class="input-field suffix col s10 m10 l10">
+                            <select id="option_Selector" class="materialSelect"></select class="value" />
+                                <label for="option_Selector">Available Options</label>
+                        </div>
+                        <div class="col">
+                            <a name="add_options" id="option_add_1084" class="waves-effect waves-green btn-large">
+                            <i class="material-icons large icon-green">add_circle</i></a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
             </div>
         </div>
         <div class="modal-footer">
             <div class="forcedelete" id = "globaldiv">
                 <label>
-                    <input id="globaloverride" type="checkbox" class="value"/>
+                    <input id="globaloverride" type="checkbox" class="value filled-in" checked="checked" disabled="disabled"/>
                     <span class="translate" for="globaloverride">Apply to model</span>
                 </label>
             </div>
@@ -1480,6 +1465,20 @@
             <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
         </div>
     </div>
+    <div id="modalrebuild" class="modal">
+        <div class="modal-content">
+            <h3 class="translate">State rebuild confirmation</h3>
+            <p>A bunch of text</p>
+        </div>
+        <div class="modal-footer">
+            <div id="cforcediv" class="forcedelete">
+                <input id="cforce_rebuild" type="checkbox" class="value"/>
+                <label class="translate" for="cforce_rebuild">Force update all roles to adapter defined roles</label>
+            </div>
+            <a name="yes" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Yes</a>
+            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+        </div>
+    </div>
     <div id="modalreconfigure" class="modal">
         <div class="modal-content">
             <h3 class="translate">Reconfigure device</h3>
@@ -1504,6 +1503,8 @@
         </div>
         <div class="modal-footer">
             <a name="IEEE" href="#!" class="modal-action waves-effect waves-red btn-flat left">Network</a>
+            <a name="endpairing" id="endpairing" href="#!" class="modal-action  waves-effect waves-red btn red translate">Stop</a>
+            <a name="extendpairing" id="endpairing" href="#!" class="modal-action waves-effect waves-green btn green translate">Extend</a>
             <a name="hide" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Hide</a>
         </div>
     </div>
@@ -1514,6 +1515,26 @@
             <p class="translate">Reset Info</p>
             <a id="soft" data-mode="soft" class="modal-action modal-close waves-effect waves-red btn translate">Soft-Reset</a>
             <a id="hard" data-mode="hard" class="modal-action modal-close waves-effect waves-red btn translate">Hard-Reset</a>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat translate">Cancel</a>
+        </div>
+    </div>
+
+    <div id="modalrestore" class="modal">
+        <div class="modal-content">
+            <h3 class="translate">Select backup to restore</h3>
+            <!--p class="translate">Restore Info</p-->
+            <div class="new_backups_available">
+                <div class="input-field suffix col s10 m10 l10">
+                    <select id="backup_Selector" class="materialSelect"></select class="value" />
+                        <label for="backup_Selector">Available Backups</label>
+                </div>
+                <div class="col col s2 m2 l2">
+                    <a name="restore_this" id="restore_this" class="waves-effect waves-green btn-large">
+                    <i class="material-icons large icon-green tooltipped" title="restore">beenhere</i></a>
+                </div>
+            </div>
         </div>
         <div class="modal-footer">
             <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat translate">Cancel</a>

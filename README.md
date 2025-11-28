@@ -35,8 +35,6 @@ Current firmware files for these devices can be found [on GitHub](https://github
 ### Dresden Elektronik SoC
 <span><img src="https://raw.githubusercontent.com/ioBroker/ioBroker.zigbee/master/docs/en/img/deconz.png" width="180"></span>
 
-As of May 2025, raspbee and conbee variants are no longer recommended, as the code is no longer actively maintained and has fallen behind the other variants with regards to functionality.
-
 Conbee/RaspBee Support is no longer considered experimental in the zigbee-herdsman and zigbee-herdsman-converters libraries used by the zigbee Adapter, use of these devices with the adapter may limit functionality. Known issues are:
 - link quality display may be incorrect
 - device map metrics may be incorrect
@@ -60,7 +58,7 @@ The adapter should **always** be installed from within the ioBroker Admin. Direc
 At first start, it is vital to set up the adapter settings. These include:
 - the communication to the zigbee Coordinator (COM Port). This can be a device identifier or a network address for Network-based coordinators
 - the required firmware-Type
-- the network parameters PanID (a number between 0 and 65565), extended PanID (a 16 digit HEX number) and the zigbee Channel **important: Do not run the adapter without changing the values for PanID (6754) and Extended PanID (DDDDDDDDDDDDDDDD) to unique values for your Zigbee Installation.**
+- the network parameters PanID (a number between 0 and 65565), extended PanID (a 16 digit HEX number) and the zigbee Channel **important: Do not run the adapter without changing the values for PanID (6754) and Extended PanID (DDDDDDDDDDDDDDDD) to unique values for your Zigbee Installation. From v3.0 onwards, the adapter will suggest a unique ExtPanID on any new install**
 
 
 ![](docs/en/img/Zigbee_config_en.png)
@@ -77,6 +75,11 @@ The adapter is placed in pairing mode by pressing the pairing button:
 ![](docs/en/img/Zigbee_pairing_en.png)
 
 A dialog showing a pairing countdown appears. When a new device is discovered, interviewed and paired with the network, messages will be shown in this dialog, and the device will show up in the grid of active devices. Any known device should show up with an image and the correct device name, as well as a number of changable settings. Any unknown device will show up with a device name and a ? as icon, while devices which failed the pairing will show up as 'unknown' with the same ? icon. These should be removed from the network to be paired again. Please refer to the documentation linked above for more details.
+
+
+## In Depth Documentation
+
+In depth information can be found here [auf deutsch](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/readme.md), here [in english](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/en/readme.md). There is more information on the [wiki](https://github.com/ioBroker/ioBroker.zigbee/wiki) as well.
 
 ## Advanced options
 
@@ -107,11 +110,18 @@ The Adapter offers to collect debug information for specific devices in order to
 
 The debug information is only available from the zigbee tab.
 
-### Local overrides
+### Local overrides (Only available until v3.1.5)
 
-Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 3.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.
+~~Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 3.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.~~
 
 The local overrides are only available from the instance configuration
+
+### Local data (available v3.2.0 or newer)
+
+Options, name and icon can be set on a model base from this section. Note: The legacy option (if offered) will revert to the legacy code in the adapter.
+Changing anything here **may** require a restart of the adapter before it becomes active.
+
+The local data are only available from the instance configuration
 
 ### Developer Mode
 
@@ -121,7 +131,8 @@ The developer tab is only available from the instance configuration
 
 
 
-## Additional info
+### Additional info
+
 
 There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality which is based on the same technology. It uses the same base libraries for hardware communication and device integration. Any device listed as compatible in this project is likely to be compatible with the ioBroker.zigbee Adapter. Note that there is a delay between device integration into zigbee2mqtt.io and the Zigbee-Adapter, as compatibility with the hardware libraries requires verification before the adapter can move to the latest version.
 
@@ -133,15 +144,6 @@ There are knowledge bases that can be useful for working with Zigbee-devices and
 
 Pleae refer to [this list](https://www.zigbee2mqtt.io/supported-devices/) to check compatibility. Once a device is listed as compatible there, it is either already compatible with the Zigbee Adapter or can be made compatible using an external converter.
 
-## In Depth Documentation
-
-[in Deutsch](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/readme.md)
-
-[in English](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/en/readme.md)
-
-or
-
-[wiki](https://github.com/ioBroker/ioBroker.zigbee/wiki)
 
 
 
@@ -152,6 +154,61 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* Fix: dynamic model assignment when exposes is function (PTVO, BuschJaeger)
+* Fix: Roles
+* Refactor: Legacy code moved
+* Refactor: Expose creation changed.
+* Refactor: Exposes no longer use states from legacy code
+* Feature: Offer state rebuild function in Settings
+
+### 3.2.5 (2025-10-31)
+* (asgothian) changed setState for lasterror
+
+### 3.2.4 (2025-10-31)
+* (asgothian) added missing state
+
+### 3.2.3 (2025-10-31)
+* (asgothian) Improvements on debug UI
+* (asgothian) Option 'resend_states' to publish state values to device on reconnect
+* (asgothian) Improved group card
+* (asgothian) Improved group info
+* (asgothian) Modified coordinator card (2 sides)
+* (asgothian) retry on error 25
+* (asgothian) clear stashed error messages
+* (asgothian) ZHC 25.50.0 or newer
+
+### 3.2.2 (2025-10-27)
+* (asgothian) Bugfix on delete object.
+* (asgothian) improved device query.
+* (asgothain) fixed delete device with local overrides.
+*
+
+### 3.2.1 (2025-10-26)
+* (asgothian) fix bug #2640
+*
+
+### 3.2.0 (2025-10-26)
+* (asgothian) remove local overrides tab from config
+* (asgothian) establish local data tab in config to edit global and device level settings and options
+* (asgothian) remove the local overrides tab
+* (asgothian) remove the ability to set model level overrides from device tab.
+* (asgothian) fix errors for 'polling' devices with changed poll times.
+* (asgothian) warning icon for devices which are not completely interviewed.
+* (asgothian) improved router detection for opening the network
+* (asgothian) bugfix: open network on router
+* (asgothian) ZHC 25.x latest, ZH 6.1.3,
+* (asgothian) restore from in-adapter backup
+
+### 3.1.6 (2025-10-21)
+* (asgothian) Bugfixes
+*
+
+### 3.1.5 (2025-10-04)
+* (asgothian) Bugfixes
+* (asgothian) ZHC25.36.0
+* (asgothian) reduced stopTimeout to 5s
+
 ### 3.1.4 (2025-09-26)
 * (asgothian) Remove extra logging
 * (asgothian) Add extra configurations
