@@ -19,11 +19,12 @@ let devices = [],
     networkEvents,
     responseCodes = false,
     localConfigData = {},
-    shownMap = Date().now,
+    shownMap = 0,
     groups = {},
     devGroups = {}, // eslint-disable-line prefer-const
     binding = [],
     excludes = [],
+    tabShown = 0,
     coordinatorinfo = {
         installSource: 'IADefault_1',
         channel: '-1',
@@ -2414,7 +2415,17 @@ function load(settings, onChange) {
         Materialize.updateTextFields();
         $('.collapsible').collapsible();
 
-        Materialize.Tabs.init($('.tabs'));
+        function new_tab_show_callback() {
+
+            tabShown = M.Tabs.getInstance($('.tabs')).index;
+            if (tabShown === 1 && shownMap === 0)  {
+                console.log(`tabShown set to ${tabShown} - showing map for the first time`);
+                showNetworkMap(devices, map);
+            }
+            else console.log(`tabShown set to ${tabShown}`);
+        }
+
+        Materialize.Tabs.init($('.tabs'), {duration: 600, onShow: new_tab_show_callback});
         $('#device-search').keyup(function (event) {
             doFilter(event.target.value.toLowerCase());
         });
@@ -2829,8 +2840,12 @@ function showNetworkMap(devices, map) {
         updateMapFilter();
     });
     //    }
+    if (tabShown != 1) {
+        console.log(`tabShown is ${tabShown} - map is not visible so we dont generate it.`);
+        return;
+    }
 
-    console.warn(`showNetwork Map (previous: ${shownMap} - new: ${map.timestamp} for ${devices.length} devices.`);
+    console.log(`showNetwork Map (previous: ${shownMap} - new: ${map.timestamp} for ${devices.length} devices.`);
     if (devices.length == 0) return;
     if (shownMap != map.timestamp) {
         shownMap = map.timestamp;
@@ -4523,14 +4538,14 @@ function doSort() {
                 by: sortByTitle
             });
         } else if (sortOrder === 'range') {
-			shuffleInstance.sort({
-				by: sortByRange
-			});
-		} else if (sortOrder === 'load') {
-			shuffleInstance.sort({
-				by: sortByLoad
-			});
-		}
+            shuffleInstance.sort({
+                by: sortByRange
+            });
+        } else if (sortOrder === 'load') {
+            shuffleInstance.sort({
+                by: sortByLoad
+            });
+        }
     }
 }
 
@@ -4538,28 +4553,28 @@ function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
 }
 function sortByRange(element) {
-	try {
-		const lqNode = element.querySelector('[id$="_link_quality"]');
-		if (!lqNode) return 0; // kein Wert -> ans Ende
-		const txt = lqNode.textContent || lqNode.innerText || '';
-		const m = txt.match(/-?\d+(.\d+)?/);
-		const val = m ? parseFloat(m[0]) : 0;
-		return -val;
-	} catch (e) {
-		return 0;
-	}
+    try {
+        const lqNode = element.querySelector('[id$="_link_quality"]');
+        if (!lqNode) return 0; // kein Wert -> ans Ende
+        const txt = lqNode.textContent || lqNode.innerText || '';
+        const m = txt.match(/-?\d+(.\d+)?/);
+        const val = m ? parseFloat(m[0]) : 0;
+        return -val;
+    } catch (e) {
+        return 0;
+    }
 }
 function sortByLoad(element) {
-	try {
-		const battNode = element.querySelector('[id$="_battery"]');
-		if (!battNode) return 0;
-		const txt = battNode.textContent || battNode.innerText || '';
-		const m = txt.match(/-?\d+(.\d+)?/);
-		const val = m ? parseFloat(m[0]) : 0;
-		return -val;
-	} catch (e) {
-		return 0;
-	}
+    try {
+        const battNode = element.querySelector('[id$="_battery"]');
+        if (!battNode) return 0;
+        const txt = battNode.textContent || battNode.innerText || '';
+        const m = txt.match(/-?\d+(.\d+)?/);
+        const val = m ? parseFloat(m[0]) : 0;
+        return -val;
+    } catch (e) {
+        return 0;
+    }
 }
 
 
