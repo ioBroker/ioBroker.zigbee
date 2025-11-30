@@ -4522,12 +4522,44 @@ function doSort() {
             shuffleInstance.sort({
                 by: sortByTitle
             });
-        }
+        } else if (sortOrder === 'range') {
+			shuffleInstance.sort({
+				by: sortByRange
+			});
+		} else if (sortOrder === 'load') {
+			shuffleInstance.sort({
+				by: sortByLoad
+			});
+		}
     }
 }
 
 function sortByTitle(element) {
     return element.querySelector('.card-title').textContent.toLowerCase().trim();
+}
+function sortByRange(element) {
+	try {
+		const lqNode = element.querySelector('[id$="_link_quality"]');
+		if (!lqNode) return 0; // kein Wert -> ans Ende
+		const txt = lqNode.textContent || lqNode.innerText || '';
+		const m = txt.match(/-?\d+(.\d+)?/);
+		const val = m ? parseFloat(m[0]) : 0;
+		return -val;
+	} catch (e) {
+		return 0;
+	}
+}
+function sortByLoad(element) {
+	try {
+		const battNode = element.querySelector('[id$="_battery"]');
+		if (!battNode) return 0;
+		const txt = battNode.textContent || battNode.innerText || '';
+		const m = txt.match(/-?\d+(.\d+)?/);
+		const val = m ? parseFloat(m[0]) : 0;
+		return -val;
+	} catch (e) {
+		return 0;
+	}
 }
 
 
