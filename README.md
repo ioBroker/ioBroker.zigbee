@@ -161,6 +161,7 @@ You can thank the authors by these links:
 * Refactor: Expose creation changed.
 * Refactor: Exposes no longer use states from legacy code
 * Feature: Offer state rebuild function in Settings
+* (mh2134): Additional filters for device display
 
 ### 3.2.5 (2025-10-31)
 * (asgothian) changed setState for lasterror
