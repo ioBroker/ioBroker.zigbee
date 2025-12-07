@@ -646,6 +646,7 @@ class Zigbee extends utils.Adapter {
         if (resetRoles) this.stController.clearModelDefinitions();
         const devicesFromObjects = (await this.getDevicesAsync()).filter(item => item.native.id.length ==16).map((item) => `0x${item.native.id}`);
         const devicesFromDB = this.zbController.getClientIterator(false);
+        const groupsFromDB = await this.zbController.getGroups();
         for (const device of devicesFromDB) {
             if (resetRoles) {
                 const hM = await zigbeeHerdsmanConverters.findByDevice(device);
