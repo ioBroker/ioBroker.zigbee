@@ -162,6 +162,9 @@ You can thank the authors by these links:
 * Refactor: Exposes no longer use states from legacy code
 * Feature: Offer state rebuild function in Settings
 * (mh2134): Additional filters for device display
+* Fix: Orphaned group states detected, marked and deletable
+* Update: ZH 7.x
+* Update: ZHC 25.84.0
 
 ### 3.2.5 (2025-10-31)
 * (asgothian) changed setState for lasterror
