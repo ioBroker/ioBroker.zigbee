@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.0",
+    "version": "3.3.1-alpha.0",
     "news": {
+      "3.3.1-alpha.0": {
+        "en": "\n",
+        "de": "\n",
+        "ru": "\n",
+        "pt": "\n",
+        "nl": "\n",
+        "fr": "\n",
+        "it": "\n",
+        "es": "\n",
+        "pl": "\n",
+        "uk": "\n",
+        "zh-cn": "\n"
+      },
       "3.3.0": {
         "en": "Fix: dynamic model assignment when exposes is function (PTVO, BuschJaeger)\nFix: Roles\nRefactor: Legacy code moved\nRefactor: Expose creation changed.\nRefactor: Exposes no longer use states from legacy code\nFeature: Offer state rebuild function in Settings\n: Additional filters for device display\nFix: Orphaned group states detected, marked and deletable\nUpdate: ZH 7.x\nUpdate: ZHC 25.84.0",
         "de": "Fix: Dynamische Modellzuweisung bei Belichtungen ist Funktion (PTVO, BuschJaeger)\nFix: Roles\nRefactor: Legacy-Code bewegt\nHersteller: Expose Kreation geändert.\nRefactor: Exposes verwendet nicht mehr Staaten von Legacy-Code\nFeature: Offer state rebuild Funktion in Einstellungen\n: Zusätzliche Filter für Geräteanzeige\nFix: Verwaiste Gruppenzustände erkannt, markiert und verblendet\nAktualisierung: ZH 7.x\nAktualisierung: ZHC 25.84.0",
@@ -80,19 +93,6 @@
         "pl": "fix bug # 2640\n",
         "uk": "виправлення помилки #2640\n",
         "zh-cn": "修复错误 # 2640\n"
-      },
-      "3.2.0": {
-        "en": "remove local overrides tab from config\nestablish local data tab in config to edit global and device level settings and options\nremove the local overrides tab\nremove the ability to set model level overrides from device tab.\nfix errors for 'polling' devices with changed poll times.\nwarning icon for devices which are not completely interviewed.\nimproved router detection for opening the network\nbugfix: open network on router\nZHC 25.x latest, ZH 6.1.3,\nrestore from in-adapter backup",
-        "de": "entfernen sie lokale overrides tab von config\nlokale daten tab erstellen, um globale und geräteebene einstellungen und optionen zu bearbeiten\nentfernen der lokalen overrides tab\nentfernen sie die fähigkeit, modellebene überschrieben von der geräte-tab.\nfehler für \"polling\"-geräte mit veränderten abfragezeiten beheben.\nwarnsymbol für geräte, die nicht vollständig interviewt werden.\nverbesserte routererkennung zum öffnen des netzwerks\nbugfix: offenes netzwerk auf router\nZHC 25.x neueste, ZH 6.1.3,\nwiederherstellung von in-adapter-backup",
-        "ru": "удалить локальную вкладку overrided из конфигураций\nустановить локальную вкладку данных в конфигурацию для редактирования глобальных настроек и параметров уровня устройства\nудалить вкладку local overrides\nудалить возможность установки переопределений уровня модели из вкладки устройства.\nисправление ошибок для «опросных» устройств с измененным временем опроса.\nиконка предупреждения для устройств, которые не были полностью опрошены.\nулучшенное обнаружение маршрутизатора для открытия сети\nbugfix: открытая сеть на маршрутизаторе\nZHC 25.x, ZH 6.1.3,\nвосстановление из in-adapter backup",
-        "pt": "remover a página de substituições locais da configuração\nestabelecer a página de dados locais na configuração para editar as configurações e opções globais e de nível do dispositivo\nremover a página de sobreposições locais\nremover a capacidade de definir os comandos de nível do modelo da aba do dispositivo.\ncorrigir erros para dispositivos de 'polling' com tempos de votação alterados.\nícone de aviso para dispositivos que não são completamente entrevistados.\ndetecção de roteador melhorada para abrir a rede\ncorreção de erros: abrir rede no roteador\nZHC 25.x mais recente, ZH 6.1.3,\nrestaurar a partir de backup no adaptador",
-        "nl": "tabblad overrides verwijderen uit config\nlokale datatabblad instellen in config om instellingen en opties voor het niveau van het apparaat en de globale instellingen te bewerken\nhet tabblad lokale overrides verwijderen\nverwijder de mogelijkheid om modelniveau overrides van apparaat tab.\nfouten te herstellen voor 'polling' apparaten met veranderde polltijden.\nwaarschuwingspictogram voor apparaten die niet volledig zijn geïnterviewd.\nverbeterde routerdetectie voor het openen van het netwerk\nbugfix: open netwerk op router\nZHC 25.x laatste, ZH 6.1.3,\nherstellen van in-adapter back-up",
-        "fr": "supprimer l'onglet local de la configuration\ncréer un onglet local de données dans la configuration pour modifier les paramètres et les options de niveau global et périphérique\nsupprimer l'onglet local de remplacement\nsupprimer la possibilité de définir les dépassements de niveau du modèle de l'onglet périphérique.\ncorriger les erreurs pour les dispositifs 'polling' avec des temps de sondage modifiés.\nicône d'avertissement pour les appareils qui ne sont pas complètement interviewés.\namélioration de la détection du routeur pour l'ouverture du réseau\nbugfix: ouvrir le réseau sur le routeur\nZHC 25.x dernier, ZH 6.1.3,\nrestaurer à partir de la sauvegarde dans l'adaptateur",
-        "it": "rimuovere la scheda override locale da config\nstabilire la scheda dati locale in configurazione per modificare le impostazioni e le opzioni del livello globale e del dispositivo\nrimuovere la scheda override locale\nrimuovere la capacità di impostare override di livello del modello dalla scheda del dispositivo.\ncorreggere gli errori per i dispositivi 'polling' con tempi di sondaggio modificati.\nicona di avviso per dispositivi che non sono completamente intervistati.\nmiglioramento del rilevamento del router per l'apertura della rete\nbugfix: aprire la rete sul router\nZHC 25.x ultimo, ZH 6.1.3,\nripristino da backup in-adapter",
-        "es": "eliminar la pestaña de anulaciones locales de config\nestablecer la ficha de datos local en config para editar ajustes y opciones a nivel global y de dispositivos\neliminar la ficha de anulación local\neliminar la capacidad de establecer el nivel de modelo anula de la pestaña dispositivo.\ncorrige errores para dispositivos 'polling' con tiempos de votación cambiados.\nicono de advertencia para dispositivos que no son entrevistados por completo.\nmejor detección de router para abrir la red\nbugfix: red abierta en router\nZHC 25.x más reciente, ZH 6.1.3,\nrestaurar de la copia de seguridad en el equipo",
-        "pl": "usuń lokalne nadjazdy z zakładki config\ntworzy lokalną kartę danych w konfigu, aby edytować globalne i na poziomie urządzenia ustawienia i opcje\nusuń kartę lokalnych nadwozi\nusuń możliwość ustawiania nadwyżek poziomu modelu z zakładki urządzenia.\nnaprawić błędy urządzeń 'sondażowych' ze zmienionymi okresami ankiety.\nikona ostrzegawcza dla urządzeń, które nie są w pełni przesłuchane.\nulepszone wykrywanie routerów w celu otwarcia sieci\nbugfix: otwarta sieć na routerze\nZHC 25.x najnowszy, ZH 6.1.3,\nprzywracanie z kopii zapasowej in- adaptera",
-        "uk": "видалити локальну вкладку overrides з налаштування\nвстановити локальну вкладку даних в конфігурацію для редагування параметрів рівня глобального та пристрою та параметрів\nвидалити локальну вкладку\nприбрати можливість встановити рівень моделі перенаряддя з вкладки пристрою.\nфіксувати помилки для пристроїв «запилення» з змінними термінами опитування.\nзначок попередження для пристроїв, які не повністю опитуються.\nполіпшення виявлення маршрутизатора для відкриття мережі\nвиправлення помилок: відкрита мережа на маршрутизаторі\nZHC 25.x останнє, ZH 6.1.3,\nвідновлення з резервної копії",
-        "zh-cn": "从配置中删除本地覆盖标签\n在配置中建立本地数据标签以编辑全局和设备级别设置和选项\n删除本地覆盖标签\n从设备标签中删除设置模型级别覆盖的能力 .\n修正“ 投票” 设备的错误, 并更改投票时间 .\n警告未完全访问设备的图标.\n为打开网络改进路由器检测\n错误修正: 在路由器上打开网络\nZHC 25.x最新版,ZH 6.1.3,\n从适应中备份恢复"
       }
     },
     "titleLang": {

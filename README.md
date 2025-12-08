@@ -154,6 +154,10 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### 3.3.1-alpha.0 (2025-12-08)
+*
+*
+
 ### 3.3.0 (2025-12-08)
 * Fix: dynamic model assignment when exposes is function (PTVO, BuschJaeger)
 * Fix: Roles
