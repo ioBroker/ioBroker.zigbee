@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.2.5",
+    "version": "3.3.0",
     "news": {
+      "3.3.0": {
+        "en": "Fix: dynamic model assignment when exposes is function (PTVO, BuschJaeger)\nFix: Roles\nRefactor: Legacy code moved\nRefactor: Expose creation changed.\nRefactor: Exposes no longer use states from legacy code\nFeature: Offer state rebuild function in Settings\n: Additional filters for device display\nFix: Orphaned group states detected, marked and deletable\nUpdate: ZH 7.x\nUpdate: ZHC 25.84.0",
+        "de": "Fix: Dynamische Modellzuweisung bei Belichtungen ist Funktion (PTVO, BuschJaeger)\nFix: Roles\nRefactor: Legacy-Code bewegt\nHersteller: Expose Kreation geändert.\nRefactor: Exposes verwendet nicht mehr Staaten von Legacy-Code\nFeature: Offer state rebuild Funktion in Einstellungen\n: Zusätzliche Filter für Geräteanzeige\nFix: Verwaiste Gruppenzustände erkannt, markiert und verblendet\nAktualisierung: ZH 7.x\nAktualisierung: ZHC 25.84.0",
+        "ru": "Исправление: назначение динамической модели при раскрытии функции (PTVO, BuschJaeger)\nИсполнитель: Roles\nРефактор: код Legacy перемещен\nРефактор: Создание экспозиции изменилось.\nRefactor: EXPOES больше не используют устаревший код\nФункция: Предложите функцию восстановления состояния в настройках\nДополнительные фильтры для отображения устройства\nИсправление: обнаруженные, помеченные и удаляемые состояния орфанной группы\nОбновление: ZH 7.x\nОбновление: ZHC 25.84.0",
+        "pt": "Corrigir: atribuição dinâmica do modelo quando expõe é função (PTVO, BuschJaeger)\nCorrigir: Funções\nRefactor: Código de legado movido\nRefactor: Expor a criação mudou.\nRefator: Expos não usam mais estados do código legado\nCaracterística: Ofereça a função de reconstrução do estado em Configurações\n: Filtros adicionais para exibição do dispositivo\nCorrigir: estados de grupo órfão detectados, marcados e deletáveis\nActualização: ZH 7.x\nAtualização: ZHC 25.84.0",
+        "nl": "Fix: dynamische modeltoewijzing wanneer blootgesteld is functie (PTVO, BuschJaeger)\nFix: rollen\nRefactor: Legacy code verplaatst\nRefactor: Aanmaak gewijzigd tonen.\nRefactor: Exposes gebruikt geen staten meer van legacy code\nFunctie: Aanbieden status wederopbouw functie in Instellingen\n: Extra filters voor apparaatweergave\nFix: weesgroep staten gedetecteerd, gemarkeerd en deletable\nUpdate: ZH 7.x\nUpdate: ZHC 25.84.0",
+        "fr": "Correction : attribution de modèle dynamique lorsque l'exposition est fonction (PTVO, BuschJaeger)\nCorrection : Rôles\nRefactor: Legacy code déplacé\nRefacteur: La création d'exposition a changé.\nRefactor: Les expositions n'utilisent plus les états à partir du code ancien\nCaractéristique: Offre la fonction de reconstruction de l'état dans les paramètres\n: Filtres supplémentaires pour l'affichage des appareils\nCorrection : États de groupe orphelins détectés, marqués et délaissables\nMise à jour : ZH 7.x\nMise à jour: ZHC 25.84.0",
+        "it": "Fisso: l'assegnazione dinamica del modello quando espone è funzione (PTVO, BuschJaeger)\nFisso: Roles\nRefactor: Legacy code move\nRefactor: La creazione dell'esposizione è cambiata.\nRefactor: Exposes not use stati from legacy code\nCaratteristica: Offrire la funzione di ricostruzione dello stato in Impostazioni\n: Filtri aggiuntivi per display del dispositivo\nFisso: Stati del gruppo orfano rilevati, contrassegnati e cancellabili\nAggiornamento: ZH 7.x\nAggiornamento: ZHC 25.84.0",
+        "es": "Fijación: asignación de modelos dinámicos cuando se expone es función (PTVO, BuschJaeger)\nCorrección: Papeles\nRefactor: Se movió el código de Legacy\nRefactor: La creación de la exposición cambió.\nRefactor: Los Exposes ya no utilizan estados del código hereditario\nCaracterística: Oferta función de reconstrucción estatal en Ajustes\n: Filtros adicionales para la pantalla del dispositivo\nFijación: Estados del grupo huérfano detectados, marcados y eliminables\nActualización: ZH 7.x\nActualización: ZHC 25.84.0",
+        "pl": "Fix: przypisanie modelu dynamicznego, gdy funkcja eksponuje (PTVO, BuschJaeger)\nFix: Roles\nWspółczynnik: Przesunięty kod legacy\nWspółczynnik: Odkryj, że kreacja się zmieniła.\nRefaktor: Ekspozycje nie wykorzystują już stanów z dotychczasowego kodu\nCecha: Oferta funkcji odbudowy państwa w ustawieniach\n: Dodatkowe filtry do wyświetlania urządzeń\nFix: Osierocone państwa grupowe wykryte, oznaczone i usunięte\nAktualizacja: ZH 7.x\nAktualizacja: ZHC 25.84.0",
+        "uk": "Виправлення: динамічне завдання моделі при налаштуванні функції (PTVO, BuschJaeger)\nФіксація: Ролі\nРефактор: код Legacy переїхав\nРефактор: Змінено виставку.\nРефактор: Виставки більше не використовують стани з коду спадкування\nХарактеристика: Пропозиція функції державного відновлення в налаштуваннях\n: Додаткові фільтри для відображення пристрою\nВиправлення: Виявлені орфагенти групи, позначені та видалені\nОновлення: ZH 7.x\nОновлення: ZHC 25.84.0",
+        "zh-cn": "Fix: 曝光时的动态模型任务为函数( PTVO, Busch Jaeger)\n修补:角色\n内容: 遗留代码已移动\n重构 : 展览的创作改变了.\n内容: 展览不再使用遗留代码中的状态\n特性: 在设置中提供状态重建功能\n: 设备显示的额外过滤器\n修复:发现、标记和删除孤儿群体状态\n最新情况:ZH 7.x\n最新情况:ZHC 25.84.0"
+      },
       "3.2.5": {
         "en": "changed setState for lasterror",
         "de": "geändert setState für lasterror",
@@ -80,19 +93,6 @@
         "pl": "usuń lokalne nadjazdy z zakładki config\ntworzy lokalną kartę danych w konfigu, aby edytować globalne i na poziomie urządzenia ustawienia i opcje\nusuń kartę lokalnych nadwozi\nusuń możliwość ustawiania nadwyżek poziomu modelu z zakładki urządzenia.\nnaprawić błędy urządzeń 'sondażowych' ze zmienionymi okresami ankiety.\nikona ostrzegawcza dla urządzeń, które nie są w pełni przesłuchane.\nulepszone wykrywanie routerów w celu otwarcia sieci\nbugfix: otwarta sieć na routerze\nZHC 25.x najnowszy, ZH 6.1.3,\nprzywracanie z kopii zapasowej in- adaptera",
         "uk": "видалити локальну вкладку overrides з налаштування\nвстановити локальну вкладку даних в конфігурацію для редагування параметрів рівня глобального та пристрою та параметрів\nвидалити локальну вкладку\nприбрати можливість встановити рівень моделі перенаряддя з вкладки пристрою.\nфіксувати помилки для пристроїв «запилення» з змінними термінами опитування.\nзначок попередження для пристроїв, які не повністю опитуються.\nполіпшення виявлення маршрутизатора для відкриття мережі\nвиправлення помилок: відкрита мережа на маршрутизаторі\nZHC 25.x останнє, ZH 6.1.3,\nвідновлення з резервної копії",
         "zh-cn": "从配置中删除本地覆盖标签\n在配置中建立本地数据标签以编辑全局和设备级别设置和选项\n删除本地覆盖标签\n从设备标签中删除设置模型级别覆盖的能力 .\n修正“ 投票” 设备的错误, 并更改投票时间 .\n警告未完全访问设备的图标.\n为打开网络改进路由器检测\n错误修正: 在路由器上打开网络\nZHC 25.x最新版,ZH 6.1.3,\n从适应中备份恢复"
-      },
-      "3.1.6": {
-        "en": "Bugfixes\n",
-        "de": "Bugfixes\n",
-        "ru": "Багфиксы\n",
-        "pt": "Correcções de Erros\n",
-        "nl": "Bugfixes\n",
-        "fr": "Fixes de bogue\n",
-        "it": "Bugfix\n",
-        "es": "Bugfixes\n",
-        "pl": "Korekty błędów\n",
-        "uk": "Помилки\n",
-        "zh-cn": "错误修正\n"
       }
     },
     "titleLang": {
