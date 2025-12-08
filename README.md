@@ -38,8 +38,8 @@ Current firmware files for these devices can be found [on GitHub](https://github
 Conbee/RaspBee Support is no longer considered experimental in the zigbee-herdsman and zigbee-herdsman-converters libraries used by the zigbee Adapter, use of these devices with the adapter may limit functionality. Known issues are:
 - link quality display may be incorrect
 - device map metrics may be incorrect
-- NVRam Backup is not supported.
-- channel change is not supported.
+- NVRam Backup is not currently supported.
+- channel change is not currently supported.
 
 ### Silicon Labs SoC
 
@@ -55,19 +55,8 @@ Support for [ZiGate](https://zigate.fr) based adapters is experimental. The init
 
 The adapter should **always** be installed from within the ioBroker Admin. Direct npm and GitHub installations are **not recommended**.
 
-At first start, it is vital to set up the adapter settings. These include:
-- the communication to the zigbee Coordinator (COM Port). This can be a device identifier or a network address for Network-based coordinators
-- the required firmware-Type
-- the network parameters PanID (a number between 0 and 65565), extended PanID (a 16 digit HEX number) and the zigbee Channel **important: Do not run the adapter without changing the values for PanID (6754) and Extended PanID (DDDDDDDDDDDDDDDD) to unique values for your Zigbee Installation. From v3.0 onwards, the adapter will suggest a unique ExtPanID on any new install**
-
-
-![](docs/en/img/Zigbee_config_en.png)
-
-The *Test Port* and *Star/Stop* buttons are provided to test the settings.
-
-**Once the settings are verified the adapter can be prepared for automatic start by setting the CheckBox *start the zigbee network automatically* and saving the parameters.**
-
-Please refer to the [in depth documentation](docs/en/readme.md) ([german version](docs/de/readme.md), [russian version](docs/ru/readme.md)) for a detailed explanation on how to configure the adapter.
+At first start, it is vital to set up the adapter settings.
+Please refer to the [in depth documentation](docs/en/readme.md) ([german version](docs/de/readme.md), [russian version](docs/ru/readme.md)) and/or the [wiki](https://github.com/ioBroker/ioBroker.zigbee/wiki) for more information and a step-by-step guide on how to configure the adapter.
 
 Once the adapter is up and running, the desired devices need to be integrated into the network. This requires for both the adapter and the device to be in pairing mode. Most new devices will be in pairing-mode when they are powered up for the first time, but some will require a special procedure for this. Please refer to the device manual for information on this.
 
@@ -76,63 +65,61 @@ The adapter is placed in pairing mode by pressing the pairing button:
 
 A dialog showing a pairing countdown appears. When a new device is discovered, interviewed and paired with the network, messages will be shown in this dialog, and the device will show up in the grid of active devices. Any known device should show up with an image and the correct device name, as well as a number of changable settings. Any unknown device will show up with a device name and a ? as icon, while devices which failed the pairing will show up as 'unknown' with the same ? icon. These should be removed from the network to be paired again. Please refer to the documentation linked above for more details.
 
+## Configuration Tabs
 
-## In Depth Documentation
+The adapter configuration is done completely and solely through the instance settings. It is split into 4 sections, which are covered in detail below. Within the instance settings, there is only limited access to operational functionalities. There is no controllable list of devices, nor is there access to advanced pairing modes or device-level configurations. Instead, the configuration offers the option to rebuild the states and/or trigger a device image download through the Zigbee adapter buttons.
 
-In depth information can be found here [auf deutsch](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/de/readme.md), here [in english](https://github.com/ioBroker/ioBroker.zigbee/blob/master/docs/en/readme.md). There is more information on the [wiki](https://github.com/ioBroker/ioBroker.zigbee/wiki) as well.
+### SETTINGS
 
-## Advanced options
+This tab contains the general adapter settings. Most of the adapter behaviour is configured on this tab.
 
-### Groups
+It also include the setting for external converters, which currently read relative to 2 folders:
+- The adapters Data folder, i.e. the folder where the `sheperd.db`, `nvbackup.json` and `LocalOverrides.json` are located
+- The adapters internal storage of external converters, i.e. `iobroker.zigbee/converters`.
 
-The adapter allows for the creation of groups via the 'add group' button. Once a group has been formed, devices can be added to and removed from the group from the device card. Removal is also possible from the group card.
-Groups have the advantage that a single command is sent to control all group members. This is especially helpful when changing the groups brightness and/or color settings.
-Note that not all devices may be added to groups - the device itself needs to support this feature.
+Any user who whishes to share their external converters with the users of the adapter can open an issue or PR to have them added to the `converters` repository. **Note:** The adapter developers will **not** maintain these external converters. Each converter accepted into the repository will need to include some form of author identification.
 
-Group configuration is available from the device grid.
+External converters are only loaded **when configured**, i.e. without the respective entry in the External converters field, they will remain unused.
 
-### Bindings
+Changes to this tab trigger an automatic restart of the adapter upon leaving the settings.
 
-Bindings can be used to link a remote control directly to a device, like it is e.g. done for the ikea devices. This binding has the advantage that bound devices will continue to work together even if the Zigbee Coordinator is unavailable.
-Note that not all devices may be part of a binding - the devices themselves need to support this feature.
+### HARDWARE
 
-The binding configuration is only available from the zigbee tab
+This tab contains the Zigbee-Hardware specific settings. Network and Coordinator parameters are set in this tab. It also offers the option to test hardware related settings **without** saving them, giving the user the ability to see how a change in hardware parameters will affect their network. Local backup/restore options for zigbee-adapter local data (Zigbee database, NVRam backup and Local Overrides) are also provided.
+
+**Note** This tab also contains the option if to start the zigbee network automatically.
+
+Changes to this tab trigger an automatic restart of the adapter upon leaving the settings.
+
+### LOCAL DATA
+
+This tab offers the option to do model-level configuration for device behaviour. Currently, model Options, the default device name and the default device Icon can be set through this tab. Most of the advanced options from Z2M are made available for configuration here. It also offers the option to delete devices.
+
+Changes to this tab **do not** trigger an automatic restart of the adapter upon leaving the settings.
+
+### DEVELOPER
+
+The developer tab offers the option to communicate directly with the device based on ZCL Clusters and attributes. Proper use of this requires access to the cluster definition as well as additional device specific documentation. The results generated through this help with generating an external converter for a currently unknown device.
+
+Changes to this tab **do not** trigger an automatic restart of the adapter upon leaving the settings.
+
+## Sidebar Tabs
+
+Most of the 'normal' operation of the adapter should be performed using the sidebar tabs. Through the Zigbee adapter buttons, the tab offers the ability to
+- trigger a firmware update check for all devices
+- create a new group
+- perform a touchlink reset
+- pair devices which require a pairing code
+
+### Devices
+
+The devices tab shows the device tiles, which offer access to a subset of states to display / control for each device, as well as general information on the device. Device tiles can be flipped over to reveal additional information and a row of buttons which allow the operator to rename the devivc, assign device-level options, change the device icon, enable/disable the device or per-device debug and reconfigure the device and manage group membership of devices which can join groups.
 
 ### Network Map
 
-The adapter has the ability to generate a map of the mesh network. This usually takes a few minutes and provides a momentary glimpse into how the devices are meshed with each other.
+The network map shows **a Snapshot** of the mesh network. The accuracy of the snapshot relies heavily on the stability of the network and the willingness of the included devices to respond to LQI and Routing requests. After the adapter is started, the map is inactive and incomplete. It must first be generated using the button on the map background or from the map settings. Once a map was generated, it is available in any openend browser window or tab without regeneration. Generating the map can take several minutes to complete, during which time an additional button will appear in the title bar to show the progress.
 
-The network map is only available the zigbee tab.
-
-### Debug information
-
-The Adapter offers to collect debug information for specific devices in order to identify problems in device operation and integration. This needs to be enabled on the desired devices from the device grid.
-
-The debug information is only available from the zigbee tab.
-
-### Local overrides (Only available until v3.1.5)
-
-~~Device integration can be modified on a *per Model* basis, allowing the user to customise the states associated with the device. Note that before version 3.1.0, this is limited to choosing between the default *expose based* integration and the previous *legacy* integration. More options for customisation are under development.~~
-
-The local overrides are only available from the instance configuration
-
-### Local data (available v3.2.0 or newer)
-
-Options, name and icon can be set on a model base from this section. Note: The legacy option (if offered) will revert to the legacy code in the adapter.
-Changing anything here **may** require a restart of the adapter before it becomes active.
-
-The local data are only available from the instance configuration
-
-### Developer Mode
-
-The developer mode offers the ability to communicate with any paired device solely based on the details of the Zigbee communication rules. Use of this requires an insight into Zigbee Clusters, Attributes and messaging structure. It can be used to control devices which are not currently supported. An in depth desctiption of the developer Tab is available in the documentation.
-
-The developer tab is only available from the instance configuration
-
-
-
-### Additional info
-
+## Additional info
 
 There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality which is based on the same technology. It uses the same base libraries for hardware communication and device integration. Any device listed as compatible in this project is likely to be compatible with the ioBroker.zigbee Adapter. Note that there is a delay between device integration into zigbee2mqtt.io and the Zigbee-Adapter, as compatibility with the hardware libraries requires verification before the adapter can move to the latest version.
 
@@ -154,8 +141,8 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### 3.3.1-alpha.0 (2025-12-08)
-*
+### **WORK IN PROGRESS**
+* Update documentation
 *
 
 ### 3.3.0 (2025-12-08)
