@@ -3,19 +3,6 @@
     "name": "zigbee",
     "version": "3.3.1-alpha.0",
     "news": {
-      "3.3.1-alpha.0": {
-        "en": "\n",
-        "de": "\n",
-        "ru": "\n",
-        "pt": "\n",
-        "nl": "\n",
-        "fr": "\n",
-        "it": "\n",
-        "es": "\n",
-        "pl": "\n",
-        "uk": "\n",
-        "zh-cn": "\n"
-      },
       "3.3.0": {
         "en": "Fix: dynamic model assignment when exposes is function (PTVO, BuschJaeger)\nFix: Roles\nRefactor: Legacy code moved\nRefactor: Expose creation changed.\nRefactor: Exposes no longer use states from legacy code\nFeature: Offer state rebuild function in Settings\n: Additional filters for device display\nFix: Orphaned group states detected, marked and deletable\nUpdate: ZH 7.x\nUpdate: ZHC 25.84.0",
         "de": "Fix: Dynamische Modellzuweisung bei Belichtungen ist Funktion (PTVO, BuschJaeger)\nFix: Roles\nRefactor: Legacy-Code bewegt\nHersteller: Expose Kreation geändert.\nRefactor: Exposes verwendet nicht mehr Staaten von Legacy-Code\nFeature: Offer state rebuild Funktion in Einstellungen\n: Zusätzliche Filter für Geräteanzeige\nFix: Verwaiste Gruppenzustände erkannt, markiert und verblendet\nAktualisierung: ZH 7.x\nAktualisierung: ZHC 25.84.0",
