@@ -165,8 +165,7 @@
         "es": "Zigbee",
         "pl": "Zigbee",
         "zh-cn": "Zigbee"
-      },
-      "fa-icon": "</i><img style='width:24px;margin-bottom:-6px;' src='/adapter/zigbee/zigbee.svg'><i>"
+      }
     },
     "plugins": {
       "sentry": {
