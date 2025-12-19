@@ -130,15 +130,13 @@ class Zigbee extends utils.Adapter {
                     const Sentry = sentryInstance.getSentryObject();
                     if (Sentry) {
                         if (message) {
-                            Sentry.configureScope(scope =>
-                                scope.addBreadcrumb({
-                                    type: 'error', // predefined types
-                                    category: 'error message',
-                                    level: 'error',
-                                    message
-                                }));
+                            Sentry && Sentry.withScope(scope => scope.addBreadcrumb({
+                                type: 'error', // predefined types
+                                category: 'error message',
+                                level: 'error',
+                                message
+                            }));
                         }
-
                         if (typeof error == 'string') {
                             Sentry.captureException(new Error(error));
                         } else {
@@ -641,13 +639,13 @@ class Zigbee extends utils.Adapter {
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
-    async syncAllDeviceStates(resetRoles) {
+    async syncAllDeviceStates(rebuildStates) {
         this.stController.CleanupRequired(false);
-        if (resetRoles) this.stController.clearModelDefinitions();
+        if (rebuildStates) this.stController.clearModelDefinitions();
         const devicesFromObjects = (await this.getDevicesAsync()).filter(item => item.native.id.length ==16).map((item) => `0x${item.native.id}`);
         const devicesFromDB = this.zbController.getClientIterator(false);
         for (const device of devicesFromDB) {
-            if (resetRoles) {
+            if (rebuildStates) {
                 const hM = await zigbeeHerdsmanConverters.findByDevice(device);
                 await this.stController.AddModelFromHerdsman(device, hM ? hM.model : device.modelID);
             }
@@ -660,7 +658,7 @@ class Zigbee extends utils.Adapter {
             if (entity) {
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
                 this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
-                    this.stController.syncDevStates(device, model, resetRoles));
+                    this.stController.syncDevStates(device, model, rebuildStates));
             }
             else (this.log.debug('resolveEntity returned no entity'));
         }
@@ -705,15 +703,12 @@ class Zigbee extends utils.Adapter {
         await this.stController.AddModelFromHerdsman(entity.device, model)
         if (device) {
             this.getObject(zbIdorIeeetoAdId(this, device.ieeeAddr, false), (err, obj) => {
-                if (!obj) {
-                    const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
-                    if (this.debugActive) this.log.debug(`new device ${device.ieeeAddr} ${device.networkAddress} ${model} `);
+                const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
+                if (this.debugActive) this.log.debug(`new device ${device.ieeeAddr} ${device.networkAddress} ${model} `);
 
-                    this.logToPairing(`New device joined '${device.ieeeAddr}' model ${model}`, true);
-                    this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
-                        this.stController.syncDevStates(device, model, false));
-                }
-                else if (this.debugActive) this.log.debug(`Device ${safeJsonStringify(entity)} rejoined, no new device`);
+                this.logToPairing(`New device joined '${device.ieeeAddr}' model ${model}`, true);
+                this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
+                    this.stController.syncDevStates(device, model, true));
             });
         }
     }
