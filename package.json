@@ -23,7 +23,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.3.2",
     "@iobroker/dm-utils": "^1.0.13",
-    "humanize-duration": "^3.33.1",
+    "humanize-duration": "^3.33.2",
     "tar": "^7.5.2",
     "ajv": "^8.17.1",
     "uri-js": "^4.4.1",
@@ -38,7 +38,7 @@
     "@alcalzone/release-script-plugin-license": "^4.0.0",
     "@alcalzone/release-script-plugin-manual-review": "^4.0.0",
     "@iobroker/testing": "^5.2.2",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.4",
     "mixin-deep": "^2.0.1",
