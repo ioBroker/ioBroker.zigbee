@@ -763,16 +763,18 @@ function getDashCard(dev, groupImage, groupstatus) {
     const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
-        let val = stateDef.val || '';
+        let val = stateDef.val === undefined ? '' : stateDef.val;
         if (stateDef.role === 'switch' && stateDef.write) {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? 'checked' : ''}><span class="lever"></span></label></span>`;
         } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
-            val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
+            val = `<span class="range-field dash"><input type="range" min="0" max="100" value="${(val != '') ? val : 0}" /></span>`;
         } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
             val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
+//        } else if (stateDef.role === 'button') {
         } else if (stateDef.type === 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
-            val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+//            val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+            val = `<label class="dash"><input type="radio" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
         } else if (stateDef.role === 'level.color.rgb') {
             const options = []
             for (const key of namedColors) {
@@ -799,6 +801,9 @@ function getDashCard(dev, groupImage, groupstatus) {
         } else if (stateDef.write) {
             return;
             // val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
+        }
+        else if (stateDef.type === 'number') {
+            val = `<span class="dash value">${val ? val : 0} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
         else {
             val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
@@ -850,7 +855,8 @@ function setDashStates(id, state) {
             } else if (stateDef.states && stateDef.write) {
                 $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
             } else if (stateDef.type === 'boolean') {
-                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+//                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+                $(`#${sid}`).find('input[type=\'radio\']').prop('checked', state.val);
             } else {
                 $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
             }
