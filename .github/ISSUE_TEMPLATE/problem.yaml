@@ -9,6 +9,8 @@ body:
               - check whether the issue is linked to a single device or a group of devices
               - verify that you can recreate the issue by executing a limited number of steps
               - do **not** use this issue template to request support for new devices.
+              - ensure that the issue is present in the current latest and/or current GitHub version. **issues raised without being tested with at least the current latest versions will not be analysed**
+              
     - type: textarea
       id: what_problem
       attributes:
