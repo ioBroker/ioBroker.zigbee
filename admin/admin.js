@@ -736,6 +736,14 @@ function getDeviceCard(devId) {
     return $('#devices').find(`div[id='${namespace}.${devId}']`);
 }
 
+function sortStateDefs(a, b) {
+    if (a.isInternalState != b.isInternalState)
+        return a.isInternalState ? -1 : 1;
+    if (a.write != b.write)
+        return a.write ? -1 : 1;
+    return a.id.localeCompare(b.id);
+}
+
 function getDashCard(dev, groupImage, groupstatus) {
     const title = dev.common.name,
         id = dev._id,
@@ -760,7 +768,7 @@ function getDashCard(dev, groupImage, groupstatus) {
         //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
         //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
-    const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
+    const info = (dev.statesDef) ? dev.statesDef.sort(sortStateDefs).map((stateDef) => {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
         let val = stateDef.val === undefined ? '' : stateDef.val;
@@ -770,12 +778,11 @@ function getDashCard(dev, groupImage, groupstatus) {
             val = `<span class="range-field dash"><input type="range" min="0" max="100" value="${(val != '') ? val : 0}" /></span>`;
         } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
             val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
-//        } else if (stateDef.role === 'button') {
         } else if (stateDef.type === 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
-//            val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
-            val = `<label class="dash"><input type="radio" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
-        } else if (stateDef.role === 'level.color.rgb') {
+            if (stateDef.write) val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+            else val = `<label class="dash"><input type="radio" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+        } else if (stateDef.role === 'level.color') {
             const options = []
             for (const key of namedColors) {
                 options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
@@ -855,7 +862,7 @@ function setDashStates(id, state) {
             } else if (stateDef.states && stateDef.write) {
                 $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
             } else if (stateDef.type === 'boolean') {
-//                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+            //  $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
                 $(`#${sid}`).find('input[type=\'radio\']').prop('checked', state.val);
             } else {
                 $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
@@ -866,6 +873,13 @@ function setDashStates(id, state) {
 
 function hookControls() {
     $('input[type=\'checkbox\']').change(function (event) {
+        console.warn('write triggered')
+        const val = $(this).is(':checked');
+        const id = $(this).parents('.state').attr('oid');
+        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
+        });
+    });
+    $('input[type=\'radio\']').change(function (event) {
         const val = $(this).is(':checked');
         const id = $(this).parents('.state').attr('oid');
         sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
