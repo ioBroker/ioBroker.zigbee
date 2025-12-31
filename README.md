@@ -143,6 +143,12 @@ You can thank the authors by these links:
 ## Changelog
 ### **WORK IN PROGRESS**
 * Update documentation
+* Color Hue/Saturation in Groups
+* ZH8
+* Sort by model in Admin
+* Object for complex exposes
+* POSSIBLY BREAKING: Complex exposes changed to 'channel / state' structure
+* Bugfixes
 *
 
 ### 3.3.0 (2025-12-08)
