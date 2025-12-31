@@ -4604,13 +4604,9 @@ function sortByLoad(element) {
 function sortByModel(element) {
     try {
         const modelNode = element.querySelector('[id$="model_name"]');
-        if (!modelNode) return 0;
-        const txt = modelNode.textContent || modelNode.innerText || '';
-        const m = txt.match(/-?\d+(.\d+)?/);
-        const val = m ? parseFloat(m[0]) : 0;
-        return -val;
+        return modelNode?.textContent || modelNode?.innerText || '';
     } catch (e) {
-        return 0;
+        return '';
     }
 }
 
