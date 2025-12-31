@@ -144,7 +144,7 @@ You can thank the authors by these links:
 ### 3.3.1 (2025-12-31)
 * Update documentation
 * Color Hue/Saturation in Groups
-* ZH8
+* Zigbee-Herdsman v8.x.x
 * Sort by model in Admin
 * Object for complex exposes
 * POSSIBLY BREAKING: Complex exposes changed to 'channel / state' structure
