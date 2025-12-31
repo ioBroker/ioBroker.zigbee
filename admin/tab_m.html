@@ -401,6 +401,24 @@
         margin-left: 25px;
         margin-top: -1px;
     }
+    .m .dash input[type=radio]:checked+span:not(.lever):before {
+        width: 12px;
+        height: 12px;
+    }
+    .m .dash input[type=radio]:checked+span:not(.lever):after {
+        width: 12px;
+        height: 12px;
+    }
+    .m .dash input[type=radio]+span:not(.lever):before {
+        width: 12px;
+        height: 12px;
+    }
+    .m .dash input[type="radio"]+span:not(.lever) {
+        width: 12px;
+        height: 12px;
+        margin-left: 25px;
+        margin-top: -1px;
+    }
     .m .dash input[type=checkbox]:not(:checked):disabled+span:not(.lever):before {
         background-color: rgba(0,0,0,.1);
     }
@@ -773,6 +791,7 @@
                                         <li class="device-order-item" data-type="default" tabindex="0"><a class="translate" data-lang="Default">Default</a></li>
                                         <li class="device-order-item" data-type="range" tabindex="0"><a class="translate" data-lang="Range">Range</a></li>
 										<li class="device-order-item" data-type="load" tabindex="0"><a class="translate" data-lang="Load">Load</a></li>
+										<li class="device-order-item" data-type="model" tabindex="0"><a class="translate" data-lang="Model">Model</a></li>
                                     </ul>
                                 </div>
                             </li>

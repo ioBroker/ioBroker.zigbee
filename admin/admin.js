@@ -525,7 +525,7 @@ function getCard(dev) {
                     <ul>
                         <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
                         <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
-                        <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
+                        <li><span class="labelinfo">model:</span><span id="model_name">${modelUrl}</span></li>
                         ${groupInfo}
                         ${roomInfo}
                     </ul>
@@ -736,6 +736,14 @@ function getDeviceCard(devId) {
     return $('#devices').find(`div[id='${namespace}.${devId}']`);
 }
 
+function sortStateDefs(a, b) {
+    if (a.isInternalState != b.isInternalState)
+        return a.isInternalState ? -1 : 1;
+    if (a.write != b.write)
+        return a.write ? -1 : 1;
+    return a.id.localeCompare(b.id);
+}
+
 function getDashCard(dev, groupImage, groupstatus) {
     const title = dev.common.name,
         id = dev._id,
@@ -760,20 +768,21 @@ function getDashCard(dev, groupImage, groupstatus) {
         //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
         //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
-    const info = (dev.statesDef) ? dev.statesDef.map((stateDef) => {
+    const info = (dev.statesDef) ? dev.statesDef.sort(sortStateDefs).map((stateDef) => {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
-        let val = stateDef.val || '';
+        let val = stateDef.val === undefined ? '' : stateDef.val;
         if (stateDef.role === 'switch' && stateDef.write) {
             val = `<span class="switch"><label><input type="checkbox" ${(val) ? 'checked' : ''}><span class="lever"></span></label></span>`;
         } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
-            val = `<span class="range-field dash"><input type="range" min="0" max="100" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
+            val = `<span class="range-field dash"><input type="range" min="0" max="100" value="${(val != '') ? val : 0}" /></span>`;
         } else if (stateDef.role === 'level.color.temperature' && stateDef.write) {
             val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
         } else if (stateDef.type === 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
-            val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
-        } else if (stateDef.role === 'level.color.rgb') {
+            if (stateDef.write) val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+            else val = `<label class="dash"><input type="radio" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+        } else if (stateDef.role === 'level.color') {
             const options = []
             for (const key of namedColors) {
                 options.push(`<option value="${key}" ${val===key ? 'selected' : ''}>${key}</option>`);
@@ -799,6 +808,9 @@ function getDashCard(dev, groupImage, groupstatus) {
         } else if (stateDef.write) {
             return;
             // val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
+        }
+        else if (stateDef.type === 'number') {
+            val = `<span class="dash value">${val ? val : 0} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
         else {
             val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
@@ -850,7 +862,8 @@ function setDashStates(id, state) {
             } else if (stateDef.states && stateDef.write) {
                 $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
             } else if (stateDef.type === 'boolean') {
-                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+            //  $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+                $(`#${sid}`).find('input[type=\'radio\']').prop('checked', state.val);
             } else {
                 $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
             }
@@ -860,6 +873,13 @@ function setDashStates(id, state) {
 
 function hookControls() {
     $('input[type=\'checkbox\']').change(function (event) {
+        console.warn('write triggered')
+        const val = $(this).is(':checked');
+        const id = $(this).parents('.state').attr('oid');
+        sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
+        });
+    });
+    $('input[type=\'radio\']').change(function (event) {
         const val = $(this).is(':checked');
         const id = $(this).parents('.state').attr('oid');
         sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
@@ -4545,6 +4565,10 @@ function doSort() {
             shuffleInstance.sort({
                 by: sortByLoad
             });
+        } else if (sortOrder === 'model') {
+            shuffleInstance.sort({
+                by: sortByModel
+            });
         }
     }
 }
@@ -4577,6 +4601,14 @@ function sortByLoad(element) {
     }
 }
 
+function sortByModel(element) {
+    try {
+        const modelNode = element.querySelector('[id$="model_name"]');
+        return modelNode?.textContent || modelNode?.innerText || '';
+    } catch (e) {
+        return '';
+    }
+}
 
 function updateDevice(id) {
     if (devices.length > 0)
