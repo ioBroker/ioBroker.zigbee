@@ -525,7 +525,7 @@ function getCard(dev) {
                     <ul>
                         <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
                         <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
-                        <li><span class="labelinfo">model:</span><span>${modelUrl}</span></li>
+                        <li><span class="labelinfo">model:</span><span id="model_name">${modelUrl}</span></li>
                         ${groupInfo}
                         ${roomInfo}
                     </ul>
@@ -4565,6 +4565,10 @@ function doSort() {
             shuffleInstance.sort({
                 by: sortByLoad
             });
+        } else if (sortOrder === 'model') {
+            shuffleInstance.sort({
+                by: sortByModel
+            });
         }
     }
 }
@@ -4597,6 +4601,18 @@ function sortByLoad(element) {
     }
 }
 
+function sortByModel(element) {
+    try {
+        const modelNode = element.querySelector('[id$="model_name"]');
+        if (!modelNode) return 0;
+        const txt = modelNode.textContent || modelNode.innerText || '';
+        const m = txt.match(/-?\d+(.\d+)?/);
+        const val = m ? parseFloat(m[0]) : 0;
+        return -val;
+    } catch (e) {
+        return 0;
+    }
+}
 
 function updateDevice(id) {
     if (devices.length > 0)
