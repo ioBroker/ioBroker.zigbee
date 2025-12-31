@@ -658,7 +658,7 @@ class Zigbee extends utils.Adapter {
             if (entity) {
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
                 this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
-                    this.stController.syncDevStates(device, model, rebuildStates));
+                    this.stController.syncDevStates(device, model));
             }
             else (this.log.debug('resolveEntity returned no entity'));
         }
@@ -708,7 +708,7 @@ class Zigbee extends utils.Adapter {
 
                 this.logToPairing(`New device joined '${device.ieeeAddr}' model ${model}`, true);
                 this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
-                    this.stController.syncDevStates(device, model, true));
+                    this.stController.syncDevStates(device, model));
             });
         }
     }
