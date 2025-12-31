@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.3.1 (2025-12-31)
 * Update documentation
 * Color Hue/Saturation in Groups
 * ZH8

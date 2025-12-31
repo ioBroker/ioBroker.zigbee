@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.1-alpha.0",
+    "version": "3.3.1",
     "news": {
+      "3.3.1": {
+        "en": "Update documentation\nColor Hue/Saturation in Groups\nZH8\nSort by model in Admin\nObject for complex exposes\nPOSSIBLY BREAKING: Complex exposes changed to 'channel / state' structure\nBugfixes\n",
+        "de": "Dokumentation zur Aktualisierung\nFarbe Hue/Sättigung in Gruppen\nZH8\nSortieren nach Modell in Admin\nObjekt für komplexe Exponate\nPOSSIBLY BREAKING: Komplex enthüllt geändert in 'Kanal / Zustand' Struktur\nBugfixes\n",
+        "ru": "Обновленная документация\nЦветовой оттенок / насыщение в группах\nZH8\nСортировка по модели в Admin\nОбъект для сложных разоблачений\nВозможное расширение: комплекс подвергается изменениям в структуре «канал / состояние»\nБагфиксы\n",
+        "pt": "Atualizar documentação\nTom de cor/saturação em grupos\nZH8\nOrdenar por modelo no administrador\nObjeto para exposições complexas\nPOSSIBly BREAKING: Complexo expõe alterado para estrutura 'canal / estado'\nCorrecções de Erros\n",
+        "nl": "Documentatie bijwerken\nKleurtoon/verzadiging in groepen\nZH8\nSorteer op model in Admin\nObject voor complexe blootstellingen\nPOSSILY BREAKING: Complex stelt 'channel / state' structuur bloot\nBugfixes\n",
+        "fr": "Mettre à jour la documentation\nCouleur Hue/Saturation en groupes\nZH8\nTrier par modèle dans Admin\nObjet pour des expositions complexes\nPOSSIBILITÉ : Les expositions complexes ont changé à la structure « canal / état »\nFixes de bogue\n",
+        "it": "Documentazione di aggiornamento\nColor Hue/Saturazione in gruppi\nZH8\nOrdina per modello in Admin\nOggetto per esposizioni complesse\nPOSSIBILE BREAKING: Complesso espone cambiato in struttura 'canale / stato'\nBugfix\n",
+        "es": "Documentación actualizada\nColor Hue/Saturación en Grupos\nZH8\nOrdenar por modelo en Admin\nObjeto para exposiciones complejas\nPOSSIBLY BREAKING: Complejo expone cambiado a la estructura 'canal / estado'\nBugfixes\n",
+        "pl": "Aktualizacja dokumentacji\nKolor barwy / nasycenie w grupach\nZH8\nSortuj według modelu w Admin\nObiekt dla złożonych ekspozycji\nPOSIADANIE POŁOWÓW: Złożona ekspozycja zmieniona na strukturę \"kanał / stan\"\nKorekty błędów\n",
+        "uk": "Документи\nКолір Hue / насичення груп\nЗХ8\nСортувати за моделлю в Admin\nОб'єкт для комплексних просторів\nPOSSIBLY BREAKING: Комплекс передбачає зміни до структури каналу / держави\nПомилки\n",
+        "zh-cn": "更新文件\n组中的颜色色调/ 饱和度\nZH8型电力机车\n按管理模式排序\n复杂曝光对象\nPOSSIBLY BREEAKING:复杂曝光改为\"通道/状态\"结构\n错误修正\n"
+      },
       "3.3.0": {
         "en": "Fix: dynamic model assignment when exposes is function (PTVO, BuschJaeger)\nFix: Roles\nRefactor: Legacy code moved\nRefactor: Expose creation changed.\nRefactor: Exposes no longer use states from legacy code\nFeature: Offer state rebuild function in Settings\n: Additional filters for device display\nFix: Orphaned group states detected, marked and deletable\nUpdate: ZH 7.x\nUpdate: ZHC 25.84.0",
         "de": "Fix: Dynamische Modellzuweisung bei Belichtungen ist Funktion (PTVO, BuschJaeger)\nFix: Roles\nRefactor: Legacy-Code bewegt\nHersteller: Expose Kreation geändert.\nRefactor: Exposes verwendet nicht mehr Staaten von Legacy-Code\nFeature: Offer state rebuild Funktion in Einstellungen\n: Zusätzliche Filter für Geräteanzeige\nFix: Verwaiste Gruppenzustände erkannt, markiert und verblendet\nAktualisierung: ZH 7.x\nAktualisierung: ZHC 25.84.0",
