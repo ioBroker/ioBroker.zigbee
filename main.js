@@ -706,7 +706,7 @@ class Zigbee extends utils.Adapter {
                 const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
                 if (this.debugActive) this.log.debug(`new device ${device.ieeeAddr} ${device.networkAddress} ${model} `);
 
-                this.logToPairing(`New device joined '${device.ieeeAddr}' model ${model}`, true);
+                if (!obj) this.logToPairing(`New device joined '${device.ieeeAddr}' model ${model}`, true);
                 this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
                     this.stController.syncDevStates(device, model));
             });

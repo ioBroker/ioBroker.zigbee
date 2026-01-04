@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "3.3.1",
+  "version": "3.3.2-alpha.0",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -28,8 +28,8 @@
     "ajv": "^8.17.1",
     "uri-js": "^4.4.1",
     "typescript": "^5.9.3",
-    "zigbee-herdsman": "^8.0.0",
-    "zigbee-herdsman-converters": "^25.85.0"
+    "zigbee-herdsman": "^8.0.1",
+    "zigbee-herdsman-converters": "^25.99.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
