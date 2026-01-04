@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.2",
+    "version": "3.3.3-alpha.1",
     "news": {
       "3.3.2": {
         "en": "Fix sync brightness / state\nFix bug in expose\nFix rewrite state config\n",

@@ -141,6 +141,12 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS
+*
+*
+*
+*
+## Changelog
 ### 3.3.2 (2026-01-04)
 * Fix sync brightness / state
 * Fix bug in expose
