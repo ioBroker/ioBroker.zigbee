@@ -143,6 +143,8 @@ You can thank the authors by these links:
 ## Changelog
 ### **WORK IN PROGRESS**
 * Fix sync brightness / state
+* Fix bug in expose
+* Fix rewrite state config
 *
 
 
