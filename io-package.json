@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.2-alpha.0",
+    "version": "3.3.2",
     "news": {
+      "3.3.2": {
+        "en": "Fix sync brightness / state\nFix bug in expose\nFix rewrite state config\n",
+        "de": "Synchronisierhelligkeit / Zustand\nFehler behoben in exponieren\nRewriting State config\n",
+        "ru": "Исправление яркости синхронизации / состояние\nУстранение ошибки в разоблачении\nRewrite state config (переписать конфигурацию состояния)\n",
+        "pt": "Corrigir o brilho / estado da sincronização\nCorrigir erro na exposição\nCorrigir a configuração do estado de reescrita\n",
+        "nl": "Synchronische helderheid / status herstellen\nFix bug in expos\nHerschrijf statusconfiguratie\n",
+        "fr": "Correction de la luminosité de synchronisation / état\nCorrection du bogue dans l'exposition\nCorrection de la configuration de l'état de réécriture\n",
+        "it": "Fissare la luminosità di sincronizzazione / stato\nFissare bug in esposizione\nRiparare la configurazione dello stato di riscrittura\n",
+        "es": "Fijar el brillo de sincronización / estado\nFijar fallo en exponer\nReescribir el config del estado\n",
+        "pl": "Napraw jasność / stan synchronizacji\nPopraw błąd w odsłonięciu\nPopraw stan konfiguracji\n",
+        "uk": "Виправлення сипучих яскравості / стану\nВиправлення помилок у вигнанні\nВиправлення перезапису державного налаштування\n",
+        "zh-cn": "修正同步亮度/ 状态\n在曝光中修复错误\n修改状态配置\n"
+      },
       "3.3.1": {
         "en": "Update documentation\nColor Hue/Saturation in Groups\nZH8\nSort by model in Admin\nObject for complex exposes\nPOSSIBLY BREAKING: Complex exposes changed to 'channel / state' structure\nBugfixes\n",
         "de": "Dokumentation zur Aktualisierung\nFarbe Hue/Sättigung in Gruppen\nZH8\nSortieren nach Modell in Admin\nObjekt für komplexe Exponate\nPOSSIBLY BREAKING: Komplex enthüllt geändert in 'Kanal / Zustand' Struktur\nBugfixes\n",
@@ -80,19 +93,6 @@
         "pl": "Bugfix na usunąć obiekt.\nulepszone zapytanie urządzenia.\nnaprawione urządzenie usuwające z lokalnymi przekroczeniami.\n",
         "uk": "Виправлення помилок при видаленні об'єкта.\nпокращений пристрій запиту.\nфіксований пристрій видалення з локальними перенаряддями.\n",
         "zh-cn": "删除对象上的错误修正 .\n改进设备查询 .\n有本地覆盖的固定删除设备 .\n"
-      },
-      "3.2.1": {
-        "en": "fix bug #2640\n",
-        "de": "fehler beheben #2640\n",
-        "ru": "исправить ошибку #2640\n",
-        "pt": "corrigir o erro # 2640\n",
-        "nl": "fix bug #2640\n",
-        "fr": "correction du bug #2640\n",
-        "it": "fix bug #2640\n",
-        "es": "corrección de error #2640\n",
-        "pl": "fix bug # 2640\n",
-        "uk": "виправлення помилки #2640\n",
-        "zh-cn": "修复错误 # 2640\n"
       }
     },
     "titleLang": {

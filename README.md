@@ -141,12 +141,11 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.3.2 (2026-01-04)
 * Fix sync brightness / state
 * Fix bug in expose
 * Fix rewrite state config
 *
-
 
 ### 3.3.1 (2025-12-31)
 * Update documentation
