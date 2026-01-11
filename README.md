@@ -141,12 +141,12 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS
+### 3.3.3 (2026-01-11)
 * Fix crash bug
 * getter for composite states V1
 * zhc
 *
-## Changelog
+
 ### 3.3.2 (2026-01-04)
 * Fix sync brightness / state
 * Fix bug in expose

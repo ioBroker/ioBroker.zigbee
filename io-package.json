@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.3-alpha.1",
+    "version": "3.3.3",
     "news": {
+      "3.3.3": {
+        "en": "Fix crash bug\ngetter for composite states V1\nzhc\n",
+        "de": "Fehler behoben\ngetter für zusammengesetzte Zustände V1\nzh\n",
+        "ru": "Исправить ошибку crash bug\nгеттер для композитных состояний V1\nджк\n",
+        "pt": "Corrigir erro de falha\ngetter para estados compostos V1\nzhc\n",
+        "nl": "Fix crash bug\ngetter voor samengestelde toestanden V1\nzhc\n",
+        "fr": "Correction d'un bug de plantage\ngetter pour les états composites V1\nzhc\n",
+        "it": "Correre bug crash\ngetter per stati compositi V1\nzhc\n",
+        "es": "Corrección de fallo\ngetter para estados compuestos V1\nzhc\n",
+        "pl": "Napraw błąd awarii\ngetter for composite states V1\nzhc\n",
+        "uk": "Виправлення помилки збою\nоберт для композитних станів V1\nжк\n",
+        "zh-cn": "修复崩溃错误\nv1 复合状态获取器\n日语\n"
+      },
       "3.3.2": {
         "en": "Fix sync brightness / state\nFix bug in expose\nFix rewrite state config\n",
         "de": "Synchronisierhelligkeit / Zustand\nFehler behoben in exponieren\nRewriting State config\n",
@@ -80,19 +93,6 @@
         "pl": "Ulepszenia dotyczące debugowania interfejsu użytkownika\nOpcja \"resend _ states\" do publikowania wartości stanu dla urządzenia przy ponownym połączeniu\nUlepszona karta grupowa\nUlepszone informacje grupowe\nZmodyfikowana karta koordynatora (2 strony)\nponowna próba błędu 25\njasne komunikaty błędów ukryte\nZHC 25.50.0 lub nowsze",
         "uk": "Удосконалення на дебурзі UI\nВаріант 'resend_states' для публікації державних значень для пристрою на відключенні\nПокращена групова карта\nПокращена інформація групи\nЗмінена карта координатора (2 сторони)\nптиця по помилки 25\nчіткі повідомлення про помилку\nZHC 25.50.0 або новачок",
         "zh-cn": "调试 UI 的改进\n选项“ resend_ states ” 以在重新连接时发布状态值以设备\n改进组卡\n改进组信息\n修改的协调员卡(2面)\n重试错误 25\n清除隐藏的错误消息\nZHC 25.50.0或更新"
-      },
-      "3.2.2": {
-        "en": "Bugfix on delete object.\nimproved device query.\nfixed delete device with local overrides.\n",
-        "de": "Bugfix auf Löschobjekt.\nverbesserte geräteabfrage.\nfeste löschvorrichtung mit lokalen overrides.\n",
-        "ru": "Bugfix для удаления объекта.\nулучшенный запрос устройства.\nфиксированное устройство удаления с локальными переопределениями.\n",
-        "pt": "Correcção de erros ao apagar o objecto.\npesquisa de dispositivos melhorada.\ndispositivo de exclusão fixo com substituições locais.\n",
-        "nl": "Bugfix bij verwijderen van object.\nverbeterde apparaatquery.\nvast delete apparaat met lokale overrides.\n",
-        "fr": "Correction sur objet de suppression.\nrequête de périphérique améliorée.\ndispositif de suppression fixe avec redéfinitions locales.\n",
-        "it": "Bugfix su delete object.\nmigliore query del dispositivo.\ndispositivo di cancellazione fisso con override locali.\n",
-        "es": "Bugfix en el objeto borrado.\nmejorada consulta de dispositivos.\ndispositivo de eliminación fijo con anulas locales.\n",
-        "pl": "Bugfix na usunąć obiekt.\nulepszone zapytanie urządzenia.\nnaprawione urządzenie usuwające z lokalnymi przekroczeniami.\n",
-        "uk": "Виправлення помилок при видаленні об'єкта.\nпокращений пристрій запиту.\nфіксований пристрій видалення з локальними перенаряддями.\n",
-        "zh-cn": "删除对象上的错误修正 .\n改进设备查询 .\n有本地覆盖的固定删除设备 .\n"
       }
     },
     "titleLang": {
