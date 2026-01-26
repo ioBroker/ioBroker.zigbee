@@ -3181,7 +3181,7 @@ function getComPorts(onChange) {
     // timeout = setTimeout(function () {
     //     getComPorts(onChange);
     // }, 2000);
-    sendToWrapper(namespace, 'listUart', null, function (list) {
+    sendTo(namespace, 'listUart', null, function (list) {
         // if (timeout) {
         //     clearTimeout(timeout);
         //     timeout = null;
