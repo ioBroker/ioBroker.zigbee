@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.3.4 (2026-01-26)
 * ZHC 25.112.0
 * ZH 8.1.0
 * Fix: Admin does not load com ports

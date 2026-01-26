@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.4-alpha.0",
+    "version": "3.3.4",
     "news": {
+      "3.3.4": {
+        "en": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin does not load com ports",
+        "de": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin lädt keine Com-Ports",
+        "ru": "ZHC 25.112.0\nZH 8.1.0\nИсправление: Admin не загружает порты com",
+        "pt": "ZHC 25.112.0\nZH 8.1.0\nCorrigir: o administrador não carrega as portas com",
+        "nl": "ZHC 25.112,0\nZH 81,0\nFix: Beheerder laadt geen com-poorten",
+        "fr": "ZHC 25.112.0\nZH 8.1.0\nCorrection: Admin ne charge pas les ports com",
+        "it": "ZHC 25.112.0\nZH 8.1.0\nFisso: Admin non carica porte com",
+        "es": "ZHC 25.112.0\nZH 8.1.0\nFijación: Admin no carga puertos com",
+        "pl": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin nie ładuje portów com",
+        "uk": "ЗХК 25.112.0\nЗХ 8.1.0\nВиправлення: Адміністратор не завантажує порти",
+        "zh-cn": "ZHC 25.112.0\nZH 8.1.0 电话\n修正: 管理员不装入 com 端口"
+      },
       "3.3.3": {
         "en": "Fix crash bug\ngetter for composite states V1\nzhc\n",
         "de": "Fehler behoben\ngetter für zusammengesetzte Zustände V1\nzh\n",
@@ -80,19 +93,6 @@
         "pl": "dodany brakujący stan",
         "uk": "додано відсутній стан",
         "zh-cn": "添加缺失状态"
-      },
-      "3.2.3": {
-        "en": "Improvements on debug UI\nOption 'resend_states' to publish state values to device on reconnect\nImproved group card\nImproved group info\nModified coordinator card (2 sides)\nretry on error 25\nclear stashed error messages\nZHC 25.50.0 or newer",
-        "de": "Verbesserungen bei debug UI\nOption 'resend_states' zum Veröffentlichen von Zustandswerten auf das Gerät auf dem Reconnect\nVerbesserte Gruppenkarte\nVerbesserte Gruppeninformationen\nModifizierte Koordinatorkarte (2 Seiten)\nretry auf fehler 25\nklare stashed fehlermeldungen\nZHC 25.50.0 oder neuer",
-        "ru": "Улучшения в Debug UI\nВариант «resend_states» для публикации значений состояния на устройстве при повторном подключении\nУлучшенная групповая карта\nУлучшенная групповая информация\nИзмененная карта координатора (2 стороны)\nвозвращение к ошибке 25\nскрытые сообщения об ошибках\nZHC 25.50.0 или новее",
-        "pt": "Melhorias na interface de depuração\nOpção 'resend_states' para publicar valores de estado para o dispositivo ao religar\nCartão de grupo melhorado\nInformação melhorada do grupo\nCartão coordenador modificado (2 lados)\ntentar novamente no erro 25\nlimpar mensagens de erro escondidas\nZHC 25.50.0 ou mais recente",
-        "nl": "Verbeteringen op debug UI\nOptie 'resend_states' om statuswaarden naar apparaat te publiceren bij opnieuw verbinden\nVerbeterde groepskaart\nVerbeterde groepsinfo\nGewijzigde coördinatiekaart (2 zijden)\nopnieuw proberen bij fout 25\nfoutmeldingen wissen\nZHC 25.50.0 of nieuwer",
-        "fr": "Amélioration de l'assurance-chômage de débogage\nOption 'resend_states' pour publier les valeurs d'état sur le périphérique sur la connexion\nCarte de groupe améliorée\nInformations de groupe améliorées\nCarte de coordonnateur modifiée (2 côtés)\nréessayer sur l'erreur 25\nmessages d'erreur clairs et cachés\nZHC 25.50.0 ou plus récent",
-        "it": "Miglioramenti sul debug UI\nOpzione 'resend_states' per pubblicare i valori di stato sul dispositivo sulla riconnessione\nScheda di gruppo migliorata\nInformazioni di gruppo migliorate\nCarta coordinatrice modificata (2 lati)\nriprovare sull'errore 25\nchiari messaggi di errore stanti\nZHC 25.50.0 o più recente",
-        "es": "Mejoras en el depuro UI\nOpción 'resend_states' para publicar valores estatales al dispositivo en la reconexión\nTarjeta de grupo mejorada\nInformación de grupo mejorada\nTarjeta de coordinación modificada (2 lados)\nretry on error 25\nmensajes de error claros\nZHC 25.50.0 o más",
-        "pl": "Ulepszenia dotyczące debugowania interfejsu użytkownika\nOpcja \"resend _ states\" do publikowania wartości stanu dla urządzenia przy ponownym połączeniu\nUlepszona karta grupowa\nUlepszone informacje grupowe\nZmodyfikowana karta koordynatora (2 strony)\nponowna próba błędu 25\njasne komunikaty błędów ukryte\nZHC 25.50.0 lub nowsze",
-        "uk": "Удосконалення на дебурзі UI\nВаріант 'resend_states' для публікації державних значень для пристрою на відключенні\nПокращена групова карта\nПокращена інформація групи\nЗмінена карта координатора (2 сторони)\nптиця по помилки 25\nчіткі повідомлення про помилку\nZHC 25.50.0 або новачок",
-        "zh-cn": "调试 UI 的改进\n选项“ resend_ states ” 以在重新连接时发布状态值以设备\n改进组卡\n改进组信息\n修改的协调员卡(2面)\n重试错误 25\n清除隐藏的错误消息\nZHC 25.50.0或更新"
       }
     },
     "titleLang": {
