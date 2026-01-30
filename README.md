@@ -141,6 +141,12 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### ** WORK IN PROGRESS **
+* Bugfix - Error on startup from onEvent
+* fix: send_payload read with array of cluster
+*
+
+## Changelog
 ### 3.3.4 (2026-01-26)
 * ZHC 25.112.0
 * ZH 8.1.0
