@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### ** WORK IN PROGRESS **
+### **WORK IN PROGRESS**
 * Bugfix - Error on startup from onEvent
 * fix: send_payload read with array of cluster
 *
