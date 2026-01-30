@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.4",
+    "version": "3.3.5",
     "news": {
+      "3.3.5": {
+        "en": "Bugfix - Error on startup from onEvent\nfix: send_payload read with array of cluster\n",
+        "de": "Bugfix - Fehler beim Start von onEvent\nfix: send_payload mit cluster-array gelesen\n",
+        "ru": "Bugfix - Ошибка при запуске с OnEvent\nисправить: send_payload read with array of cluster\n",
+        "pt": "Bugfix - Erro na inicialização do onEvent\ncorreção: send_payload lido com array de cluster\n",
+        "nl": "Bugfix - Fout bij opstarten van onEvent\nfix: send_payload gelezen met clusterreeks\n",
+        "fr": "Bugfix - Erreur au démarrage depuis onEvent\ncorrection : send_payload lu avec le tableau du cluster\n",
+        "it": "Bugfix - Errore all'avvio dall'evento\ncorrezione: send_payload letto con array di cluster\n",
+        "es": "Bugfix - Error en el inicio desde onEvent\nfix: send_payload read with array of cluster\n",
+        "pl": "Bugfix - Błąd podczas uruchamiania z onEvent\nfix: send _ payload read with array of klaster\n",
+        "uk": "Бугфікс - Помилка запуску від onEvent\nвиправити: send_payload читати з масивом кластера\n",
+        "zh-cn": "Bugfix - 从 Event 启动时出错\n固定: 随集群数组一起读取的发送_ 有效载荷\n"
+      },
       "3.3.4": {
         "en": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin does not load com ports",
         "de": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin lädt keine Com-Ports",
@@ -80,19 +93,6 @@
         "pl": "zmieniony setState for lasterror",
         "uk": "змінено setState for lasterror",
         "zh-cn": "更新的设置状态"
-      },
-      "3.2.4": {
-        "en": "added missing state",
-        "de": "fehlender zustand",
-        "ru": "отсутствующее государство",
-        "pt": "estado em falta adicionado",
-        "nl": "ontbrekende status toevoegen",
-        "fr": "état manquant ajouté",
-        "it": "aggiunto stato mancante",
-        "es": "estado desaparecido",
-        "pl": "dodany brakujący stan",
-        "uk": "додано відсутній стан",
-        "zh-cn": "添加缺失状态"
       }
     },
     "titleLang": {
