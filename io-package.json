@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.5",
+    "version": "3.3.6-alpha.1",
     "news": {
       "3.3.5": {
         "en": "Bugfix - Error on startup from onEvent\nfix: send_payload read with array of cluster\n",
