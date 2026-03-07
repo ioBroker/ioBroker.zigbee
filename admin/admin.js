@@ -9,6 +9,7 @@ const Materialize = (typeof M !== 'undefined') ? M : Materialize,
     namespace = 'zigbee.' + instance,
     namespaceLen = namespace.length;
 let devices = [],
+    adapterDefinedOptions = [],
     models = [],
     debugDevices = [],
     messages = [],
@@ -66,7 +67,8 @@ const networkOptions = {
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower','useNewCompositeStates',
     'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
-    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster','availableUpdateTime'
+    'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster',
+    'availableUpdateTime', 'readBrightnessAndState'
 ];
 const lockout = {
     timeoutid:undefined,
@@ -250,7 +252,7 @@ function getModelData(data, models, keys) {
             <td rowspan="${numrows}" width="10%"><img src=${model.model.icon} class="dev_list"></td>
             <td rowspan="${numrows}" width="15%">${legacy} model<br>${key}</td>
             <td colspan="3">${devtxt}</td>
-            <td>${d_btn}&nbsp;${e_btn}</td></tr>`)
+            <td>${d_btn}&nbsp;${numOptions == 0 ? e_btn : ''}</td></tr>`)
         let cnt = 0;
         if (foldData.devices) {
             let isOdd = false;
@@ -276,7 +278,7 @@ function getModelData(data, models, keys) {
             const opttxt = (numOptions > 0) ? `${numOptions} global option${numOptions > 1 ? 's' : ''}` :''
             Html.push(`<tr id="datarowodd">
                 <td colspan="3">${opttxt}</td>
-                <td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}&nbsp;${e_btn}</td></tr>`)
+                <td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}&nbsp;${numOptions > 0 ? e_btn : ''}</td></tr>`);
             if (foldData.options) {
                 let isOdd = false;
                 for (const key of Object.keys(model.setOptions)) {
@@ -1291,6 +1293,7 @@ function showDevices() {
     $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = getDevId(dev_block);
+        console.warn(`${JSON.stringify(id)}, false`)
         editDeviceOptions(id, false);
     });
 
@@ -1489,7 +1492,8 @@ function updateLocalConfigItems(device, data, global) {
             if (msg && msg.hasOwnProperty.error) {
                 showMessage(msg.error, _('Error'));
             }
-            getDevices();
+            console.warn('update local config items called with global '+ global)
+            //getDevices();
         });
 }
 
@@ -1519,6 +1523,7 @@ async function editDeviceOptions(id, isModel) {
         if (idx > -1 && !device_options[key].isCustom) dialogData.availableOptions.splice(idx, 1);
         //console.warn(`addOption added ${JSON.stringify(device_options)}`)
     }
+    const multiselectoptions = {};
 
 
     function updateOptions(candidates) {
@@ -1538,6 +1543,7 @@ async function editDeviceOptions(id, isModel) {
             const disabled = device_options[k]?.isCustom ? '' : 'disabled ';
             //console.warn(`option for ${k} is ${JSON.stringify(device_options[k])}`);
             html_options.push(`<div class="row">`);
+            const optionType = expose.type;
             switch (expose.type) {
                 case 'numeric':
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
@@ -1555,6 +1561,27 @@ async function editDeviceOptions(id, isModel) {
                     checkboxButtons.push(`option_value_${k}`);
                     break;
                 }
+                case 'set': {
+                    const dos = device_options[k];
+                    html_options.push(`<div class="input-field col s5 m5 l5">
+                        <input ${disabled}id="option_key_${k}" type="text" class="value" />
+                        <label for="option_key_${k}">Option</label></div>`);
+                    html_options.push(`<div class="col s5">
+                    <div class="input-field members" id="option_value_${k}"><ul>`);
+                    for (const m of ['state','brightness']) {//dos.options) {
+                        if (!multiselectoptions.hasOwnProperty(k)) {
+                            multiselectoptions[k] = { entries: {}, value : dos.value || [], expose:expose }
+                        }
+                        multiselectoptions[k].entries[`mso_${k}_${m}`] = m;
+                        html_options.push(`<li class="collection-item"><label><input id="mso_${k}_${m}" type="checkbox" ${(dos.value || []).indexOf(m) >= 0 ? 'checked="checked"' : ''}/><span for="m_${k}_${m}">${m}</span></label></li>`);
+                    }
+                    html_options.push('</ul></div></div>');
+                    /*
+                    html_options.push(`<div class="input-field suffix col s5 m5 l5"><select id="option_value_${k}" class="materialSelect" multiple><option value="1">select</option><select><label for="option_value_${k}">${expose.label}</label></div>`);
+                    multiselectoptions[`option_key_${k}`] = ['state', 'brightness'];
+                    */
+                    break;
+                }
                 default:
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
@@ -1564,6 +1591,10 @@ async function editDeviceOptions(id, isModel) {
             html_options.push(`</div>`)
         }
         $('#chooseimage').find('.options_grid').html(html_options.join(''));
+        /*        for (const key of Object.keys(multiselectoptions)) {
+            list2select(key, multiselectoptions[key], []);
+        }
+        */
         for (const item of checkboxButtons) {
             $(`#${item}`).unbind('click');
             $(`#${item}`).click(() => {
@@ -1575,6 +1606,24 @@ async function editDeviceOptions(id, isModel) {
                 //console.warn(`${item} clicked: ${JSON.stringify(dok)} => ${val} from ${oval}`);
                 $(`#${item}`).html(val);
             });
+        }
+        for (const k of Object.keys(multiselectoptions)) {
+            console.warn(JSON.stringify(multiselectoptions[k]));
+            for (const item of Object.keys(multiselectoptions[k].entries)) {
+                $(`#${item}`).unbind('click');
+                $(`#${item}`).click(() => {
+                    multiselectoptions.changed = true;
+                    const mso = multiselectoptions[k];
+                    const idx = mso.value.indexOf(mso.entries[item]);
+                    if (idx > -1) {
+                        mso.value.splice(idx, 1);
+                    }
+                    else
+                    {
+                        mso.value.push(mso.entries[item]);
+                    }
+                });
+            }
         }
 
         if (html_options.length > 0) {
@@ -1600,7 +1649,7 @@ async function editDeviceOptions(id, isModel) {
     }
 
     function getExposeFromOptions(option) {
-        const rv = dialogData.model.optionExposes.find((expose) => expose.name === option);
+        const rv = [dialogData.model.optionExposes, adapterDefinedOptions].flat().find((expose) => expose.name === option);
         //console.warn(`GEFO: ${option} results in ${JSON.stringify(rv)}`);
         if (rv) return rv;
         return { type:option === 'legacy' ? 'binary' : 'string' };
@@ -1625,10 +1674,20 @@ async function editDeviceOptions(id, isModel) {
             {
                 _do[k].value = $(`#option_value_${k}`).val();
             }
+
             if (_do[k].key.length > 0) {
                 //console.warn(`dok: ${_do[k].key} : ${_do[k].value}`);
                 _no[key] = _do[k].value;
                 changed |= (_no[key] != _so[key]);
+                console.warn(`_no: ${_no[key]} _so: ${_so[key]} changed: ${changed}`)
+            }
+        }
+        if (multiselectoptions.changed) {
+            changed = true;
+            for (const k of Object.keys(multiselectoptions)) {
+                if (k === 'changed') continue;
+                const mso = multiselectoptions[k];
+                _no[mso.expose.name] = mso.value;
             }
         }
         changed |= (Object.keys(_no).length != Object.keys(_so).length);
@@ -1666,15 +1725,12 @@ async function editDeviceOptions(id, isModel) {
 
     const dialogData = {};
 
-    const adapterDefinedOptions = ['resend_states']
 
     if (isModel) {
         const model = id.model;
         dialogData.model = model;
         dialogData.availableOptions = model.options.slice() || [];
-        dialogData.availableOptions.push('custom');
-        dialogData.availableOptions.push(...adapterDefinedOptions)
-        if (model.hasLegacyDef) dialogData.availableOptions.push('legacy');
+        dialogData.availableOptions.push(...adapterDefinedOptions.filter((o) => o.byModel  && (o.cProp ? model[o.cProp] == o.cVal : o.cVal )).map(o => o ? o.name : 'undefined'));
         dialogData.setOptions = {};
         for (const k in Object.keys(id.setOptions))
             if (k == 'icon' || k == 'name') continue;
@@ -1689,7 +1745,7 @@ async function editDeviceOptions(id, isModel) {
         const dev = devices.find((d) => d._id == id);
         dialogData.model = dev.info.mapped;
         dialogData.availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
-        dialogData.availableOptions.push(...adapterDefinedOptions)
+        dialogData.availableOptions.push(...adapterDefinedOptions.filter((o) => o.byDevice  && (o.cProp ? dialogData.model[o.cProp] == o.cVal : o.cVal )).map(o => o ? o.name : 'undefined'));
         dialogData.name = dev.common.name;
         dialogData.icon = dev.common.icon || dev.icon;
         dialogData.defaultIcon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
@@ -1708,8 +1764,7 @@ async function editDeviceOptions(id, isModel) {
         updateOptions(dialogData.availableOptions);
     });
 
-
-
+    console.warn('stw 1')
     sendToWrapper(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
             updateImageSelection(dialogData , msg.imageData);
@@ -1729,6 +1784,7 @@ async function editDeviceOptions(id, isModel) {
             });
             sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:isModel, key:'options' }, function (msg) {
                 if (msg) {
+                    console.warn('stw')
                     if (msg.error) showMessage(msg.error, '_Error');
                     Object.keys(device_options).forEach(key => delete device_options[key]);
                     Object.keys(received_options).forEach(key => delete received_options[key]);
@@ -1746,7 +1802,9 @@ async function editDeviceOptions(id, isModel) {
                     }
                     updateOptions(dialogData.availableOptions);
                 } else showMessage('callback without message');
+                console.warn('Open')
                 $('#chooseimage').modal('open');
+                console.warn('Update')
                 Materialize.updateTextFields();
             });
         }
@@ -2059,13 +2117,16 @@ function getDevices() {
         })
         sendToWrapper(namespace, 'getDevices', {}, function (msg) {
             if (msg) {
+                msg.adapterOptions.forEach((o) => {
+                    console.warn(`${JSON.stringify(o)} : ${typeof o.condition}`);
+                });
                 extractDevicesData(msg);
                 if (msg.error) {
                     //errorData.push(msg.error);
                     isHerdsmanRunning = false;
                 } else {
                     isHerdsmanRunning = true;
-                    getBinding();
+                    getHerdsmanBinding();
                 }
                 updateStartButton();
                 displayDebugMessages(debugMessages);
@@ -2094,6 +2155,7 @@ function getDevices() {
 function extractDevicesData(msg) {
     //console.warn(JSON.stringify(msg.errors));
     devices = msg.devices ? msg.devices : [];
+    adapterDefinedOptions = msg.adapterOptions ? msg.adapterOptions: [];
     // check if stashed error messages are sent alongside
     if (msg.clean)
         $('#state_cleanup_btn').removeClass('hide');
@@ -2434,6 +2496,7 @@ function load(settings, onChange) {
         $('.dropdown-trigger').dropdown({constrainWidth: false});
         Materialize.updateTextFields();
         $('.collapsible').collapsible();
+        //$('.action-menu').floatingActionButton();
 
         function new_tab_show_callback() {
 
@@ -3892,6 +3955,119 @@ function prepareBindingDialog(bindObj) {
             }
         },
     );
+};
+
+function prepareHerdsmanBindingDialog(src, dst) {
+    const binddevices = devices.slice();
+    binddevices.unshift('');
+    const bind_source = (src) ? [src] : [''];
+    const bind_target = (dst) ? [dst] : [''];
+
+    // 5 - genScenes, 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
+    const denyClusters = [25,4096];
+    const allowClusters = [5, 6, 8, 768];
+    //const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
+    // fill device selector
+    list2select('#bind_source', binddevices, bind_source,
+        function (key, device) {
+            if (device == '') {
+                return 'Select source device';
+            }
+            if (device.hasOwnProperty('info')) {
+                if (device.info.device && device.info.device.type === 'Coordinator') {
+                    return null;
+                }
+                // check for output clusters
+                let allow = false;
+                if (device.info.endpoints) for (const ep of device.info.endpoints) {
+                    for (const cluster of ep.output_clusters) {
+                        if (!denyClusters.includes(cluster)) {
+                            allow = true;
+                            break;
+                        }
+                    }
+                    if (allow) {
+                        break;
+                    }
+                }
+                if (!allow) {
+                    return null;
+                }
+                return `${device?.common?.name || 'unnamed'} (${device?.info?.device?.ieee || '0x0'})`;
+            } else { // fallback if device in list but not paired
+                return device.common.name + ' ' + device.native.id;
+            }
+        },
+        function (key, device) {
+            if (device == '') {
+                return '';
+            } else {
+                return device._id;
+            }
+        },
+        function (key, device) {
+            if (device == '') {
+                return 'disabled';
+            } else if (device.icon) {
+                return `data-icon="${device.icon}"`;
+            } else {
+                return '';
+            }
+        },
+    );
+    const bindtargets = binddevices.slice();
+    for (const key in groups) {
+        bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
+    }
+    list2select('#bind_target', bindtargets, bind_target,
+        function (key, device) {
+            if (device == '') {
+                return 'Select target device';
+            }
+            if (device.hasOwnProperty('info')) {
+                if (device.info.device && device.info.device.type === 'Coordinator') {
+                    return 'Coordinator';
+                }
+                // check for input clusters
+                let allow = false;
+                for (const cluster of allowClusters) {
+                    if (device.info.endpoints) for (const ep of device.info.endpoints) {
+                        if (ep.input_clusters.includes(cluster)) {
+                            allow = true;
+                            break;
+                        }
+                    }
+                    if (allow) {
+                        break;
+                    }
+                }
+                if (!allow) {
+                    return null;
+                }
+                return `${device?.common?.name || 'unnamed'} (${device?.info?.device?.ieee || '0x0'})`;
+            } else {
+                if (device.hasOwnProperty('groupId')) {
+                    return device.groupName;
+                }
+            }
+        },
+        function (key, device) {
+            if (device == '') {
+                return '';
+            } else {
+                return device._id;
+            }
+        },
+        function (key, device) {
+            if (device == '') {
+                return 'disabled';
+            } else if (device.icon) {
+                return `data-icon="${device.icon}"`;
+            } else {
+                return '';
+            }
+        },
+    );
 
     const configureSourceEp = function (devID, selected) {
         const device = devices.find(obj => {
@@ -4049,6 +4225,63 @@ function editBindingDialog(bindObj) {
     Materialize.updateTextFields();
 }
 
+function addHerdsmanBindingDialog() {
+    $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
+    $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
+        const //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
+            bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
+            bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
+            bind_target = $('#bindingmodaledit').find('#bind_target option:selected').val(),
+            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val(),
+            bind_source_clusters = [],
+            unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
+        addBinding(bind_source, bind_source_ep, bind_source_clusters, bind_target, bind_target_ep, unbind_from_coordinator);
+    });
+    prepareBindingDialog();
+
+    $('#bindingmodaledit').modal('open');
+    Materialize.updateTextFields();
+}
+
+
+function editHerdsmanBinding(bind_id, bind_source, bind_source_ep, bind_source_clusters, bind_target, bind_target_ep, unbind_from_coordinator) {
+    sendToWrapper(namespace, 'editBinding', {
+        id: bind_id,
+        bind_source: bind_source,
+        bind_source_ep: bind_source_ep,
+        bind_source_clusters: bind_source_clusters,
+        bind_target: bind_target,
+        bind_target_ep: bind_target_ep,
+        unbind_from_coordinator
+    }, function (msg) {
+        closeWaitingDialog();
+        if (msg && msg.error) {
+            showMessage(msg.error, _('Error'));
+        }
+        getBinding();
+    });
+    showWaitingDialog('Device binding is being updated', 10);
+}
+
+
+function editHerdsmanBindingDialog(bind_id) {
+    $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
+    $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
+        const //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
+            bind_source = $('#herdsmanbindingmodaledit').find('#bind_source option:selected').val(),
+            bind_source_ep = $('#herdsmanbindingmodaledit').find('#bind_source_ep option:selected').val(),
+            bind_target = $('#herdsmanbindingmodaledit').find('#bind_target option:selected').val(),
+            bind_target_ep = $('#herdsmanbindingmodaledit').find('#bind_target_ep option:selected').val(),
+            bind_source_clusters = [],
+            unbind_from_coordinator = $('#herdsmanbindingmodaledit').find('#unbind_from_coordinator').prop('checked');
+        editHerdsmanBinding(bind_id, bind_source, bind_source_ep, bind_source_clusters, bind_target, bind_target_ep, unbind_from_coordinator);
+    });
+    prepareHerdsmanBindingDialog(src, dst);
+    $('#bindingmodaledit').modal('open');
+    Materialize.updateTextFields();
+}
+
+
 function showBinding() {
     const element = $('#binding');
     element.find('.binding').remove();
@@ -4064,13 +4297,25 @@ function showBinding() {
             target_icon = (target_dev.icon) ? `<img src="${target_dev.icon}" width="64px">` : '';
         const card = `
                     <div id="${bind_id}" class="binding col s12 m6 l4 xl3">
-                        <div class="card hoverable">
+                        <div class="card hoverable binding-card">
                             <div class="card-content zcard">
                                 <span class="card-title truncate">${source_dev.common.name}</span>
                                 <i class="left"><img src="${source_dev.icon}" width="64px"></i>
                                 <i class="right">${target_icon}</i>
                                 <div style="min-height:72px; font-size: 0.8em" class="truncate">
                                     <ul>
+                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
+                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
+                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
+                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
+                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
+                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
+                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
                                         <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
                                         <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
                                         <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
@@ -4107,6 +4352,73 @@ function showBinding() {
         }
     });
 }
+function bindInfoFromId(id) {
+    const pattern = new RegExp('SID_([^_]+)_EP([^_]+)_TID_([^_]+)_EP([^_]+)');
+    const match = id.match(pattern);
+    console.warn(JSON.stringify(match))
+    if (match.length < 5) return undefined;
+    return {
+        s_address: match[1],
+        s_ep: match[2],
+        b_address: match[3],
+        b_ep: match[4],
+    };
+}
+
+function showHerdsmanBinding() {
+    const element = $('#binding');
+    element.find('.binding').remove();
+
+    for (const source of Object.values(herdsmanBindings)) {
+        const source_dev = devices.find((d) => source.address == d.info.device.ieee);
+        const source_icon = (source_dev?.icon) ? `<img src="${source_dev.icon}" width="64px">` : '';
+        const cardParts = [];
+        const s_ep = source_dev?.info?.endpoints?.find((ep) => ep.ID == source.endpoint)
+        const s_epName = s_ep ? s_ep.epName : source.endpoint;
+        const icons = [];
+        for (const binding of Object.values(source.binds)) {
+            const target_dev = devices.find((d) => binding.address == d.info.device.ieee);
+            const target_icon = (target_dev?.icon) ? `<img src="${target_dev.icon}" width="64px">` : '';
+            const t_ep = target_dev?.info?.endpoints?.find((ep) => ep.ID == source.endpoint)
+            const t_epName = t_ep ? t_ep.epName : binding.endpoint;
+            const src_id = source.endpoint > 0 ? `${source.address}.${s_epName}` : `group_${source.address}`;
+            const dst_id = binding.endpoint > 0 ? `${binding.address}.${t_epName}` : `group_${binding.address}`;
+            cardParts.push(`<div id="SID_${source.address}_EP${source.endpoint}_TID_${binding.address}_EP${binding.endpoint}" class="binding"><div class="card binding">`);
+            cardParts.push(`<div class="card-title truncate">${source_dev?.common?.name}${source.endpoint> 0 ? ' Endpoint ' + s_epName : ''} <i class="small material-icons bottom">forward</i> ${target_dev?.common?.name}${binding.endpoint> 0 ? ' Endpoint ' + t_epName : ''}</div>`)
+            cardParts.push(`<div class="card-content">`)
+            cardParts.push(`<i class="left i-binding">${source_icon}</i>`);
+            cardParts.push(`<i class="right i-binding">${target_icon}</i>`);
+            for (const cluster of binding.clusters.map(findClName)) {
+                cardParts.push(`<li><span class="label">Cluster:</span></span>${cluster}</li>`);
+            }
+            for (let cnt = binding.clusters.length; cnt<6;cnt++) {
+                cardParts.push(`<br>`);
+            }
+            cardParts.push(`</div></div>`);
+            cardParts.push(`<div class="card-action"><div class="card-reveal-buttons zcard"><span class="card-title truncate"> ${src_id} <i class="tiny material-icons center">forward</i> ${dst_id}<button name="delete" class="right btn-flat btn-small">
+                                        <i class="material-icons icon-black">delete</i>
+                                    </button>
+                                    <button name="edit" class="right btn-flat btn-small">
+                                        <i class="material-icons icon-green">edit</i>
+                                    </button>
+                        </span></div></div></div>`);
+        }
+        element.append(cardParts.join(''));
+    }
+
+    $('#binding button[name=\'delete\']').click(function () {
+        const bind_id = bindInfoFromId($(this).parents('.binding')[0].id);
+        if (bind_id) deleteHerdsmanBindingConfirmation(bind_id);
+    });
+    $('#binding button[name=\'edit\']').click(function () {
+        const bind_id = bindInfoFromId($(this).parents('.binding')[0].id);
+        if (bind_id) {
+            editHerdsmanBindingDialog(bind_id);
+        }
+    });
+}
+
+
 
 function getBinding() {
     sendToWrapper(namespace, 'getBinding', {}, function (msg) {
@@ -4121,8 +4433,53 @@ function getBinding() {
     });
 }
 
+let herdsmanBindings = {};
+
+function getHerdsmanBinding() {
+    sendToWrapper(namespace, 'getHerdsmanBindings', {}, function (msg) {
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            } else {
+                herdsmanBindings = msg;
+                showHerdsmanBinding();
+            }
+        }
+    });
+}
+
+function bindableAddress(address, ep) {
+    if (ep > 0) return `${address}.${ep}`;
+    return `group_${address}`;
+}
+
+function deleteHerdsmanBindingConfirmation(id) {
+    const text = translateWord(`Do you really want to delete the binding from ${bindableAddress(id.s_address, id.s_ep)} to ${bindableAddress(id.b_address, id.b_ep)}?`);
+    $('#modaldelete').find('p').text(text);
+    //$('#forcediv').removeClass('hide');
+    $('#forcediv').addClass('hide');
+    $('#modaldelete a.btn[name=\'yes\']').unbind('click');
+    $('#modaldelete a.btn[name=\'yes\']').click(() => {
+        deleteHerdsmanBinding(id);
+    });
+    $('#modaldelete').modal('open');
+}
+
+function deleteHerdsmanBinding(id) {
+    sendToWrapper(namespace, 'delHerdsmanBinding', id, (msg) => {
+        closeWaitingDialog();
+        if (msg) {
+            if (msg.error) {
+                showMessage(msg.error, _('Error'));
+            }
+        }
+        getHerdsmanBinding();
+    });
+    showWaitingDialog('Device binding is being removed', 10);
+}
+
 function deleteBindingConfirmation(id) {
-    const text = translateWord('Do you really want to delete binding?');
+    const text = translateWord(`Do you really want to delete the binding ?`);
     $('#modaldelete').find('p').text(text);
     //$('#forcediv').removeClass('hide');
     $('#forcediv').addClass('hide');
