@@ -38,6 +38,7 @@ const DeviceDebug = require('./lib/DeviceDebug');
 const dns = require('dns');
 const net = require('net');
 const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee , removeFromArray } = require('./lib/utils');
+const localConfig = require('./lib/localConfig');
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -77,6 +78,7 @@ class Zigbee extends utils.Adapter {
         this.uploadRequired = false;
 
         this.query_device_block = [];
+        this.localConfig = new localConfig(this);
 
         this.stController = new StatesController(this);
         this.stController.on('log', this.onLog.bind(this));
@@ -216,7 +218,7 @@ class Zigbee extends utils.Adapter {
         this.zbController.on('ready', this.onZigbeeAdapterReady.bind(this));
         this.zbController.on('disconnect', this.onZigbeeAdapterDisconnected.bind(this));
         this.zbController.on('new', this.newDevice.bind(this));
-        this.zbController.on('leave', this.stController.leaveDevice.bind(this));
+        this.zbController.on('leave', this.stController.leaveDevice.bind(this.stController));
         this.zbController.on('announce', this.stController.announceDevice.bind(this));
         this.zbController.on('pairing', this.onPairing.bind(this));
         this.zbController.on('event', this.stController.onZigbeeEvent.bind(this.stController));

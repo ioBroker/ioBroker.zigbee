@@ -177,9 +177,27 @@
         -o-perspective: 800px;
         perspective: 800px;
     }
+    .binding {
+        padding: 8px;
+        width: 90%;
+        height: auto !important;
+        -webkit-perspective: 800px;
+        -moz-perspective: 800px;
+        -o-perspective: 800px;
+        perspective: 800px;
+    }
+    .i-binding {
+        font-size: 10px;
+    }
     .m .zcard .card-title {
         font-size: 16px;
         font-weight: 300;
+    }
+    .bottom {
+        vertical-align: text-bottom;
+    }
+    .center {
+        vertical-align: middle;
     }
     .card-action .card-reveal-buttons {
         left: 0;
@@ -952,10 +970,12 @@
                 </div>
             </div>
             <div id="tab-binding" class="col s12 page">
-                <div class="fixed-action-btn">
-                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add binding"><i class="material-icons large">add</i></a>
+                <div class="fixed-action-btn action-menu">
+                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add binding">
+                        <i class="material-icons large">add</i>
+                    </a>
                 </div>
-                <div id="binding" class="row">
+                <div id="binding" class="row s6">
                 </div>
             </div>
             <div id="tab-exclude" class="col s12 page">
@@ -1032,6 +1052,93 @@
                     <div class="input-field col s8 m8 l10">
                         <input id="g_name" type="text" class="value validate">
                         <label for="g_name" class="translate">Name</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
+            </div>
+        </div>
+
+        <div id="herdsmanbindingedit" class="modal">
+            <div class="modal-content">
+                <div class = "hbe">
+                    <h3 class="translate">Edit binding</h3>
+                </div>
+                <div class="row">
+                    <div class="col s6 m4 l2">Source</div>
+                    <div class="col s6 m4 l2">Destination</div>
+                </div>
+                <div class="row">
+                    <div class="col s5">
+                        <div class="input-field sourcedevice">
+                            <label for="s_ieee" class="translate">Device</label>
+                            <ul class="collection">
+                                <li class="collection-item">
+                                <label>
+                                    <input id="member1" type="checkbox" class="value"/>
+                                    <span class="translate" for="member1">Member 1</span>
+                                </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col s1">
+                        <div class="input-field sourcedevice">
+                            <label for="s_ep" class="translate">Endpoint</label>
+                            <ul class="collection">
+                                <li class="collection-item">
+                                <label>
+                                    <input id="member1" type="checkbox" class="value"/>
+                                    <span class="translate" for="member1">Member 1</span>
+                                </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col s5">
+                        <div class="input-field destdevice">
+                            <label for="d_ieee" class="translate">Device</label>
+                            <ul class="collection">
+                                <li class="collection-item">
+                                <label>
+                                    <input id="member1" type="checkbox" class="value"/>
+                                    <span class="translate" for="member1">Member 1</span>
+                                </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col s1">
+                        <div class="input-field destdevice">
+                            <label for="d_ieee" class="translate">Endpoin t</label>
+                            <ul class="collection">
+                                <li class="collection-item">
+                                <label>
+                                    <input id="member1" type="checkbox" class="value"/>
+                                    <span class="translate" for="member1">Member 1</span>
+                                </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s6">
+                        <div class="input-field sourcedevice">
+                            <label for="s_clusters" class="translate">Clusters</label>
+                            <ul class="collection">
+                                <li class="collection-item">
+                                <label>
+                                    <input id="member1" type="checkbox" class="value"/>
+                                    <span class="translate" for="member1">Member 1</span>
+                                </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col s6">
                     </div>
                 </div>
             </div>
