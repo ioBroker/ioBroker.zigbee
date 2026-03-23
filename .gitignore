@@ -10,3 +10,4 @@ debugidentify.js
 .dev-server/
 .devcontainer
 .commitinfo
+shepherd.db

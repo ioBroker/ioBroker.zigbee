@@ -60,6 +60,10 @@ const errorCodes = {
     134: {severity: E_WARN, message: 'Unsupported Attribute'},
 };
 
+function isFunction(functionToCheck) {
+    return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
+}
+
 class Zigbee extends utils.Adapter {
     /**
      * @param {Partial<ioBroker.AdapterOptions>} [options={}]
@@ -256,24 +260,36 @@ class Zigbee extends utils.Adapter {
         this.log.info('Change of log level while running to ' + state);
     }
 
-    sandboxAdd(sandbox, item, module) {
+    sandboxAdd(sandbox, item, module, isNamed) {
         const multipleItems = item.split(',');
-        for(const singleItem of multipleItems) {
-            const message = `Adding code from '${module}' as '${singleItem.trim()}' to sandbox `;
-            if (!module.match(new RegExp(`/${sandbox.zhclibBase}/`)))
-                module = module.replace(/zigbee-herdsman-converters\//, `${sandbox.zhclibBase}/`);
-            try {
-                const m = require(module);
-                sandbox[singleItem.trim()] = m;
-                this.log.info(`${message} -- success`);
+        const message = `Adding code from '${module}'`;
+        if (!module.match(new RegExp(`/${sandbox.zhclibBase}/`)))
+            module = module.replace(/zigbee-herdsman-converters\//, `${sandbox.zhclibBase}/`);
+        try {
+            const m = require(module);
+            for(const singleItem of multipleItems) {
+                const sti = singleItem.trim();
+                if (m.hasOwnProperty(sti)) {
+                    sandbox[sti] = m[sti];
+                    if (m[sti]) {
+                        if (isFunction(m[sti])) this.log.info(`Adding code from '${module}' as '${sti}' (function) to sandbox -- success`)
+                        else this.log.info(`Adding code from '${module}' as '${sti}' (${typeof m[sti]} to sandbox -- success`);
+                    }
+                    else this.log.info(`Adding code from '${module}' as '${sti}' (undefined) to sandbox -- possible failure`);
+                }
+                else {
+                    sandbox[sti] = m;
+                    if (m) this.log.info(`Adding '${module}' as ${sti} (${typeof m}) toi sandbox -- success`);
+                    else this.log.info(`Adding '${module}' as ${sti} (undefined) to sandbox -- possiblefailure`);
+                }
             }
-            catch (error) {
-                this.log.warn(`${message} -- failed: ${error && error.message ? error.message : 'no reason given'}`);
-            }
+        }
+        catch (error) {
+            this.log.warn(`${message} -- failed: ${error && error.message ? error.message : 'no reason given'}`);
         }
     }
 
-    SandboxRequire(sandbox, items) {
+    SandboxRequire(sandbox, items, isNamed) {
         if (!items) return true;
         for (const item of items) {
             const modulePath = item[2].replace(/['"]/gm, '');
@@ -282,7 +298,7 @@ class Zigbee extends utils.Adapter {
 
             if (ZHCComponentMatch) {
                 const fullModulePath = '.' + path.sep + path.join('.',sandbox.zhclibBase, ZHCComponentMatch[1], ZHCComponentMatch[2]);
-                this.sandboxAdd(sandbox, item[1], fullModulePath);
+                this.sandboxAdd(sandbox, item[1], fullModulePath, isNamed);
                 continue;
             }
             this.sandboxAdd(sandbox, item[1], modulePath);
@@ -330,13 +346,13 @@ class Zigbee extends utils.Adapter {
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\*\s+as\s+(\S+)\s+from\s+(\S+);/gm)]);
                 modifiedCode = modifiedCode.replace(/import\s+\*\s+as\s+\S+\s+from\s+\S+;/gm, '')
 
-                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\{(.+)\}\s+from\s+(\S+);/gm)]);
+                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+\{(.+)\}\s+from\s+(\S+);/gm)], true);
                 modifiedCode = modifiedCode.replace(/import\s+\{.+\}\s+from\s+\S+;/gm, '');
 
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/import\s+(.+)\s+from\s+(\S+);/gm)]);
                 modifiedCode = modifiedCode.replace(/import\s+.+\s+from\s+\S+;/gm, '');
 
-                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+\{(.+)\}\s+=\s+require\((.+)\)/gm)]);
+                converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+\{(.+)\}\s+=\s+require\((.+)\)/gm)], true);
                 modifiedCode = modifiedCode.replace(/const\s+\{.+\}\s+=\s+require\(.+\)/gm, '');
 
                 converterLoaded &= this.SandboxRequire(sandbox,[...modifiedCode.matchAll(/const\s+(\S+)\s+=\s+require\((.+)\)/gm)]);
