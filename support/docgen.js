@@ -32,7 +32,7 @@ Devices.fillStatesWithExposes('');
 const iobCount = iobDevices.filter((d) => (!d.exposed)).length;
 iobDevices = new Map(iobDevices.map((d) => d.models.map((m) => [m, d])).flat());
 
-const fs = require('fs');
+const fs = require('node:fs');
 const outputdir = process.argv[2];
 
 if (!outputdir) {
