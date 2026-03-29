@@ -14,8 +14,8 @@ try {
 const originalLogMethod = debug.log;
 
 const safeJsonStringify = require('./lib/json');
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const utils = require('@iobroker/adapter-core'); // Get common adapter utils
 const SerialListPlugin = require('./lib/seriallist');
 const CommandsPlugin = require('./lib/commands');
@@ -31,12 +31,12 @@ const ExcludePlugin = require('./lib/exclude');
 const zigbeeHerdsmanConverters = require('zigbee-herdsman-converters');
 const zigbeeHerdsmanConvertersPackage = require('zigbee-herdsman-converters/package.json')
 const zigbeeHerdsmanPackage = require('zigbee-herdsman/package.json')
-const vm = require('vm');
-const util = require('util');
+const vm = require('node:vm');
+const util = require('node:util');
 const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
-const dns = require('dns');
-const net = require('net');
+const dns = require('node:dns');
+const net = require('node:net');
 const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee , removeFromArray } = require('./lib/utils');
 const localConfig = require('./lib/localConfig');
 
