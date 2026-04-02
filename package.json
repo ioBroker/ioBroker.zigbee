@@ -25,7 +25,7 @@
     "@iobroker/dm-utils": "^1.0.16",
     "humanize-duration": "^3.33.2",
     "tar": "^7.5.2",
-    "ajv": "^8.17.1",
+    "ajv": "^8.18.0",
     "uri-js": "^4.4.1",
     "typescript": "^5.9.3",
     "zigbee-herdsman": "^9.0.2",
