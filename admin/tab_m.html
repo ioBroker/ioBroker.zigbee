@@ -178,7 +178,7 @@
         perspective: 800px;
     }
     .binding {
-        padding: 8px;
+        padding: 2px;
         width: 90%;
         height: auto !important;
         -webkit-perspective: 800px;
@@ -735,12 +735,12 @@
                         </li>
                         <li>
                             <a id="map_errors_btn" class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translateT hide" title="Show errors from map generation">
-                            <i class="material-icons large">filter_none</i></a>
+                            <i class="material-icons large">border_outer</i></a>
                             </li>
                         <li>
                         <li>
                             <a id="map_generating_btn" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT hide" title="Map generation in progress">
-                            <i class="material-icons large">filter_none</i></a>
+                            <i class="material-icons large">border_outer</i></a>
                             </li>
                         <li>
                         <li>
@@ -970,12 +970,52 @@
                 </div>
             </div>
             <div id="tab-binding" class="col s12 page">
-                <div class="fixed-action-btn action-menu">
-                    <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add binding">
-                        <i class="material-icons large">add</i>
-                    </a>
+                <div class="navbar-fixed" style="height: 36px;">
+                    <nav class="resposHeight" style="margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
+                        <ul id="nav-mobile" class="left">
+                            <li>
+                                <div class="col main-toolbar-table-types-tools main-toolbar-table-filter input-field" style="line-height: 24px;">
+                                    <i class="material-icons prefix" style="line-height: 24px;">search</i>
+                                    <input id="bind-search" class="filter-input translateP" placeholder="Искать" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Filter">
+                                    <a class="filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
+                                </div>
+
+                            </li>
+                            <li>
+                                <div class="col input-field" style="line-height: 24px;">
+                                    <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
+                                    <a id="bind-order-btn" class="dropdown-trigger btn" href="#" data-target="bind-order">Default</a>
+                                    <ul id="bind-order" class="dropdown-content" tabindex="0">
+                                        <li class="bind-order-item" data-type="default" tabindex="0"><a class="translate" data-lang="Default">Default</a></li>
+                                        <li class="bind-order-item" data-type="saz" tabindex="0"><a class="translate" data-lang="source">Source</a></li>
+                                        <li class="bind-order-item" data-type="taz" tabindex="0"><a class="translate" data-lang="target">Target</a></li>
+                                        <!--<li class="device-order-item" data-type="kind" tabindex="0"><a class="translate" data-lang="Kind">Kind</a></li>-->
+                                        <!--<li class="device-order-item" data-type="status" tabindex="0"><a class="translate" data-lang="Status">Status</a></li>-->
+                                        <li class="bind-order-item" data-type="sieee" tabindex="0"><a class="translate" data-lang="source IEEE">Source IEEE</a></li>
+                                        <li class="bind-order-item" data-type="sieee" tabindex="0"><a class="translate" data-lang="target IEEE">Target IEEE</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="col input-field" style="line-height: 24px;">
+                                    <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">filter_list</i>
+                                    <a id="bind-filter-btn" class="dropdown-trigger btn" href="#" data-target="bind-filter">Device</a>
+                                    <ul id="bind-filter" class="dropdown-content" tabindex="0">
+                                        <li class="bind-filter-item" data-type="device" tabindex="0"><a class="translate" data-lang="Device">Device</a></li>
+                                        <li class="bind-filter-item" data-type="all" tabindex="0"><a class="translate" data-lang="All">All</a></li>
+                                        <li class="bind-filter-item" data-type="coordinator" tabindex="0"><a class="translate" data-lang="Coordinator">Coordinator</a></li>
+                                    </ul>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
                 </div>
-                <div id="binding" class="row s6">
+                <div id="binding" class="row" >
+                    <div class="fixed-action-btn action-menu">
+                        <a id="add_binding" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add binding">
+                            <i class="material-icons large">add</i>
+                        </a>
+                    </div>
                 </div>
             </div>
             <div id="tab-exclude" class="col s12 page">
@@ -1061,93 +1101,6 @@
             </div>
         </div>
 
-        <div id="herdsmanbindingedit" class="modal">
-            <div class="modal-content">
-                <div class = "hbe">
-                    <h3 class="translate">Edit binding</h3>
-                </div>
-                <div class="row">
-                    <div class="col s6 m4 l2">Source</div>
-                    <div class="col s6 m4 l2">Destination</div>
-                </div>
-                <div class="row">
-                    <div class="col s5">
-                        <div class="input-field sourcedevice">
-                            <label for="s_ieee" class="translate">Device</label>
-                            <ul class="collection">
-                                <li class="collection-item">
-                                <label>
-                                    <input id="member1" type="checkbox" class="value"/>
-                                    <span class="translate" for="member1">Member 1</span>
-                                </label>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col s1">
-                        <div class="input-field sourcedevice">
-                            <label for="s_ep" class="translate">Endpoint</label>
-                            <ul class="collection">
-                                <li class="collection-item">
-                                <label>
-                                    <input id="member1" type="checkbox" class="value"/>
-                                    <span class="translate" for="member1">Member 1</span>
-                                </label>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col s5">
-                        <div class="input-field destdevice">
-                            <label for="d_ieee" class="translate">Device</label>
-                            <ul class="collection">
-                                <li class="collection-item">
-                                <label>
-                                    <input id="member1" type="checkbox" class="value"/>
-                                    <span class="translate" for="member1">Member 1</span>
-                                </label>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col s1">
-                        <div class="input-field destdevice">
-                            <label for="d_ieee" class="translate">Endpoin t</label>
-                            <ul class="collection">
-                                <li class="collection-item">
-                                <label>
-                                    <input id="member1" type="checkbox" class="value"/>
-                                    <span class="translate" for="member1">Member 1</span>
-                                </label>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s6">
-                        <div class="input-field sourcedevice">
-                            <label for="s_clusters" class="translate">Clusters</label>
-                            <ul class="collection">
-                                <li class="collection-item">
-                                <label>
-                                    <input id="member1" type="checkbox" class="value"/>
-                                    <span class="translate" for="member1">Member 1</span>
-                                </label>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col s6">
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-            </div>
-        </div>
-
         <div id="groupedit" class="modal">
             <div class="modal-content">
                 <div class = "editgroup">
@@ -1167,24 +1120,24 @@
                 </div>
                 <div class="row">
                     <div class="col s12">
-                    <div class="input-field members">
-                        <label for="g_members" class="translate">Members</label>
-                        <ul class="collection">
-                            <li class="collection-item">
-                            <label>
-                                <input id="member1" type="checkbox" class="value"/>
-                                <span class="translate" for="member1">Member 1</span>
-                            </label>
-                            </li>
-                            <li class="collection-item">
-                                Member 2
+                        <div class="input-field members">
+                            <label for="g_members" class="translate">Members</label>
+                            <ul class="collection">
+                                <li class="collection-item">
                                 <label>
-                                <input id="globaloverride" type="checkbox" class="value"/>
-                                <span class="translate" for="member2"></span>
+                                    <input id="member1" type="checkbox" class="value"/>
+                                    <span class="translate" for="member1">Member 1</span>
                                 </label>
-                            </li>
-                        </ul>
-                    </div>
+                                </li>
+                                <li class="collection-item">
+                                    Member 2
+                                    <label>
+                                    <input id="globaloverride" type="checkbox" class="value"/>
+                                    <span class="translate" for="member2"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1374,41 +1327,59 @@
             <div class="modal-content">
                 <div class="row">
                     <h3 class="translate">Binding configuration</h3>
+                    <div class="row"><h5 class="translate">Source</h5></div>
                     <div class="row">
-                        <div class="col s9 input-field">
+                        <div class="col s5 input-field">
                             <select id="bind_source" class="icons">
                             </select>
-                            <label for="bind_source" class="translate">Source device</label>
+                            <label for="bind_source" class="translate">Device</label>
                         </div>
-                        <div class="col s3 input-field">
+                        <div class="col s2 input-field">
                             <select id="bind_source_ep" class="materialSelect">
                             </select>
-                            <label for="bind_source_ep" class="translate">Source endpoint</label>
+                            <label for="bind_source_ep" class="translate">Endpoint</label>
+                        </div>
+                        <div class="input-field suffix col s5 m5 l5">
+                            <select id="binding_src_cluster" class="materialSelect" multiple>
+                                <option value="1">select</option>
+                            </select>
+                            <label for="binding_src_cluster">Cluster(s)</label>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col s9 input-field">
+                    <div class="row" id="binding_target_title"><h5 class="translate">Target</h5></div>
+                    <div class="row" id="binding_target_selector">
+                        <div class="col s6 input-field">
                             <select id="bind_target" class="icons">
                             </select>
-                            <label for="bind_target" class="translate">Target device</label>
+                            <label for="bind_target" class="translate">Device</label>
                         </div>
                         <div class="col s3 input-field">
                             <select id="bind_target_ep" class="materialSelect">
                             </select>
-                            <label for="bind_target_ep" class="translate">Target endpoint</label>
+                            <label for="bind_target_ep" class="translate">Endpoint</label>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col s9 input-field">
+                    <div class="row hide" id="binding_target_coordinator">
+                        <h5 class="translate">Target: Coordinator</h5>
+                    </div>
+                    <div class="row" id="binding_unbind_from_coordinator">
+                        <div class="col s6 input-field tooltipped hide" id="__fcs" title="Allows free selection of clusters for Binding">
+                            <label>
+                                <input id="free_cluster_selection" type="checkbox" class="value" />
+                                <span class="translate" for="free_cluster_selection">Free Cluster Selection</span>
+                            </label>
+                        </div>
+                        <div class="col s6 input-field tooltipped" id="__ufc" title="Needed to successfully bind some remotes, i.e. Hue Dimmer">
                             <label>
                                 <input id="unbind_from_coordinator" type="checkbox" class="value" />
-                                <span class="translate" for="unbind_from_coordinator">Unbind remote from Coordinator (necessary for some remotes like HUE Dimmer Switch)</span>
+                                <span class="translate" for="unbind_from_coordinator">Unbind from Coordinator</span>
                             </label>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
+                <a name="bind_to_coordinator" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">rebind to Coordinator</a>
                 <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>

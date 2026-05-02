@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.99-alpha.4",
+    "version": "3.3.99-alpha.6",
     "news": {
       "3.3.5": {
         "en": "Bugfix - Error on startup from onEvent\nfix: send_payload read with array of cluster\n",
@@ -178,8 +178,7 @@
         "es": "Zigbee",
         "pl": "Zigbee",
         "zh-cn": "Zigbee"
-      },
-      "fa-icon": "</i><img style='width:24px;margin-bottom:-6px;' src='/adapter/zigbee/zigbee.svg'><i>"
+      }
     },
     "plugins": {
       "sentry": {

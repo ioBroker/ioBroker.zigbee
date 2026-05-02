@@ -640,6 +640,7 @@ function getCoordinatorCard(dev) {
                           <i class="left">${image}</i>
                           <div style="min-height:88px; font-size: 0.8em" class="truncate">
                             <ul>
+                                <li><span class="label coordinator">Ieee:</span><span>${coordinatorinfo.ieee}</span></li>
                                 <li><span class="label coordinator">Adapter:</span><span>${coordinatorinfo.installedVersion}</span></li>
                                 <li><span class="label coordinator">Installed:</span><span>${coordinatorinfo.installSource}</span></li>
                                 <li><span class="label coordinator">Herdsman:</span><span>${coordinatorinfo.herdsman}</span></li>
@@ -875,7 +876,6 @@ function setDashStates(id, state) {
 
 function hookControls() {
     $('input[type=\'checkbox\']').change(function (event) {
-        console.warn('write triggered')
         const val = $(this).is(':checked');
         const id = $(this).parents('.state').attr('oid');
         sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
@@ -1293,7 +1293,6 @@ function showDevices() {
     $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
         const dev_block = $(this).parents('div.device');
         const id = getDevId(dev_block);
-        console.warn(`${JSON.stringify(id)}, false`)
         editDeviceOptions(id, false);
     });
 
@@ -1608,7 +1607,6 @@ async function editDeviceOptions(id, isModel) {
             });
         }
         for (const k of Object.keys(multiselectoptions)) {
-            console.warn(JSON.stringify(multiselectoptions[k]));
             for (const item of Object.keys(multiselectoptions[k].entries)) {
                 $(`#${item}`).unbind('click');
                 $(`#${item}`).click(() => {
@@ -1679,7 +1677,7 @@ async function editDeviceOptions(id, isModel) {
                 //console.warn(`dok: ${_do[k].key} : ${_do[k].value}`);
                 _no[key] = _do[k].value;
                 changed |= (_no[key] != _so[key]);
-                console.warn(`_no: ${_no[key]} _so: ${_so[key]} changed: ${changed}`)
+                //console.warn(`_no: ${_no[key]} _so: ${_so[key]} changed: ${changed}`)
             }
         }
         if (multiselectoptions.changed) {
@@ -1764,7 +1762,6 @@ async function editDeviceOptions(id, isModel) {
         updateOptions(dialogData.availableOptions);
     });
 
-    console.warn('stw 1')
     sendToWrapper(namespace, 'getLocalImages', {}, function(msg) {
         if (msg && msg.imageData) {
             updateImageSelection(dialogData , msg.imageData);
@@ -1784,7 +1781,6 @@ async function editDeviceOptions(id, isModel) {
             });
             sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:isModel, key:'options' }, function (msg) {
                 if (msg) {
-                    console.warn('stw')
                     if (msg.error) showMessage(msg.error, '_Error');
                     Object.keys(device_options).forEach(key => delete device_options[key]);
                     Object.keys(received_options).forEach(key => delete received_options[key]);
@@ -1802,9 +1798,7 @@ async function editDeviceOptions(id, isModel) {
                     }
                     updateOptions(dialogData.availableOptions);
                 } else showMessage('callback without message');
-                console.warn('Open')
                 $('#chooseimage').modal('open');
-                console.warn('Update')
                 Materialize.updateTextFields();
             });
         }
@@ -2117,9 +2111,9 @@ function getDevices() {
         })
         sendToWrapper(namespace, 'getDevices', {}, function (msg) {
             if (msg) {
-                msg.adapterOptions.forEach((o) => {
+                /*msg.adapterOptions.forEach((o) => {
                     console.warn(`${JSON.stringify(o)} : ${typeof o.condition}`);
-                });
+                });*/
                 extractDevicesData(msg);
                 if (msg.error) {
                     //errorData.push(msg.error);
@@ -2520,6 +2514,17 @@ function load(settings, onChange) {
             $('#device-filter-btn').text($(this).text());
             doFilter();
         });
+        $('#bind-search').keyup(function (event) {
+            showHerdsmanBinding(event.target.value.toLowerCase());
+        });
+        $('#bind-order a').click(function () {
+            $('#bind-order-btn').text($(this).text());
+            showHerdsmanBinding();
+        });
+        $('#bind-filter a').click(function () {
+            $('#bind-filter-btn').text($(this).text());
+            showHerdsmanBinding();
+        });
         $('#model-search').keyup(function (event) {
             LocalDataDisplayValues.searchVal = event.target.value.toLowerCase();
             if (!LocalDataDisplayValues.searchTimeout)
@@ -2764,6 +2769,7 @@ socket.emit('subscribe', namespace + '.*');
 socket.emit('subscribeObjects', namespace + '.*');
 
 // react to changes
+const borderArr = ['border_bottom', 'border_left','border_top', 'border_right'];
 socket.on('stateChange', function (id, state) {
     UpdateAdapterAlive(true);
     // only watch our own states
@@ -2812,8 +2818,7 @@ socket.on('stateChange', function (id, state) {
                     const numDev = Number(state.val.split(':').pop()) || 0;
                     if (numDev > 0) {
                         $(`#map_generating_btn`).removeClass('hide');
-                        if (numDev < 10) $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">filter_${numDev}</i>`);
-                        else $(`#map_generating_btn`).html(`<i class="material-icons large icon-blue">${numDev%2 ? 'filter_9_plus' : 'queue'}</i>`);
+                        $(`#map_generating_btn`).html(`<i class="material-icons large">${borderArr[numDev%4]}</i>`);
                     }
                     else {
                         $('#map_generating_btn').addClass('hide');
@@ -3845,51 +3850,143 @@ function showViewConfig() {
     $('#modalviewconfig').modal('open');
 }
 
-function prepareBindingDialog(bindObj) {
+
+function deviceHasCoordinatorBinding (devInfo) {
+    const sources = Object.values(herdsmanBindings).filter((o) => o.address === devInfo.ieee);
+    for (const source of sources) {
+        for (const target of Object.values(source?.binds ?? {})) {
+            if (target.address === coordinatorinfo.ieee) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+function prepareBindingDialog(bindObj, bindtarget) {
     const binddevices = devices.slice();
     binddevices.unshift('');
-    const bind_source = (bindObj) ? [bindObj.bind_source] : [''];
-    const bind_target = (bindObj) ? [bindObj.bind_target] : [''];
+    const bind_source = ['']//(src) ? [src.id] : [''];
+    const bind_target = ['']//(dst) ? [dst.id] : [''];
+
+    let srcDevice = undefined;
+    let targetDevice = undefined;
+    let srcEP = undefined;
+    let targetEP = undefined;
+    let freeSelection = false;
 
     // 5 - genScenes, 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
     const allowClusters = [5, 6, 8, 768];
+    let offeredClusters = [];
     const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
     // fill device selector
+    function configureTarget () {
+        list2select('#bind_target', bindtargets, bind_target,
+            function (key, device) {
+                if (device == '') {
+                    return 'Select target device';
+                }
+                if (device.hasOwnProperty('info')) {
+                    if (device?.info?.device && device?.info?.device?.type === 'Coordinator') {
+                        return 'Coordinator';
+                    }
+                    // check for input clusters
+                    let allow = false;
+                    for (const cluster of offeredClusters) {
+                        if (device.info.endpoints) for (const ep of device.info.endpoints) {
+                            if (ep.input_clusters.includes(cluster)) {
+                                allow = true;
+                                break;
+                            }
+                        }
+                        if (allow) {
+                            break;
+                        }
+                    }
+                    if (!allow) {
+                        return null;
+                    }
+                    return device.common.name;
+                } else {
+                    if (device.hasOwnProperty('groupId')) {
+                        return device.groupName;
+                    }
+                }
+            },
+            function (key, device) {
+                if (device == '') {
+                    return '';
+                } else {
+                    return device?.info?.device?.ieee ?? device?._id;
+                }
+            },
+            function (key, device) {
+                if (device == '') {
+                    return 'disabled';
+                } else if (device.icon) {
+                    return `data-icon="${device.icon}"`;
+                } else {
+                    return '';
+                }
+            },
+        );
+    }
+    const configureSourceEp = function (selected) {
+
+        const epList = srcDevice ? srcDevice.info.endpoints.map((ep) => ep.epName) : [];
+        //console.warn(`configureSourceEp with ${JSON.stringify(epList)} from ${JSON.stringify(srcDevice?.info?.endpoints)}`)
+        list2select('#bind_source_ep', epList, (selected) ? [selected] : [],
+            (key, ep) => {
+                return ep;
+            },
+            (key, ep) => {
+                return ep;
+            }
+        );
+    };
+    const configureTargetEp = function (selected) {
+
+        const epList = targetDevice ? targetDevice.info.endpoints.map((ep) => ep.epName) : [];
+        //console.warn(`configureSourceEp with ${JSON.stringify(epList)} from ${JSON.stringify(srcDevice?.info?.endpoints)}`)
+        list2select('#bind_target_ep', epList, (selected) ? [selected] : [],
+            (key, ep) => {
+                return ep;
+            },
+            (key, ep) => {
+                return ep;
+            }
+        );
+    };
+
+    function configureSourceCluster(clusters, selected) {
+        //console.warn(`configureSourceCLuster  ${JSON.stringify(clusters)}, selected ${JSON.stringify(selected)} , freeSelection is ${freeSelection}`);
+        list2select(`#binding_src_cluster`, clusters, [], (key, cluster) => {
+            return allowClustersName[cluster] ?? cluster;
+        });
+
+    }
+
+
     list2select('#bind_source', binddevices, bind_source,
         function (key, device) {
             if (device == '') {
                 return 'Select source device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device && device.info.device.type === 'Coordinator') {
-                    return null;
-                }
-                // check for output clusters
-                let allow = false;
-                for (const cluster of allowClusters) {
-                    if (device.info.endpoints) for (const ep of device.info.endpoints) {
-                        if (ep.output_clusters.includes(cluster)) {
-                            allow = true;
-                            break;
-                        }
-                    }
-                    if (allow) {
-                        break;
-                    }
-                }
-                if (!allow) {
-                    return null;
-                }
+                if (device.info.device && device.info.device.type === 'Coordinator') return null;
+                if (!device?.info?.device?.type) return null;
+                if (device.info.device.BindSource) return `${device.common.name} (...${device?.info?.device?.ieee?.slice(-6) ?? ''})`;
+                if (deviceHasCoordinatorBinding(device.info.device)) return null;
                 return device.common.name;
-            } else { // fallback if device in list but not paired
+            } /*/ No Fallback for now (ae) else { // fallback if device in list but not paired
                 return device.common.name + ' ' + device.native.id;
-            }
+            }*/
         },
         function (key, device) {
             if (device == '') {
                 return '';
             } else {
-                return device._id;
+                //console.warn(device?.info?.device?.ieee ?? device?._id)
+                return device?.info?.device?.ieee ?? device?._id;
             }
         },
         function (key, device) {
@@ -3906,309 +4003,154 @@ function prepareBindingDialog(bindObj) {
     for (const key in groups) {
         bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
     }
-    list2select('#bind_target', bindtargets, bind_target,
-        function (key, device) {
-            if (device == '') {
-                return 'Select target device';
-            }
-            if (device.hasOwnProperty('info')) {
-                if (device.info.device && device.info.device.type === 'Coordinator') {
-                    return null;
-                }
-                // check for input clusters
-                let allow = false;
-                for (const cluster of allowClusters) {
-                    if (device.info.endpoints) for (const ep of device.info.endpoints) {
-                        if (ep.input_clusters.includes(cluster)) {
-                            allow = true;
-                            break;
-                        }
-                    }
-                    if (allow) {
-                        break;
-                    }
-                }
-                if (!allow) {
-                    return null;
-                }
-                return device.common.name;
-            } else {
-                if (device.hasOwnProperty('groupId')) {
-                    return device.groupName;
-                }
-            }
-        },
-        function (key, device) {
-            if (device == '') {
-                return '';
-            } else {
-                return device._id;
-            }
-        },
-        function (key, device) {
-            if (device == '') {
-                return 'disabled';
-            } else if (device.icon) {
-                return `data-icon="${device.icon}"`;
-            } else {
-                return '';
-            }
-        },
-    );
-};
 
-function prepareHerdsmanBindingDialog(src, dst) {
-    const binddevices = devices.slice();
-    binddevices.unshift('');
-    const bind_source = (src) ? [src] : [''];
-    const bind_target = (dst) ? [dst] : [''];
+    configureSourceEp();
+    configureSourceCluster([],[])
+    configureTarget();
+    configureTargetEp();
 
-    // 5 - genScenes, 6 - genOnOff, 8 - genLevelCtrl, 768 - lightingColorCtrl
-    const denyClusters = [25,4096];
-    const allowClusters = [5, 6, 8, 768];
-    //const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
-    // fill device selector
-    list2select('#bind_source', binddevices, bind_source,
-        function (key, device) {
-            if (device == '') {
-                return 'Select source device';
-            }
-            if (device.hasOwnProperty('info')) {
-                if (device.info.device && device.info.device.type === 'Coordinator') {
-                    return null;
-                }
-                // check for output clusters
-                let allow = false;
-                if (device.info.endpoints) for (const ep of device.info.endpoints) {
-                    for (const cluster of ep.output_clusters) {
-                        if (!denyClusters.includes(cluster)) {
-                            allow = true;
-                            break;
-                        }
-                    }
-                    if (allow) {
-                        break;
-                    }
-                }
-                if (!allow) {
-                    return null;
-                }
-                return `${device?.common?.name || 'unnamed'} (${device?.info?.device?.ieee || '0x0'})`;
-            } else { // fallback if device in list but not paired
-                return device.common.name + ' ' + device.native.id;
-            }
-        },
-        function (key, device) {
-            if (device == '') {
-                return '';
-            } else {
-                return device._id;
-            }
-        },
-        function (key, device) {
-            if (device == '') {
-                return 'disabled';
-            } else if (device.icon) {
-                return `data-icon="${device.icon}"`;
-            } else {
-                return '';
-            }
-        },
-    );
-    const bindtargets = binddevices.slice();
-    for (const key in groups) {
-        bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
-    }
-    list2select('#bind_target', bindtargets, bind_target,
-        function (key, device) {
-            if (device == '') {
-                return 'Select target device';
-            }
-            if (device.hasOwnProperty('info')) {
-                if (device.info.device && device.info.device.type === 'Coordinator') {
-                    return 'Coordinator';
-                }
-                // check for input clusters
-                let allow = false;
-                for (const cluster of allowClusters) {
-                    if (device.info.endpoints) for (const ep of device.info.endpoints) {
-                        if (ep.input_clusters.includes(cluster)) {
-                            allow = true;
-                            break;
-                        }
-                    }
-                    if (allow) {
-                        break;
-                    }
-                }
-                if (!allow) {
-                    return null;
-                }
-                return `${device?.common?.name || 'unnamed'} (${device?.info?.device?.ieee || '0x0'})`;
-            } else {
-                if (device.hasOwnProperty('groupId')) {
-                    return device.groupName;
-                }
-            }
-        },
-        function (key, device) {
-            if (device == '') {
-                return '';
-            } else {
-                return device._id;
-            }
-        },
-        function (key, device) {
-            if (device == '') {
-                return 'disabled';
-            } else if (device.icon) {
-                return `data-icon="${device.icon}"`;
-            } else {
-                return '';
-            }
-        },
-    );
+    $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
+    $('#bindingmodaledit').find('#free_cluster_selection').prop('checked', freeSelection);
+    $('#binding_target_title').removeClass('hide');
+    $('#binding_target_selector').removeClass('hide');
+    $('#binding_target_coordinator').addClass('hide');
 
-    const configureSourceEp = function (devID, selected) {
-        const device = devices.find(obj => {
-            return obj._id === devID;
-        });
 
-        const epList = device ? device.info.endpoints : [];
-        const sClusterList = epList.map((ep) => {
-            const clusters = ep.output_clusters.map((cl) => {
-                return allowClusters.includes(cl) ? {ID: ep.ID + '_' + cl, name: allowClustersName[cl]} : null;
-            }).filter((i) => {
-                return i != null;
-            });
-            return clusters.length == 0 ? null : [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter((i) => {
-            return i != null;
-        });
-        list2select('#bind_source_ep', sClusterList, (selected) ? [selected] : [],
-            (key, ep) => {
-                return ep.ID + ' ' + ep.name;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
-    };
-
-    const configureTargetEp = function (devID, selected, sourceCl) {
-        const device = devices.find(obj => {
-            return obj._id === devID;
-        });
-
-        const epList = device ? device.info.endpoints : [];
-        const tClusterList = epList.map((ep) => {
-            const clusters = ep.input_clusters.map((cl) => {
-                return (allowClusters.includes(cl) && (!sourceCl || sourceCl == cl)) ? {
-                    ID: ep.ID + '_' + cl,
-                    name: allowClustersName[cl]
-                } : null;
-            }).filter((i) => {
-                return i != null;
-            });
-            return !clusters.length ? null : [{ID: ep.ID, name: 'all'}, clusters];
-        }).flat(2).filter(i => {
-            return i != null;
-        });
-        list2select('#bind_target_ep', tClusterList, (selected) ? [selected] : [],
-            (key, ep) => {
-                return ep.ID + ' ' + ep.name;
-            },
-            (key, ep) => {
-                return ep.ID;
-            }
-        );
-    };
-
+    $('#bind_source').unbind('change')
     $('#bind_source').change(function () {
         if (this.selectedIndex <= 0) {
             return;
         }
-        configureSourceEp(this.value);
-    });
-    if (bindObj) {
-        configureSourceEp(bindObj.bind_source, bindObj.bind_source_ep);
-    } else {
+        srcDevice = devices.find(obj => {
+            return obj.info.device.ieee === this.value //obj._id === devID;
+        });
         configureSourceEp();
-    }
+        $('#bind_source_ep').trigger('change');
+        // identify the device
+    });
+    $('#bind_source_ep').unbind('change')
+    $('#bind_source_ep').change(function() {
+        if (this.selectedIndex < 0) return;
+        //console.warn(`bind_source_ep.change called, ieee: ${srcDevice?.info?.device?.ieee ?? 'unknown'} ep: ${this.value}, eps: ${srcDevice.info.endpoints.map((ep) => ep.epName)}`);
+        srcEP = srcDevice?.info?.endpoints.find((ep) => ep.epName == this.value)
+        //console.warn(`srcEP: ${JSON.stringify(srcEP)}`);
+        offeredClusters = !freeSelection ? (srcEP?.output_clusters ?? []).filter( (id) => allowClusters.includes(id)) : srcEP?.output_clusters ?? [];
+        if (offeredClusters.length > 0) {
+            $('#binding_target_title').removeClass('hide');
+            $('#binding_target_selector').removeClass('hide');
+            $('#binding_target_coordinator').addClass('hide');
+            $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
+            $('#__ufc').removeClass('hide')
+            configureTarget();
 
+        }
+        else {
+            $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
+            $('#__ufc').addClass('hide')
+            $('#binding_target_title').addClass('hide');
+            $('#binding_target_selector').addClass('hide');
+            $('#binding_target_coordinator').removeClass('hide');
+        }
+        //console.warn(`clusters are : ${JSON.stringify(offeredClusters)}`)
+        const clusters = offeredClusters.slice();
+        configureSourceCluster(offeredClusters ?? [],[]);
+        $('#bind_target').trigger('change');
+    })
+
+    $('#free_cluster_selection').unbind('click')
+    $('#free_cluster_selection').click(function() {
+        freeSelection =     $('#bindingmodaledit').find('#free_cluster_selection').prop('checked');
+        //console.warn(`free_selection: ${freeSelection}`);
+        $('#bind_source').trigger('change');
+
+    });
+
+    $('#bind_target').unbind('change')
     $('#bind_target').change(function () {
         if (this.selectedIndex <= 0) {
             return;
         }
+        //console.warn(`bind_target: value is ${this.value}`)
+        targetDevice = devices.find(obj => {
+            return obj.info.device.ieee == this.value;
+        });
+        if (targetDevice.info.device.ieee === coordinatorinfo.ieee) {
+            $('#unbind_from_coordinator').prop('checked', false);
+            $('#binding_unbind_from_coordinator').addClass('disabled')
+            $('#free_cluster_selection').prop('checked', false);
+            $('#free_cluster_selection').addClass('disable', false);
+        }
+        else {
+            $('#binding_unbind_from_coordinator').removeClass('disabled')
+            $('#free_cluster_selection').removeClass('disabled', false);
+        }
         const bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val();
-        configureTargetEp(this.value, null, (bind_source_ep.indexOf('_') > 0) ? bind_source_ep.split('_')[1] : null);
-    });
-    if (bindObj) {
-        configureTargetEp(bindObj.bind_target, bindObj.bind_target_ep);
-    } else {
         configureTargetEp();
-    }
-
-    $('#bind_source_ep').change(function () {
-        $('#bind_target').trigger('change');
+        $('#bind_target_ep').trigger('change');
+        $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').addClass('hide');
+    });
+    $('#bind_target_ep').unbind('change')
+    $('#bind_target_ep').change(function () {
+        targetEP = targetDevice?.info?.endpoints.find((ep) => ep.epName == this.value)
     });
 
     const unbind_fom_coordinator = bindObj ? bindObj.unbind_from_coordinator : false;
     $('#unbind_from_coordinator').prop('checked', unbind_fom_coordinator);
-}
 
-function addBindingDialog() {
     $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
     $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
-        const //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
-            bind_source = $('#bindingmodaledit').find('#bind_source option:selected').val(),
-            bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val(),
-            bind_target = $('#bindingmodaledit').find('#bind_target option:selected').val(),
-            bind_target_ep = $('#bindingmodaledit').find('#bind_target_ep option:selected').val(),
-            unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
-        addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator);
+        const unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
+        const v = $('#binding_src_cluster').val();
+        const srcClusters = Array.isArray(v) ? (v.includes('all') ? offeredClusters : v.map((o) => offeredClusters[o])) : offeredClusters;
+        addBinding(srcDevice.info.device.ieee, srcEP.ID, srcClusters, targetDevice.info.device.ieee, targetEP?.ID ?? -1, unbind_from_coordinator);
     });
+
+    $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').unbind('click');
+    $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').click(() => {
+        sendToWrapper(namespace, 'reconfigure', {id: srcDevice._id}, function (msg) {
+            closeWaitingDialog();
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'));
+                }
+                getHerdsmanBinding();
+            }
+        });
+        showWaitingDialog('Attempting to rebind to Coordinator', 30);
+    });
+};
+
+
+
+function addBindingDialog() {
     prepareBindingDialog();
 
     $('#bindingmodaledit').modal('open');
     Materialize.updateTextFields();
 }
 
-function addBinding(bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator) {
-    sendToWrapper(namespace, 'addBinding', {
-        bind_source: bind_source,
-        bind_source_ep: bind_source_ep,
-        bind_target: bind_target,
-        bind_target_ep: bind_target_ep,
+function addBinding(srcDevice, srcEP, srcClusters, targetDevice, targetEP, unbind_from_coordinator) {
+    const message = {
+        s_address: srcDevice,
+        s_ep: srcEP,
+        clusters: srcClusters,
+        b_address: targetDevice,
+        b_ep: targetEP,
         unbind_from_coordinator
-    }, function (msg) {
+    };
+    //console.warn(`add Binding with ${JSON.stringify(message)}`);
+    sendToWrapper(namespace, 'addBinding', message, function (msg) {
         closeWaitingDialog();
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
         }
-        getBinding();
+        getHerdsmanBinding();
     });
     showWaitingDialog('Device binding is being added', 10);
 }
 
-function editBinding(bind_id, bind_source, bind_source_ep, bind_target, bind_target_ep, unbind_from_coordinator) {
-    sendToWrapper(namespace, 'editBinding', {
-        id: bind_id,
-        bind_source: bind_source,
-        bind_source_ep: bind_source_ep,
-        bind_target: bind_target,
-        bind_target_ep: bind_target_ep,
-        unbind_from_coordinator
-    }, function (msg) {
-        closeWaitingDialog();
-        if (msg && msg.error) {
-            showMessage(msg.error, _('Error'));
-        }
-        getBinding();
-    });
-    showWaitingDialog('Device binding is being updated', 10);
-}
 
+/*
 function editBindingDialog(bindObj) {
     $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
     $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
@@ -4243,7 +4185,6 @@ function addHerdsmanBindingDialog() {
     Materialize.updateTextFields();
 }
 
-
 function editHerdsmanBinding(bind_id, bind_source, bind_source_ep, bind_source_clusters, bind_target, bind_target_ep, unbind_from_coordinator) {
     sendToWrapper(namespace, 'editBinding', {
         id: bind_id,
@@ -4262,100 +4203,12 @@ function editHerdsmanBinding(bind_id, bind_source, bind_source_ep, bind_source_c
     });
     showWaitingDialog('Device binding is being updated', 10);
 }
+*/
 
-
-function editHerdsmanBindingDialog(bind_id) {
-    $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
-    $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
-        const //bind_id = $('#bindingmodaledit').find("input[id='bind_id']").val(),
-            bind_source = $('#herdsmanbindingmodaledit').find('#bind_source option:selected').val(),
-            bind_source_ep = $('#herdsmanbindingmodaledit').find('#bind_source_ep option:selected').val(),
-            bind_target = $('#herdsmanbindingmodaledit').find('#bind_target option:selected').val(),
-            bind_target_ep = $('#herdsmanbindingmodaledit').find('#bind_target_ep option:selected').val(),
-            bind_source_clusters = [],
-            unbind_from_coordinator = $('#herdsmanbindingmodaledit').find('#unbind_from_coordinator').prop('checked');
-        editHerdsmanBinding(bind_id, bind_source, bind_source_ep, bind_source_clusters, bind_target, bind_target_ep, unbind_from_coordinator);
-    });
-    prepareHerdsmanBindingDialog(src, dst);
-    $('#bindingmodaledit').modal('open');
-    Materialize.updateTextFields();
-}
-
-
-function showBinding() {
-    const element = $('#binding');
-    element.find('.binding').remove();
-    if (!binding || !binding.length) return;
-    binding.forEach(b => {
-        const bind_id = b.id,
-            bind_source = b.bind_source,
-            bind_source_ep = b.bind_source_ep,
-            bind_target = b.bind_target,
-            bind_target_ep = b.bind_target_ep;
-        const source_dev = devices.find((d) => d._id == bind_source) || {common: {name: bind_source}},
-            target_dev = devices.find((d) => d._id == bind_target) || {common: {name: bind_target}},
-            target_icon = (target_dev.icon) ? `<img src="${target_dev.icon}" width="64px">` : '';
-        const card = `
-                    <div id="${bind_id}" class="binding col s12 m6 l4 xl3">
-                        <div class="card hoverable binding-card">
-                            <div class="card-content zcard">
-                                <span class="card-title truncate">${source_dev.common.name}</span>
-                                <i class="left"><img src="${source_dev.icon}" width="64px"></i>
-                                <i class="right">${target_icon}</i>
-                                <div style="min-height:72px; font-size: 0.8em" class="truncate">
-                                    <ul>
-                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
-                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
-                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
-                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
-                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
-                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
-                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
-                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
-                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
-                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
-                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
-                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
-                                        <li><span class="label">source:</span><span>0x${bind_source.replace(namespace + '.', '')}</span></li>
-                                        <li><span class="label">endpoint:</span><span>${bind_source_ep}</span></li>
-                                        <li><span class="label">target:</span><span>0x${bind_target.replace(namespace + '.', '')}</span></li>
-                                        <li><span class="label">endpoint:</span><span>${bind_target_ep}</span></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="card-action">
-                                <div class="card-reveal-buttons zcard">
-                                    <span class="card-title truncate">${target_dev.common.name}
-                                        <button name="delete" class="right btn-flat btn-small">
-                                            <i class="material-icons icon-black">delete</i>
-                                        </button>
-                                        <button name="edit" class="right btn-flat btn-small">
-                                            <i class="material-icons icon-green">edit</i>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-        element.append(card);
-    });
-
-    $('#binding button[name=\'delete\']').click(function () {
-        const bind_id = $(this).parents('.binding')[0].id;
-        deleteBindingConfirmation(bind_id);
-    });
-    $('#binding button[name=\'edit\']').click(function () {
-        const bind_id = $(this).parents('.binding')[0].id;
-        const bindObj = binding.find((b) => b.id == bind_id);
-        if (bindObj) {
-            editBindingDialog(bindObj);
-        }
-    });
-}
 function bindInfoFromId(id) {
     const pattern = new RegExp('SID_([^_]+)_EP([^_]+)_TID_([^_]+)_EP([^_]+)');
     const match = id.match(pattern);
-    console.warn(JSON.stringify(match))
+    //console.warn(JSON.stringify(match))
     if (match.length < 5) return undefined;
     return {
         s_address: match[1],
@@ -4365,19 +4218,42 @@ function bindInfoFromId(id) {
     };
 }
 
-function showHerdsmanBinding() {
+function showHerdsmanBinding(searchentry) {
+    const bindOrderFunctions = {
+        'source': (a, b) => a.dst_name < b.dst_name ? a.dst_name == b.dst_name ? 0 : -1 : 1,
+        'target': (a, b) => a.dst_name < b.dst_name ? a.dst_name == b.dst_name ? 0 : -1 : 1,
+        'sourceieee': (a,b) => a.src_ieee < b.src_ieee ? a.src_ieee == b.src_ieee ? 0 : -1 : 1,
+        'targetieee': (a,b) => a.src_ieee < b.src_ieee ? a.src_ieee == b.src_ieee ? 0 : -1 : 1,
+        default: (a, b) => 0
+    }
+
+    const bindFilterFunctions = {
+        device: (o) => !o.hasCoordinatorDest,
+        coordinator: (o) => o.hasCoordinatorDest,
+        all: (o) => true,
+    }
+
+    const bindFilter = $('#bind-filter-btn').text().toLowerCase();
+    const bindOrder = $('#bind-order-btn').text().toLowerCase().replace(' ','');
+    const bindSearch = $('#bind-search').text().toLowerCase();
+    const cards = [];
+    //console.warn(`showHerdsmanBindings called with se ${searchentry}  bs ${bindSearch} bf ${bindFilter} bo ${bindOrder}`);
+
     const element = $('#binding');
     element.find('.binding').remove();
 
     for (const source of Object.values(herdsmanBindings)) {
         const source_dev = devices.find((d) => source.address == d.info.device.ieee);
+        if (!source_dev) continue;
         const source_icon = (source_dev?.icon) ? `<img src="${source_dev.icon}" width="64px">` : '';
-        const cardParts = [];
+        //const cardParts = [];
         const s_ep = source_dev?.info?.endpoints?.find((ep) => ep.ID == source.endpoint)
         const s_epName = s_ep ? s_ep.epName : source.endpoint;
         const icons = [];
         for (const binding of Object.values(source.binds)) {
+            const cardParts = [];
             const target_dev = devices.find((d) => binding.address == d.info.device.ieee);
+            if (searchentry && (!source_dev.common?.name?.toLowerCase().includes(searchentry) || target_dev?.common?.name?.toLowerCase().includes(searchentry))) continue;
             const target_icon = (target_dev?.icon) ? `<img src="${target_dev.icon}" width="64px">` : '';
             const t_ep = target_dev?.info?.endpoints?.find((ep) => ep.ID == source.endpoint)
             const t_epName = t_ep ? t_ep.epName : binding.endpoint;
@@ -4395,43 +4271,48 @@ function showHerdsmanBinding() {
                 cardParts.push(`<br>`);
             }
             cardParts.push(`</div></div>`);
-            cardParts.push(`<div class="card-action"><div class="card-reveal-buttons zcard"><span class="card-title truncate"> ${src_id} <i class="tiny material-icons center">forward</i> ${dst_id}<button name="delete" class="right btn-flat btn-small">
+            /*cardParts.push(`<div class="card-action"><div class="card-reveal-buttons zcard"><span class="card-title truncate"> ${src_id} <i class="tiny material-icons center">forward</i> ${dst_id}<button name="delete" class="right btn-flat btn-small">
                                         <i class="material-icons icon-black">delete</i>
                                     </button>
                                     <button name="edit" class="right btn-flat btn-small">
                                         <i class="material-icons icon-green">edit</i>
                                     </button>
                         </span></div></div></div>`);
+            */
+            cardParts.push(`<div class="card-action"><div class="card-reveal-buttons zcard"><span class="card-title truncate"> ${src_id} <i class="tiny material-icons center">forward</i> ${dst_id}<button name="delete" class="right btn-flat btn-small">
+                                        <i class="material-icons icon-black">delete</i>
+                                    </button>
+                        </span></div></div></div>`);
+
+            cards.push({
+                src_name: source_dev.common?.name?.toLowerCase(),
+                src_iee: src_id, card:cardParts.join(''),
+                dst_name: source_dev.common?.name?.toLowerCase(),
+                dst_ieee:dst_id,
+                hasCoordinatorDest: target_dev?.common?.name?.toLowerCase() === 'coordinator' })
         }
-        element.append(cardParts.join(''));
+
     }
+
+    const sorted = cards.filter(bindFilterFunctions[bindFilter]).sort(bindOrderFunctions[bindOrder]);
+
+    //console.warn(`pre-sort: ${JSON.stringify(cards.map((o) => o.src_name))} - post-sort: ${JSON.stringify(sorted.map((o) => o.src_name))}`);
+
+    element.append(sorted.map((o) => o.card).join(''));
 
     $('#binding button[name=\'delete\']').click(function () {
         const bind_id = bindInfoFromId($(this).parents('.binding')[0].id);
         if (bind_id) deleteHerdsmanBindingConfirmation(bind_id);
     });
-    $('#binding button[name=\'edit\']').click(function () {
+    /*$('#binding button[name=\'edit\']').click(function () {
         const bind_id = bindInfoFromId($(this).parents('.binding')[0].id);
         if (bind_id) {
             editHerdsmanBindingDialog(bind_id);
         }
-    });
+    });*/
 }
 
 
-
-function getBinding() {
-    sendToWrapper(namespace, 'getBinding', {}, function (msg) {
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            } else {
-                binding = msg;
-                showBinding();
-            }
-        }
-    });
-}
 
 let herdsmanBindings = {};
 
@@ -4498,7 +4379,7 @@ function deleteBinding(id) {
                 showMessage(msg.error, _('Error'));
             }
         }
-        getBinding();
+        getHerdsmanBinding();
     });
     showWaitingDialog('Device binding is being removed', 10);
 }
