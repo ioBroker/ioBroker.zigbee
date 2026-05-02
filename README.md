@@ -142,6 +142,7 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
 * ZH 9.0
 * ZHC 25.115 or newer
 
