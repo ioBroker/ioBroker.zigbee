@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.3.99-alpha.6",
+    "version": "3.4.0",
     "news": {
+      "3.4.0": {
+        "en": "ZH 9.0\nZHC 25.115 or newer",
+        "de": "ZH 9.0\nZHC 25.115 oder neuer",
+        "ru": "ZH 9,0\nZHC 25.115 или новее",
+        "pt": "ZH 9.0\nZHC 25.115 ou mais recente",
+        "nl": "ZH 9,0\nZHC 25.115 of nieuwer",
+        "fr": "ZH 9,0\nZHC 25.115 ou plus récent",
+        "it": "ZH 9.0\nZHC 25.115 o più recente",
+        "es": "ZH 9.0\nZHC 25.115 o más reciente",
+        "pl": "ZH 9.0\nZHC 25.115 lub nowsze",
+        "uk": "ЗХ 9.0\nZHC 25.115 або новачок",
+        "zh-cn": "ZH 9.0号公路\nZHC 25.115或更新"
+      },
       "3.3.5": {
         "en": "Bugfix - Error on startup from onEvent\nfix: send_payload read with array of cluster\n",
         "de": "Bugfix - Fehler beim Start von onEvent\nfix: send_payload mit cluster-array gelesen\n",
@@ -80,19 +93,6 @@
         "pl": "Fix: przypisanie modelu dynamicznego, gdy funkcja eksponuje (PTVO, BuschJaeger)\nFix: Roles\nWspółczynnik: Przesunięty kod legacy\nWspółczynnik: Odkryj, że kreacja się zmieniła.\nRefaktor: Ekspozycje nie wykorzystują już stanów z dotychczasowego kodu\nCecha: Oferta funkcji odbudowy państwa w ustawieniach\n: Dodatkowe filtry do wyświetlania urządzeń\nFix: Osierocone państwa grupowe wykryte, oznaczone i usunięte\nAktualizacja: ZH 7.x\nAktualizacja: ZHC 25.84.0",
         "uk": "Виправлення: динамічне завдання моделі при налаштуванні функції (PTVO, BuschJaeger)\nФіксація: Ролі\nРефактор: код Legacy переїхав\nРефактор: Змінено виставку.\nРефактор: Виставки більше не використовують стани з коду спадкування\nХарактеристика: Пропозиція функції державного відновлення в налаштуваннях\n: Додаткові фільтри для відображення пристрою\nВиправлення: Виявлені орфагенти групи, позначені та видалені\nОновлення: ZH 7.x\nОновлення: ZHC 25.84.0",
         "zh-cn": "Fix: 曝光时的动态模型任务为函数( PTVO, Busch Jaeger)\n修补:角色\n内容: 遗留代码已移动\n重构 : 展览的创作改变了.\n内容: 展览不再使用遗留代码中的状态\n特性: 在设置中提供状态重建功能\n: 设备显示的额外过滤器\n修复:发现、标记和删除孤儿群体状态\n最新情况:ZH 7.x\n最新情况:ZHC 25.84.0"
-      },
-      "3.2.5": {
-        "en": "changed setState for lasterror",
-        "de": "geändert setState für lasterror",
-        "ru": "измененный setState for lasterror",
-        "pt": "alterado setState for lasterror",
-        "nl": "veranderd setState for lasterror",
-        "fr": "changement de setState pour lasterror",
-        "it": "set modificatoStata per lasterror",
-        "es": "cambio de Estado para el último terror",
-        "pl": "zmieniony setState for lasterror",
-        "uk": "змінено setState for lasterror",
-        "zh-cn": "更新的设置状态"
       }
     },
     "titleLang": {

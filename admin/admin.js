@@ -23,7 +23,6 @@ let devices = [],
     shownMap = 0,
     groups = {},
     devGroups = {}, // eslint-disable-line prefer-const
-    binding = [],
     excludes = [],
     tabShown = 0,
     coordinatorinfo = {
