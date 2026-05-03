@@ -439,6 +439,8 @@ You can thank the authors by these links:
 
 ------------------------------------------------------------------------------
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## License
 The MIT License (MIT)
 
