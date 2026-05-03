@@ -141,17 +141,15 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
-*
-*
+### 3.4.1 (2026-05-03)
+* new Binding UI
+* new *model specific* option `meta_state` - accepts a list of states (.ie. 'state,brightness')
+* adapter defined default-options
 
 ### 3.4.0 (2026-05-02)
 * ZH 9.0
 * ZHC 24.41 or newer
-* new Binding UI
-* new *model specific* option `meta_state` - accepts a list of states (.ie. 'state,brightness')
-* adapter defined default-options
-  
+
 ### 3.3.5 (2026-01-30)
 * Bugfix - Error on startup from onEvent
 * fix: send_payload read with array of cluster
