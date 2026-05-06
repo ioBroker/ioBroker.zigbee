@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.4.2 (2026-05-06)
 * Fix bug with color expose
 * remove serialport, axios, debug dependency
 * Tooltips for cards

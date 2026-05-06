@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.1",
+    "version": "3.4.2",
     "news": {
+      "3.4.2": {
+        "en": "Fix bug with color expose\nremove serialport, axios, debug dependency\nTooltips for cards\ndifferent card sizes (test)\nchanged visuals for checkboxes and radio boxes",
+        "de": "Fehler beheben mit Farbbelichtung\nserialport, axios, debug abhängigency\nTooltips für Karten\nverschiedene kartengrößen (test)\ngeänderte visualisierungen für checkboxen und radioboxen",
+        "ru": "Исправьте баг с помощью цветной экспозиции\nудалить последовательный порт, аксиос, зависимость от отладки\nТултипы для карт\nразные размеры карт (тест)\nизменены визуальные эффекты для чекбоксов и радиобоксов",
+        "pt": "Corrigir erro com exposição a cores\nremover serialport, axios, dependência de depuração\nDicas para cartas\ndiferentes tamanhos de cartas (teste)\nvisual alterado para caixas de seleção e caixas de rádio",
+        "nl": "Fix bug met kleur bloot\nseriëleport, axio's, debug-afhankelijkheid verwijderen\nTooltips voor kaarten\nverschillende kaartgroottes (test)\ngewijzigde visuals voor vakjes en radioboxen",
+        "fr": "Correction d'un bug avec affichage de couleur\nsupprimer serialport, axios, dépendance de débogage\nOutils pour cartes\ndifférentes tailles de cartes (essai)\nmodification des visuels pour les cases à cocher et les cases radio",
+        "it": "Fisso bug con colore esporre\nrimuovere serialport, assios, debug dipendenza\nTooltips per carte\ndiverse dimensioni della carta (test)\nmodifiche visive per caselle di controllo e caselle radio",
+        "es": "Correr error con el color exponer\nremove serialport, axios, dependencia de depuración\nHerramientas para tarjetas\ndiferentes tamaños de tarjetas (prueba)\ncambio de visuales para casillas de verificación y cajas de radio",
+        "pl": "Napraw błąd z odsłonięciem koloru\nusuń port szeregowy, axios, debugowanie zależności\nWskazówki dla kart\nróżne rozmiary kart (test)\nzmienione wizualizacje dla pól kontrolnych i radiowych",
+        "uk": "Виправлення помилок з кольором\nприбрати послідовнийпорт, аксіос, відхилення залежності\nІнструмент для карток\nрізні розміри картки (test)\nзмінені візуальні карти для чекбоксів та радіобоксів",
+        "zh-cn": "用颜色曝光修正错误\n删除序列port、 轴、 调试依赖性\n纸牌工具提示\n不同卡片大小( 测试)\n更改复选框和收音机框的视觉"
+      },
       "3.4.1": {
         "en": "new Binding UI\nnew *model specific* option `meta_state` - accepts a list of states (.ie. 'state,brightness')\nadapter defined default-options",
         "de": "neue Binding UI\nneue *model specific* option `meta state` - akzeptiert eine liste von staaten (.d.h. 'state,brightness')\nadapter definierte standardoptionen",
