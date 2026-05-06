@@ -9,9 +9,9 @@ let debug;
 try {
     debug = require('zigbee-herdsman/node_modules/debug');
 } catch (e) {
-    debug = require('debug');
+    debug = undefined;
 }
-const originalLogMethod = debug.log;
+const originalLogMethod = debug ? debug.log : undefined;
 
 const safeJsonStringify = require('./lib/json');
 const fs = require('fs');
@@ -205,8 +205,14 @@ class Zigbee extends utils.Adapter {
         this.debugActive = (dbActive && dbActive.val === 'debug');
         this.log.info('Adapter ready - starting subsystems. Adapter is running in '+dbActive.val+ ' mode.');
         if (this.config.debugHerdsman) {
-            debug.log = this.debugLog.bind(this);
-            debug.enable('zigbee-herdsman*');
+            if (debug) {
+                this.log.warn('Activating zigbee-herdsman debug connection - successful');
+                debug.log = this.debugLog.bind(this);
+                debug.enable('zigbee-herdsman*');
+            }
+            else {
+                this.log.warn('Activating zigbee-herdsman debug connection - failed: debug library not available');
+            }
         }
         // external converters
         this.applyExternalConverters();
@@ -774,8 +780,10 @@ class Zigbee extends utils.Adapter {
             this.setState('info.connection', false, true);
             const chain = [];
             if (this.config.debugHerdsman) {
-                debug.disable();
-                debug.log = originalLogMethod;
+                if (debug) {
+                    debug.disable();
+                    debug.log = originalLogMethod;
+                }
             }
             this.log.info('cleaning everything up');
             await this.callPluginMethod('stop');
