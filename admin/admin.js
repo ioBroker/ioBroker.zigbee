@@ -507,6 +507,9 @@ function getCard(dev) {
         }
     }
 
+    const dci = getDashCardInfoAndHeight(dev.statesDef);
+    const height = dci.length > 7 ? 400 : 200;
+    console.warn(`get Card for ${title} with height ${height} from ${dci.length} entries`)
     const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
     const rid = id.split('.').join('_');
@@ -522,7 +525,7 @@ function getCard(dev) {
             ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>`
             : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`,
         status = (isActive ? lq : `<div class="col tool"><i class="material-icons icon-red">cancel</i></div>`),
-        info = `<div style="min-height:88px; font-size: 0.8em" class="truncate">
+        info = `<div style="min-height:${height - 112}px; font-size: 0.8em" class="truncate">
                     <ul>
                         <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
                         <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
@@ -541,8 +544,8 @@ function getCard(dev) {
                                     <i class="material-icons icon-black">group_work</i>
                                 </button>` : ``;
 
-    const dashCard = getDashCard(dev);
-    const card = `<div id="${id}" class="device">
+    const dashCard = getDashCard(dev, dci.join(''), height);
+    const card = `<div id="${id}" class="${height > 200 ? 'device_lrge' : 'device'} devicecard">
                   <div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
                     <div class="front face">${dashCard}</div>
                     <div class="back face">
@@ -605,7 +608,7 @@ function getCoordinatorCard(dev) {
                 </div>`,
         permitJoinBtn = '<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="open network"><i class="material-icons icon-green">leak_add</i></button></div>',
         //permitJoinBtn = `<div class="col tool"><button name="join" class="btn-floating-sml waves-effect waves-light right hoverable green><i class="material-icons">leak_add</i></button></div>`,
-        card = `<div id="${id}" class="device">
+        card = `<div id="${id}" class="device devicecard">
                   <div class="card hoverable flipable">
                     <div class="front face">
                         <div class="card-content zcard">
@@ -689,10 +692,10 @@ function getGroupCard(dev) {
                 </div>`);
     const infoBtn = `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>`;
     const image = `<img src="${dev.common.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
-    const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
-    const card = `<div id="${id}" class="device group">
+    //const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
+    const card = `<div id="${id}" class="device group devicecard">
                   <div class="card hoverable flipable">
-                    <div class="front face">${dashCard}</div>
+                    <div class="front face">${getDashCard(dev, getDashCardInfoAndHeight(dev.statesDef).join(''), 200, dev.common.icon, memberCount > 0)}</div>
                     <div class="back face">
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
@@ -746,31 +749,8 @@ function sortStateDefs(a, b) {
     return a.id.localeCompare(b.id);
 }
 
-function getDashCard(dev, groupImage, groupstatus) {
-    const title = dev.common.name,
-        id = dev._id,
-        type = dev.common.type,
-        img_src = (groupImage ? groupImage : dev.common.icon || dev.icon),
-        isActive = !dev.common.deactivated,
-        rooms = [],
-        lang = systemLang || 'en';
-    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
-    const permitJoinBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="open network on device"><i class="material-icons icon-green">leak_add</i></button></div>`;
-    const device_queryBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="trigger device query"><i class="material-icons icon-green">play_for_work</i></button></div>`;
-    const rid = id.split('.').join('_');
-    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
-    const NoInterviewIcon = (dev.info?.device?.interviewstate != 'SUCCESSFUL' && dev.common.type != 'group') ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
-    const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
-        nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
-        battery_cls = getBatteryCls(dev.battery),
-        lqi_cls = getLQICls(dev.link_quality),
-        unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>'),
-        battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
-        //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
-        //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
-        idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
-    const info = (dev.statesDef) ? dev.statesDef.sort(sortStateDefs).map((stateDef) => {
+function getDashCardInfoAndHeight(statesDef) {
+    const info = (statesDef) ? statesDef.sort(sortStateDefs).map((stateDef) => {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
         let val = stateDef.val === undefined ? '' : stateDef.val;
@@ -817,8 +797,36 @@ function getDashCard(dev, groupImage, groupstatus) {
         else {
             val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
-        return `<li><span class="label dash truncate">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
-    }).join('') : '';
+        return `<li><span class="label dash truncate" title="${stateDef.name}">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
+    }) : [];
+    return info;
+}
+
+function getDashCard(dev, info, height, groupImage, groupstatus) {
+    const title = dev.common.name,
+        id = dev._id,
+        type = dev.common.type,
+        img_src = (groupImage ? groupImage : dev.common.icon || dev.icon),
+        isActive = !dev.common.deactivated,
+        rooms = [],
+        lang = systemLang || 'en';
+    const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
+    const permitJoinBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="open network on device"><i class="material-icons icon-green">leak_add</i></button></div>`;
+    const device_queryBtn = dev.info?.device?.type == 'EndDevice' || dev.common.type == 'group' ? '' : `<div class="col tool"><button name="deviceQuery" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="trigger device query"><i class="material-icons icon-green">play_for_work</i></button></div>`;
+    const rid = id.split('.').join('_');
+    const modelUrl = (!type) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${type}.html" target="_blank" rel="noopener noreferrer">${type}</a>`;
+    const NoInterviewIcon = (dev.info?.device?.interviewstate != 'SUCCESSFUL' && dev.common.type != 'group') ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
+    const image = `<img src="${img_src}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`,
+        nwk = (dev.info && dev.info.device) ? dev.info.device.nwk : undefined,
+        battery_cls = getBatteryCls(dev.battery),
+        lqi_cls = getLQICls(dev.link_quality),
+        unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>'),
+        battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
+        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
+        //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
+        //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
+        idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
+
     const dashCard = `
         <div class="card-content zcard ${isActive ? '' : 'bg_red'}">
             <div style="cursor: pointer">
@@ -837,7 +845,7 @@ function getDashCard(dev, groupImage, groupstatus) {
             </div>
             </div>
             <i class="left">${image}</i>
-            <div style="min-height:88px; font-size: 0.8em; height: 130px; width: 220px; overflow-y: auto" class="truncate">
+            <div style="min-height:88px; font-size: 0.8em; height: ${height - 70}px; width: 220px; overflow-y: auto" class="truncate">
                 <ul>
                     ${(isActive ? info : 'Device deactivated')}
                 </ul>
@@ -1253,7 +1261,7 @@ function showDevices() {
 
     if ($('tab-main')) try {
         shuffleInstance = devices && devices.length ? new Shuffle(element, {
-            itemSelector: '.device',
+            itemSelector: '.devicecard',
             sizer: '.js-shuffle-sizer',
         }) : undefined;
         doFilter();
