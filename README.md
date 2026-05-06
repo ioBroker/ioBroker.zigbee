@@ -141,12 +141,14 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* Fix bug with color expose
+* remove serialport, axios, debug dependency
+
 ### 3.4.1 (2026-05-03)
 * new Binding UI
 * new *model specific* option `meta_state` - accepts a list of states (.ie. 'state,brightness')
 * adapter defined default-options
-
-### 3.4.0 (2026-05-02)
 * ZH 9.0
 * ZHC 24.41 or newer
 
@@ -370,12 +372,6 @@ You can thank the authors by these links:
 * (asgothian) Fix: Aqara T1M (CL-L02D)
 * (arteck) deleteDeviceStates change to deleteObj
 
-### 1.10.13 (2024-11-10)
-* (arteck) corr icon download bug (axios)
-
-### 1.10.12 (2024-11-03)
-* (asgothian) corr Channel Scan
-
 ### 1.10.11 (2024-11-02)
 * BREAKING CHANGE
 *
@@ -390,33 +386,6 @@ You can thank the authors by these links:
 * (asgothian) Allow use of keyless converters (used for TuYa and compatible devices in zigbee-herdsman-converters
 * (arteck) swap from request to axios
 * (arteck) delete groups works again
-
-### 1.10.9 (2024-09-05)
-* (arteck) typo admin settings
-* (arteck) eslint config
-
-### 1.10.8 (2024-09-05)
-* (arteck) corr admin settings
-* (arteck) add new eslint version
-
-### 1.10.7 (2024-09-05)
-* (arteck) add flow control option
-* (asgothian) add new NewHerdsman
-* (arteck) add new ezsp coordinator Firmware (7.4.1.0)
-
-### 1.10.5 (2024-06-21)
-* (arteck) icon ota device update
-* (arteck) icon fix
-
-### 1.10.4 (2024-04-20)
-* (arteck) core update
-* (arteck) dependency update
-
-### 1.10.3 (2024-04-06)
-* (arteck) dependency update
-
-### 1.10.2 (2024-01-25)
-* (arteck) dependency update
 
 ### 1.10.1 (2024-01-21)
 * (arteck) Baudrate is now configurable. works ONLY with Deconz/Conbee(38400)

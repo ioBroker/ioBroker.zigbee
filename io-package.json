@@ -16,19 +16,6 @@
         "uk": "новий Binding UI\n`meta state`` - приймає список станів (.ie. 'state,brightness')\nадаптер, визначений за замовчуванням",
         "zh-cn": "新装订的 UI\n新的 *模式 特定* 选项 `meta state' - 接受状态列表 (. e. 'state, braightness') \n适配器定义的默认选项"
       },
-      "3.4.0": {
-        "en": "ZH 9.0\nZHC 25.115 or newer",
-        "de": "ZH 9.0\nZHC 25.115 oder neuer",
-        "ru": "ZH 9,0\nZHC 25.115 или новее",
-        "pt": "ZH 9.0\nZHC 25.115 ou mais recente",
-        "nl": "ZH 9,0\nZHC 25.115 of nieuwer",
-        "fr": "ZH 9,0\nZHC 25.115 ou plus récent",
-        "it": "ZH 9.0\nZHC 25.115 o più recente",
-        "es": "ZH 9.0\nZHC 25.115 o más reciente",
-        "pl": "ZH 9.0\nZHC 25.115 lub nowsze",
-        "uk": "ЗХ 9.0\nZHC 25.115 або новачок",
-        "zh-cn": "ZH 9.0号公路\nZHC 25.115或更新"
-      },
       "3.3.5": {
         "en": "Bugfix - Error on startup from onEvent\nfix: send_payload read with array of cluster\n",
         "de": "Bugfix - Fehler beim Start von onEvent\nfix: send_payload mit cluster-array gelesen\n",
