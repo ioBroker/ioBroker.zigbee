@@ -61,6 +61,41 @@
     .m.react-dark .tabs {
         background-color: #272727 !important;
     }
+
+    .m.react-dark [type=checkbox]:checked+span:not(.lever)::before {
+        border-top: 2px solid transparent;
+        border-left: 2px solid transparent;
+        border-right: 2px solid green;
+        border-bottom: 2px solid green;
+    }
+    .m [type=checkbox]:checked+span:not(.lever)::before {
+        border-top: 2px solid transparent;
+        border-left: 2px solid transparent;
+        border-right: 2px solid green;
+        border-bottom: 2px solid green;
+    }
+
+    .m.react-dark [type="checkbox"]+span:not(.lever)::before {
+        border-color:#ccc
+    }
+
+    .m.react-dark [type="radio"]:disabled:checked+span::before {
+        background-color: #090;
+        border: 1px solid #ccc;
+    }
+    .m.react-dark [type="radio"]:disabled:not(:checked)+span::before {
+        background-color: #500;
+        border-color: #ccc;
+        border: 1px solid #ccc;
+    }
+    .m [type="radio"]:disabled:checked+span::before {
+        background-color: #080;
+        border: 1px solid #aaa;
+    }
+    .m [type="radio"]:disabled:not(:checked)+span::before {
+        background-color: #fcc;
+        border: 1px solid #aaa;
+    }
     .row.navbar-fixed {
         height: 0 !important;
     }
@@ -180,7 +215,7 @@
     .device_lrge {
         padding: 5px;
         width: 330px;
-        height: 400px;
+        height: 300px;
         -webkit-perspective: 800px;
         -moz-perspective: 800px;
         -o-perspective: 800px;

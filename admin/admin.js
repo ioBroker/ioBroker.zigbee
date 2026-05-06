@@ -1276,68 +1276,68 @@ function showDevices() {
         return dev_block.attr('id');
     };
     $('.card-reveal-buttons button[name=\'delete\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
     });
     $('.card-reveal-buttons button[name=\'deletegrp\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         const id = dev_block.attr('id').replace(namespace + '.group_', '');
         deleteGroupConfirmation(id, getDevName(dev_block));
     });
     $('.card-reveal-buttons button[name=\'edit\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         const id = getDevId(dev_block);
         const name = getDevName(dev_block);
         editGroupMembers(id, name);
     });
     $('.card-reveal-buttons button[name=\'swapdebug\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         const id = getDevId(dev_block);
         const name = getDevName(dev_block);
         toggleDebugDevice(id, name);
     });
 
     $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         const id = getDevId(dev_block);
         editDeviceOptions(id, false);
     });
 
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         const id = dev_block.attr('id').replace(namespace + '.group_', '');
         const name = getDevName(dev_block);
         editGroup(id, name, false);
     });
     $('button[name=\'joinCard\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         if (!$('#pairing').hasClass('pulse')) {
             joinProcess(getDevId(dev_block));
         }
         showPairingProcess();
     });
     $('button[name=\'deviceQuery\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         sendTo(namespace, 'setState', {id: `${getDevId(dev_block)}.device_query`, val: true}, function (data) {
             //console.log(data);
         });    });
     $('.card-reveal-buttons button[name=\'info\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         showDevInfo(getDevId(dev_block));
     });
     $('a.btn[name=\'done\']').click((e) => {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         closeReval(e, getDevId(dev_block), getDevName(dev_block));
     });
     $('a.btn-flat[name=\'close\']').click((e) => {
         closeReval(e);
     });
     $('.card-reveal-buttons button[name=\'reconfigure\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         reconfigureConfirmation(getDevId(dev_block));
     });
     $('.card-reveal-buttons button[name=\'swapactive\']').click(function () {
-        const dev_block = $(this).parents('div.device');
+        const dev_block = $(this).parents('div.devicecard');
         swapActive(getDevId(dev_block));
     });
 
