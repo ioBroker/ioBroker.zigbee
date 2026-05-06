@@ -508,7 +508,7 @@ function getCard(dev) {
     }
 
     const dci = getDashCardInfoAndHeight(dev.statesDef);
-    const height = dci.length > 7 ? 400 : 200;
+    const height = dci.length > 7 ? 300 : 200;
     console.warn(`get Card for ${title} with height ${height} from ${dci.length} entries`)
     const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
