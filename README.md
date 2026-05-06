@@ -144,6 +144,9 @@ You can thank the authors by these links:
 ### **WORK IN PROGRESS**
 * Fix bug with color expose
 * remove serialport, axios, debug dependency
+* Tooltips for cards
+* different card sizes (test)
+* changed visuals for checkboxes and radio boxes
 
 ### 3.4.1 (2026-05-03)
 * new Binding UI
