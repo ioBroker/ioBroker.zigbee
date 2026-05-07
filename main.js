@@ -323,6 +323,8 @@ class Zigbee extends utils.Adapter {
         return false;
     }
 
+
+
     * getExternalDefinition() {
 
 

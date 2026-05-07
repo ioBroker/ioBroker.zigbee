@@ -508,7 +508,7 @@ function getCard(dev) {
     }
 
     const dci = getDashCardInfoAndHeight(dev.statesDef);
-    const height = dci.length > 7 ? 300 : 200;
+    const height = (dci.length > 7 && isActive) ? 300 : 200;
     //console.warn(`get Card for ${title} with height ${height} from ${dci.length} entries`);
     const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
@@ -731,13 +731,14 @@ function getGroupCard(dev) {
 }
 
 function getDeviceCards() {
-    return $('#devices .device').not('.group');
+    return $('#devices .devicecard').not('.group');
 }
 
 function getDeviceCard(devId) {
     if (devId.startsWith('0x')) {
         devId = devId.substr(2, devId.length);
     }
+    console.warn(`getting device card for ${devId}`);
     return $('#devices').find(`div[id='${namespace}.${devId}']`);
 }
 
