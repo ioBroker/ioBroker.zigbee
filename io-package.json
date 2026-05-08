@@ -328,7 +328,8 @@
     "listDevicesAtStart": true,
     "useNewCompositeStates": false,
     "availableUpdateTime": 30,
-    "readBrightnessAndState": true
+    "readBrightnessAndState": true,
+    "dynamicUI": false
   },
   "instanceObjects": [
     {
