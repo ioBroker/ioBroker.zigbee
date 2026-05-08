@@ -142,6 +142,8 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
+* Dynamic IU setting (2 card sizes)
+* Bugfixes
 *
 
 ## Changelog
