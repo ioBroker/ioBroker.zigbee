@@ -509,7 +509,7 @@ function getCard(dev) {
     }
 
     const dci = getDashCardInfoAndHeight(dev.statesDef);
-    const height = (dci.length < 8 || !isActive || !dynamicUI) ? 200 : dci.length > 18 ? 400 : 300;
+    const height = (dci.length < 8 || !isActive || !dynamicUI) ? 200 : dci.length > 15 ? 400 : 300;
     //console.warn(`get Card for ${title} with height ${height} from ${dci.length} entries`);
     const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
