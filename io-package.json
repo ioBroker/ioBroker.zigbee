@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.2",
+    "version": "3.4.3",
     "news": {
+      "3.4.3": {
+        "en": "Dynamic IU setting (2 card sizes)\nBugfixes\n",
+        "de": "Dynamische IU-Einstellung (2 Kartengrößen)\nBugfixes\n",
+        "ru": "Динамическая настройка IU (2 размера карты)\nБагфиксы\n",
+        "pt": "Configuração dinâmica da UI (2 tamanhos de cartão)\nCorrecções de Erros\n",
+        "nl": "Dynamische IU instelling (2 kaartgroottes)\nBugfixes\n",
+        "fr": "Réglage dynamique de l'UI (2 tailles de cartes)\nFixes de bogue\n",
+        "it": "Regolazione dinamica IU (2 dimensioni scheda)\nBugfix\n",
+        "es": "Ajuste dinámico de UI (2 tamaños de tarjeta)\nBugfixes\n",
+        "pl": "Dynamiczne ustawianie IU (2 rozmiary kart)\nKorekty błędów\n",
+        "uk": "Динамічне налаштування IU (2 розміри карт)\nПомилки\n",
+        "zh-cn": "动态 IU 设置(2张牌大小)\n错误修正\n"
+      },
       "3.4.2": {
         "en": "Fix bug with color expose\nremove serialport, axios, debug dependency\nTooltips for cards\ndifferent card sizes (test)\nchanged visuals for checkboxes and radio boxes",
         "de": "Fehler beheben mit Farbbelichtung\nserialport, axios, debug abhängigency\nTooltips für Karten\nverschiedene kartengrößen (test)\ngeänderte visualisierungen für checkboxen und radioboxen",
@@ -80,19 +93,6 @@
         "pl": "Napraw jasność / stan synchronizacji\nPopraw błąd w odsłonięciu\nPopraw stan konfiguracji\n",
         "uk": "Виправлення сипучих яскравості / стану\nВиправлення помилок у вигнанні\nВиправлення перезапису державного налаштування\n",
         "zh-cn": "修正同步亮度/ 状态\n在曝光中修复错误\n修改状态配置\n"
-      },
-      "3.3.1": {
-        "en": "Update documentation\nColor Hue/Saturation in Groups\nZH8\nSort by model in Admin\nObject for complex exposes\nPOSSIBLY BREAKING: Complex exposes changed to 'channel / state' structure\nBugfixes\n",
-        "de": "Dokumentation zur Aktualisierung\nFarbe Hue/Sättigung in Gruppen\nZH8\nSortieren nach Modell in Admin\nObjekt für komplexe Exponate\nPOSSIBLY BREAKING: Komplex enthüllt geändert in 'Kanal / Zustand' Struktur\nBugfixes\n",
-        "ru": "Обновленная документация\nЦветовой оттенок / насыщение в группах\nZH8\nСортировка по модели в Admin\nОбъект для сложных разоблачений\nВозможное расширение: комплекс подвергается изменениям в структуре «канал / состояние»\nБагфиксы\n",
-        "pt": "Atualizar documentação\nTom de cor/saturação em grupos\nZH8\nOrdenar por modelo no administrador\nObjeto para exposições complexas\nPOSSIBly BREAKING: Complexo expõe alterado para estrutura 'canal / estado'\nCorrecções de Erros\n",
-        "nl": "Documentatie bijwerken\nKleurtoon/verzadiging in groepen\nZH8\nSorteer op model in Admin\nObject voor complexe blootstellingen\nPOSSILY BREAKING: Complex stelt 'channel / state' structuur bloot\nBugfixes\n",
-        "fr": "Mettre à jour la documentation\nCouleur Hue/Saturation en groupes\nZH8\nTrier par modèle dans Admin\nObjet pour des expositions complexes\nPOSSIBILITÉ : Les expositions complexes ont changé à la structure « canal / état »\nFixes de bogue\n",
-        "it": "Documentazione di aggiornamento\nColor Hue/Saturazione in gruppi\nZH8\nOrdina per modello in Admin\nOggetto per esposizioni complesse\nPOSSIBILE BREAKING: Complesso espone cambiato in struttura 'canale / stato'\nBugfix\n",
-        "es": "Documentación actualizada\nColor Hue/Saturación en Grupos\nZH8\nOrdenar por modelo en Admin\nObjeto para exposiciones complejas\nPOSSIBLY BREAKING: Complejo expone cambiado a la estructura 'canal / estado'\nBugfixes\n",
-        "pl": "Aktualizacja dokumentacji\nKolor barwy / nasycenie w grupach\nZH8\nSortuj według modelu w Admin\nObiekt dla złożonych ekspozycji\nPOSIADANIE POŁOWÓW: Złożona ekspozycja zmieniona na strukturę \"kanał / stan\"\nKorekty błędów\n",
-        "uk": "Документи\nКолір Hue / насичення груп\nЗХ8\nСортувати за моделлю в Admin\nОб'єкт для комплексних просторів\nPOSSIBLY BREAKING: Комплекс передбачає зміни до структури каналу / держави\nПомилки\n",
-        "zh-cn": "更新文件\n组中的颜色色调/ 饱和度\nZH8型电力机车\n按管理模式排序\n复杂曝光对象\nPOSSIBLY BREEAKING:复杂曝光改为\"通道/状态\"结构\n错误修正\n"
       }
     },
     "titleLang": {

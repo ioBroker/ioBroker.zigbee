@@ -141,12 +141,11 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.4.3 (2026-05-08)
 * Dynamic IU setting (2 card sizes)
 * Bugfixes
 *
 
-## Changelog
 ### 3.4.2 (2026-05-06)
 * Fix bug with color expose
 * remove serialport, axios, debug dependency
