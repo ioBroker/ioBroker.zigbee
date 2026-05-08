@@ -545,7 +545,7 @@ function getCard(dev) {
                                     <i class="material-icons icon-black">group_work</i>
                                 </button>` : ``;
 
-    const dashCard = getDashCard(dev, dci.join(''), height);
+    const dashCard = getDashCard(dev, dci.text, height);
     const card = `<div id="${id}" class="device_${height} devicecard">
                   <div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
                     <div class="front face">${dashCard}</div>
@@ -696,7 +696,7 @@ function getGroupCard(dev) {
     //const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
     const card = `<div id="${id}" class="device_200 group devicecard">
                   <div class="card hoverable flipable">
-                    <div class="front face">${getDashCard(dev, getDashCardInfoAndHeight(dev.statesDef).join(''), 200, dev.common.icon, memberCount > 0)}</div>
+                    <div class="front face">${getDashCard(dev, getDashCardInfoAndHeight(dev.statesDef).text, 200, dev.common.icon, memberCount > 0)}</div>
                     <div class="back face">
                         <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
@@ -751,6 +751,9 @@ function sortStateDefs(a, b) {
 }
 
 function getDashCardInfoAndHeight(statesDef) {
+    const rv = {
+        length: 0,
+    };
     const info = (statesDef) ? statesDef.sort(sortStateDefs).map((stateDef) => {
         const id = stateDef.id;
         const sid = id.split('.').join('_');
@@ -798,9 +801,11 @@ function getDashCardInfoAndHeight(statesDef) {
         else {
             val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
+        rv.length++;
         return `<li><span class="label dash truncate" title="${stateDef.name}">${stateDef.name}</span><span id=${sid} oid=${id} class="state">${val}</span></li>`;
     }) : [];
-    return info;
+    rv.text = info.join('');
+    return rv;
 }
 
 function getDashCard(dev, info, height, groupImage, groupstatus) {
