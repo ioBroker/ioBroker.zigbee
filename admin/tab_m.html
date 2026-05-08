@@ -203,23 +203,22 @@
         -o-backface-visibility: hidden;
         backface-visibility: hidden;
     }
-    .device {
+    .devicecard {
         padding: 5px;
         width: 330px;
-        height: 200px;
         -webkit-perspective: 800px;
         -moz-perspective: 800px;
         -o-perspective: 800px;
         perspective: 800px;
     }
-    .device_lrge {
-        padding: 5px;
-        width: 330px;
+    .device_200 {
+        height: 200px;
+    }
+    .device_300 {
         height: 300px;
-        -webkit-perspective: 800px;
-        -moz-perspective: 800px;
-        -o-perspective: 800px;
-        perspective: 800px;
+    }
+    .device_400 {
+        height: 400px;
     }
     .binding {
         padding: 2px;
@@ -297,13 +296,22 @@
     i.icon-blue {
         color: blue;
     }
+
+    .m.card-content.bg_red {
+        background-color: #cccccc;
+        color: darkgray !important;
+    }
     .m.react-blue div.bg_red {
-            background-color: #400000;
-            color: DimGray;
+            background-color: #400000 !important;
+            color: DimGray !important;
     }
     .m.react-dark div.bg_red {
             background-color: #400000;
-            color: DimGray;
+            color: DimGray !important;
+    }
+    .bg_red {
+        background-color: #ffcccc;
+        color: darkgray;
     }
     #dbgroweven { background-color: #404040; color: #c0c0c0 !important; }
     #dbgrowodd  { background-color: #c0c0c0; color: #404040 !important; }

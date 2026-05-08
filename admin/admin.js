@@ -42,6 +42,7 @@ let devices = [],
     debugMessages = {},
     debugInLog = true,
     nvRamBackup = {},
+    dynamicUI = true,
     isHerdsmanRunning = false;
 const dbgMsgfilter = new Set();
 const dbgMsghide = new Set();
@@ -67,7 +68,7 @@ const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower','useNewCompositeStates',
     'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
     'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster',
-    'availableUpdateTime', 'readBrightnessAndState'
+    'availableUpdateTime', 'readBrightnessAndState', 'dynamicUI'
 ];
 const lockout = {
     timeoutid:undefined,
@@ -508,7 +509,7 @@ function getCard(dev) {
     }
 
     const dci = getDashCardInfoAndHeight(dev.statesDef);
-    const height = dci.length > 7 ? 300 : 200;
+    const height = (dci.length < 8 || !isActive || !dynamicUI) ? 200 : dci.length > 18 ? 400 : 300;
     //console.warn(`get Card for ${title} with height ${height} from ${dci.length} entries`);
     const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
@@ -545,7 +546,7 @@ function getCard(dev) {
                                 </button>` : ``;
 
     const dashCard = getDashCard(dev, dci.join(''), height);
-    const card = `<div id="${id}" class="${height > 200 ? 'device_lrge' : 'device'} devicecard">
+    const card = `<div id="${id}" class="device_${height} devicecard">
                   <div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
                     <div class="front face">${dashCard}</div>
                     <div class="back face">
@@ -608,7 +609,7 @@ function getCoordinatorCard(dev) {
                 </div>`,
         permitJoinBtn = '<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="open network"><i class="material-icons icon-green">leak_add</i></button></div>',
         //permitJoinBtn = `<div class="col tool"><button name="join" class="btn-floating-sml waves-effect waves-light right hoverable green><i class="material-icons">leak_add</i></button></div>`,
-        card = `<div id="${id}" class="device devicecard">
+        card = `<div id="${id}" class="device_200 devicecard">
                   <div class="card hoverable flipable">
                     <div class="front face">
                         <div class="card-content zcard">
@@ -693,7 +694,7 @@ function getGroupCard(dev) {
     const infoBtn = `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>`;
     const image = `<img src="${dev.common.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
     //const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
-    const card = `<div id="${id}" class="device group devicecard">
+    const card = `<div id="${id}" class="device_200 group devicecard">
                   <div class="card hoverable flipable">
                     <div class="front face">${getDashCard(dev, getDashCardInfoAndHeight(dev.statesDef).join(''), 200, dev.common.icon, memberCount > 0)}</div>
                     <div class="back face">
@@ -731,7 +732,7 @@ function getGroupCard(dev) {
 }
 
 function getDeviceCards() {
-    return $('#devices .device').not('.group');
+    return $('#devices .devicecard').not('.group');
 }
 
 function getDeviceCard(devId) {
@@ -828,7 +829,7 @@ function getDashCard(dev, info, height, groupImage, groupstatus) {
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
 
     const dashCard = `
-        <div class="card-content zcard ${isActive ? '' : 'bg_red'}">
+        <div class="card-content zcard">
             <div style="cursor: pointer">
             <span class="top right small" style="border-radius: 50%">
                 ${device_queryBtn}
@@ -2303,6 +2304,7 @@ function load(settings, onChange) {
             });
         }
     }
+    dynamicUI = settings.dynamicUI ?? true;
 
     getComPorts(onChange);
 
@@ -4240,8 +4242,8 @@ function showHerdsmanBinding(searchentry) {
         all: (o) => true,
     }
 
-    const bindFilter = $('#bind-filter-btn').text().toLowerCase();
-    const bindOrder = $('#bind-order-btn').text().toLowerCase().replace(' ','');
+    const bindFilter = $('#bind-filter-btn').text().toLowerCase() ?? 'all';
+    const bindOrder = $('#bind-order-btn').text().toLowerCase().replace(' ','') ?? 'default';
     const bindSearch = $('#bind-search').text().toLowerCase();
     const cards = [];
     //console.warn(`showHerdsmanBindings called with se ${searchentry}  bs ${bindSearch} bf ${bindFilter} bo ${bindOrder}`);
