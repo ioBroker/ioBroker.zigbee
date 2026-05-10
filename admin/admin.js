@@ -739,6 +739,7 @@ function getDeviceCard(devId) {
     if (devId.startsWith('0x')) {
         devId = devId.substr(2, devId.length);
     }
+    console.warn(`getting device card for ${devId}`);
     return $('#devices').find(`div[id='${namespace}.${devId}']`);
 }
 
