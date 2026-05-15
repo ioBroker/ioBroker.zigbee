@@ -664,6 +664,8 @@ class Zigbee extends utils.Adapter {
             }
         }
 
+        this.stController.updateCoordinatorIEEE(await this.zbController.getCoordinatorIeee());
+
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
