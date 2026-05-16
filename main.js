@@ -323,6 +323,8 @@ class Zigbee extends utils.Adapter {
         return false;
     }
 
+
+
     * getExternalDefinition() {
 
 
@@ -661,6 +663,8 @@ class Zigbee extends utils.Adapter {
                 this.log.warn(`error removing ${id}`)
             }
         }
+
+        this.stController.updateCoordinatorIEEE(await this.zbController.getCoordinatorIeee());
 
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }

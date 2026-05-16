@@ -482,6 +482,7 @@ function showLocalData() {
     }
 }
 
+
 /////
 //
 // Section Cards
@@ -509,7 +510,7 @@ function getCard(dev) {
     }
 
     const dci = getDashCardInfoAndHeight(dev.statesDef);
-    const height = (dci.length < 8 || !isActive || !dynamicUI) ? 200 : dci.length > 15 ? 400 : 300;
+    const height = dynamicUI ? (isActive ? (dci.length < 8 ? 200 : dci.length > 14 ? 400 : 300) : 200) : 200;
     //console.warn(`get Card for ${title} with height ${height} from ${dci.length} entries`);
     const NoInterviewIcon = dev.info?.device?.interviewstate != 'SUCCESSFUL' ? `<div class="col tool"><i class="material-icons icon-red">perm_device_information</i></div>` : ``;
     const paired = (dev.paired) ? '' : '<i class="material-icons right">leak_remove</i>';
@@ -543,7 +544,10 @@ function getCard(dev) {
                                 </button>` : ``,
         groupButton = dev.info?.device?.isGroupable ? `                                <button name="edit" class="right btn-flat btn-small tooltipped" title="edit group membership">
                                     <i class="material-icons icon-black">group_work</i>
-                                </button>` : ``;
+                                </button>` : ``,
+        addBindingButton = dev.info?.device?.BindSource
+            ? `<button name="binding_btn" class="right btn-flat btn-small tooltipped" title="add binding"><i class="material-icons icon-black">queue</i></button>`
+            : ``;
 
     const dashCard = getDashCard(dev, dci.text, height);
     const card = `<div id="${id}" class="device_${height} devicecard">
@@ -576,6 +580,7 @@ function getCard(dev) {
                                 <button name="swapimage" class="right btn-flat btn-small tooltipped" title="edit device options">
                                     <i class="material-icons icon-black">edit</i>
                                 </button>
+                                ${addBindingButton}
                                 ${reconfigureButton}
                                 ${deactBtn}
                                 ${debugBtn}
@@ -739,6 +744,7 @@ function getDeviceCard(devId) {
     if (devId.startsWith('0x')) {
         devId = devId.substr(2, devId.length);
     }
+    console.warn(`getting device card for ${devId}`);
     return $('#devices').find(`div[id='${namespace}.${devId}']`);
 }
 
@@ -828,7 +834,9 @@ function getDashCard(dev, info, height, groupImage, groupstatus) {
         lqi_cls = getLQICls(dev.link_quality),
         unconnected_icon = (groupImage ? (groupstatus ? '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>' : '<div class="col tool"><i class="material-icons icon-red">cancel</i></div>') :'<div class="col tool"><i class="material-icons icon-red">leak_remove</i></div>'),
         battery = (dev.battery && isActive) ? `<div class="col tool"><i id="${rid}_battery_icon" class="material-icons ${battery_cls}">battery_std</i><div id="${rid}_battery" class="center" style="font-size:0.7em">${dev.battery}</div></div>` : '',
-        lq = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` : (isActive ? unconnected_icon : ''),
+        lq = (dev.link_quality > 0 && isActive) ?
+            `<div class="col tool"><i id="${rid}_link_quality_icon" class="material-icons ${lqi_cls}">network_check</i><div id="${rid}_link_quality" class="center" style="font-size:0.7em">${dev.link_quality}</div></div>` :
+            (isActive ? unconnected_icon : `<div class="col tool"><i class="material-icons icon-red">phonelink_erase</i></div>`),
         //status = (dev.link_quality > 0 && isActive) ? `<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>` : (groupImage || !isActive ? '' : `<div class="col tool"><i class="material-icons icon-black">leak_remove</i></div>`),
         //infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         idleTime = (dev.link_quality_lc > 0 && isActive) ? `<div class="col tool"><i id="${rid}_link_quality_lc_icon" class="material-icons idletime">access_time</i><div id="${rid}_link_quality_lc" class="center" style="font-size:0.7em">${getIdleTime(dev.link_quality_lc)}</div></div>` : '';
@@ -1345,6 +1353,14 @@ function showDevices() {
     $('.card-reveal-buttons button[name=\'swapactive\']').click(function () {
         const dev_block = $(this).parents('div.devicecard');
         swapActive(getDevId(dev_block));
+    });
+    $('.card-reveal-buttons button[name=\'binding_btn\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        const devId = getDevId(dev_block);
+        const device = devices.find((obj) => obj._id == devId);
+        console.warn(`dev id is  ${devId} device was ${device ? 'found' : 'not found'}`);
+
+        addBindingDialog(device?.info?.device?.ieee);
     });
 
     showNetworkMap(devices, map);
@@ -3876,10 +3892,10 @@ function deviceHasCoordinatorBinding (devInfo) {
     }
     return false;
 }
-function prepareBindingDialog(bindObj, bindtarget) {
+function prepareBindingDialog(bind_src) {
     const binddevices = devices.slice();
     binddevices.unshift('');
-    const bind_source = ['']//(src) ? [src.id] : [''];
+    const bind_source = bind_src ? [bind_src] : ['']//(src) ? [src.id] : [''];
     const bind_target = ['']//(dst) ? [dst.id] : [''];
 
     let srcDevice = undefined;
@@ -3893,6 +3909,120 @@ function prepareBindingDialog(bindObj, bindtarget) {
     let offeredClusters = [];
     const allowClustersName = {5: 'genScenes', 6: 'genOnOff', 8: 'genLevelCtrl', 768: 'lightingColorCtrl'};
     // fill device selector
+
+    $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
+    $('#bindingmodaledit').find('#free_cluster_selection').prop('checked', freeSelection);
+    $('#binding_target_title').removeClass('hide');
+    $('#binding_target_selector').removeClass('hide');
+    $('#binding_target_coordinator').addClass('hide');
+
+
+    $('#bind_source').unbind('change')
+    $('#bind_source').change(function () {
+        console.warn(`selected Index is ${this.selectedIndex}`);
+        if (this.selectedIndex <= 0) {
+            return;
+        }
+        srcDevice = devices.find(obj => {
+            return obj.info.device.ieee === this.value //obj._id === devID;
+        });
+        configureSourceEp();
+        $('#bind_source_ep').trigger('change');
+        // identify the device
+    });
+    //if (bind_src) $('#bind_source').trigger('change');
+    $('#bind_source_ep').unbind('change')
+    $('#bind_source_ep').change(function() {
+        if (this.selectedIndex < 0) return;
+        //console.warn(`bind_source_ep.change called, ieee: ${srcDevice?.info?.device?.ieee ?? 'unknown'} ep: ${this.value}, eps: ${srcDevice.info.endpoints.map((ep) => ep.epName)}`);
+        srcEP = srcDevice?.info?.endpoints.find((ep) => ep.epName == this.value)
+        //console.warn(`srcEP: ${JSON.stringify(srcEP)}`);
+        offeredClusters = !freeSelection ? (srcEP?.output_clusters ?? []).filter( (id) => allowClusters.includes(id)) : srcEP?.output_clusters ?? [];
+        if (offeredClusters.length > 0) {
+            $('#binding_target_title').removeClass('hide');
+            $('#binding_target_selector').removeClass('hide');
+            $('#binding_target_coordinator').addClass('hide');
+            $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
+            $('#__ufc').removeClass('hide')
+            configureTarget();
+
+        }
+        else {
+            $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
+            $('#__ufc').addClass('hide')
+            $('#binding_target_title').addClass('hide');
+            $('#binding_target_selector').addClass('hide');
+            $('#binding_target_coordinator').removeClass('hide');
+        }
+        //console.warn(`clusters are : ${JSON.stringify(offeredClusters)}`)
+        const clusters = offeredClusters.slice();
+        configureSourceCluster(offeredClusters ?? [],[]);
+        $('#bind_target').trigger('change');
+    })
+
+    $('#free_cluster_selection').unbind('click')
+    $('#free_cluster_selection').click(function() {
+        freeSelection =     $('#bindingmodaledit').find('#free_cluster_selection').prop('checked');
+        //console.warn(`free_selection: ${freeSelection}`);
+        $('#bind_source').trigger('change');
+
+    });
+
+    $('#bind_target').unbind('change')
+    $('#bind_target').change(function () {
+        if (this.selectedIndex <= 0) {
+            return;
+        }
+        //console.warn(`bind_target: value is ${this.value}`)
+        targetDevice = devices.find(obj => {
+            return obj.info.device.ieee == this.value;
+        });
+        if (targetDevice.info.device.ieee === coordinatorinfo.ieee) {
+            $('#unbind_from_coordinator').prop('checked', false);
+            $('#binding_unbind_from_coordinator').addClass('disabled')
+            $('#free_cluster_selection').prop('checked', false);
+            $('#free_cluster_selection').addClass('disable', false);
+        }
+        else {
+            $('#binding_unbind_from_coordinator').removeClass('disabled')
+            $('#free_cluster_selection').removeClass('disabled', false);
+        }
+        const bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val();
+        configureTargetEp();
+        $('#bind_target_ep').trigger('change');
+        $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').addClass('hide');
+    });
+    $('#bind_target_ep').unbind('change')
+    $('#bind_target_ep').change(function () {
+        targetEP = targetDevice?.info?.endpoints.find((ep) => ep.epName == this.value)
+    });
+
+    const unbind_fom_coordinator = false //bindObj ? bindObj.unbind_from_coordinator : false;
+    $('#unbind_from_coordinator').prop('checked', unbind_fom_coordinator);
+
+    $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
+    $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
+        const unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
+        const v = $('#binding_src_cluster').val();
+        const srcClusters = Array.isArray(v) ? (v.includes('all') ? offeredClusters : v.map((o) => offeredClusters[o])) : offeredClusters;
+        addBinding(srcDevice.info.device.ieee, srcEP.ID, srcClusters, targetDevice.info.device.ieee, targetEP?.ID ?? -1, unbind_from_coordinator);
+    });
+
+    $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').unbind('click');
+    $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').click(() => {
+        sendToWrapper(namespace, 'reconfigure', {id: srcDevice._id}, function (msg) {
+            closeWaitingDialog();
+            if (msg) {
+                if (msg.error) {
+                    showMessage(msg.error, _('Error'));
+                }
+                getHerdsmanBinding();
+            }
+        });
+        showWaitingDialog('Attempting to rebind to Coordinator', 30);
+    });
+
+
     function configureTarget () {
         list2select('#bind_target', bindtargets, bind_target,
             function (key, device) {
@@ -4023,121 +4153,14 @@ function prepareBindingDialog(bindObj, bindtarget) {
     configureTarget();
     configureTargetEp();
 
-    $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
-    $('#bindingmodaledit').find('#free_cluster_selection').prop('checked', freeSelection);
-    $('#binding_target_title').removeClass('hide');
-    $('#binding_target_selector').removeClass('hide');
-    $('#binding_target_coordinator').addClass('hide');
+    if (bind_src) $('#bind_source').trigger('change');
 
-
-    $('#bind_source').unbind('change')
-    $('#bind_source').change(function () {
-        if (this.selectedIndex <= 0) {
-            return;
-        }
-        srcDevice = devices.find(obj => {
-            return obj.info.device.ieee === this.value //obj._id === devID;
-        });
-        configureSourceEp();
-        $('#bind_source_ep').trigger('change');
-        // identify the device
-    });
-    $('#bind_source_ep').unbind('change')
-    $('#bind_source_ep').change(function() {
-        if (this.selectedIndex < 0) return;
-        //console.warn(`bind_source_ep.change called, ieee: ${srcDevice?.info?.device?.ieee ?? 'unknown'} ep: ${this.value}, eps: ${srcDevice.info.endpoints.map((ep) => ep.epName)}`);
-        srcEP = srcDevice?.info?.endpoints.find((ep) => ep.epName == this.value)
-        //console.warn(`srcEP: ${JSON.stringify(srcEP)}`);
-        offeredClusters = !freeSelection ? (srcEP?.output_clusters ?? []).filter( (id) => allowClusters.includes(id)) : srcEP?.output_clusters ?? [];
-        if (offeredClusters.length > 0) {
-            $('#binding_target_title').removeClass('hide');
-            $('#binding_target_selector').removeClass('hide');
-            $('#binding_target_coordinator').addClass('hide');
-            $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
-            $('#__ufc').removeClass('hide')
-            configureTarget();
-
-        }
-        else {
-            $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
-            $('#__ufc').addClass('hide')
-            $('#binding_target_title').addClass('hide');
-            $('#binding_target_selector').addClass('hide');
-            $('#binding_target_coordinator').removeClass('hide');
-        }
-        //console.warn(`clusters are : ${JSON.stringify(offeredClusters)}`)
-        const clusters = offeredClusters.slice();
-        configureSourceCluster(offeredClusters ?? [],[]);
-        $('#bind_target').trigger('change');
-    })
-
-    $('#free_cluster_selection').unbind('click')
-    $('#free_cluster_selection').click(function() {
-        freeSelection =     $('#bindingmodaledit').find('#free_cluster_selection').prop('checked');
-        //console.warn(`free_selection: ${freeSelection}`);
-        $('#bind_source').trigger('change');
-
-    });
-
-    $('#bind_target').unbind('change')
-    $('#bind_target').change(function () {
-        if (this.selectedIndex <= 0) {
-            return;
-        }
-        //console.warn(`bind_target: value is ${this.value}`)
-        targetDevice = devices.find(obj => {
-            return obj.info.device.ieee == this.value;
-        });
-        if (targetDevice.info.device.ieee === coordinatorinfo.ieee) {
-            $('#unbind_from_coordinator').prop('checked', false);
-            $('#binding_unbind_from_coordinator').addClass('disabled')
-            $('#free_cluster_selection').prop('checked', false);
-            $('#free_cluster_selection').addClass('disable', false);
-        }
-        else {
-            $('#binding_unbind_from_coordinator').removeClass('disabled')
-            $('#free_cluster_selection').removeClass('disabled', false);
-        }
-        const bind_source_ep = $('#bindingmodaledit').find('#bind_source_ep option:selected').val();
-        configureTargetEp();
-        $('#bind_target_ep').trigger('change');
-        $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').addClass('hide');
-    });
-    $('#bind_target_ep').unbind('change')
-    $('#bind_target_ep').change(function () {
-        targetEP = targetDevice?.info?.endpoints.find((ep) => ep.epName == this.value)
-    });
-
-    const unbind_fom_coordinator = bindObj ? bindObj.unbind_from_coordinator : false;
-    $('#unbind_from_coordinator').prop('checked', unbind_fom_coordinator);
-
-    $('#bindingmodaledit a.btn[name=\'save\']').unbind('click');
-    $('#bindingmodaledit a.btn[name=\'save\']').click(() => {
-        const unbind_from_coordinator = $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked');
-        const v = $('#binding_src_cluster').val();
-        const srcClusters = Array.isArray(v) ? (v.includes('all') ? offeredClusters : v.map((o) => offeredClusters[o])) : offeredClusters;
-        addBinding(srcDevice.info.device.ieee, srcEP.ID, srcClusters, targetDevice.info.device.ieee, targetEP?.ID ?? -1, unbind_from_coordinator);
-    });
-
-    $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').unbind('click');
-    $('#bindingmodaledit a.btn[name=\'bind_to_coordinator\']').click(() => {
-        sendToWrapper(namespace, 'reconfigure', {id: srcDevice._id}, function (msg) {
-            closeWaitingDialog();
-            if (msg) {
-                if (msg.error) {
-                    showMessage(msg.error, _('Error'));
-                }
-                getHerdsmanBinding();
-            }
-        });
-        showWaitingDialog('Attempting to rebind to Coordinator', 30);
-    });
 };
 
 
 
-function addBindingDialog() {
-    prepareBindingDialog();
+function addBindingDialog(src) {
+    prepareBindingDialog(src);
 
     $('#bindingmodaledit').modal('open');
     Materialize.updateTextFields();

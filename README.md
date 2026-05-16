@@ -141,6 +141,13 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* Configurable dynamic UI
+* Configurable read after binding trigger
+* Bugfix in binding creation
+* edit binding button on device tile
+*
+
 ### 3.4.3 (2026-05-08)
 * Dynamic IU setting (2 card sizes)
 * Bugfixes
