@@ -141,6 +141,12 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* Bugfix
+* Wider Webkit scrollbars
+*
+
+## Changelog
 ### 3.4.4 (2026-05-17)
 * ZH10 ZHC 26.51.0
 * Configurable dynamic UI

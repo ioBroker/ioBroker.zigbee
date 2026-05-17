@@ -4292,10 +4292,11 @@ function showHerdsmanBinding(searchentry) {
             const target_dev = devices.find((d) => binding.address == d.info.device.ieee);
             if (searchentry && (!source_dev.common?.name?.toLowerCase().includes(searchentry) || target_dev?.common?.name?.toLowerCase().includes(searchentry))) continue;
             const target_icon = (target_dev?.icon) ? `<img src="${target_dev.icon}" width="64px">` : '';
-            const t_ep = target_dev?.info?.endpoints?.find((ep) => ep.ID == source.endpoint)
+            const t_ep = target_dev?.info?.endpoints?.find((ep) => ep.ID == binding.endpoint)
             const t_epName = t_ep ? t_ep.epName : binding.endpoint;
             const src_id = source.endpoint > 0 ? `${source.address}.${s_epName}` : `group_${source.address}`;
             const dst_id = binding.endpoint > 0 ? `${binding.address}.${t_epName}` : `group_${binding.address}`;
+            console.warn(`going through bindings with ${src_id} ->${dst_id} `)
             cardParts.push(`<div id="SID_${source.address}_EP${source.endpoint}_TID_${binding.address}_EP${binding.endpoint}" class="binding"><div class="card binding">`);
             cardParts.push(`<div class="card-title truncate">${source_dev?.common?.name}${source.endpoint> 0 ? ' Endpoint ' + s_epName : ''} <i class="small material-icons bottom">forward</i> ${target_dev?.common?.name}${binding.endpoint> 0 ? ' Endpoint ' + t_epName : ''}</div>`)
             cardParts.push(`<div class="card-content">`)
