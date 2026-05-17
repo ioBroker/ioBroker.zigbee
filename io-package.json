@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.3",
+    "version": "3.4.4",
     "news": {
+      "3.4.4": {
+        "en": "ZH10 ZHC 26.51.0\nConfigurable dynamic UI\nConfigurable read after binding trigger\nBugfix in binding creation\nedit binding button on device tile\n",
+        "de": "ZH10 ZHC 26.51.0\nKonfigurierbare dynamische UI\nKonfigurierbares Lesen nach verbindlichem Trigger\nBugfix in verbindlicher Kreation\nbinden taste auf gerätefliese bearbeiten\n",
+        "ru": "ZH10 ZHC 26.51.0\nНастраиваемый динамический UI\nНастраиваемое чтение после триггера связывания\nBugfix в обязательном создании\nредактировать кнопку связывания на плитке устройства\n",
+        "pt": "ZH10 ZHC 26.51.0\nUI dinâmica configurável\nLeitura configurável após o gatilho de ligação\nCorrecção de erros na criação de ligações\nbotão de edição de ligação na peça do dispositivo\n",
+        "nl": "ZH10 ZHC 24.7.2010\nConfigureerbare dynamische UI\nConfigureerbaar lezen na binding trigger\nBugfix in binding aanmaken\nde bindingsknop op apparaattegel bewerken\n",
+        "fr": "ZH10 ZHC 26,51,0\nUI dynamique configurable\nLecture configurable après le déclencheur de liaison\nBugfix dans la création de liaison\nmodifier le bouton de liaison sur la tuile de l'appareil\n",
+        "it": "ZH10 ZHC 26.51.0\nUI dinamica configurabile\nLettura configurabile dopo il grilletto\nBugfix nella creazione vincolante\nmodificare il pulsante di binding sulla piastrella del dispositivo\n",
+        "es": "ZH10 ZHC 26.51.0\nUI dinámica configurable\nLeída configurable después del gatillo de unión\nBugfix en la creación vinculante\neditar botón de unión en la ficha del dispositivo\n",
+        "pl": "ZH10 ZHC 26.51.0\nKonfiguracja dynamicznego interfejsu użytkownika\nKonfigurable odczyt po wywołaniu\nBugfix w tworzeniu wiążącym\nedytuj przycisk wiązania na płytce urządzenia\n",
+        "uk": "ЗХ10 ЗХК 26.51.0\nКонфігуративний динамічний інтерфейс\nКонфігуративне зчитування після запору\nВиправлення помилок у створенні\nредагування кнопки ввімкнення на пристрої плитка\n",
+        "zh-cn": "ZH10 ZHC 26.510\n可配置动态 UI\n可装订触发后读取\n绑定创建中的错误fix\n编辑设备瓦片上的绑定按钮\n"
+      },
       "3.4.3": {
         "en": "Dynamic IU setting (2 card sizes)\nBugfixes\n",
         "de": "Dynamische IU-Einstellung (2 Kartengrößen)\nBugfixes\n",
@@ -80,19 +93,6 @@
         "pl": "Napraw błąd awarii\ngetter for composite states V1\nzhc\n",
         "uk": "Виправлення помилки збою\nоберт для композитних станів V1\nжк\n",
         "zh-cn": "修复崩溃错误\nv1 复合状态获取器\n日语\n"
-      },
-      "3.3.2": {
-        "en": "Fix sync brightness / state\nFix bug in expose\nFix rewrite state config\n",
-        "de": "Synchronisierhelligkeit / Zustand\nFehler behoben in exponieren\nRewriting State config\n",
-        "ru": "Исправление яркости синхронизации / состояние\nУстранение ошибки в разоблачении\nRewrite state config (переписать конфигурацию состояния)\n",
-        "pt": "Corrigir o brilho / estado da sincronização\nCorrigir erro na exposição\nCorrigir a configuração do estado de reescrita\n",
-        "nl": "Synchronische helderheid / status herstellen\nFix bug in expos\nHerschrijf statusconfiguratie\n",
-        "fr": "Correction de la luminosité de synchronisation / état\nCorrection du bogue dans l'exposition\nCorrection de la configuration de l'état de réécriture\n",
-        "it": "Fissare la luminosità di sincronizzazione / stato\nFissare bug in esposizione\nRiparare la configurazione dello stato di riscrittura\n",
-        "es": "Fijar el brillo de sincronización / estado\nFijar fallo en exponer\nReescribir el config del estado\n",
-        "pl": "Napraw jasność / stan synchronizacji\nPopraw błąd w odsłonięciu\nPopraw stan konfiguracji\n",
-        "uk": "Виправлення сипучих яскравості / стану\nВиправлення помилок у вигнанні\nВиправлення перезапису державного налаштування\n",
-        "zh-cn": "修正同步亮度/ 状态\n在曝光中修复错误\n修改状态配置\n"
       }
     },
     "titleLang": {
