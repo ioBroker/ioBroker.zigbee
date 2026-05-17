@@ -142,6 +142,7 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
+* ZH10 ZHC 26.51.0
 * Configurable dynamic UI
 * Configurable read after binding trigger
 * Bugfix in binding creation
