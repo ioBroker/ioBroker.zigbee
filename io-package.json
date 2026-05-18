@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.4",
+    "version": "3.4.5",
     "news": {
+      "3.4.5": {
+        "en": "Bugfix\nWider Webkit scrollbars\n",
+        "de": "Fehlerbehebung\nWider Webkit Scrollbars\n",
+        "ru": "Багфикс\nWider Webkit Scrollbars\n",
+        "pt": "Correcção de Erros\nBarras de rolagem mais largas do Webkit\n",
+        "nl": "Bugfix\nBreder Webkit schuifbalken\n",
+        "fr": "Correction du bogue\nBarres de défilement Webkit plus larges\n",
+        "it": "Bugfix\nBarra di scorrimento Wider Webkit\n",
+        "es": "Bugfix\nWider Webkit barras de desplazamiento\n",
+        "pl": "Bugfix\nSzersze paski przewijania Webkit\n",
+        "uk": "Помилки\nWider Webkit рульові панелі\n",
+        "zh-cn": "错误修正\n更大的 Webkit 滚动条\n"
+      },
       "3.4.4": {
         "en": "ZH10 ZHC 26.51.0\nConfigurable dynamic UI\nConfigurable read after binding trigger\nBugfix in binding creation\nedit binding button on device tile\n",
         "de": "ZH10 ZHC 26.51.0\nKonfigurierbare dynamische UI\nKonfigurierbares Lesen nach verbindlichem Trigger\nBugfix in verbindlicher Kreation\nbinden taste auf gerätefliese bearbeiten\n",
@@ -80,19 +93,6 @@
         "pl": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin nie ładuje portów com",
         "uk": "ЗХК 25.112.0\nЗХ 8.1.0\nВиправлення: Адміністратор не завантажує порти",
         "zh-cn": "ZHC 25.112.0\nZH 8.1.0 电话\n修正: 管理员不装入 com 端口"
-      },
-      "3.3.3": {
-        "en": "Fix crash bug\ngetter for composite states V1\nzhc\n",
-        "de": "Fehler behoben\ngetter für zusammengesetzte Zustände V1\nzh\n",
-        "ru": "Исправить ошибку crash bug\nгеттер для композитных состояний V1\nджк\n",
-        "pt": "Corrigir erro de falha\ngetter para estados compostos V1\nzhc\n",
-        "nl": "Fix crash bug\ngetter voor samengestelde toestanden V1\nzhc\n",
-        "fr": "Correction d'un bug de plantage\ngetter pour les états composites V1\nzhc\n",
-        "it": "Correre bug crash\ngetter per stati compositi V1\nzhc\n",
-        "es": "Corrección de fallo\ngetter para estados compuestos V1\nzhc\n",
-        "pl": "Napraw błąd awarii\ngetter for composite states V1\nzhc\n",
-        "uk": "Виправлення помилки збою\nоберт для композитних станів V1\nжк\n",
-        "zh-cn": "修复崩溃错误\nv1 复合状态获取器\n日语\n"
       }
     },
     "titleLang": {
