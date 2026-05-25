@@ -6,7 +6,7 @@
 
 const Materialize = (typeof M !== 'undefined') ? M : Materialize,
     anime = (typeof M !== 'undefined') ? M.anime : anime,
-    namespace = 'zigbee.' + instance,
+    namespace = `zigbee.${  instance}`,
     namespaceLen = namespace.length;
 let devices = [],
     adapterDefinedOptions = [],
@@ -22,7 +22,7 @@ let devices = [],
     localConfigData = {},
     shownMap = 0,
     groups = {},
-    devGroups = {}, // eslint-disable-line prefer-const
+    devGroups = {},  
     excludes = [],
     tabShown = 0,
     coordinatorinfo = {
@@ -89,11 +89,14 @@ const connectionStatus = {
 
 function keepAlive(callback) {
     const responseTimeout = setTimeout(function() {
-        UpdateAdapterAlive(false); }, 500);
+        UpdateAdapterAlive(false); 
+}, 500);
     sendTo(namespace, 'aliveCheck', {}, function(msg) {
         clearTimeout(responseTimeout);
         UpdateAdapterAlive(true);
-        if (callback) callback();
+        if (callback) {
+callback();
+}
     });
 }
 
@@ -103,7 +106,9 @@ function startKeepalive() {
 
 function UpdateAdapterAlive(state) {
     connectionStatus.time = Date.now();
-    if (connectionStatus.connected === state) return;
+    if (connectionStatus.connected === state) {
+return;
+}
     if (state) {
         $('#adapterStopped_btn').addClass('hide');
         $('#code_pairing').removeClass('disabled');
@@ -115,8 +120,7 @@ function UpdateAdapterAlive(state) {
         $('#download_icons_btn').removeClass('disabled');
         $('#rebuild_states_btn').removeClass('disabled');
         $('#pairing').removeClass('disabled');
-    }
-    else {
+    } else {
         $('#adapterStopped_btn').removeClass('hide');
         $('#code_pairing').addClass('disabled');
         $('#touchlink_btn').addClass('disabled');
@@ -138,15 +142,19 @@ function UpdateAdapterAlive(state) {
 //
 ////
 function sendToWrapper(target,command,msg,callback) {
-    if (connectionStatus.connected)
-        sendTo(target,command,msg,callback);
-    else if (callback) callback({error:'Cannot execute command - adapter is not running'});
+    if (connectionStatus.connected) {
+sendTo(target,command,msg,callback);
+} else if (callback) {
+callback({error:'Cannot execute command - adapter is not running'});
+}
 }
 
 function getDeviceByID(ID) {
-    if (devices) return devices.find((devInfo) => {
+    if (devices) {
+return devices.find((devInfo) => {
         return (devInfo ? devInfo._id : '') == ID;
     });
+}
 }
 
 function getDeviceByIEEE(ieeeAddr) {
@@ -172,16 +180,24 @@ function getDeviceByNetwork(nwk) {
 
 function getBatteryCls(value) {
     if (value) {
-        if (value < 50) return 'icon-red';
-        if (value < 80) return 'icon-orange';
+        if (value < 50) {
+return 'icon-red';
+}
+        if (value < 80) {
+return 'icon-orange';
+}
     }
     return '';
 }
 
 function getLQICls(value) {
     if (value) {
-        if (value < 20) return 'icon-red';
-        if (value < 50) return 'icon-orange';
+        if (value < 20) {
+return 'icon-red';
+}
+        if (value < 50) {
+return 'icon-orange';
+}
     }
     return 'icon-green';
 }
@@ -190,8 +206,7 @@ function sanitizeModelParameter(parameter) {
     const replaceByUnderscore = /[\s/]/g;
     try {
         return parameter.replace(replaceByUnderscore, '_');
-    }
-    catch { /* intentionally empty*/ }
+    } catch { /* intentionally empty*/ }
     return parameter;
 }
 
@@ -207,8 +222,12 @@ const LocalDataDisplayValues = {
     buttonSet: new Set(),
     showModels: true,
     sortedKeys : [],
-    sortMethod: function (a, b) { return 0 },
-    filterMethod: function (a) { return true },
+    sortMethod: function (a, b) {
+ return 0 
+},
+    filterMethod: function (a) {
+ return true 
+},
 }
 
 function updateFoldModel(model, devices, options) {
@@ -218,8 +237,12 @@ function updateFoldModel(model, devices, options) {
         LocalDataDisplayValues.unfoldedModels.push(ml)
         return ml;;
     }
-    if (devices) m.devices = !m.devices;
-    if (options) m.options = !m.options;
+    if (devices) {
+m.devices = !m.devices;
+}
+    if (options) {
+m.options = !m.options;
+}
     return m;
 }
 
@@ -234,9 +257,15 @@ function getModelData(data, models, keys) {
         const numOptions = Object.keys(model.setOptions).length + ((typeof model.setOptions.options === 'object' && model.setOptions.options != null) ? Object.keys(model.setOptions.options).length-1 : 0);
         const foldData = updateFoldModel(key, undefined, undefined);
         let numrows = 1;
-        if (foldData.devices) numrows +=  model.devices.length;
-        if (numOptions > 0) numrows += 1;
-        if (foldData.options) numrows += numOptions;
+        if (foldData.devices) {
+numrows +=  model.devices.length;
+}
+        if (numOptions > 0) {
+numrows += 1;
+}
+        if (foldData.options) {
+numrows += numOptions;
+}
         const d_btn_name = `d_toggle_${k}`;
         const e_btn_name = `m_edit_${k}`;
         const d_btn_tip = `fold / unfold devices of ${key}`;
@@ -259,7 +288,9 @@ function getModelData(data, models, keys) {
             for (const dev of model.devices) {
                 let devieee = dev._id.replace(`${namespace}.`, '');
 
-                if (devieee == undefined) devieee = 'unknown' + cnt++;
+                if (devieee == undefined) {
+devieee = `unknown${  cnt++}`;
+}
                 //LocalDataDisplayValues.buttonSet.add(`d_delete_${devieee}`);
                 LocalDataDisplayValues.buttonSet.add(`d_delall_${k}-${devieee}`);
                 LocalDataDisplayValues.buttonSet.add(`d_disen_${k}-${devieee}`);
@@ -287,20 +318,19 @@ function getModelData(data, models, keys) {
                         for (const ok of Object.keys(oo)) {
                             LocalDataDisplayValues.buttonSet.add(`o_delete_${k}-${ok}`);
                             const btn = btnParam(`o_delete_${k}-${ok}`, `delete option ${ok}`, 'delete', 'red darken-4', false);
-                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${ok}</td><td${oo[ok] === undefined ? 'id="datared">"not set on model"' : '>'+oo[ok]}</td><td width="10%">${btn}</td></tr>`)
+                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${ok}</td><td${oo[ok] === undefined ? 'id="datared">"not set on model"' : `>${oo[ok]}`}</td><td width="10%">${btn}</td></tr>`)
                             isOdd = !isOdd;
                         }
-                    }
-                    else {
+                    } else {
                         LocalDataDisplayValues.buttonSet.add(`l_delete_${k}-${key}`);
                         const btn = btnParam(`l_delete_${k}-${key}`, `delete option ${key}`, 'delete', 'red darken-4', false);
                         if (key==='icon') {
                             const icontext = model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : `>${model.setOptions[key]}`;
                             const icon = model.setOptions[key]=== undefined ? '' : `<img src=${model.setOptions[key]} height="32px" class="sml_list">`;
                             Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${key}</td><td valign="middle" ${icontext}</td><td width="10%">${btn}${icon}</td></tr>`)
-                        }
-                        else
-                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${key}</td><td ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>${btn}</td></tr>`)
+                        } else {
+Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${key}</td><td ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : `>${model.setOptions[key]}`}</td><td>${btn}</td></tr>`)
+}
                         isOdd = !isOdd;
                     }
                 }
@@ -365,8 +395,12 @@ function sortAndFilter(filter, sort) {
         filterMap = filterMap.sort(sFun);
     }
     //console.warn(JSON.stringify(filterMap));
-    if (typeof filter == 'function') LocalDataDisplayValues.filterMethod = filter;
-    if (typeof sort == 'function') LocalDataDisplayValues.sortMethod = sort;
+    if (typeof filter == 'function') {
+LocalDataDisplayValues.filterMethod = filter;
+}
+    if (typeof sort == 'function') {
+LocalDataDisplayValues.sortMethod = sort;
+}
     return filterMap;
 }
 
@@ -401,32 +435,41 @@ function showLocalData() {
 
     //console.warn(`lddv is ${JSON.stringify(LocalDataDisplayValues)}`)
     for (const item of LocalDataDisplayValues.buttonSet) {
-        if (item.startsWith('d_toggle_')) $(`#${item}`).click(function () {
+        if (item.startsWith('d_toggle_')) {
+$(`#${item}`).click(function () {
             const key = item.replace('d_toggle_',  '');
             //console.warn(`clicked ${item}`);
             updateFoldModel(models[key].model.model, true, false)
             showLocalData();
         });
-        if (item.startsWith('o_toggle_')) $(`#${item}`).click(function () {
+}
+        if (item.startsWith('o_toggle_')) {
+$(`#${item}`).click(function () {
             //console.warn(`clicked ${item}`);
             const key = item.substring(9);
             updateFoldModel(models[key].model.model, false, true)
             showLocalData();
         })
-        if (item.startsWith('do_toggle_')) $(`#${item}`).click(function () {
+}
+        if (item.startsWith('do_toggle_')) {
+$(`#${item}`).click(function () {
             //console.warn(`clicked ${item}`);
             const key = item.substring(10);
-            if (LocalDataDisplayValues.unfoldedDevices.hasOwnProperty(key))
-                LocalDataDisplayValues.unfoldedDevices[key] =! LocalDataDisplayValues.unfoldedDevices[key];
-            else
-                LocalDataDisplayValues.unfoldedDevices[key] = true;
+            if (LocalDataDisplayValues.unfoldedDevices.hasOwnProperty(key)) {
+LocalDataDisplayValues.unfoldedDevices[key] =! LocalDataDisplayValues.unfoldedDevices[key];
+} else {
+LocalDataDisplayValues.unfoldedDevices[key] = true;
+}
             showLocalData();
         })
-        if (item.startsWith('m_edit_')) $(`#${item}`).click(function () {
+}
+        if (item.startsWith('m_edit_')) {
+$(`#${item}`).click(function () {
             //console.warn(`clicked ${item}`);
             const key = item.substring(7);
             editDeviceOptions(models[key], true);
         })
+}
         if (item.startsWith('o_delete_'))  {
             //console.warn(`adding click to ${item}`)
             $(`#${item}`).click(function () {
@@ -443,7 +486,8 @@ function showLocalData() {
                 showLocalData();
             })
         }
-        if (item.startsWith('l_delete_'))  $(`#${item}`).click(function () {
+        if (item.startsWith('l_delete_'))  {
+$(`#${item}`).click(function () {
             const keys = item.replace('l_delete_', '').split('-');
             const model = models[keys[0]]?.model.model;
             const option = keys[1];
@@ -454,6 +498,7 @@ function showLocalData() {
             delete options[option];
             showLocalData();
         })
+}
         if (item.startsWith('d_disen_'))  {
             //console.warn(`adding click to ${item}`)
             $(`#${item}`).click(function () {
@@ -490,7 +535,9 @@ function showLocalData() {
 ////
 
 function getCard(dev) {
-    if (!dev._id) return '';
+    if (!dev._id) {
+return '';
+}
     const title = dev.common.name,
         id = (dev._id ? dev._id : ''),
         type = (dev.common.type ? dev.common.type : 'unknown'),
@@ -499,7 +546,7 @@ function getCard(dev) {
         rooms = [],
         isActive = (dev.common.deactivated ? false : true),
         lang = systemLang || 'en',
-        ieee = id.replace(namespace + '.', ''),
+        ieee = id.replace(`${namespace  }.`, ''),
         isDebug = checkDebugDevice(ieee);
     for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
@@ -530,14 +577,14 @@ function getCard(dev) {
         info = `<div style="min-height:${height - 112}px; font-size: 0.8em" class="truncate">
                     <ul>
                         <li><span class="labelinfo">ieee:</span><span>0x${ieee}</span></li>
-                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? nwk.toString() + ' (0x' + nwk.toString(16) + ')' : ''}</span></li>
+                        <li><span class="labelinfo">nwk:</span><span>${(nwk) ? `${nwk.toString()  } (0x${  nwk.toString(16)  })` : ''}</span></li>
                         <li><span class="labelinfo">model:</span><span id="model_name">${modelUrl}</span></li>
                         ${groupInfo}
                         ${roomInfo}
                     </ul>
                 </div>`,
         deactBtn = `<button name="swapactive" class="right btn-flat btn-small tooltipped" title="${(isActive ? 'deactivate' : 'activate')}"><i class="material-icons ${(isActive ? 'icon-green' : 'icon-red')}">power_settings_new</i></button>`,
-        debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?'automatic by '+debugDevices[isDebug-1]: 'disable debug' : 'enable debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
+        debugBtn = `<button name="swapdebug" class="right btn-flat btn-small tooltipped" title="${(isDebug > -1 ? (isDebug > 0) ?`automatic by ${debugDevices[isDebug-1]}`: 'disable debug' : 'enable debug')}"><i class="material-icons icon-${(isDebug > -1 ? (isDebug > 0 ? 'orange' : 'green') : 'gray')}">bug_report</i></button>`,
         infoBtn = (nwk) ? `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>` : '',
         reconfigureButton = dev.info.mapped.hasConfigure ? `<button name="reconfigure" class="right btn-flat btn-small tooltipped" title="reconfigure">
                                     <i class="material-icons icon-red">sync</i>
@@ -670,7 +717,7 @@ function getGroupCard(dev) {
         title = dev.common.name,
         lq = '<div class="col tool"><i class="material-icons icon-green">check_circle</i></div>',
         rooms = [],
-        numid = parseInt(id.replace(namespace + '.group_', '')),
+        numid = parseInt(id.replace(`${namespace  }.group_`, '')),
         lang = systemLang || 'en';
     for (const r in dev.rooms) {
         if (dev.rooms[r].hasOwnProperty(lang)) {
@@ -749,10 +796,12 @@ function getDeviceCard(devId) {
 }
 
 function sortStateDefs(a, b) {
-    if (a.isInternalState != b.isInternalState)
-        return a.isInternalState ? -1 : 1;
-    if (a.write != b.write)
-        return a.write ? -1 : 1;
+    if (a.isInternalState != b.isInternalState) {
+return a.isInternalState ? -1 : 1;
+}
+    if (a.write != b.write) {
+return a.write ? -1 : 1;
+}
     return a.id.localeCompare(b.id);
 }
 
@@ -772,8 +821,11 @@ function getDashCardInfoAndHeight(statesDef) {
             val = `<span class="range-field dash"><input type="range" min="150" max="500" ${(val != undefined) ? `value="${val}"` : ''} /></span>`;
         } else if (stateDef.type === 'boolean') {
             const disabled = (stateDef.write) ? '' : 'disabled="disabled"';
-            if (stateDef.write) val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
-            else val = `<label class="dash"><input type="radio" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+            if (stateDef.write) {
+val = `<label class="dash"><input type="checkbox" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+} else {
+val = `<label class="dash"><input type="radio" ${(val == true) ? 'checked=\'checked\'' : ''} ${disabled}/><span></span></label>`;
+}
         } else if (stateDef.role === 'level.color') {
             const options = []
             for (const key of namedColors) {
@@ -784,7 +836,9 @@ function getDashCardInfoAndHeight(statesDef) {
             let options;
             if (typeof stateDef.states == 'string') {
                 const sts = stateDef.states.split(';');
-                if (sts.length < 2) return '';
+                if (sts.length < 2) {
+return '';
+}
                 options = sts.map((item) => {
                     const v = item.split(':');
                     return `<option value="${v[0]}" ${(val == v[0]) ? 'selected' : ''}>${v[1]}</option>`;
@@ -795,16 +849,16 @@ function getDashCardInfoAndHeight(statesDef) {
                     options.push(`<option value="${key}" ${(val == key) ? 'selected' : ''}>${key}</option>`);
                 }
             }
-            if (options.length < 2) return '';
+            if (options.length < 2) {
+return '';
+}
             val = `<select class="browser-default enum" style="color : white; background-color: grey; height: 16px; padding: 0; width: auto; display: inline-block">${options.join('')}</select>`;
         } else if (stateDef.write) {
             return;
             // val = `<span class="input-field dash value"><input class="dash value" id="${stateDef.name}" value="${val}"></input></span>`;
-        }
-        else if (stateDef.type === 'number') {
+        } else if (stateDef.type === 'number') {
             val = `<span class="dash value">${val ? val : 0} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
-        }
-        else {
+        } else {
             val = `<span class="dash value">${val ? val : '(null)'} ${(stateDef.unit) ? stateDef.unit : ''}</span>`;
         }
         rv.length++;
@@ -1004,7 +1058,7 @@ function showDevInfo(id) {
 //
 ////
 function deleteConfirmation(id, name, dev, model) {
-    const text = translateWord('Do you really want to delete device') + ' "' + name + '" (' + id + ')?';
+    const text = `${translateWord('Do you really want to delete device')  } "${  name  }" (${  id  })?`;
     $('#modaldelete').find('p').text(text);
     $('#force').prop('checked', false);
     $('#forcediv').removeClass('hide');
@@ -1030,8 +1084,11 @@ function deleteNvBackupConfirmation() {
             closeWaitingDialog();
             if (msg) {
                 if (msg.error) {
-                    if (msg.error.includes('ENOENT')) showMessage('No nvRam backup available for deletion.', _('Error'))
-                    else showMessage(msg.error, _('Error'));
+                    if (msg.error.includes('ENOENT')) {
+showMessage('No nvRam backup available for deletion.', _('Error'))
+} else {
+showMessage(msg.error, _('Error'));
+}
                 } else {
                     getDevices();
                 }
@@ -1059,8 +1116,9 @@ function cleanConfirmation() {
 }
 
 function EndPointIDfromEndPoint(ep) {
-    if (ep && ep.deviceIeeeAddress && ep.ID)
-        return `${ep.deviceIeeeAddress}:${ep.ID}`;
+    if (ep && ep.deviceIeeeAddress && ep.ID) {
+return `${ep.deviceIeeeAddress}:${ep.ID}`;
+}
     return 'unidentified';
 }
 
@@ -1070,8 +1128,7 @@ function editGroupMembers(id, name) {
 
     function updateGroupables(groupables) {
         const html = [];
-        if (groupables && groupables.length > 0)
-        {
+        if (groupables && groupables.length > 0) {
             for (const groupable of groupables) {
                 const k = groupable.ep.ID || -1;
                 const n = groupable.epid != `unidentified` ? groupable.epid : `Endpoint ${k}`;
@@ -1107,9 +1164,10 @@ function editGroupMembers(id, name) {
         if (groupables.length > 0) {
             for (const groupable of groupables) {
                 const k = groupable.ep.ID || -1;
-                const ng = $('#gk_' + k).val();
-                if (ng.toString() != groupable.memberOf.toString())
-                    groupsById[k] = GenerateGroupChange(groupable.memberOf, ng);
+                const ng = $(`#gk_${  k}`).val();
+                if (ng.toString() != groupable.memberOf.toString()) {
+groupsById[k] = GenerateGroupChange(groupable.memberOf, ng);
+}
             }
         }
         updateDev(id, newName, groupsById);
@@ -1126,10 +1184,16 @@ function editGroupMembers(id, name) {
 ////
 function GenerateGroupChange(oldmembers, newmembers) {
     const grpchng = [];
-    for (const oldg of oldmembers)
-        if (!newmembers.includes(oldg)) grpchng.push('-' + oldg);
-    for (const newg of newmembers)
-        if (!oldmembers.includes(newg)) grpchng.push(newg);
+    for (const oldg of oldmembers) {
+if (!newmembers.includes(oldg)) {
+grpchng.push(`-${  oldg}`);
+}
+}
+    for (const newg of newmembers) {
+if (!oldmembers.includes(newg)) {
+grpchng.push(newg);
+}
+}
     return grpchng;
 }
 
@@ -1166,7 +1230,7 @@ function modifyDeviceStates(action, force, message, timeout) {
 }
 
 function renameDevice(id, name) {
-    showMessage('rename device with ' + id + ' and ' + name, _('Error'));
+    showMessage(`rename device with ${  id  } and ${  name}`, _('Error'));
     sendToWrapper(namespace, 'renameDevice', {id: id, name: name}, function (msg) {
         if (msg) {
             if (msg.error) {
@@ -1237,7 +1301,9 @@ function showDevices() {
             html += card;
         }
     }
-    if (!hasCoordinator) html += getCoordinatorCard();
+    if (!hasCoordinator) {
+html += getCoordinatorCard();
+}
 
     $('#devices').html(html);
     hookControls();
@@ -1246,9 +1312,9 @@ function showDevices() {
     const allRooms = new Set(devices.map((item) => item.rooms).flat().map((room) => {
         if (room && room.hasOwnProperty(lang)) {
             return room[lang];
-        } else {
+        } 
             return room;
-        }
+        
     }).filter((item) => item != undefined));
     //console.warn(`rooms is ${JSON.stringify(allRooms)}`);
     const roomSelector = $('#room-filter');
@@ -1273,7 +1339,8 @@ function showDevices() {
 
     const element = $('#devices');
 
-    if ($('tab-main')) try {
+    if ($('tab-main')) {
+try {
         shuffleInstance = devices && devices.length ? new Shuffle(element, {
             itemSelector: '.devicecard',
             sizer: '.js-shuffle-sizer',
@@ -1282,6 +1349,7 @@ function showDevices() {
     } catch {
         // empty.
     }
+}
 
     const getDevName = function (dev_block) {
         return dev_block.find('#dName').text();
@@ -1295,7 +1363,7 @@ function showDevices() {
     });
     $('.card-reveal-buttons button[name=\'deletegrp\']').click(function () {
         const dev_block = $(this).parents('div.devicecard');
-        const id = dev_block.attr('id').replace(namespace + '.group_', '');
+        const id = dev_block.attr('id').replace(`${namespace  }.group_`, '');
         deleteGroupConfirmation(id, getDevName(dev_block));
     });
     $('.card-reveal-buttons button[name=\'edit\']').click(function () {
@@ -1319,7 +1387,7 @@ function showDevices() {
 
     $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
         const dev_block = $(this).parents('div.devicecard');
-        const id = dev_block.attr('id').replace(namespace + '.group_', '');
+        const id = dev_block.attr('id').replace(`${namespace  }.group_`, '');
         const name = getDevName(dev_block);
         editGroup(id, name, false);
     });
@@ -1334,7 +1402,8 @@ function showDevices() {
         const dev_block = $(this).parents('div.devicecard');
         sendTo(namespace, 'setState', {id: `${getDevId(dev_block)}.device_query`, val: true}, function (data) {
             //console.log(data);
-        });    });
+        });    
+});
     $('.card-reveal-buttons button[name=\'info\']').click(function () {
         const dev_block = $(this).parents('div.devicecard');
         showDevInfo(getDevId(dev_block));
@@ -1404,7 +1473,7 @@ function checkFwUpdate() {
             } else if (msg.status == 'not_available') {
                 fwInfoNode.html(createBtn('check_circle', 'Up-to-date', true));
             } else if (msg.status == 'fail') {
-                fwInfoNode.html(createBtn('check_circle', 'Firmware check failed, ' + msg.msg, true, 'icon-red'));
+                fwInfoNode.html(createBtn('check_circle', `Firmware check failed, ${  msg.msg}`, true, 'icon-red'));
             } else {
                 fwInfoNode.html(createBtn('not_interested', 'No firmware update available', true));
             }
@@ -1427,8 +1496,7 @@ function letsPairingWithCode(code) {
     sendToWrapper(namespace, 'letsPairing', {code: code, stop:false}, function (msg) {
         if (msg && msg.error) {
             showMessage(msg.error, _('Error'));
-        }
-        else {
+        } else {
             showPairingProcess();
         }
     });
@@ -1491,8 +1559,12 @@ function checkDebugDevice(id) {
     // returns: -1: debug not set
     // 0: debug set explicitly
     // > 0: debug set by pattern.
-    if (!debugDevices) return -1;
-    if (debugDevices.indexOf(id) > -1) return 0 // debug set
+    if (!debugDevices) {
+return -1;
+}
+    if (debugDevices.indexOf(id) > -1) {
+return 0
+} // debug set
     for (const addressPart of debugDevices) {
         if (typeof id === 'string' && id.includes(addressPart)) {
             return debugDevices.indexOf(addressPart)+1; // debug set by pattern (>0)
@@ -1506,23 +1578,24 @@ async function toggleDebugDevice(id) {
         sendToWrapper(namespace, 'getDebugDevices', {}, function(msg) {
             if (msg && typeof (msg.debugDevices == 'array')) {
                 debugDevices = msg.debugDevices;
-            }
-            else
-                debugDevices = [];
+            } else {
+debugDevices = [];
+}
             showDevices();
         });
     });
 }
 
 function updateLocalConfigItems(device, data, global) {
-    if (data != {})
-        sendToWrapper(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
+    if (data != {}) {
+sendToWrapper(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
             if (msg && msg.hasOwnProperty.error) {
                 showMessage(msg.error, _('Error'));
             }
-            console.warn('update local config items called with global '+ global)
+            console.warn(`update local config items called with global ${ global}`)
             //getDevices();
         });
+}
 }
 
 async function editDeviceOptions(id, isModel) {
@@ -1532,8 +1605,9 @@ async function editDeviceOptions(id, isModel) {
     function removeOption(k) {
         const model = dialogData.model;
         if (k && device_options.hasOwnProperty(k)) {
-            if (device_options[k].key === 'legacy' || (model && model.options && model.options.includes(device_options[k].key)) && !device_options[k].isCustom)
-                dialogData.availableOptions.push(device_options[k].key)
+            if (device_options[k].key === 'legacy' || (model && model.options && model.options.includes(device_options[k].key)) && !device_options[k].isCustom) {
+dialogData.availableOptions.push(device_options[k].key)
+}
             delete device_options[k];
         }
     }
@@ -1548,7 +1622,9 @@ async function editDeviceOptions(id, isModel) {
         while (device_options.hasOwnProperty(key));
         device_options[key] = { key:optionName, value:'', isCustom:optionName==='custom', expose:getExposeFromOptions(optionName)};
         idx = dialogData.availableOptions.indexOf(optionName);
-        if (idx > -1 && !device_options[key].isCustom) dialogData.availableOptions.splice(idx, 1);
+        if (idx > -1 && !device_options[key].isCustom) {
+dialogData.availableOptions.splice(idx, 1);
+}
         //console.warn(`addOption added ${JSON.stringify(device_options)}`)
     }
     const multiselectoptions = {};
@@ -1558,9 +1634,12 @@ async function editDeviceOptions(id, isModel) {
         //console.warn(`update Options with ${JSON.stringify(candidates)}`)
         if (candidates.length > 0) {
             $('#chooseimage').find('.new_options_available').removeClass('hide');
-            list2select('#option_Selector', candidates, [], (key, val) => { return val; }, (key, val) => { return val; })
-        }
-        else {
+            list2select('#option_Selector', candidates, [], (key, val) => {
+ return val; 
+}, (key, val) => {
+ return val; 
+})
+        } else {
             $('#chooseimage').find('.new_options_available').addClass('hide');
         }
         const html_options=[];
@@ -1575,16 +1654,22 @@ async function editDeviceOptions(id, isModel) {
             switch (expose.type) {
                 case 'numeric':
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
-                    html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="number"${expose.value_min != undefined ? ' min="'+expose.value_min+'"' : ''}${expose.value_max != undefined ? ' max="'+expose.value_max+'"' : ''}${expose.value_step != undefined ? ' step="'+expose.value_step+'"' : ''} class="value" /><label>${expose.label ? expose.label : 'Value'}</label></div>`)
+                    html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="number"${expose.value_min != undefined ? ` min="${expose.value_min}"` : ''}${expose.value_max != undefined ? ` max="${expose.value_max}"` : ''}${expose.value_step != undefined ? ` step="${expose.value_step}"` : ''} class="value" /><label>${expose.label ? expose.label : 'Value'}</label></div>`)
                     break;
                 case 'binary': {
                     html_options.push(`<div class="input-field col s5 m5 l5">
                         <input ${disabled}id="option_key_${k}" type="text" class="value" />
                         <label for="option_key_${k}">Option</label></div>`);
                     const dok = device_options[k];
-                    if (dok.vOn=== undefined) dok.vOn = (expose.value_on === undefined ? 'true' : String(expose.value_on));
-                    if (dok.vOff=== undefined) dok.vOff = (expose.value_off === undefined ? 'false' : String(expose.value_off));
-                    if (dok.value != dok.vOn) dok.value = dok.vOff;
+                    if (dok.vOn=== undefined) {
+dok.vOn = (expose.value_on === undefined ? 'true' : String(expose.value_on));
+}
+                    if (dok.vOff=== undefined) {
+dok.vOff = (expose.value_off === undefined ? 'false' : String(expose.value_off));
+}
+                    if (dok.value != dok.vOn) {
+dok.value = dok.vOff;
+}
                     html_options.push(`<div class="col s5 m5 l5"><a id="option_value_${k}" class="btn-large value">${dok.value}</a></div>`);
                     checkboxButtons.push(`option_value_${k}`);
                     break;
@@ -1644,9 +1729,7 @@ async function editDeviceOptions(id, isModel) {
                     const idx = mso.value.indexOf(mso.entries[item]);
                     if (idx > -1) {
                         mso.value.splice(idx, 1);
-                    }
-                    else
-                    {
+                    } else {
                         mso.value.push(mso.entries[item]);
                     }
                 });
@@ -1655,7 +1738,9 @@ async function editDeviceOptions(id, isModel) {
 
         if (html_options.length > 0) {
             for (const k of Object.keys(device_options)) {
-                if (device_options[k].isCustom) $(`#option_key_${k}`).removeClass('disabled')
+                if (device_options[k].isCustom) {
+$(`#option_key_${k}`).removeClass('disabled')
+}
                 $(`#option_key_${k}`).val(device_options[k].key);
                 if (device_options[k].expose?.type != 'binary') {
                     const value = $(`#option_value_${k}.value`);
@@ -1678,7 +1763,9 @@ async function editDeviceOptions(id, isModel) {
     function getExposeFromOptions(option) {
         const rv = [dialogData.model.optionExposes, adapterDefinedOptions].flat().find((expose) => expose.name === option);
         //console.warn(`GEFO: ${option} results in ${JSON.stringify(rv)}`);
-        if (rv) return rv;
+        if (rv) {
+return rv;
+}
         return { type:option === 'legacy' ? 'binary' : 'string' };
     }
 
@@ -1688,17 +1775,16 @@ async function editDeviceOptions(id, isModel) {
         //console.warn(`${changed} : ${JSON.stringify(_do)} - ${JSON.stringify(_no)}`)
         for (const k of Object.keys(_do)) {
             const key =  $(`#option_key_${k}`).val();
-            if (_do[k].isCustom) _do[k].key = key;
-            else if (_do[k].key != key) {
+            if (_do[k].isCustom) {
+_do[k].key = key;
+} else if (_do[k].key != key) {
                 //console.warn(`_illegal Keys: ${key}, ${_do[k].key}`)
                 continue;
             }
             //console.warn(`_legal Keys: ${key}, ${_do[k].key}`)
             if (_do[k].expose?.type === 'binary') {
                 _do[k].value = $(`#option_value_${k}`).html();
-            }
-            else
-            {
+            } else {
                 _do[k].value = $(`#option_value_${k}`).val();
             }
 
@@ -1712,20 +1798,26 @@ async function editDeviceOptions(id, isModel) {
         if (multiselectoptions.changed) {
             changed = true;
             for (const k of Object.keys(multiselectoptions)) {
-                if (k === 'changed') continue;
+                if (k === 'changed') {
+continue;
+}
                 const mso = multiselectoptions[k];
                 _no[mso.expose.name] = mso.value;
             }
         }
         changed |= (Object.keys(_no).length != Object.keys(_so).length);
         //console.warn(`${changed ? 'changed': 'unchanged'} : ${JSON.stringify(_so)} - ${JSON.stringify(_no)}`)
-        if (changed) return _no;
+        if (changed) {
+return _no;
+}
         return undefined;
     }
 
     function updateImageSelection(dData, imagedata) {
         //        const default_icon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
-        if (dData.legacyIcon) imagedata.unshift( { file:dData.legacyIcon, name:'legacy', data:dData.legacyIcon});
+        if (dData.legacyIcon) {
+imagedata.unshift( { file:dData.legacyIcon, name:'legacy', data:dData.legacyIcon});
+}
         imagedata.unshift( { file:'none', name:'default', data:dData.defaultIcon});
         imagedata.unshift( { file:'current', name:'current', data:dData.icon});
 
@@ -1739,9 +1831,9 @@ async function editDeviceOptions(id, isModel) {
             function (key, image) {
                 if (image.isBase64) {
                     return `data-icon="data:image/png; base64, ${image.data}"`;
-                } else {
+                } 
                     return `data-icon="${image.data}"`;
-                }
+                
             },
         );
 
@@ -1759,16 +1851,19 @@ async function editDeviceOptions(id, isModel) {
         dialogData.availableOptions = model.options.slice() || [];
         dialogData.availableOptions.push(...adapterDefinedOptions.filter((o) => o.byModel  && (o.cProp ? model[o.cProp] == o.cVal : o.cVal )).map(o => o ? o.name : 'undefined'));
         dialogData.setOptions = {};
-        for (const k in Object.keys(id.setOptions))
-            if (k == 'icon' || k == 'name') continue;
-            else dialogData.setOptions[k] = id.setOptions[k];
+        for (const k in Object.keys(id.setOptions)) {
+if (k == 'icon' || k == 'name') {
+continue;
+} else {
+dialogData.setOptions[k] = id.setOptions[k];
+}
+}
         dialogData.name = id.setOptions.name || id.name || 'unset';
         dialogData.icon = id.setOptions.icon || model.icon || 'img/dummyDevice.jpg';
         dialogData.defaultIcon = model.icon || `img/${model.model.replace(/\//g, '-')}.png`;
         dialogData.legacyIcon = id.devices[0].legacyIcon;
         id = id.model.model;
-    } else
-    {
+    } else {
         const dev = devices.find((d) => d._id == id);
         dialogData.model = dev.info.mapped;
         dialogData.availableOptions = (dev.info.mapped ? dev.info.mapped.options.slice() || []:[]);
@@ -1801,32 +1896,43 @@ async function editDeviceOptions(id, isModel) {
                 //const global = $('#chooseimage').find('#globaloverride').prop('checked');
                 const name = $('#chooseimage').find('input[id=\'d_name\']').val();
                 const data = {};
-                if (image != 'current') data.icon= image;
-                if (name != dialogData.name) data.name = name;
+                if (image != 'current') {
+data.icon= image;
+}
+                if (name != dialogData.name) {
+data.name = name;
+}
                 const changedOptions = getOptionsFromUI(device_options, received_options);
-                if (changedOptions != undefined) data.options = changedOptions;
+                if (changedOptions != undefined) {
+data.options = changedOptions;
+}
 
                 updateLocalConfigItems(id, data, isModel);
             });
             sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:isModel, key:'options' }, function (msg) {
                 if (msg) {
-                    if (msg.error) showMessage(msg.error, '_Error');
+                    if (msg.error) {
+showMessage(msg.error, '_Error');
+}
                     Object.keys(device_options).forEach(key => delete device_options[key]);
                     Object.keys(received_options).forEach(key => delete received_options[key]);
                     if (typeof msg.options === 'object') {
                         let cnt = 1;
-                        for (const key in msg.options)
-                        {
+                        for (const key in msg.options) {
                             const idx = dialogData.availableOptions.indexOf(key);
                             //console.warn(`key ${key} : index : ${idx}`);
-                            if (idx > -1) dialogData.availableOptions.splice(idx,1);
+                            if (idx > -1) {
+dialogData.availableOptions.splice(idx,1);
+}
                             received_options[key]=msg.options[key];
                             device_options[`o${cnt}`] = { key:key, value:msg.options[key]}
                             cnt++;
                         }
                     }
                     updateOptions(dialogData.availableOptions);
-                } else showMessage('callback without message');
+                } else {
+showMessage('callback without message');
+}
                 $('#chooseimage').modal('open');
                 Materialize.updateTextFields();
             });
@@ -1837,9 +1943,15 @@ async function editDeviceOptions(id, isModel) {
 
 function safestring(val) {
     const t = typeof val;
-    if (t==='object') return JSON.stringify(val).replaceAll(',',', ');
-    if (t==='string') return val.replaceAll(',',', ');
-    if (t==='function') return 'function';
+    if (t==='object') {
+return JSON.stringify(val).replaceAll(',',', ');
+}
+    if (t==='string') {
+return val.replaceAll(',',', ');
+}
+    if (t==='function') {
+return 'function';
+}
     return val;
 }
 
@@ -1851,12 +1963,18 @@ function safestring(val) {
 function fne(item) {
     const rv = [];
     if (item.flags) {
-        if (item.flags.includes('SUCCESS')) rv.push('SUCCESS');
-        else rv.push(...item.flags);
+        if (item.flags.includes('SUCCESS')) {
+rv.push('SUCCESS');
+} else {
+rv.push(...item.flags);
+}
     }
     if (item.errors && item.errors.length > 0) {
-        if (item.errors.length > 1) rv.push('errors: '+item.errors.join(','));
-        else rv.push('error: '+item.errors[0]);
+        if (item.errors.length > 1) {
+rv.push(`errors: ${item.errors.join(',')}`);
+} else {
+rv.push(`error: ${item.errors[0]}`);
+}
     }
     return rv.join(', ');
 }
@@ -1867,17 +1985,18 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
     let isodd = true;
     const buttonList = [];
     const idRed = ' id="dbgred"'
-    if (dbgMsghide.has('i_'+devID)) {
+    if (dbgMsghide.has(`i_${devID}`)) {
         //console.warn('in all filtered out')
         Html.push('&nbsp;')
-    } else for (const item of messages) {
+    } else {
+for (const item of messages) {
         if (item.states.length > 0) {
             const rowspan = item.states.length > 1 ? ` rowspan="${item.states.length}"` : '';
             let idx = item.states.length;
             const IHtml = [];
             let fs = '';
             for (const state of item.states) {
-                fs = fs+state.id+'.'+fne(item);
+                fs = `${fs+state.id}.${fne(item)}`;
                 const redText = (item.errors && item.errors.length > 0 ? idRed : '');
                 idx--;
                 const LHtml = [(`<tr id="${isodd ? 'dbgrowodd' : 'dbgroweven'}">`)];
@@ -1889,15 +2008,21 @@ function HtmlFromInDebugMessages(messages, devID, filter) {
                 LHtml.push(`<td></td><td${redText}>${safestring(state.payload)}</td><td${state.inError ? idRed: redText}>${state.id}</td><td${state.inError ? idRed : redText}>${state.value}</td><td${redText}>${fne(item)}</td></tr>`);
                 IHtml.unshift(...LHtml)
             }
-            if (filter)
-                if (filterSet.has(fs)) continue; else filterSet.add(fs);
+            if (filter) {
+if (filterSet.has(fs)) {
+continue;
+} else {
+filterSet.add(fs);
+}
+}
             Html.unshift(...IHtml);
             isodd=!isodd;
         }
     }
-    const ifbutton = `<a id="i_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Filter debug messages"><i class="material-icons large">${dbgMsgfilter.has('i_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
-    const ofbutton = `<a id="hi_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Hide debug messages"><i class="material-icons large">${dbgMsghide.has('i_'+devID) ? 'unfold_more' : 'unfold_less' }</i></a>`
-    const dataHide = dbgMsgfilter.has('hi_'+devID) ? 'Data hidden' : '&nbsp;';
+}
+    const ifbutton = `<a id="i_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Filter debug messages"><i class="material-icons large">${dbgMsgfilter.has(`i_${devID}`) ? 'filter_list' : 'format_align_justify' }</i></a>`
+    const ofbutton = `<a id="hi_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Hide debug messages"><i class="material-icons large">${dbgMsghide.has(`i_${devID}`) ? 'unfold_more' : 'unfold_less' }</i></a>`
+    const dataHide = dbgMsgfilter.has(`hi_${devID}`) ? 'Data hidden' : '&nbsp;';
     return {html:`<thead id="dbgtable"><tr><td>&nbsp</td><td>Incoming messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>&nbsp;</td><td>State Payload</td><td>ID</td><td>value</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`, buttonList };
 }
 
@@ -1906,18 +2031,18 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
     const filterSet = new Set();
     let isodd=true;
     const buttonList = [];
-    if (dbgMsghide.has('o_'+devID)) {
+    if (dbgMsghide.has(`o_${devID}`)) {
         //console.warn('out all filtered out')
         Html.push('&nbsp;')
-    }
-    else for (const item of messages) {
+    } else {
+for (const item of messages) {
         if (item.states.length > 0) {
             const rowspan = item.states.length > 1 ? ` rowspan="${item.states.length}"` : '';
             let idx = item.states.length;
             let fs = '';
             const IHtml = [];
             for (const state of item.states) {
-                fs = fs+state.id+'.'+fne(item);
+                fs = `${fs+state.id}.${fne(item)}`;
                 const redText = (item.errors && item.errors.length > 0 ? ' id="dbgred"' : '');
                 const LHtml = [(`<tr id="${isodd ? 'dbgrowodd' : 'dbgroweven'}">`)];
                 idx--;
@@ -1930,15 +2055,21 @@ function HtmlFromOutDebugMessages(messages, devID, filter) {
                 IHtml.unshift(...LHtml);
 
             }
-            if (filter)
-                if (filterSet.has(fs)) continue; else filterSet.add(fs);
+            if (filter) {
+if (filterSet.has(fs)) {
+continue;
+} else {
+filterSet.add(fs);
+}
+}
             Html.unshift(...IHtml);
             isodd=!isodd;
         }
     }
-    const ifbutton = `<a id="o_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Filter debug messages"><i class="material-icons large">${dbgMsgfilter.has('o_'+devID) ? 'filter_list' : 'format_align_justify' }</i></a>`
-    const ofbutton = `<a id="ho_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Hide debug messages"><i class="material-icons large">${dbgMsghide.has('o_'+devID) ? 'unfold_more' : 'unfold_less'}</i></a>`
-    const dataHide = dbgMsgfilter.has('ho_'+devID) ? 'Data hidden' : '&nbsp;';
+}
+    const ifbutton = `<a id="o_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Filter debug messages"><i class="material-icons large">${dbgMsgfilter.has(`o_${devID}`) ? 'filter_list' : 'format_align_justify' }</i></a>`
+    const ofbutton = `<a id="ho_${devID}" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Hide debug messages"><i class="material-icons large">${dbgMsghide.has(`o_${devID}`) ? 'unfold_more' : 'unfold_less'}</i></a>`
+    const dataHide = dbgMsgfilter.has(`ho_${devID}`) ? 'Data hidden' : '&nbsp;';
     return { html:`<thead id="dbgtable"><tr><td>&nbsp</td><td>Outgoing messages</td><td>&nbsp;</td><td>&nbsp;</td><td>${dataHide}</td><td>${ifbutton}</td><td>${ofbutton}</td></tr><tr><td>ID</td><td>Zigbee Payload</td><td>EP</td><td>ID</td><td>value</td><td>State Payload</td><td>Flags</td></tr></thead><tbody>${Html.join('')}</tbody>`, buttonList};
 }
 
@@ -1960,12 +2091,13 @@ function displayDebugMessages(msg) {
         if (!keylength) {
             Html.push('<tr><td></td><td>No debug data loaded - press reload to refresh</td><td></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr></tbody></table></li>')
             $('#dbg_data_list').html(Html.join(''));
-        }
-        else {
+        } else {
             Html.push('</tbody></table></li>')
             for (const devID of Object.keys(dbgData)) {
                 const dev = devices.find((d) => d._id.endsWith(devID.slice(-16)));
-                if (!dev) continue;
+                if (!dev) {
+continue;
+}
                 const type_url = (dev && dev.common && dev.common.type ? sanitizeModelParameter(dev.common.type) : 'unknown');
                 const image = `<img src="${dev.common.icon || dev.icon}" width="40px" onerror="this.onerror=null;this.src='img/unavailable.png';">`
                 const modelUrl = (type_url === 'unknown') ? 'unknown' : `<a href="https://www.zigbee2mqtt.io/devices/${type_url}.html" target="_blank" rel="noopener noreferrer">${image}</a>`;
@@ -1975,12 +2107,12 @@ function displayDebugMessages(msg) {
                 buttonNames.push(devID);
                 Html.push(`<li><table><thead id="dbgtable"><tr><td colspan="4">${devName} (ID: ${devID} Model: ${dev && dev.common ? dev.common.name : 'unknown'})</td><td>${modelUrl}</td><td>${button}</td><td>${dbutton}</td></tr></thead><tbody>`);
                 if (dbgData[devID].IN.length > 0) {
-                    const indata = HtmlFromInDebugMessages(dbgData[devID].IN, devID, dbgMsgfilter.has('i_'+devID));
+                    const indata = HtmlFromInDebugMessages(dbgData[devID].IN, devID, dbgMsgfilter.has(`i_${devID}`));
                     Html.push(`${indata.html}`);
                     idButtons.push(...indata.buttonList)
                 }
                 if (dbgData[devID].OUT.length > 0) {
-                    const outdata = HtmlFromOutDebugMessages(dbgData[devID].OUT, devID, dbgMsgfilter.has('o_'+devID));
+                    const outdata = HtmlFromOutDebugMessages(dbgData[devID].OUT, devID, dbgMsgfilter.has(`o_${devID}`));
                     Html.push(`${outdata.html}`);
                     idButtons.push(...outdata.buttonList)
                 }
@@ -2001,8 +2133,7 @@ function displayDebugMessages(msg) {
         $(`#f_all`).click(function () {
             if (dbgMsgfilter.size > 0) {
                 dbgMsgfilter.clear();
-            }
-            else {
+            } else {
                 for (const item of Object.keys(msg.byId)) {
                     dbgMsgfilter.add(`o_${item}`)
                     dbgMsgfilter.add(`i_${item}`)
@@ -2013,8 +2144,7 @@ function displayDebugMessages(msg) {
         $(`#h_all`).click(function () {
             if (dbgMsghide.size > 0) {
                 dbgMsghide.clear();
-            }
-            else {
+            } else {
                 for (const item of Object.keys(msg.byId)) {
                     dbgMsghide.add(`o_${item}`)
                     dbgMsghide.add(`i_${item}`)
@@ -2030,24 +2160,42 @@ function displayDebugMessages(msg) {
                 getDebugMessages(true, b);
             });
             $(`#o_${b}`).click(function () {
-                if (dbgMsgfilter.has(`o_${b}`)) dbgMsgfilter.delete(`o_${b}`); else dbgMsgfilter.add(`o_${b}`);
+                if (dbgMsgfilter.has(`o_${b}`)) {
+dbgMsgfilter.delete(`o_${b}`);
+} else {
+dbgMsgfilter.add(`o_${b}`);
+}
                 displayDebugMessages(debugMessages);
             });
             $(`#i_${b}`).click(function () {
-                if (dbgMsgfilter.has(`i_${b}`)) dbgMsgfilter.delete(`i_${b}`); else dbgMsgfilter.add(`i_${b}`);
+                if (dbgMsgfilter.has(`i_${b}`)) {
+dbgMsgfilter.delete(`i_${b}`);
+} else {
+dbgMsgfilter.add(`i_${b}`);
+}
                 displayDebugMessages(debugMessages);
             });
             $(`#ho_${b}`).click(function () {
-                if (dbgMsghide.has(`o_${b}`)) dbgMsghide.delete(`o_${b}`); else dbgMsghide.add(`o_${b}`);
+                if (dbgMsghide.has(`o_${b}`)) {
+dbgMsghide.delete(`o_${b}`);
+} else {
+dbgMsghide.add(`o_${b}`);
+}
                 displayDebugMessages(debugMessages);
             });
             $(`#hi_${b}`).click(function () {
-                if (dbgMsghide.has(`i_${b}`)) dbgMsghide.delete(`i_${b}`); else dbgMsghide.add(`i_${b}`);
+                if (dbgMsghide.has(`i_${b}`)) {
+dbgMsghide.delete(`i_${b}`);
+} else {
+dbgMsghide.add(`i_${b}`);
+}
                 displayDebugMessages(debugMessages);
             });
         }
         for (const b of idButtons) {
-            $(`#lx_${b}`).click(function() { showMessageList(b)});
+            $(`#lx_${b}`).click(function() {
+ showMessageList(b)
+});
         }
     }
 }
@@ -2110,7 +2258,9 @@ function showMessageList(msgId) {
 function getDebugMessages(deleteBeforeRead, deleteSelected) {
     sendToWrapper(namespace, 'getDebugMessages', { inlog: debugInLog, del:deleteBeforeRead ? deleteSelected : '' }, function(msg) {
         debugMessages = msg;
-        if (msg) displayDebugMessages(debugMessages)
+        if (msg) {
+displayDebugMessages(debugMessages)
+}
     })
 }
 
@@ -2135,8 +2285,9 @@ function getDevices() {
             }
         });
         sendToWrapper(namespace, 'getLocalConfigItems', {getAllData:true}, function(msg) {
-            if (msg.hasOwnProperty('by_id') && msg.hasOwnProperty('by_model'))
-                localConfigData = msg;
+            if (msg.hasOwnProperty('by_id') && msg.hasOwnProperty('by_model')) {
+localConfigData = msg;
+}
         })
         sendToWrapper(namespace, 'getDevices', {}, function (msg) {
             if (msg) {
@@ -2180,29 +2331,31 @@ function extractDevicesData(msg) {
     devices = msg.devices ? msg.devices : [];
     adapterDefinedOptions = msg.adapterOptions ? msg.adapterOptions: [];
     // check if stashed error messages are sent alongside
-    if (msg.clean)
-        $('#state_cleanup_btn').removeClass('hide');
-    else
-        $('#state_cleanup_btn').addClass('hide');
+    if (msg.clean) {
+$('#state_cleanup_btn').removeClass('hide');
+} else {
+$('#state_cleanup_btn').addClass('hide');
+}
     if (msg.errors?.hasData) {
         $('#show_errors_btn').removeClass('hide');
         errorData = msg.errors;
-    }
-    else {
+    } else {
         $('#show_errors_btn').addClass('hide');
     }
     //check if debug messages are sent alongside
     if (msg && typeof (msg.debugDevices == 'array')) {
         debugDevices = msg.debugDevices;
-    }
-    else
-        debugDevices = [];
+    } else {
+debugDevices = [];
+}
 
     if (msg.deviceDebugData) {
         debugMessages = { byId: msg.deviceDebugData };
         displayDebugMessages(debugMessages);
     }
-    if (msg.models) models = msg.models;
+    if (msg.models) {
+models = msg.models;
+}
     lockout.isActive = false;
 
 }
@@ -2219,13 +2372,16 @@ function getNamedColors() {
 
 let map_errors = [];
 function getMap(rebuild) {
-    if (rebuild) $('#refresh').addClass('disabled');
+    if (rebuild) {
+$('#refresh').addClass('disabled');
+}
     if (isHerdsmanRunning || !rebuild) {
         sendToWrapper(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
             $('#refresh').removeClass('disabled');
             if (msg) {
-                if (!msg.hasMap) $('#refresh').removeClass('hide');
-                else {
+                if (!msg.hasMap) {
+$('#refresh').removeClass('hide');
+} else {
                     $('#refresh').addClass('hide');
                     if (msg.error) {
                         //errorData.push(msg.error);
@@ -2243,15 +2399,19 @@ function getMap(rebuild) {
                                 $('#map_errors_btn').addClass('hide');
                             })
                         }
-                        if (map?.timestamp != msg?.timestamp)
-                            map = msg;
-                        if (rebuild) showNetworkMap(devices, map);
+                        if (map?.timestamp != msg?.timestamp) {
+map = msg;
+}
+                        if (rebuild) {
+showNetworkMap(devices, map);
+}
                     }
                 }
             }
         });
-    }
-    else showMessage('Unable to generate map, the zigbee subsystem is inactive', 'Map generation error');
+    } else {
+showMessage('Unable to generate map, the zigbee subsystem is inactive', 'Map generation error');
+}
 }
 
 
@@ -2260,8 +2420,7 @@ function getMap(rebuild) {
 // the function loadSettings has to exist ...
 
 function load(settings, onChange) {
-    function getRandomExtPanID()
-    {
+    function getRandomExtPanID() {
         const bytes = [];
         for (let i = 0;i<16;i++) {
             bytes.push(Math.floor(Math.random() * 16).toString(16));
@@ -2269,8 +2428,7 @@ function load(settings, onChange) {
         return bytes.join('');
     }
 
-    function getRandomChannel()
-    {
+    function getRandomChannel() {
         const channels = [11,15,20,25]
         return channels[Math.floor(Math.random() * 4)];
     }
@@ -2301,8 +2459,12 @@ function load(settings, onChange) {
     if (settings.baudRate === undefined) {
         settings.baudRate = 115200;
     }
-    if (settings.autostart === undefined) settings.autostart = false;
-    if (typeof settings.pingCluster != 'string') settings.pingCluster = settings.disablePing ? 'off' : 'default';
+    if (settings.autostart === undefined) {
+settings.autostart = false;
+}
+    if (typeof settings.pingCluster != 'string') {
+settings.pingCluster = settings.disablePing ? 'off' : 'default';
+}
 
     // example: select elements with id=key and class=value and insert value
     for (const key in settings) {
@@ -2310,7 +2472,7 @@ function load(settings, onChange) {
             continue;
         }
         // example: select elements with id=key and class=value and insert value
-        const value = $('#' + key + '.value');
+        const value = $(`#${  key  }.value`);
         if (value.attr('type') === 'checkbox') {
             value.prop('checked', settings[key]).change(function () {
                 onChange();
@@ -2365,8 +2527,7 @@ function load(settings, onChange) {
                     }
                 }
             })
-        }
-        else {
+        } else {
             showMessage('function unavailable while herdsman is running', _('Error'))
         }
     });
@@ -2387,20 +2548,22 @@ function load(settings, onChange) {
         //console.warn(JSON.stringify(errorData));
         if (Object.keys(errorData.errors).length > 0) {
             errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>first seen</th><th>last seen</th></tr>`)
-            for (const err of Object.values(errorData.errors))
-                if (err && err.ts && err.count) {
+            for (const err of Object.values(errorData.errors)) {
+if (err && err.ts && err.count) {
                     const erridx = err.ts.length > 1 ? 1 : 0
                     errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[erridx]).toLocaleTimeString()}</td></tr>`)
                 }
+}
             errMsgTable.push('</table>');
         }
         if (Object.keys(errorData.unknownModels).length > 0) {
             errMsgTable.push(`<table><tr><th>Unknown Models</th><th>#</th><th>first seen</th><th>last seen</th></tr>`)
-            for (const err of Object.values(errorData.unknownModels))
-                if (err && err.ts && err.count) {
+            for (const err of Object.values(errorData.unknownModels)) {
+if (err && err.ts && err.count) {
                     const erridx = err.ts.length > 1 ? 1 : 0
                     errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[erridx]).toLocaleTimeString()}</td></tr>`)
                 }
+}
             errMsgTable.push('</table>');
         }
         //console.warn(JSON.stringify(errMsgTable));
@@ -2490,12 +2653,12 @@ function load(settings, onChange) {
 
     $('#add_group').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups || {}).reduce((a, b) => a > b ? a : b, 0));
-        addGroup(maxind + 1, 'Group ' + maxind + 1);
+        addGroup(maxind + 1, `Group ${  maxind  }${1}`);
     });
 
     $('#add_grp_btn').click(function () {
         const maxind = parseInt(Object.getOwnPropertyNames(groups || {}).reduce((a, b) => a > b ? a : b, 0));
-        addGroup(maxind + 1, 'Group ' + maxind + 1);
+        addGroup(maxind + 1, `Group ${  maxind  }${1}`);
     });
 
     $('#code_pairing').click(function () {
@@ -2528,8 +2691,9 @@ function load(settings, onChange) {
             if (tabShown === 1 && shownMap === 0)  {
                 console.log(`tabShown set to ${tabShown} - showing map for the first time`);
                 showNetworkMap(devices, map);
-            }
-            else console.log(`tabShown set to ${tabShown}`);
+            } else {
+console.log(`tabShown set to ${tabShown}`);
+}
         }
 
         Materialize.Tabs.init($('.tabs'), {duration: 600, onShow: new_tab_show_callback});
@@ -2557,8 +2721,11 @@ function load(settings, onChange) {
         });
         $('#model-search').keyup(function (event) {
             LocalDataDisplayValues.searchVal = event.target.value.toLowerCase();
-            if (!LocalDataDisplayValues.searchTimeout)
-                LocalDataDisplayValues.searchTimeout = setTimeout(() => { LocalDataDisplayValues.searchTimeout = null; showLocalData(); }, 250);
+            if (!LocalDataDisplayValues.searchTimeout) {
+LocalDataDisplayValues.searchTimeout = setTimeout(() => {
+ LocalDataDisplayValues.searchTimeout = null; showLocalData(); 
+}, 250);
+}
         });
         $('#model-sort a').click(function () {
             const t = $(this).text();
@@ -2566,20 +2733,26 @@ function load(settings, onChange) {
             switch (t) {
                 case 'by type':
                     LocalDataDisplayValues.sortMethod = function(a,b) {
-                        if (models[a].model?.type == models[b].model?.type) return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+                        if (models[a].model?.type == models[b].model?.type) {
+return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+}
                         return (models[a].model?.type > models[b].model?.type ? 1 : -1);
                     };
                     break;
 
                 case 'by device count':
                     LocalDataDisplayValues.sortMethod = function(a,b) {
-                        if (models[a].setOptions?.length == models[b].setOptions?.length) return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+                        if (models[a].setOptions?.length == models[b].setOptions?.length) {
+return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+}
                         return (models[a].setOptions?.length > models[b].setOptions?.length?1:-1);
                     };
                     break;
                 case 'by option count':
                     LocalDataDisplayValues.sortMethod = function(a,b) {
-                        if (models[a].devices?.length == models[b].devices?.length) return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+                        if (models[a].devices?.length == models[b].devices?.length) {
+return (models[a].model?.model > models[b].model?.model ? 1 : -1);
+}
                         return (models[a].devices?.length > models[b].devices?.length ? 1 : -1);
                     };
                     break;
@@ -2596,19 +2769,29 @@ function load(settings, onChange) {
             $('#model-filter-btn').text(t);
             switch (t) {
                 case 'Groups':
-                    LocalDataDisplayValues.filterMethod = function(a) { return models[a].model.model== 'group'};
+                    LocalDataDisplayValues.filterMethod = function(a) {
+ return models[a].model.model== 'group'
+};
                     break;
                 case 'Routers':
-                    LocalDataDisplayValues.filterMethod = function(a) { return models[a].model.type == 'Router'};
+                    LocalDataDisplayValues.filterMethod = function(a) {
+ return models[a].model.type == 'Router'
+};
                     break;
                 case 'End Devices':
-                    LocalDataDisplayValues.filterMethod = function(a) { return models[a].model.type == 'EndDevice'};
+                    LocalDataDisplayValues.filterMethod = function(a) {
+ return models[a].model.type == 'EndDevice'
+};
                     break;
                 case 'with options':
-                    LocalDataDisplayValues.filterMethod = function(a) { return models[a].setOptions && Object.keys(models[a].setOptions).length > 0 };
+                    LocalDataDisplayValues.filterMethod = function(a) {
+ return models[a].setOptions && Object.keys(models[a].setOptions).length > 0 
+};
                     break;
                 case 'without options':
-                    LocalDataDisplayValues.filterMethod = function(a) { return !(models[a].setOptions && Object.keys(models[a].setOptions).length > 0) };
+                    LocalDataDisplayValues.filterMethod = function(a) {
+ return !(models[a].setOptions && Object.keys(models[a].setOptions).length > 0) 
+};
                     break;
                 default: LocalDataDisplayValues.filterMethod = undefined;
             }
@@ -2652,18 +2835,20 @@ function showMessages() {
     let data = '';
     for (const ind in messages) {
         const mess = messages[ind];
-        data = mess + '\n' + data;
+        data = `${mess  }\n${  data}`;
     }
     $('#stdout').text(data);
     $('#stdout_t').text(messages.join('\n'));
 }
 
 function showPairingProcess(noextrabuttons) {
-    if (isHerdsmanRunning) $('#modalpairing').modal({
+    if (isHerdsmanRunning) {
+$('#modalpairing').modal({
         startingTop: '4%',
         endingTop: '10%',
         dismissible: false
     });
+}
 
     $('#modalpairing a.btn[name=\'extendpairing\']').unbind('click');
     $('#modalpairing a.btn[name=\'extendpairing\']').click(function () {
@@ -2676,8 +2861,7 @@ function showPairingProcess(noextrabuttons) {
     if (noextrabuttons) {
         $('#modalpairing').find('.endpairing').addClass('hide');
         $('#modalpairing').find('.extendpairing').addClass('hide');
-    }
-    else {
+    } else {
         $('#modalpairing').find('.endpairing').removeClass('hide');
         $('#modalpairing').find('.extendpairing').removeClass('hide');
     }
@@ -2700,28 +2884,32 @@ function doTestStart(start, interactive) {
         };
         // $('#testStartStart').addClass('disabled');
         messages = [];
-        if (interactive) showPairingProcess(true)
+        if (interactive) {
+showPairingProcess(true)
+}
 
         //    showWaitingDialog('Trying to start the zigbee subsystem manually', 120);
         sendToWrapper(namespace, 'testConnect', { start:true, zigbeeOptions:ovr }, function(msg) {
             if (msg) {
                 closeWaitingDialog();
                 updateStartButton(false);
-                if (msg.status)
-                    $('#testStartStop').removeClass('disabled');
-                else {
+                if (msg.status) {
+$('#testStartStop').removeClass('disabled');
+} else {
                     //showMessage(`The zigbee subsystem is not running. Please ensure that the configuration is correct. ${msg.error ? 'Error on start-Attempt ' + msg.error.message : ''}`);
                     $('#testStartStart').removeClass('disabled');
                 }
             }
         })
-    }
-    else {
+    } else {
         //$('#testStartStop').addClass('disabled');
         sendToWrapper(namespace, 'testConnect', { start:false }, function(msg) {
             if (msg) {
-                if (msg.status) $('#testStartStart').removeClass('disabled');
-                else $('#testStartStop').removeClass('disabled');
+                if (msg.status) {
+$('#testStartStart').removeClass('disabled');
+} else {
+$('#testStartStop').removeClass('disabled');
+}
             }
         })
 
@@ -2735,9 +2923,11 @@ function save(callback) {
     const obj = {};
     $('.value').each(function () {
         const $this = $(this);
-        if (savedSettings.indexOf($this.attr('id')) === -1) return;
+        if (savedSettings.indexOf($this.attr('id')) === -1) {
+return;
+}
         if ($this.hasClass('validate') && $this.hasClass('invalid')) {
-            showMessage('Invalid input for ' + $this.attr('id'), _('Error'));
+            showMessage(`Invalid input for ${  $this.attr('id')}`, _('Error'));
             return;
         }
         if ($this.attr('type') === 'checkbox') {
@@ -2766,8 +2956,7 @@ function updateStartButton(block) {
         $('#ErrorNotificationBtn').addClass('orange')
         return;
     }
-    if (isHerdsmanRunning)
-    {
+    if (isHerdsmanRunning) {
         $('#ErrorNotificationBtn').addClass('hide')
         $('#ErrorNotificationBtn').removeClass('blinking');
         $('#show_test_run').removeClass('disabled');
@@ -2778,8 +2967,7 @@ function updateStartButton(block) {
         $('#touchlink_btn').removeClass('hide');
         $('#code_pairing').removeClass('hide');
         //$('#pairing').removeClass('hide');
-    }
-    else {
+    } else {
         $('#ErrorNotificationBtn').addClass('red')
         $('#ErrorNotificationBtn').removeClass('orange')
         $('#ErrorNotificationBtn').removeClass('hide')
@@ -2795,15 +2983,17 @@ function updateStartButton(block) {
     }
 }
 // subscribe to changes
-socket.emit('subscribe', namespace + '.*');
-socket.emit('subscribeObjects', namespace + '.*');
+socket.emit('subscribe', `${namespace  }.*`);
+socket.emit('subscribeObjects', `${namespace  }.*`);
 
 // react to changes
 const borderArr = ['border_bottom', 'border_left','border_top', 'border_right'];
 socket.on('stateChange', function (id, state) {
     UpdateAdapterAlive(true);
     // only watch our own states
-    if (id.substring(0, namespaceLen) !== namespace) return;
+    if (id.substring(0, namespaceLen) !== namespace) {
+return;
+}
     if (state) {
         if (id.match(/\.info\.pairingMode$/)) {
             if (state.val) {
@@ -2825,8 +3015,7 @@ socket.on('stateChange', function (id, state) {
         } else if (id.match(/\.info\.pairingMessage$/)) {
             if (state.val == 'NewDebugMessage') {
                 getDebugMessages();
-            }
-            else {
+            } else {
                 messages.push(state.val);
                 showMessages();
                 if (state.val.startsWith('Zigbee-Herdsman started successfully')) {
@@ -2849,8 +3038,7 @@ socket.on('stateChange', function (id, state) {
                     if (numDev > 0) {
                         $(`#map_generating_btn`).removeClass('hide');
                         $(`#map_generating_btn`).html(`<i class="material-icons large">${borderArr[numDev%4]}</i>`);
-                    }
-                    else {
+                    } else {
                         $('#map_generating_btn').addClass('hide');
                     }
                 }
@@ -2872,8 +3060,9 @@ socket.on('stateChange', function (id, state) {
                 if (changed) {
                     $('#show_errors_btn').removeClass('hide');
                 }
-            }
-            catch { console.error('JSON didnt parse') }
+            } catch {
+ console.error('JSON didnt parse') 
+}
 
         } else {
             const devId = getDevId(id);
@@ -2902,7 +3091,9 @@ socket.on('stateChange', function (id, state) {
 
 socket.on('objectChange', function (id, obj) {
     UpdateAdapterAlive(true);
-    if (id.substring(0, namespaceLen) !== namespace) return;
+    if (id.substring(0, namespaceLen) !== namespace) {
+return;
+}
     if (obj && obj.type == 'device') { // && obj.common.type !== 'group') {
         updateDevice(id);
     }
@@ -2964,14 +3155,18 @@ function showNetworkMap(devices, map) {
     }
 
     console.log(`showNetwork Map (previous: ${shownMap} - new: ${map.timestamp} for ${devices.length} devices.`);
-    if (devices.length == 0) return;
+    if (devices.length == 0) {
+return;
+}
     if (shownMap != map.timestamp) {
         shownMap = map.timestamp;
 
         const createNode = function (dev, mapEntry) {
-            if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) return undefined;
+            if (dev.common && (dev.common.type == 'group' || dev.common.deactivated)) {
+return undefined;
+}
             const extInfo = (mapEntry && mapEntry.networkAddress) ? `\n (nwkAddr: 0x${mapEntry.networkAddress.toString(16)} | ${mapEntry.networkAddress})` : '';
-            const t = dev._id.replace(namespace + '.', '');
+            const t = dev._id.replace(`${namespace  }.`, '');
             const node = {
                 id: dev._id,
                 label: (dev.link_quality > 0 ? dev.common.name : `${dev.common.name}\n(disconnected)`),
@@ -3026,7 +3221,7 @@ function showNetworkMap(devices, map) {
                     if (mapEntry.relationship === 0 || mapEntry.relationship === 1) { // 0 - parent, 1 - child
                         // // parent/child
                         if (mapEntry.status !== 'online') {
-                            label = label + ' (off)';
+                            label = `${label  } (off)`;
                             linkColor = '#660000';
                         }
                         if (mapEntry.lqi < 10) {
@@ -3042,7 +3237,7 @@ function showNetworkMap(devices, map) {
                     if (reverse) {
                         // update reverse edge
                         edge = reverse;
-                        edge.label += '\n' + label;
+                        edge.label += `\n${  label}`;
                         edge.arrows.from = {enabled: false, scaleFactor: 0.5}; // start hidden if node is not selected
                         if (mapEntry.relationship == 1) { //
                             edge.color.color = linkColor;
@@ -3295,7 +3490,7 @@ function getComPorts(onChange) {
         }
         const element = $('#ports');
         for (let j = 0; j < list.length; j++) {
-            element.append('<li><a href="#!" data-value="' + list[j].comName + '">' + list[j].comName + (list[j].label ? (' [' + list[j].label + ']') : '') + '</a></li>');
+            element.append(`<li><a href="#!" data-value="${  list[j].comName  }">${  list[j].comName  }${list[j].label ? (` [${  list[j].label  }]`) : ''  }</a></li>`);
         }
         $('#ports a').click(function () {
             $('#port').val($(this).data('value'));
@@ -3313,11 +3508,13 @@ function loadDeveloperTab() {
                 if (device.info.device && device.info.device.type === 'Coordinator') {
                     return null;
                 }
-                if (device.common.type === 'group') return null;
+                if (device.common.type === 'group') {
+return null;
+}
                 return `${device.common.name} (${device.info.device.ieee})`;
-            } else { // fallback if device in list but not paired
-                return device.common.name + ' ' + device.native.id;
-            }
+            }  // fallback if device in list but not paired
+                return `${device.common.name  } ${  device.native.id}`;
+            
         },
         function (key, device) {
             return device.native.id;
@@ -3398,14 +3595,14 @@ function loadDeveloperTab() {
                     } else if (is.length === 1 && value !== undefined) {
                         if (value == null) {
                             return delete obj[is[0]];
-                        } else {
+                        } 
                             return obj[is[0]] = value;
-                        }
+                        
                     } else if (!is.length) {
                         return obj;
-                    } else {
+                    } 
                         return index(obj[is[0]], is.slice(1), value);
-                    }
+                    
                 };
                 assignVal(data, prop, value);
             } else {
@@ -3476,14 +3673,14 @@ function loadDeveloperTab() {
             } else {
                 $('#value-input').attr('disabled', 'disabled');
             }
-            setExpertData('zclData.' + attr, attrData);
+            setExpertData(`zclData.${  attr}`, attrData);
             $('#type-selector').select();
             Materialize.updateTextFields();
         });
 
         $('#value-input').keyup(function () {
             const attr = $('#attrid-selector').val();
-            setExpertData('zclData.' + attr, getValue());
+            setExpertData(`zclData.${  attr}`, getValue());
         });
 
         $('#expert-mode').change(function () {
@@ -3505,7 +3702,7 @@ function loadDeveloperTab() {
                 data = prepareData();
             }
             sendToZigbee(data.devId, data.ep, data.cid, data.cmd, data.cmdType, data.zclData, data.cfg, function (reply) {
-                console.log('Send to Zigbee replied with ' + JSON.stringify(reply));
+                console.log(`Send to Zigbee replied with ${  JSON.stringify(reply)}`);
                 if (reply.hasOwnProperty('localErr')) {
                     showDevRunInfo(reply.localErr, reply.errMsg, 'yellow');
                 } else if (reply.hasOwnProperty('localStatus')) {
@@ -3535,10 +3732,10 @@ function loadDeveloperTab() {
  * @param cmd
  * @param {string}
  *            cmdType - 'foundation' or 'functional'
- * @param {Object}
+ * @param {object}
  *            zclData - may contain zclData.attrId, ...
- * @param {?Object} cfg - e.g. { "manufCode": 0000, "manufSpec": 1} or null (default settings)
- * @param {Object}
+ * @param {?object} cfg - e.g. { "manufCode": 0000, "manufSpec": 1} or null (default settings)
+ * @param {object}
  *            callback - called with argument 'reply'. If reply.localErr or localStatus exists,
  *            the reply was created on local frontend, not by adapter (e.g.
  *            timeout)
@@ -3571,7 +3768,7 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
         }
     }, 15000);
 
-    console.log('Send to zigbee, id ' + id + ',ep ' + ep + ', cid ' + cid + ', cmd ' + cmd + ', cmdType ' + cmdType + ', zclData ' + JSON.stringify(zclData));
+    console.log(`Send to zigbee, id ${  id  },ep ${  ep  }, cid ${  cid  }, cmd ${  cmd  }, cmdType ${  cmdType  }, zclData ${  JSON.stringify(zclData)}`);
 
     sendToWrapper(namespace, 'sendToZigbee', data, function (reply) {
         clearTimeout(sendTimeout);
@@ -3583,6 +3780,10 @@ function sendToZigbee(id, ep, cid, cmd, cmdType, zclData, cfg, callback) {
 
 /**
  * Short feedback message next to run button
+ *
+ * @param result
+ * @param text
+ * @param level
  */
 function showDevRunInfo(result, text, level) {
     const card = $('#devActResult');
@@ -3597,13 +3798,13 @@ function showDevRunInfo(result, text, level) {
 
 function addDevLog(reply) {
     const statusCode = reply.statusCode;
-    let logHtml = '<span>' + JSON.stringify(reply.msg) + '</span><br>';
+    let logHtml = `<span>${  JSON.stringify(reply.msg)  }</span><br>`;
     if (responseCodes != undefined) {
         const status = Object.keys(responseCodes).find(key => responseCodes[key] === statusCode);
         if (statusCode == 0) {
-            logHtml = '<span class="green-text">' + status + '</span>   ' + logHtml;
+            logHtml = `<span class="green-text">${  status  }</span>   ${  logHtml}`;
         } else {
-            logHtml = '<span class="yellow-text">' + status + '</span>   ' + logHtml;
+            logHtml = `<span class="yellow-text">${  status  }</span>   ${  logHtml}`;
         }
     }
     const logView = $('#dev_result_log');
@@ -3613,9 +3814,13 @@ function addDevLog(reply) {
 
 /**
  * Query adapter and update select with result
+ *
+ * @param selectId
+ * @param key
+ * @param cid
  */
 function populateSelector(selectId, key, cid) {
-    $(selectId + '>option:enabled').remove(); // remove existing elements
+    $(`${selectId  }>option:enabled`).remove(); // remove existing elements
     $(selectId).select();
     if (cid == '-2') {
         updateSelect(selectId, null);
@@ -3626,7 +3831,7 @@ function populateSelector(selectId, key, cid) {
         if (key === 'attrIdList') {
             updateSelect(selectId, list,
                 (attrName, attr) => {
-                    return attrName + ' (' + attr.ID + ', type ' + attr.type + ')';
+                    return `${attrName  } (${  attr.ID  }, type ${  attr.type  })`;
                 },
                 (attrName) => {
                     return attrName;
@@ -3634,7 +3839,7 @@ function populateSelector(selectId, key, cid) {
         } else if (key === 'typeList') {
             updateSelect(selectId, list,
                 (name, val) => {
-                    return name + ' (' + val + ')';
+                    return `${name  } (${  val  })`;
                 },
                 (name, val) => {
                     return val;
@@ -3642,7 +3847,7 @@ function populateSelector(selectId, key, cid) {
         } else {
             updateSelect(selectId, list,
                 (propName, propInfo) => {
-                    return propName + ' (' + propInfo.ID + ')';
+                    return `${propName  } (${  propInfo.ID  })`;
                 },
                 (propName) => {
                     return propName;
@@ -3652,10 +3857,10 @@ function populateSelector(selectId, key, cid) {
 }
 
 function updateSelect(id, list, getText, getId, append = false) {
-    const selectId = id + '-selector';
+    const selectId = `${id  }-selector`;
     const mySelect = $(selectId);
     if (!append) {
-        $(selectId + '>:not(:first[disabled])').remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
+        $(`${selectId  }>:not(:first[disabled])`).remove(); // remove existing elements, except first if disabled, (is 'Select...' info)
         mySelect.select();
     }
     if (list == null && !append) {
@@ -3675,7 +3880,7 @@ function updateSelect(id, list, getText, getId, append = false) {
         }
     }
 
-    if ($(id + '-c-input').length > 0) {
+    if ($(`${id  }-c-input`).length > 0) {
         mySelect.append(new Option('CUSTOM', -2));
     }
     // update select element (Materialize)
@@ -3688,10 +3893,14 @@ function list2select(selector, list, selected, getText, getKey, getData) {
     for (const j in list) {
         if (list.hasOwnProperty(j)) {
             const optionKey = (getKey) ? getKey(j, list[j]) : j;
-            if (optionKey == null) continue;
+            if (optionKey == null) {
+continue;
+}
             const cls = (selected.indexOf(optionKey) >= 0) ? ' selected' : '';
             const optionText = (getText) ? getText(j, list[j]) : list[j];
-            if (optionText == null) continue;
+            if (optionText == null) {
+continue;
+}
             const optionData = (getData) ? getData(j, list[j]) : '';
             element.append(`<option value="${optionKey}"${cls} ${optionData}>${optionText}</option>`);
         }
@@ -3705,8 +3914,9 @@ function editGroup(id, name) {
     if (grp && grp.memberinfo) {
         for (let m=0; m< grp.memberinfo.length; m++) {
             const mi = grp.memberinfo[m];
-            if (mi)
-                info = info.concat(`<li class="collection-item"><label><input id="member_${m}" type="checkbox" checked="checked"/><span for="member_${m}">${mi.device} Endpoint ${mi.epid} (${mi.ieee})</span></label></li>`);
+            if (mi) {
+info = info.concat(`<li class="collection-item"><label><input id="member_${m}" type="checkbox" checked="checked"/><span for="member_${m}">${mi.device} Endpoint ${mi.epid} (${mi.ieee})</span></label></li>`);
+}
         }
     }
     $('#groupedit').find('.collection').html(info);
@@ -3723,8 +3933,9 @@ function editGroup(id, name) {
         if (grp && grp.memberinfo) {
             for (let m=0; m<grp.memberinfo.length;m++) {
                 const member = grp.memberinfo[m];
-                if (!$(`#member_${m}`).prop('checked'))
-                    removeMembers.push({id:member.ieee.replace('0x',''), ep:member.epid})
+                if (!$(`#member_${m}`).prop('checked')) {
+removeMembers.push({id:member.ieee.replace('0x',''), ep:member.epid})
+}
             }
         }
         updateGroup(Id, newName, (removeMembers.length > 0 ? removeMembers: undefined));
@@ -3750,7 +3961,7 @@ function addGroup(id, name) {
 }
 
 function deleteGroupConfirmation(id, name) {
-    const text = translateWord('Do you really whant to delete group') + ' "' + name + '" (' + id + ')?';
+    const text = `${translateWord('Do you really whant to delete group')  } "${  name  }" (${  id  })?`;
     $('#modaldelete').find('p').text(text);
     $('#forcediv').addClass('hide');
     $('#modaldelete a.btn[name=\'yes\']').unbind('click');
@@ -3790,8 +4001,9 @@ function updateDev(id, newName, newGroups) {
         if (dev.common.name !== newName) {
             command.name = newName;
             needName = true;
-        }
-        else command.name = dev.common.name;
+        } else {
+command.name = dev.common.name;
+}
     }
 
     const keys = Object.keys(newGroups);
@@ -3808,9 +4020,7 @@ function updateDev(id, newName, newGroups) {
         });
         showWaitingDialog('Updating group memberships', 10);
 
-    }
-    else if (needName)
-    {
+    } else if (needName) {
         sendToWrapper(namespace, 'renameDevice', command, function(msg) {
             //closeWaitingDialog();
             if (msg && msg.error) {
@@ -3852,7 +4062,11 @@ function selectBackup() {
             }
         }
         //console.warn('candidates is ' + JSON.stringify(candidates));
-        list2select('#backup_Selector', msg.files, [], (key, val) => { return val; }, (key, val) => { return val; })
+        list2select('#backup_Selector', msg.files, [], (key, val) => {
+ return val; 
+}, (key, val) => {
+ return val; 
+})
         $('#modalrestore').modal('open');
         const btn = $('#modalrestore .modal-content a.btn-large');
         btn.unbind('click')
@@ -3866,8 +4080,7 @@ function selectBackup() {
                 closeWaitingDialog();
                 if (msg.error) {
                     showMessage(msg.error, _('Error'))
-                }
-                else {
+                } else {
                     const duration = Date.now() - start;
                     showMessage(`Restored configuration from backup after ${duration / 1000} s`, 'Restore successful');
                 }
@@ -3933,7 +4146,9 @@ function prepareBindingDialog(bind_src) {
     //if (bind_src) $('#bind_source').trigger('change');
     $('#bind_source_ep').unbind('change')
     $('#bind_source_ep').change(function() {
-        if (this.selectedIndex < 0) return;
+        if (this.selectedIndex < 0) {
+return;
+}
         //console.warn(`bind_source_ep.change called, ieee: ${srcDevice?.info?.device?.ieee ?? 'unknown'} ep: ${this.value}, eps: ${srcDevice.info.endpoints.map((ep) => ep.epName)}`);
         srcEP = srcDevice?.info?.endpoints.find((ep) => ep.epName == this.value)
         //console.warn(`srcEP: ${JSON.stringify(srcEP)}`);
@@ -3946,8 +4161,7 @@ function prepareBindingDialog(bind_src) {
             $('#__ufc').removeClass('hide')
             configureTarget();
 
-        }
-        else {
+        } else {
             $('#bindingmodaledit').find('#unbind_from_coordinator').prop('checked', false);
             $('#__ufc').addClass('hide')
             $('#binding_target_title').addClass('hide');
@@ -3982,8 +4196,7 @@ function prepareBindingDialog(bind_src) {
             $('#binding_unbind_from_coordinator').addClass('disabled')
             $('#free_cluster_selection').prop('checked', false);
             $('#free_cluster_selection').addClass('disable', false);
-        }
-        else {
+        } else {
             $('#binding_unbind_from_coordinator').removeClass('disabled')
             $('#free_cluster_selection').removeClass('disabled', false);
         }
@@ -4036,12 +4249,14 @@ function prepareBindingDialog(bind_src) {
                     // check for input clusters
                     let allow = false;
                     for (const cluster of offeredClusters) {
-                        if (device.info.endpoints) for (const ep of device.info.endpoints) {
+                        if (device.info.endpoints) {
+for (const ep of device.info.endpoints) {
                             if (ep.input_clusters.includes(cluster)) {
                                 allow = true;
                                 break;
                             }
                         }
+}
                         if (allow) {
                             break;
                         }
@@ -4050,27 +4265,27 @@ function prepareBindingDialog(bind_src) {
                         return null;
                     }
                     return device.common.name;
-                } else {
+                } 
                     if (device.hasOwnProperty('groupId')) {
                         return device.groupName;
                     }
-                }
+                
             },
             function (key, device) {
                 if (device == '') {
                     return '';
-                } else {
+                } 
                     return device?.info?.device?.ieee ?? device?._id;
-                }
+                
             },
             function (key, device) {
                 if (device == '') {
                     return 'disabled';
                 } else if (device.icon) {
                     return `data-icon="${device.icon}"`;
-                } else {
+                } 
                     return '';
-                }
+                
             },
         );
     }
@@ -4116,10 +4331,18 @@ function prepareBindingDialog(bind_src) {
                 return 'Select source device';
             }
             if (device.hasOwnProperty('info')) {
-                if (device.info.device && device.info.device.type === 'Coordinator') return null;
-                if (!device?.info?.device?.type) return null;
-                if (device.info.device.BindSource) return `${device.common.name} (...${device?.info?.device?.ieee?.slice(-6) ?? ''})`;
-                if (deviceHasCoordinatorBinding(device.info.device)) return null;
+                if (device.info.device && device.info.device.type === 'Coordinator') {
+return null;
+}
+                if (!device?.info?.device?.type) {
+return null;
+}
+                if (device.info.device.BindSource) {
+return `${device.common.name} (...${device?.info?.device?.ieee?.slice(-6) ?? ''})`;
+}
+                if (deviceHasCoordinatorBinding(device.info.device)) {
+return null;
+}
                 return device.common.name;
             } /*/ No Fallback for now (ae) else { // fallback if device in list but not paired
                 return device.common.name + ' ' + device.native.id;
@@ -4128,24 +4351,24 @@ function prepareBindingDialog(bind_src) {
         function (key, device) {
             if (device == '') {
                 return '';
-            } else {
+            } 
                 //console.warn(device?.info?.device?.ieee ?? device?._id)
                 return device?.info?.device?.ieee ?? device?._id;
-            }
+            
         },
         function (key, device) {
             if (device == '') {
                 return 'disabled';
             } else if (device.icon) {
                 return `data-icon="${device.icon}"`;
-            } else {
+            } 
                 return '';
-            }
+            
         },
     );
     const bindtargets = binddevices.slice();
     for (const key in groups) {
-        bindtargets.push({'_id': key, 'groupId': key, 'groupName': groups[key]});
+        bindtargets.push({_id: key, groupId: key, groupName: groups[key]});
     }
 
     configureSourceEp();
@@ -4153,7 +4376,9 @@ function prepareBindingDialog(bind_src) {
     configureTarget();
     configureTargetEp();
 
-    if (bind_src) $('#bind_source').trigger('change');
+    if (bind_src) {
+$('#bind_source').trigger('change');
+}
 
 };
 
@@ -4246,7 +4471,9 @@ function bindInfoFromId(id) {
     const pattern = new RegExp('SID_([^_]+)_EP([^_]+)_TID_([^_]+)_EP([^_]+)');
     const match = id.match(pattern);
     //console.warn(JSON.stringify(match))
-    if (match.length < 5) return undefined;
+    if (match.length < 5) {
+return undefined;
+}
     return {
         s_address: match[1],
         s_ep: match[2],
@@ -4257,10 +4484,10 @@ function bindInfoFromId(id) {
 
 function showHerdsmanBinding(searchentry) {
     const bindOrderFunctions = {
-        'source': (a, b) => a.dst_name < b.dst_name ? a.dst_name == b.dst_name ? 0 : -1 : 1,
-        'target': (a, b) => a.dst_name < b.dst_name ? a.dst_name == b.dst_name ? 0 : -1 : 1,
-        'sourceieee': (a,b) => a.src_ieee < b.src_ieee ? a.src_ieee == b.src_ieee ? 0 : -1 : 1,
-        'targetieee': (a,b) => a.src_ieee < b.src_ieee ? a.src_ieee == b.src_ieee ? 0 : -1 : 1,
+        source: (a, b) => a.dst_name < b.dst_name ? a.dst_name == b.dst_name ? 0 : -1 : 1,
+        target: (a, b) => a.dst_name < b.dst_name ? a.dst_name == b.dst_name ? 0 : -1 : 1,
+        sourceieee: (a,b) => a.src_ieee < b.src_ieee ? a.src_ieee == b.src_ieee ? 0 : -1 : 1,
+        targetieee: (a,b) => a.src_ieee < b.src_ieee ? a.src_ieee == b.src_ieee ? 0 : -1 : 1,
         default: (a, b) => 0
     }
 
@@ -4281,7 +4508,9 @@ function showHerdsmanBinding(searchentry) {
 
     for (const source of Object.values(herdsmanBindings)) {
         const source_dev = devices.find((d) => source.address == d.info.device.ieee);
-        if (!source_dev) continue;
+        if (!source_dev) {
+continue;
+}
         const source_icon = (source_dev?.icon) ? `<img src="${source_dev.icon}" width="64px">` : '';
         //const cardParts = [];
         const s_ep = source_dev?.info?.endpoints?.find((ep) => ep.ID == source.endpoint)
@@ -4290,7 +4519,9 @@ function showHerdsmanBinding(searchentry) {
         for (const binding of Object.values(source.binds)) {
             const cardParts = [];
             const target_dev = devices.find((d) => binding.address == d.info.device.ieee);
-            if (searchentry && (!source_dev.common?.name?.toLowerCase().includes(searchentry) || target_dev?.common?.name?.toLowerCase().includes(searchentry))) continue;
+            if (searchentry && (!source_dev.common?.name?.toLowerCase().includes(searchentry) || target_dev?.common?.name?.toLowerCase().includes(searchentry))) {
+continue;
+}
             const target_icon = (target_dev?.icon) ? `<img src="${target_dev.icon}" width="64px">` : '';
             const t_ep = target_dev?.info?.endpoints?.find((ep) => ep.ID == binding.endpoint)
             const t_epName = t_ep ? t_ep.epName : binding.endpoint;
@@ -4298,7 +4529,7 @@ function showHerdsmanBinding(searchentry) {
             const dst_id = binding.endpoint > 0 ? `${binding.address}.${t_epName}` : `group_${binding.address}`;
             console.warn(`going through bindings with ${src_id} ->${dst_id} `)
             cardParts.push(`<div id="SID_${source.address}_EP${source.endpoint}_TID_${binding.address}_EP${binding.endpoint}" class="binding"><div class="card binding">`);
-            cardParts.push(`<div class="card-title truncate">${source_dev?.common?.name}${source.endpoint> 0 ? ' Endpoint ' + s_epName : ''} <i class="small material-icons bottom">forward</i> ${target_dev?.common?.name}${binding.endpoint> 0 ? ' Endpoint ' + t_epName : ''}</div>`)
+            cardParts.push(`<div class="card-title truncate">${source_dev?.common?.name}${source.endpoint> 0 ? ` Endpoint ${  s_epName}` : ''} <i class="small material-icons bottom">forward</i> ${target_dev?.common?.name}${binding.endpoint> 0 ? ` Endpoint ${  t_epName}` : ''}</div>`)
             cardParts.push(`<div class="card-content">`)
             cardParts.push(`<i class="left i-binding">${source_icon}</i>`);
             cardParts.push(`<i class="right i-binding">${target_icon}</i>`);
@@ -4340,7 +4571,9 @@ function showHerdsmanBinding(searchentry) {
 
     $('#binding button[name=\'delete\']').click(function () {
         const bind_id = bindInfoFromId($(this).parents('.binding')[0].id);
-        if (bind_id) deleteHerdsmanBindingConfirmation(bind_id);
+        if (bind_id) {
+deleteHerdsmanBindingConfirmation(bind_id);
+}
     });
     /*$('#binding button[name=\'edit\']').click(function () {
         const bind_id = bindInfoFromId($(this).parents('.binding')[0].id);
@@ -4368,7 +4601,9 @@ function getHerdsmanBinding() {
 }
 
 function bindableAddress(address, ep) {
-    if (ep > 0) return `${address}.${ep}`;
+    if (ep > 0) {
+return `${address}.${ep}`;
+}
     return `group_${address}`;
 }
 
@@ -4435,30 +4670,32 @@ function genDevInfo(device) {
     const dev = (device && device.info) ? device.info.device : undefined;
     const mapped = (device && device.info) ? device.info.mapped : undefined;
     const endpoints = (device && device.info) ? device.info.endpoints : [];
-    if (!dev) return `<div class="truncate">No info</div>`;
+    if (!dev) {
+return `<div class="truncate">No info</div>`;
+}
     const genRow = function (name, value, refresh) {
         if (value === undefined) {
             return '';
-        } else {
-            const label = `${name=='' ? '&nbsp;' : name + ':'}`;
+        } 
+            const label = `${name=='' ? '&nbsp;' : `${name  }:`}`;
             return `<li><span class="label">${label.replace('_',' ')}</span><span>${value}</span></li>`;
-        }
+        
     };
     const genRowValues = function (name, value) {
         if (Array.isArray(value)) {
-            let label = `${name=='' ? '&nbsp;' : name + ':'}`;
+            let label = `${name=='' ? '&nbsp;' : `${name  }:`}`;
             try {
                 return value.map((val) => {
                     const row = `<li><span class="label">${label}</span><span>${val}</span></li>`;
                     label = '';
                     return row;
                 }).join('');
-            }
-            catch {
+            } catch {
                 return `<li><span class="label">${label}</span><span>${JSON.stringify(value)}</span></li>`
             }
-        }
-        else return '';
+        } else {
+return '';
+}
     };
     const modelUrl = (!mapped) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(mapped.model)}.html" target="_blank" rel="noopener noreferrer">${mapped.model}</a>`;
     const mappedInfo = [];
@@ -4467,10 +4704,12 @@ function genDevInfo(device) {
             `<div style="font-size: 0.9em">
                 <ul>`);
         for (const item in mapped) {
-            if (item == 'model' && mapped.model != 'group')
-                mappedInfo.push(genRow(item,modelUrl));
-            else
-                if (typeof mapped[item] != 'object') mappedInfo.push(genRow(item,mapped[item]));
+            if (item == 'model' && mapped.model != 'group') {
+mappedInfo.push(genRow(item,modelUrl));
+} else
+                if (typeof mapped[item] != 'object') {
+mappedInfo.push(genRow(item,mapped[item]));
+}
         }
         mappedInfo.push(
             `            </ul>
@@ -4503,22 +4742,25 @@ function genDevInfo(device) {
     }
     if (device.memberinfo != undefined) {
         const memberCount = (device.memberinfo.length);
-        if (memberCount != 1) info.push(genRow(`Members`, `${memberCount}`));
+        if (memberCount != 1) {
+info.push(genRow(`Members`, `${memberCount}`));
+}
         for (let m = 0; m < device.memberinfo.length; m++) {
             const dev =  getDeviceByIEEE(device.memberinfo[m].ieee);
             const epid = device.memberinfo[m].epid;
             const epname = Array.isArray(dev.info.endpoints) ? `:${dev.info.endpoints.find((item) => item.ID == epid)?.epName}` : undefined;
-            info.push(genRow(`Member${memberCount > 1 ?  ' ' + (m+1) : ''}`, `${device.memberinfo[m].device}${epname ? epname : ''} - ${device.memberinfo[m].ieee}.${epid}`));
+            info.push(genRow(`Member${memberCount > 1 ?  ` ${  m+1}` : ''}`, `${device.memberinfo[m].device}${epname ? epname : ''} - ${device.memberinfo[m].ieee}.${epid}`));
         }
         info.push(`</div>
         </div>`);
-    }
-    else info.push(`${genRow('configured', (device.isConfigured), true)}</ul>
+    } else {
+info.push(`${genRow('configured', (device.isConfigured), true)}</ul>
             </div>
         </div>
         <div class="col s12 m6 l6 xl6">
         ${epInfo}
         </div>`);
+}
     return info.join('');
 }
 
@@ -4542,8 +4784,12 @@ function showWaitingDialog(text, timeout) {
 }
 
 function closeWaitingDialog() {
-    if (waitingInt) clearTimeout(waitingInt);
-    if (waitingTimeout) clearTimeout(waitingTimeout);
+    if (waitingInt) {
+clearTimeout(waitingInt);
+}
+    if (waitingTimeout) {
+clearTimeout(waitingTimeout);
+}
     $('#modalWaiting').modal('close');
 }
 
@@ -4625,28 +4871,28 @@ function prepareExcludeDialog(excludeObj) {
                     return null;
                 }
                 return device.common.type;
-            } else {
+            } 
                 if (device.common.type == 'group') {
                     return null;
                 }
                 return device.common.type;
-            }
+            
         },
         function (key, device) {
             if (device == '') {
                 return '';
-            } else {
+            } 
                 return device._id;
-            }
+            
         },
         function (key, device) {
             if (device == '') {
                 return 'disabled';
             } else if (device.icon) {
                 return `data-icon="${device.icon}" onerror="this.onerror=null;this.src='img/unavailable.png';"`;
-            } else {
+            } 
                 return '';
-            }
+            
         },
     );
 
@@ -4667,8 +4913,8 @@ function addExcludeDialog() {
 }
 
 function addExclude(exclude_model) {
-    if (typeof exclude_model == 'object' && exclude_model.hasOwnProperty('common'))
-        sendToWrapper(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
+    if (typeof exclude_model == 'object' && exclude_model.hasOwnProperty('common')) {
+sendToWrapper(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
             closeWaitingDialog();
             if (msg) {
                 if (msg.error) {
@@ -4677,7 +4923,9 @@ function addExclude(exclude_model) {
             }
             getExclude();
         });
-    else closeWaitingDialog();
+} else {
+closeWaitingDialog();
+}
 }
 
 function getExclude() {
@@ -4784,9 +5032,9 @@ function doFilter(inputText) {
                         const rooms = dev.rooms.map((room) => {
                             if (room && room.hasOwnProperty(lang)) {
                                 return room[lang];
-                            } else {
+                            } 
                                 return room;
-                            }
+                            
                         }).filter((item) => item != undefined).map((item) => item.toLowerCase().trim());
                         valid = rooms.includes(roomFilter);
                     } else {
@@ -4855,7 +5103,9 @@ function sortByTitle(element) {
 function sortByRange(element) {
     try {
         const lqNode = element.querySelector('[id$="_link_quality"]');
-        if (!lqNode) return 0; // kein Wert -> ans Ende
+        if (!lqNode) {
+return 0;
+} // kein Wert -> ans Ende
         const txt = lqNode.textContent || lqNode.innerText || '';
         const m = txt.match(/-?\d+(.\d+)?/);
         const val = m ? parseFloat(m[0]) : 0;
@@ -4867,7 +5117,9 @@ function sortByRange(element) {
 function sortByLoad(element) {
     try {
         const battNode = element.querySelector('[id$="_battery"]');
-        if (!battNode) return 0;
+        if (!battNode) {
+return 0;
+}
         const txt = battNode.textContent || battNode.innerText || '';
         const m = txt.match(/-?\d+(.\d+)?/);
         const val = m ? parseFloat(m[0]) : 0;
@@ -4887,8 +5139,8 @@ function sortByModel(element) {
 }
 
 function updateDevice(id) {
-    if (devices.length > 0)
-        sendToWrapper(namespace, 'getDevice', {id: id}, function (msg) {
+    if (devices.length > 0) {
+sendToWrapper(namespace, 'getDevice', {id: id}, function (msg) {
             if (msg) {
                 const devs = msg.devices;
                 if (devs) {
@@ -4902,7 +5154,9 @@ function updateDevice(id) {
                 }
             }
         });
-    else sendToWrapper(namespace, 'getDevices', {}, extractDevicesData)
+} else {
+sendToWrapper(namespace, 'getDevices', {}, extractDevicesData)
+}
 }
 
 function removeDevice(id) {
@@ -4950,31 +5204,35 @@ function reconfigureDevice(id) {
 }
 
 const warnLevel = {
-    extPanID : function(v) { return !(v && v.toLowerCase().trim()!='dddddddddddddddd')},
-    channel: function(v) { const num = parseInt(v); return !(num==11 || num==15 || num==20 || num==25)},
+    extPanID : function(v) {
+ return !(v && v.toLowerCase().trim()!='dddddddddddddddd')
+},
+    channel: function(v) {
+ const num = parseInt(v); return !(num==11 || num==15 || num==20 || num==25)
+},
 }
 const validatableKeys = ['channel', 'precfgkey', 'extPanID', 'panID'];
 
 function validateConfigData(key, val) {
-    if (validatableKeys.indexOf(key) < 0 || !val) return;
+    if (validatableKeys.indexOf(key) < 0 || !val) {
+return;
+}
     if (warnLevel[key]) {
         if (warnLevel[key](val)) {
             $(`#${key}_ALERT`).removeClass('hide')
-        } else $(`#${key}_ALERT`).addClass('hide')
+        } else {
+$(`#${key}_ALERT`).addClass('hide')
+}
     }
     if (nvRamBackup[key]) {
-        if ((typeof val == 'string' && typeof nvRamBackup[key] == 'string' && val.toLowerCase == nvRamBackup[key].toLowerCase) || val == nvRamBackup[key])
-        {
+        if ((typeof val == 'string' && typeof nvRamBackup[key] == 'string' && val.toLowerCase == nvRamBackup[key].toLowerCase) || val == nvRamBackup[key]) {
             $(`#${key}_OK`).removeClass('hide')
             $(`#${key}_NOK`).addClass('hide')
-        }
-        else
-        {
+        } else {
             $(`#${key}_OK`).addClass('hide')
             $(`#${key}_NOK`).removeClass('hide')
         }
-    }
-    else {
+    } else {
         $(`#${key}_OK`).addClass('hide')
         $(`#${key}_NOK`).addClass('hide')
     }
@@ -4984,7 +5242,7 @@ function validateNVRamBackup(update, src) {
     const validatedKeys = src ? [src] : validatableKeys;
     const validator = {};
     for (const key of validatedKeys) {
-        const value = $('#' + key + '.value');
+        const value = $(`#${  key  }.value`);
         if (nvRamBackup[key] && update) {
             if (value.attr('type') === 'checkbox') {
                 value.prop('checked', nvRamBackup[key]);
@@ -5001,8 +5259,11 @@ function readNVRamBackup(update) {
     sendToWrapper(namespace, 'readNVRam', {}, function(msg) {
         if (msg) {
             if (msg.error && update) {
-                if (msg.error.includes('ENOENT')) showMessage('Unable to read nvRam backup - no backup available.',_('Error'))
-                else showMessage(msg.error, _('Error'));
+                if (msg.error.includes('ENOENT')) {
+showMessage('Unable to read nvRam backup - no backup available.',_('Error'))
+} else {
+showMessage(msg.error, _('Error'));
+}
                 delete msg.error;
             }
             nvRamBackup = msg;

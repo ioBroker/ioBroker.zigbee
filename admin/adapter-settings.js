@@ -3,13 +3,15 @@ const path = location.pathname;
 const parts = path.split('/');
 parts.splice(-3);
 
-const socket = io.connect('/', { path: parts.join('/') + '/socket.io' });
+const socket = io.connect('/', { path: `${parts.join('/')  }/socket.io` });
 const query = (window.location.search || '').replace(/^\?/, '').replace(/#.*$/, '');
 const args = {};
 let theme = null;
 
 // parse parameters
-query.trim().split('&').filter(function (t) { return t.trim(); }).forEach(function (b, i) {
+query.trim().split('&').filter(function (t) {
+ return t.trim(); 
+}).forEach(function (b, i) {
     const parts = b.split('=');
     if (!i && parts.length === 1 && !isNaN(parseInt(b, 10))) {
         args.instance = parseInt(b, 10);
@@ -40,12 +42,14 @@ const onChangeSupported = false;
 
 const tmp = window.location.pathname.split('/');
 adapter = tmp[tmp.length - 2];
-const _adapterInstance = 'system.adapter.' + adapter + '.' + instance;
+const _adapterInstance = `system.adapter.${  adapter  }.${  instance}`;
 
 $(document).ready(function () {
     'use strict';
     loadSystemConfig(function () {
-        if (typeof translateAll === 'function') translateAll();
+        if (typeof translateAll === 'function') {
+translateAll();
+}
         loadSettings(prepareTooltips);
     });
 });
@@ -63,7 +67,9 @@ function loadSystemConfig(callback) {
                 if (res.native && res.native.certificates) {
                     certs = [];
                     for (const c in res.native.certificates) {
-                        if (res.native.certificates.hasOwnProperty(c) && !res.native.certificates[c]) continue;
+                        if (res.native.certificates.hasOwnProperty(c) && !res.native.certificates[c]) {
+continue;
+}
                         const _cert = {
                             name: c,
                             type: (res.native.certificates[c].substring(0, '-----BEGIN RSA PRIVATE KEY'.length) === '-----BEGIN RSA PRIVATE KEY' || res.native.certificates[c].substring(0, '-----BEGIN PRIVATE KEY'.length) === '-----BEGIN PRIVATE KEY') ? 'private' : 'public'
@@ -72,16 +78,22 @@ function loadSystemConfig(callback) {
                             const m = res.native.certificates[c].split('-----END CERTIFICATE-----');
                             let count = 0;
                             for (let _m = 0; _m < m.length; _m++) {
-                                if (m[_m].replace(/[\r\n|\r|\n]+/, '').trim()) count++;
+                                if (m[_m].replace(/[\r\n|\r|\n]+/, '').trim()) {
+count++;
+}
                             }
-                            if (count > 1) _cert.type = 'chained';
+                            if (count > 1) {
+_cert.type = 'chained';
+}
                         }
 
                         certs.push(_cert);
                     }
                 }
             }
-            if (callback) callback();
+            if (callback) {
+callback();
+}
         });
     });
 }
@@ -89,18 +101,20 @@ function loadSystemConfig(callback) {
 function loadSettings(callback) {
     socket.emit('getObject', _adapterInstance, function (err, res) {
         if (!err && res && res.native) {
-            $('.adapter-instance').html(adapter + '.' + instance);
-            $('.adapter-config').html('system.adapter.' + adapter + '.' + instance);
+            $('.adapter-instance').html(`${adapter  }.${  instance}`);
+            $('.adapter-config').html(`system.adapter.${  adapter  }.${  instance}`);
             common = res.common;
-            if (res.common && res.common.name) $('.adapter-name').html(res.common.name);
+            if (res.common && res.common.name) {
+$('.adapter-name').html(res.common.name);
+}
             if (typeof load === 'undefined') {
                 alert('Please implement save function in your admin/index.html');
             } else {
                 const _query = query.split('&');
                 for (let q = 0; q < _query.length; q++) {
                     if (_query[q].indexOf('react=') !== -1) {
-                        $('.adapter-container').addClass('react-' + _query[q].substring(6));
-                        theme = 'react-' + _query[q].substring(6);
+                        $('.adapter-container').addClass(`react-${  _query[q].substring(6)}`);
+                        theme = `react-${  _query[q].substring(6)}`;
                     }
                 }
                 load(res.native, onChange);
@@ -112,7 +126,7 @@ function loadSettings(callback) {
             if (typeof callback === 'function') {
                 callback();
             }
-            alert('error loading settings for ' + _adapterInstance + '\n\n' + err);
+            alert(`error loading settings for ${  _adapterInstance  }\n\n${  err}`);
         }
         // Design Fix simatec
         checkMediaQuery();
@@ -215,23 +229,35 @@ function prepareTooltips() {
         if (!id) {
             let $prev = $(this).prev();
             let $input = $prev.find('input');
-            if (!$input.length) $input = $prev.find('select');
-            if (!$input.length) $input = $prev.find('textarea');
+            if (!$input.length) {
+$input = $prev.find('select');
+}
+            if (!$input.length) {
+$input = $prev.find('textarea');
+}
 
             if (!$input.length) {
                 $prev = $prev.parent();
                 $input = $prev.find('input');
-                if (!$input.length) $input = $prev.find('select');
-                if (!$input.length) $input = $prev.find('textarea');
+                if (!$input.length) {
+$input = $prev.find('select');
+}
+                if (!$input.length) {
+$input = $prev.find('textarea');
+}
             }
-            if ($input.length) id = $input.attr('id');
+            if ($input.length) {
+id = $input.attr('id');
+}
         }
 
-        if (!id) return;
+        if (!id) {
+return;
+}
 
         let tooltip = '';
-        if (systemDictionary['tooltip_' + id]) {
-            tooltip = systemDictionary['tooltip_' + id][systemLang] || systemDictionary['tooltip_' + id].en;
+        if (systemDictionary[`tooltip_${  id}`]) {
+            tooltip = systemDictionary[`tooltip_${  id}`][systemLang] || systemDictionary[`tooltip_${  id}`].en;
         }
 
         let icon = '';
@@ -239,21 +265,21 @@ function prepareTooltips() {
         if (link) {
             if (link === true) {
                 if (common.readme) {
-                    link = common.readme + '#' + id;
+                    link = `${common.readme  }#${  id}`;
                 } else {
-                    link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + id;
+                    link = `https://github.com/ioBroker/ioBroker.${  common.name  }#${  id}`;
                 }
             }
             if (!link.match('^https?:\/\/')) { //eslint-disable-line no-useless-escape
                 if (common.readme) {
-                    link = common.readme + '#' + link;
+                    link = `${common.readme  }#${  link}`;
                 } else {
-                    link = 'https://github.com/ioBroker/ioBroker.' + common.name + '#' + link;
+                    link = `https://github.com/ioBroker/ioBroker.${  common.name  }#${  link}`;
                 }
             }
-            icon += '<a class="admin-tooltip-link" target="config_help" href="' + link + '" title="' + (tooltip || systemDictionary.htooltip[systemLang]) + '"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>';
+            icon += `<a class="admin-tooltip-link" target="config_help" href="${  link  }" title="${  tooltip || systemDictionary.htooltip[systemLang]  }"><img class="admin-tooltip-icon" src="../../img/info.png" /></a>`;
         } else if (tooltip) {
-            icon += '<img class="admin-tooltip-icon" title="' + tooltip + '" src="../../img/info.png"/>';
+            icon += `<img class="admin-tooltip-icon" title="${  tooltip  }" src="../../img/info.png"/>`;
         }
 
         if (icon) {
@@ -265,29 +291,41 @@ function prepareTooltips() {
         if (!id) {
             let $prev = $(this).prev();
             let $input = $prev.find('input');
-            if (!$input.length) $input = $prev.find('select');
-            if (!$input.length) $input = $prev.find('textarea');
+            if (!$input.length) {
+$input = $prev.find('select');
+}
+            if (!$input.length) {
+$input = $prev.find('textarea');
+}
             if (!$input.length) {
                 $prev = $prev.parent();
                 $input = $prev.find('input');
-                if (!$input.length) $input = $prev.find('select');
-                if (!$input.length) $input = $prev.find('textarea');
+                if (!$input.length) {
+$input = $prev.find('select');
+}
+                if (!$input.length) {
+$input = $prev.find('textarea');
+}
             }
-            if ($input.length) id = $input.attr('id');
+            if ($input.length) {
+id = $input.attr('id');
+}
         }
 
-        if (!id) return;
+        if (!id) {
+return;
+}
 
         // check if translation for this exist
-        if (systemDictionary['info_' + id]) {
-            $(this).html('<span class="admin-tooltip-text">' + (systemDictionary['info_' + id][systemLang] || systemDictionary['info_' + id].en) + '</span>');
+        if (systemDictionary[`info_${  id}`]) {
+            $(this).html(`<span class="admin-tooltip-text">${  systemDictionary[`info_${  id}`][systemLang] || systemDictionary[`info_${  id}`].en  }</span>`);
         }
     });
 }
 
 
 function sendTo(_adapter_instance, command, message, callback) {
-    socket.emit('sendTo', (_adapter_instance || adapter + '.' + instance), command, message, callback);
+    socket.emit('sendTo', (_adapter_instance || `${adapter  }.${  instance}`), command, message, callback);
 }
 
 function sendToHost(host, command, message, callback) {

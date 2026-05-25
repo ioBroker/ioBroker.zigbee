@@ -141,6 +141,10 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* (arteck) little fixes
+* (arteck) Dependencies have been updated
+
 ### 3.4.5 (2026-05-17)
 * Bugfix
 * Wider Webkit scrollbars
