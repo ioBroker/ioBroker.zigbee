@@ -43,7 +43,8 @@
     "@tsconfig/node14": "^14.1.8",
     "@types/node": "^25.6.2",
     "@types/node-schedule": "^2.1.8",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "@iobroker/dev-server": "^0.8.0"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
