@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "3.4.5-alpha.4",
+  "version": "3.4.5-alpha.5",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -15,7 +15,7 @@
     }
   ],
   "engines": {
-    "node": ">=20"
+    "node": "^20.19.0 || >=22.12.0"
   },
   "optionalDependencies": {
     "serialport": "^13.0.0"
@@ -25,18 +25,15 @@
     "@iobroker/dm-utils": "^1.0.16",
     "humanize-duration": "^3.33.2",
     "tar": "^7.5.2",
-    "ajv": "^8.17.1",
-    "uri-js": "^4.4.1",
-    "typescript": "^5.9.3",
     "zigbee-herdsman": "^10.0.8",
     "zigbee-herdsman-converters": "^26.52.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
-    "@alcalzone/release-script": "^5.1.0",
-    "@alcalzone/release-script-plugin-iobroker": "^5.1.0",
-    "@alcalzone/release-script-plugin-license": "^5.1.0",
-    "@alcalzone/release-script-plugin-manual-review": "^5.1.0",
+    "@alcalzone/release-script": "^5.2.0",
+    "@alcalzone/release-script-plugin-iobroker": "^5.2.0",
+    "@alcalzone/release-script-plugin-license": "^5.2.0",
+    "@alcalzone/release-script-plugin-manual-review": "^5.2.0",
     "@iobroker/testing": "^5.2.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^9.1.0",

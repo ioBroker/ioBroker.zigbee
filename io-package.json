@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.5-alpha.4",
+    "version": "3.4.5-alpha.5",
     "news": {
       "3.4.5": {
         "en": "Bugfix\nWider Webkit scrollbars\n",
@@ -180,11 +180,7 @@
         "zh-cn": "Zigbee"
       }
     },
-    "plugins": {
-      "sentry": {
-        "dsn": "https://c829e2ad996d45d1bdb2247805699883@o831057.ingest.sentry.io/5812498"
-      }
-    },
+    "plugins": {},
     "globalDependencies": [
       {
         "admin": ">=7.6.17"

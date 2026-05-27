@@ -141,6 +141,14 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* Dependency update
+* removed sentry
+* removed unnecessary Data from debug messages
+* Fix: Option meta_message
+* default Option meta_message: brightness for CK-BL702-AL-01
+*
+
 ### 3.4.5 (2026-05-17)
 * Bugfix
 * Wider Webkit scrollbars

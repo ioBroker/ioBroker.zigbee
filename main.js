@@ -37,7 +37,7 @@ const dmZigbee  = require('./lib/devicemgmt.js');
 const DeviceDebug = require('./lib/DeviceDebug');
 const dns = require('dns');
 const net = require('net');
-const { getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee , removeFromArray } = require('./lib/utils');
+const { entityData, deviceData, zigbeeMessageData, modelData, groupData, getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee , removeFromArray } = require('./lib/utils');
 const localConfig = require('./lib/localConfig');
 
 const createByteArray = function (hexString) {
@@ -129,7 +129,7 @@ class Zigbee extends utils.Adapter {
     }
 
     sendError(error, message) {
-        try {
+        /* try {
             if (this.supportsFeature && this.supportsFeature('PLUGINS')) {
                 const sentryInstance = this.getPluginInstance('sentry');
                 if (sentryInstance) {
@@ -153,7 +153,7 @@ class Zigbee extends utils.Adapter {
             }
         } catch (err) {
             this.log.error(`SentryError : ${message} ${error} ${err} `);
-        }
+        } */
     }
 
     filterError(errormessage, message, error) {
@@ -720,11 +720,9 @@ class Zigbee extends utils.Adapter {
 
     async newDevice(entity) {
 
-        if (this.debugActive) this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
-
         const device = entity.device;
         const model = (entity.mapped) ? entity.mapped.model : device.modelID;
-        this.log.debug(`New device event: ${safeJsonStringify(entity)}`);
+        this.log.debug(`New device event: ${safeJsonStringify(entityData(entity))}`);
         if (!entity.mapped && !entity.device.interviewing) {
             const msg = `New device: '${device.ieeeAddr}' does not have a known model. please provide an external converter for '${device.modelID}'.`;
             this.log.warn(msg);
