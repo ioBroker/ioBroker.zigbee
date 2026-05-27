@@ -14,5 +14,8 @@
 			"fileMatch": ["io-package.json"],
 			"url": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json"
 		}
-	]
+    ],
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 }
