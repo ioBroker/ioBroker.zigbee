@@ -21,9 +21,10 @@ let devices = [],
     responseCodes = false,
     localConfigData = {},
     shownMap = 0,
+    tabOrSettings = 0, // tab
     groups = {},
     devGroups = {}, // eslint-disable-line prefer-const
-    excludes = [],
+    //excludes = [],
     tabShown = 0,
     coordinatorinfo = {
         installSource: 'IADefault_1',
@@ -47,6 +48,7 @@ let devices = [],
 const dbgMsgfilter = new Set();
 const dbgMsghide = new Set();
 const updateCardInterval = setInterval(updateCardTimer, 6000);
+
 
 const networkOptions = {
     autoResize: true,
@@ -371,6 +373,7 @@ function sortAndFilter(filter, sort) {
 }
 
 function showLocalData() {
+    if (tabOrSettings) return;
     LocalDataDisplayValues.buttonSet.clear();
     ;
     const ModelHtml = getModelData(devices, models, sortAndFilter(undefined, undefined));
@@ -1179,6 +1182,7 @@ function renameDevice(id, name) {
 }
 
 function showDevices() {
+    if (tabOrSettings == 0) return; // tab
     let html = '';
     let hasCoordinator = false;
     const lang = systemLang || 'en';
@@ -2524,13 +2528,18 @@ function load(settings, onChange) {
 
         function new_tab_show_callback() {
 
+            console.warn(`shown UI is ${tabOrSettings ? 'tab' : 'settings'}`)
+
             tabShown = M.Tabs.getInstance($('.tabs')).index;
-            if (tabShown === 1 && shownMap === 0)  {
-                console.log(`tabShown set to ${tabShown} - showing map for the first time`);
+            if (tabShown === 1 && shownMap === 0 && tabOrSettings)  {
+                console.warn(`tabShown set to ${tabShown} - showing map for the first time`);
                 showNetworkMap(devices, map);
             }
-            else console.log(`tabShown set to ${tabShown}`);
+            else console.warn(`tabShown set to ${tabShown}`);
         }
+
+        tabOrSettings = ($('#tab-dev').length) ? 0 : 1;
+        console.warn(`showing ${tabOrSettings ? 'tab' : 'settings'}`);
 
         Materialize.Tabs.init($('.tabs'), {duration: 600, onShow: new_tab_show_callback});
         $('#device-search').keyup(function (event) {
@@ -2629,10 +2638,6 @@ function load(settings, onChange) {
         if ($(e.target).attr('id') == 'develop') {
             loadDeveloperTab(onChange);
         }
-    });
-
-    $('#add_exclude').click(function () {
-        addExcludeDialog();
     });
 
     $('#updateData').click(function () {
@@ -3160,7 +3165,10 @@ function showNetworkMap(devices, map) {
             edges: mapEdges
         };
 
-        network = new vis.Network(container, data, networkOptions);
+        if (tabOrSettings) {
+            console.warn(`building network`)
+            network = new vis.Network(container, data, networkOptions);
+        }
 
         const onMapSelect = function (event) {
             // workaround for https://github.com/almende/vis/issues/4112
@@ -4265,8 +4273,8 @@ function showHerdsmanBinding(searchentry) {
     }
 
     const bindFilterFunctions = {
-        device: (o) => !o.hasCoordinatorDest,
-        coordinator: (o) => o.hasCoordinatorDest,
+        device: (o) => !o?.hasCoordinatorDest,
+        coordinator: (o) => o?.hasCoordinatorDest,
         all: (o) => true,
     }
 
@@ -4332,7 +4340,8 @@ function showHerdsmanBinding(searchentry) {
 
     }
 
-    const sorted = cards.filter(bindFilterFunctions[bindFilter]).sort(bindOrderFunctions[bindOrder]);
+    let sorted = typeof(bindFilterFunctions) === 'function' ? cards.filter(bindFilterFunctions[bindFilter]) : cards;
+    sorted = typeof(bindOrderFunctions) === 'function' ? sorted.sort(bindOrderFunctions[bindOrder]) : sorted;
 
     //console.warn(`pre-sort: ${JSON.stringify(cards.map((o) => o.src_name))} - post-sort: ${JSON.stringify(sorted.map((o) => o.src_name))}`);
 
@@ -4598,170 +4607,6 @@ function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
 
-function prepareExcludeDialog(excludeObj) {
-    const exDevs = devices.slice();
-    const excludetargets = [];
-    const exclude_target = (excludeObj) ? [excludeObj.exclude_target] : [''];
-    const arrExclude = JSON.stringify(excludes);
-
-    for (const exTr of exDevs) {
-        const typeEx = exTr.common.type;
-        if (arrExclude.indexOf(typeEx) < 1) {
-            excludetargets.push(exTr);
-        }
-    }
-
-    const onlyOneTargets = onlyOne(excludetargets);
-    onlyOneTargets.unshift('');
-
-    list2select('#exclude_target', onlyOneTargets, exclude_target,
-
-        function (key, device) {
-            if (device == '') {
-                return 'Select model';
-            }
-            if (device.hasOwnProperty('info')) {
-                if (device.info.device && device.info.device.type == 'Coordinator') {
-                    return null;
-                }
-                return device.common.type;
-            } else {
-                if (device.common.type == 'group') {
-                    return null;
-                }
-                return device.common.type;
-            }
-        },
-        function (key, device) {
-            if (device == '') {
-                return '';
-            } else {
-                return device._id;
-            }
-        },
-        function (key, device) {
-            if (device == '') {
-                return 'disabled';
-            } else if (device.icon) {
-                return `data-icon="${device.icon}" onerror="this.onerror=null;this.src='img/unavailable.png';"`;
-            } else {
-                return '';
-            }
-        },
-    );
-
-}
-
-function addExcludeDialog() {
-    $('#excludemodaledit a.btn[name=\'save\']').unbind('click');
-    $('#excludemodaledit a.btn[name=\'save\']').click(() => {
-        const exclude_id = $('#excludemodaledit').find('#exclude_target option:selected').val();
-        const ids = devices.map(el => el._id);
-        const idx = ids.indexOf(exclude_id);
-        const exclude_model = devices[idx];
-        addExclude(exclude_model);
-    });
-    prepareExcludeDialog();
-    $('#excludemodaledit').modal('open');
-    Materialize.updateTextFields();
-}
-
-function addExclude(exclude_model) {
-    if (typeof exclude_model == 'object' && exclude_model.hasOwnProperty('common'))
-        sendToWrapper(namespace, 'addExclude', { exclude_model: exclude_model }, function (msg) {
-            closeWaitingDialog();
-            if (msg) {
-                if (msg.error) {
-                    showMessage(msg.error, _('Error'));
-                }
-            }
-            getExclude();
-        });
-    else closeWaitingDialog();
-}
-
-function getExclude() {
-    sendToWrapper(namespace, 'getExclude', {}, function (msg) {
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            } else {
-                excludes = msg.legacy;
-                showExclude();
-            }
-        }
-    });
-}
-
-function showExclude() {
-    const element = $('#exclude');
-    element.find('.exclude').remove();
-
-    if (!excludes || !excludes.length) {
-        return;
-    }
-
-    excludes.forEach(id => {
-        const exclude_id = id.key;
-        const exclude_icon = id.value;
-        const exclude_dev = devices.find((d) => d.common.type == exclude_id) || {common: {name: exclude_id}};
-        const modelUrl = (!exclude_id) ? '' : `<a href="https://www.zigbee2mqtt.io/devices/${sanitizeModelParameter(exclude_id)}.html" target="_blank" rel="noopener noreferrer">${exclude_id}</a>`;
-        const card = `
-                    <div id="${exclude_id}" class="exclude col s12 m6 l4 xl3" style="height: 135px;padding-bottom: 10px;">
-                        <div class="card hoverable">
-                            <div class="card-content zcard">
-                                <i class="left"><img src="${exclude_dev.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';"></i>
-                                    <div style="min-height:72px; font-size: 0.8em" class="truncate">
-                                        <ul>
-                                            <li><span class="label">model:</span><span>${modelUrl}</span></li>
-                                        </ul>
-                                    </div>
-                            </div>
-                            <div class="card-action">
-                                <div class="card-reveal-buttons zcard">
-                                    <span class="card-title truncate">${exclude_id}
-                                        <button name="delete" class="right btn-flat btn-small">
-                                            <i class="material-icons icon-black">delete</i>
-                                        </button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-        element.append(card);
-    });
-
-    $('#exclude button[name=\'delete\']').click(function () {
-        const exclude_id = $(this).parents('.exclude')[0].id;
-        deleteExcludeConfirmation(exclude_id);
-        //deleteExclude(exclude_id);
-    });
-}
-
-
-function deleteExcludeConfirmation(id) {
-    const text = translateWord('Do you really want to delete exclude?');
-    $('#modaldelete').find('p').text(text);
-    //$('#forcediv').removeClass('hide');
-    $('#forcediv').addClass('hide');
-    $('#modaldelete a.btn[name=\'yes\']').unbind('click');
-    $('#modaldelete a.btn[name=\'yes\']').click(() => {
-        deleteExclude(id);
-    });
-    $('#modaldelete').modal('open');
-}
-
-function deleteExclude(id) {
-    sendToWrapper(namespace, 'delExclude', id, (msg) => {
-        closeWaitingDialog();
-        if (msg) {
-            if (msg.error) {
-                showMessage(msg.error, _('Error'));
-            }
-        }
-        getExclude();
-    });
-}
 
 function doFilter(inputText) {
     if (shuffleInstance) {

@@ -87,6 +87,7 @@
     "release-patch": "release-script patch --yes --no-update-lockfile",
     "release-minor": "release-script minor --yes --no-update-lockfile",
     "release-major": "release-script major --yes --no-update-lockfile",
-    "dev-server": "dev-server"
+    "dev-server": "dev-server",
+    "translate": "translate-adapter"
   }
 }
