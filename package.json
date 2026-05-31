@@ -43,7 +43,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.4",
     "mixin-deep": "^2.0.1",
-    "@iobroker/dev-server": "^0.8.0"
+    "@iobroker/adapter-dev": "^1.5.0"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
@@ -87,7 +87,6 @@
     "release-patch": "release-script patch --yes --no-update-lockfile",
     "release-minor": "release-script minor --yes --no-update-lockfile",
     "release-major": "release-script major --yes --no-update-lockfile",
-    "dev-server": "dev-server",
     "translate": "translate-adapter"
   }
 }
