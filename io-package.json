@@ -1,7 +1,7 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.5-alpha.5",
+    "version": "3.4.6-alpha.0",
     "news": {
       "3.4.5": {
         "en": "Bugfix\nWider Webkit scrollbars\n",
@@ -325,7 +325,9 @@
     "useNewCompositeStates": false,
     "availableUpdateTime": 30,
     "readBrightnessAndState": true,
-    "dynamicUI": false
+    "dynamicUI": false,
+    "reconnectCount": 5,
+    "reconnectDelay": 10
   },
   "instanceObjects": [
     {
@@ -424,6 +426,31 @@
         "read": true,
         "write": true,
         "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.ota_avail",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Firmware upgrade available for",
+        "type": "string",
+        "read": true,
+        "write": true,
+        "def": "[]"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.ota",
+      "type": "state",
+      "common": {
+        "role": "state",
+        "name": "Trigger OTA Check",
+        "type": "boolean",
+        "read": true,
+        "write": true
       },
       "native": {}
     }

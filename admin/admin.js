@@ -70,7 +70,7 @@ const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower','useNewCompositeStates',
     'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
     'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster',
-    'availableUpdateTime', 'readBrightnessAndState', 'dynamicUI'
+    'availableUpdateTime', 'readBrightnessAndState', 'dynamicUI', 'reconnectCount','reconnectDelay'
 ];
 const lockout = {
     timeoutid:undefined,
@@ -4340,8 +4340,8 @@ function showHerdsmanBinding(searchentry) {
 
     }
 
-    let sorted = typeof(bindFilterFunctions) === 'function' ? cards.filter(bindFilterFunctions[bindFilter]) : cards;
-    sorted = typeof(bindOrderFunctions) === 'function' ? sorted.sort(bindOrderFunctions[bindOrder]) : sorted;
+    let sorted = typeof(bindFilterFunctions[bindFilter]) === 'function' ? cards.filter(bindFilterFunctions[bindFilter]) : cards;
+    sorted = typeof(bindOrderFunctions[bindOrder]) === 'function' ? sorted.sort(bindOrderFunctions[bindOrder]) : sorted;
 
     //console.warn(`pre-sort: ${JSON.stringify(cards.map((o) => o.src_name))} - post-sort: ${JSON.stringify(sorted.map((o) => o.src_name))}`);
 

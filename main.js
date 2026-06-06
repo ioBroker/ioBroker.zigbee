@@ -80,7 +80,7 @@ class Zigbee extends adapterCore.Adapter {
      * @param {Partial<ioBroker.AdapterOptions>} [options={}]
      */
     constructor(options) {
-        super(Object.assign(options || {}, {
+        super(Object.assign(options ?? {}, {
             dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
             name: 'zigbee',
             systemConfig: true,
@@ -260,8 +260,9 @@ class Zigbee extends adapterCore.Adapter {
 
         // elevated debug handling
         this.deviceDebug.start(this.stController, this.zbController);
+        this.reconnectDelay =  this.config.reconnectDelay || 10;
 
-        this.reconnectCounter = 1;
+        this.reconnectCounter = this.config.reconnectCount;
         if (this.config.autostart) {
             this.log.info('Autostart Zigbee subsystem');
             this.doConnect();
@@ -458,6 +459,12 @@ class Zigbee extends adapterCore.Adapter {
                 return response;
             }
             catch (error) {
+                try {
+                    await this.zbController.stopHerdsman();
+                }
+                catch {
+                    // intentionally empty
+                }
                 return { status:false, error };
             }
         }
@@ -515,35 +522,41 @@ class Zigbee extends adapterCore.Adapter {
     }
 
     async onZigbeeAdapterDisconnected() {
-        this.reconnectCounter = 5;
+        this.reconnectCounter = this.config.options.reconnectCount;
+        this.reconnectDelay = this.config.options.reconnectDelay;
         this.log.error('Adapter disconnected, stopping');
         this.sendError('Adapter disconnected, stopping');
         this.setState('info.connection', false, true);
+        await this.zbController.stop();
         await this.callPluginMethod('stop');
         this.tryToReconnect();
     }
 
     async tryToReconnect() {
         this.reconnectTimer = setTimeout(async () => {
-            const result = await this.testConnection(this.config.port)
-            if (result.error) {
-                delete this.herdsman;
+            try {
+                const result = await this.testConnection(this.config.port)
+                if (result.error) {
+                    this.tryToReconnect();
+                    return;
+                }
+                if (this.config.port.includes('tcp://')) {
+                    // Controller connect though Wi-Fi.
+                    // Unlikely USB dongle, connection broken may only cause user unplugged the dongle,
+                    // Wi-Fi connected gateway is possible that device connection is broken caused by
+                    // AP issue or Zigbee gateway power is turned off unexpectedly.
+                    // So try to reconnect gateway every 10 seconds all the time.
+                    this.log.info(`Try to reconnect.`);
+                } else {
+                    this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
+                    this.reconnectCounter -= 1;
+                }
+                this.doConnect();
+            } catch (error) {
+                this.warn(`error ${error?.message ?? 'unknown'} in tryToReconnect`);
                 this.tryToReconnect();
-                return;
             }
-            if (this.config.port.includes('tcp://')) {
-                // Controller connect though Wi-Fi.
-                // Unlikely USB dongle, connection broken may only cause user unplugged the dongle,
-                // Wi-Fi connected gateway is possible that device connection is broken caused by
-                // AP issue or Zigbee gateway power is turned off unexpectedly.
-                // So try to reconnect gateway every 10 seconds all the time.
-                this.log.info(`Try to reconnect.`);
-            } else {
-                this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
-                this.reconnectCounter -= 1;
-            }
-            this.doConnect();
-        }, 10 * 1000); // every 10 seconds
+        }, this.reconnectDelay * 1000); // every 10 seconds
     }
 
 
@@ -813,7 +826,7 @@ class Zigbee extends adapterCore.Adapter {
     }
 
     getZigbeeOptions(overrideOptions) {
-        const override = (overrideOptions ? overrideOptions:{});
+        const override = overrideOptions ?? {};
         // file path for db
         const dbDir = this.expandFileName('');
 
