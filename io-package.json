@@ -430,7 +430,7 @@
       "native": {}
     },
     {
-      "_id": "info.ota_avail",
+      "_id": "info.ota_available",
       "type": "state",
       "common": {
         "role": "state",
