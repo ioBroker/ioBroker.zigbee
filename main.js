@@ -103,6 +103,7 @@ class Zigbee extends adapterCore.Adapter {
         this.deviceDebug =  new DeviceDebug(this),
         this.deviceDebug.on('log', this.onLog.bind(this));
         this.debugActive = true;
+        this.onreadycount = 1;
 
         this.plugins = [
             new SerialListPlugin(this),
@@ -529,6 +530,7 @@ class Zigbee extends adapterCore.Adapter {
         this.setState('info.connection', false, true);
         await this.zbController.stop();
         await this.callPluginMethod('stop');
+        this.log.warn('Adapter stopped');
         this.tryToReconnect();
     }
 
