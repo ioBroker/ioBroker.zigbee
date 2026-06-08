@@ -522,8 +522,8 @@ class Zigbee extends adapterCore.Adapter {
     }
 
     async onZigbeeAdapterDisconnected() {
-        this.reconnectCounter = this.config.options.reconnectCount;
-        this.reconnectDelay = this.config.options.reconnectDelay;
+        this.reconnectCounter = this.config?.reconnectCount ?? 5;
+        this.reconnectDelay = this.config?.reconnectDelay ?? 10;
         this.log.error('Adapter disconnected, stopping');
         this.sendError('Adapter disconnected, stopping');
         this.setState('info.connection', false, true);
