@@ -3166,7 +3166,7 @@ function showNetworkMap(devices, map) {
         };
 
         if (tabOrSettings) {
-            console.warn(`building network`)
+            console.warn(`building network`);
             network = new vis.Network(container, data, networkOptions);
         }
 
