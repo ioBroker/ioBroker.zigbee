@@ -30,7 +30,7 @@
     "humanize-duration": "^3.33.2",
     "tar": "^7.5.2",
     "zigbee-herdsman": "^10.3.0",
-    "zigbee-herdsman-converters": "^26.52.0"
+    "zigbee-herdsman-converters": "^26.63.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
