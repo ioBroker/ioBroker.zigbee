@@ -1,6 +1,6 @@
 {
   "name": "iobroker.zigbee",
-  "version": "3.4.5-alpha.5",
+  "version": "3.4.5",
   "author": {
     "name": "Kirov Ilya",
     "email": "kirovilya@gmail.com"
@@ -12,6 +12,10 @@
     {
       "name": "Kirov Ilya",
       "email": "kirovilya@gmail.com"
+    },
+    {
+      "name": "Axel Eschenburg",
+      "email": "Axel.Eschenburg@gmx.de"
     }
   ],
   "engines": {
@@ -25,8 +29,8 @@
     "@iobroker/dm-utils": "^1.0.16",
     "humanize-duration": "^3.33.2",
     "tar": "^7.5.2",
-    "zigbee-herdsman": "^10.0.8",
-    "zigbee-herdsman-converters": "^26.52.0"
+    "zigbee-herdsman": "^10.3.0",
+    "zigbee-herdsman-converters": "^26.63.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -39,7 +43,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.4",
     "mixin-deep": "^2.0.1",
-    "@iobroker/dev-server": "^0.8.0"
+    "@iobroker/adapter-dev": "^1.5.0"
   },
   "homepage": "https://github.com/ioBroker/ioBroker.zigbee",
   "keywords": [
@@ -83,6 +87,6 @@
     "release-patch": "release-script patch --yes --no-update-lockfile",
     "release-minor": "release-script minor --yes --no-update-lockfile",
     "release-major": "release-script major --yes --no-update-lockfile",
-    "dev-server": "dev-server"
+    "translate": "translate-adapter"
   }
 }

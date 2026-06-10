@@ -832,9 +832,6 @@
                         <li class="tab col s2"><a href="#tab-map"  id="tabmap"    class="translate">Network map</a></li>
                         <li class="tab col s2"><a href="#tab-binding"             class="translate">Binding</a></li>
                         <li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>
-                        <!-- <li class="tab col s2"><a href="#tab-exclude"             class="translate">Excludes</a></li>-->
-                        <!-- li class="tab col s2"><a href="#tab-sett" id="settings"  class="translate">Settings</a></li-->
-                        <!-- li class="tab col s2"><a href="#tab-dev"  id="develop"   class="translate">Developer</a></li-->
                     </ul>
                 </div>
             </nav>
@@ -913,121 +910,6 @@
                 <div id="map">
                 </div>
             </div>
-            <div id="tab-sett" class="col s12 page">
-                <div id="sett" class="row">
-                    <div class="input-field input-group col s12 m6 l4">
-                        <input id="port" type="text" class="value validate"/>
-                        <label for="port" class="translate">COM port name</label>
-                        <span class="suffix">
-                            <a id="selector" class='dropdown-trigger btn' href='#' data-target='ports'><i class="material-icons">arrow_drop_down</i></a>
-                            <!-- Dropdown Structure -->
-                            <ul id='ports' class='dropdown-content'>
-                            </ul>
-                        </span>
-                    </div>
-                    <div class="input-field col s12 m6 l4">
-                        <select id="adapterType" class="value">
-                            <option value="" disabled selected class="translate">Choose type</option>
-                            <option value="zstack">TI Z-Stack/CCxxxx</option>
-                            <option value="deconz">Deconz/Conbee</option>
-                        </select>
-                        <label class="translate">Type</label>
-                    </div>
-                    <div class="input-field col s6 m3 l3">
-                        <input id="countDown" type="number" min="0" max="180" class="value" />
-                        <label class="translate" for="countDown">Countdown</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <h6>Network</h6>
-                    <div class="row">
-                        <div class="input-field col s12 m6 l4">
-                            <input id="extPanID" type="text" pattern="[a-fA-F\d]+" minlength="16" maxlength="16" class="validate value" />
-                            <label class="translate" for="extPanID">ExtPanID</label>
-                        </div>
-                        <div class="input-field col s12 m6 l8">
-                            <p class="translate">ExtPanIDText</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="input-field col s12 m6 l4">
-                            <input id="panID" type="number" min="1" max="65565" class="value" />
-                            <label class="translate" for="panID">PanID</label>
-                        </div>
-                        <div class="input-field col s12 m6 l8">
-                            <p class="translate">PanIDText</p>
-                        </div>
-
-                    </div>
-                    <div class="row">
-                        <div class="input-field suffix col s12 m6 l4">
-                            <select id="channel" class="value">
-                                <option value="" disabled selected class="translate">Choose channel</option>
-                                <option value="11">11</option>
-                                <option value="12">12</option>
-                                <option value="13">13</option>
-                                <option value="14">14</option>
-                                <option value="15">15</option>
-                                <option value="16">16</option>
-                                <option value="17">17</option>
-                                <option value="18">18</option>
-                                <option value="19">19</option>
-                                <option value="20">20</option>
-                                <option value="21">21</option>
-                                <option value="22">22</option>
-                                <option value="23">23</option>
-                                <option value="24">24</option>
-                                <option value="25">25</option>
-                                <option value="26">26</option>
-                            </select>
-                            <label class="translate">Channel</label>
-                            <a id="scan" class='btn' data-target='channel'><i class="material-icons">graphic_eq</i></a>
-                        </div>
-                        <div class="input-field col s12 m6 l8">
-                            <p class="translate">ChannelChangeText</p>
-                        </div>
-                    </div>
-                    <div class="input-field col s12 m6 l4">
-                        <input id="precfgkey" type="text" pattern="[a-fA-F\d]+" class="validate value"/>
-                        <label class="translate" for="precfgkey">Transport Key</label>
-                    </div>
-                    <div class="input-field col s12 m6 l8">
-                        <p class="translate">Tranport Key Text</p>
-                    </div>
-                </div>
-                <div class="row" style="margin-bottom: 90px">
-                    <h6>Others</h6>
-                    <div class="input-field col s12 m6 l4 col-disableLed">
-                        <input id="disableLed" type="checkbox" class="value" />
-                        <label class="translate" for="disableLed">Disable LED for cc2531</label>
-                    </div>
-                    <div class="input-field col s12 m6 l4 col-disablePing">
-                        <input id="disablePing" type="checkbox" class="value" />
-                        <label class="translate" for="disablePing">Disable active availability check</label>
-                    </div>
-                    <div class="input-field col s12 m6 l4 col-warnOnDeviceAnnouncement">
-                        <input id="warnOnDeviceAnnouncement" type="checkbox" class="value" />
-                        <label class="translate" for="warnOnDeviceAnnouncement">Log warning on Zigbee device announcement</label>
-                    </div>
-                    <div class="input-field col s12 m6 l8 col-transmitPower">
-                        <select id="transmitPower" class="value" >
-                            <option value="" disabled selected class="translate">transmitPower</option>
-                            <option value="-22">low</option>
-                            <option value="0">norm</option>
-                            <option value="19">high</option>
-                            <option value="20">high+</option>
-                        </select>
-                        <label class="translate" for="transmitPower">transmitPower</label>
-                    </div>
-                    <div class="input-field col s12 m6 l4 col-disableLed">
-                        <input id="debugHerdsman" type="checkbox" class="value" />
-                        <label class="translate" for="debugHerdsman">Zigbee-herdsman debug info</label>
-                    </div>
-                    <div class="input-field col s12 m6 l6">
-                        <a id="reset-btn" class="waves-effect waves-light white-text btn-large translate">Reset...</a>
-                    </div>
-                </div>
-            </div>
             <div id="tab-binding" class="col s12 page">
                 <div class="navbar-fixed" style="height: 36px;">
                     <nav class="resposHeight" style="margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
@@ -1075,16 +957,6 @@
                             <i class="material-icons large">add</i>
                         </a>
                     </div>
-                </div>
-            </div>
-            <div id="tab-exclude" class="col s12 page">
-                <div class="row">
-                    <p class="translate">ExcludeTextTranslation</p>
-                </div>
-                <div class="fixed-action-btn" style="margin-bottom: 100px">
-                    <a id="add_exclude" class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT" title="Add exlude"><i class="material-icons large">add</i></a>
-                </div>
-                <div id="exclude" class="row">
                 </div>
             </div>
             <div id="tab-debug" class="col s12 page">
@@ -1463,25 +1335,6 @@
             </div>
             <div class="modal-footer">
                 <a name="bind_to_coordinator" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">rebind to Coordinator</a>
-                <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-                <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-            </div>
-        </div>
-
-        <div id="excludemodaledit" class="modal">
-            <div class="modal-content">
-                <div class="row">
-                    <h3 class="translate">Exclude configuration</h3>
-                    <div class="row">
-                        <div class="col s9 input-field">
-                            <select id="exclude_target" class="icons">
-                            </select>
-                            <label for="exclude_target" class="translate">exclude device</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
                 <a name="save" href="#!" class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
                 <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
             </div>

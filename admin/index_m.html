@@ -756,33 +756,14 @@
                 <ul class="tabs tabs-transparent">
                     <li class="tab col s2"><a href="#tab-sett" id="settings" class="translate tooltipped">Settings</a></li>
                     <li class="tab col s2"><a href="#tab-herdsman" id="hardware" class="translate tooltipped">Hardware</a></li>
-                    <!--<li class="tab col s2"><a href="#tab-map" id="tabmap" class="translate tooltipped">Network map</a></li> -->
-                    <!--<li class="tab col s1"><a href="#tab-binding" class="translate tooltipped">Binding</a></li> -->
-                    <!--<li class="tab col s2"><a href="#tab-exclude" class="translate tooltipped">Local Overrides</a></li>-->
                     <li class="tab col s2"><a href="#tab-overrides" class="translate tooltipped">Local Data</a></li>
-                    <!--<li class="tab col s2"><a href="#tab-main" id="devs" class="translate tooltipped">Devices</a></li>-->
                     <li class="tab col s2"><a href="#tab-dev" id="develop" class="translate tooltipped">Developer</a>
-                    <!--<li class="tab col s2"><a href="#tab-debug" id="tabdebug" class="translate">Debug</a></li>-->
                     </li>
                 </ul>
             </div>
         </nav>
     </div>
     <div id="tabs" class="tabs-content row">
-        <div id="tab-map" class="col s12 page">
-            <div class="fixed-action-btn" style="margin-bottom: 100px">
-                <a id="refresh"
-                   class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
-                   title="Refresh"><i class="material-icons large">autorenew</i></a>
-            </div>
-            <div id="viewconfigbtn" class="fixed-action-btn top left">
-                <a id="viewconfig"
-                   class="btn-floating waves-effect waves-light orange tooltipped center-align hoverable translateT"
-                   title="View config"><i class="material-icons large">menu</i></a>
-            </div>
-            <div id="map" class="row">
-            </div>
-        </div>
         <div id="tab-sett" class="col s12 page active">
             <div class="row">
                 <h6>Adapter</h6>
@@ -871,6 +852,14 @@
                 <div class="input-field col s12 m6 l4 col-readBrightnessAndState">
                     <input id="readBrightnessAndState" type="checkbox" class="value"/>
                     <label class="translate" for="readBrightnessAndState">read brightness and state</label>
+                </div>
+                <div class="input-field col s12 m6 l4 col-readBrightnessAndState">
+                    <input id="reconnectDelay" type="number" min="5" max="60" class="value"/>
+                    <label class="translate" for="reconnectDelay">restart delay</label>
+                </div>
+                <div class="input-field col s12 m6 l4 col-readBrightnessAndState">
+                    <input id="reconnectCount" type="number" min="1" max="60" class="value"/>
+                    <label class="translate" for="reconnectCount"># of restart attempts</label>
                 </div>
                 <div class="input-field col s12 m12 l12 col-startWithInconsistent">
                     <input id="startWithInconsistent" type="checkbox" class="value"/>
@@ -995,24 +984,6 @@
             <div class="row textarea">
                 <div class="col">
                     <textarea class="monospaced" id="stdout_t" disabled="disabled" cols="120" rows="20" style="height: calc(50% - 115px)"></textarea>
-                </div>
-            </div>
-        </div>
-        <div id="tab-expos" class="col s12 page">
-            <div id="exposes" class="row">
-                <a class="btn-floating waves-effect waves-light blue table-button-add"><i class="material-icons">add</i></a>
-                <div class="table-values-div">
-                    <table class="table-values">
-                        <thead>
-                        <tr>
-                            <th data-name="addr" style="width: 70%" class="translate">addr</th>
-                            <th data-name="active" style="width: 30px" data-style="width: 70px" data-type="checkbox"
-                                class="translate">enabled
-                            </th>
-                            <th data-buttons="delete up down" style="width: 120px"></th>
-                        </tr>
-                        </thead>
-                    </table>
                 </div>
             </div>
         </div>
@@ -1207,105 +1178,59 @@
                 </div>
             </div>
         </div>
-        <div id="tab-groups" class="col s12 page">
-            <div class="row">
-                <div class="col s12">
-                    <div class="col s12">
-                        <table class="">
-                            <thead>
-                            <tr>
-                                <th data-name="num" class="translate">№</th>
-                                <th data-name="name" class="translate">Name</th>
-                            </tr>
-                            </thead>
-                            <tbody id="groups_table"></tbody>
-                        </table>
-                    </div>
-                    <a id="add_group"
-                        class="btn-floating waves-effect waves-light blue table-button-add tooltipped hoverable translateT"
-                        title="Add group">
-                        <i class="material-icons">add</i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div id="tab-binding" class="col s12 page">
-            <div class="fixed-action-btn" style="margin-bottom: 100px">
-                <a id="add_binding"
-                    class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
-                    title="Add binding"><i class="material-icons large">add</i></a>
-            </div>
-            <div id="binding" class="row">
-            </div>
-        </div>
-        <div id="tab-exclude" class="col s12 page">
-            <div class="row col s12">
-                <p class="translate">ExcludeTextTranslation</p>
-            </div>
-            <div class="fixed-action-btn" style="margin-bottom: 100px">
-                <a id="add_exclude"
-                    class="btn-floating waves-effect waves-light blue tooltipped center-align hoverable translateT"
-                    title="Add exlude"><i class="material-icons large">add</i></a>
-            </div>
-            <div id="exclude" class="row">
-            </div>
-        </div>
-        <div id="tab-debug" class="col s12 page">
-            <ul id="dbg_data_list">
-            </ul>
-        </div>
         <div id="tab-overrides" class="col s12 page">
-        <div class="navbar-fixed" style="height: 56px;">
-            <nav class="resposHeight" style="margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
-                <ul id="nav-mobile-2" class="left">
-                    <li>
-                        <a id="refresh_models_btn" class="btn-floating waves-effect waves-light tooltipped center-align hoverable translateT" title="refresh data">
-                            <i class="material-icons large">refresh</i>
-                        </a>
-                    </li>
-                    <li>
-                        <div class="col main-toolbar-table-types-tools main-toolbar-table-filter input-field" style="line-height: 24px;">
-                            <i class="material-icons prefix" style="line-height: 24px;">search</i>
-                            <input id="model-search" class="filter-input translateP" placeholder="" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Sort">
-                            <a class="model-filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="col input-field" style="line-height: 24px;">
-                            <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
-                            <a id="model-sort-btn" class="dropdown-trigger btn" href="#" data-target="model-sort">all</a>
-                            <ul id="model-sort" class="dropdown-content" tabindex="0">
-                                <li class="model-sort-item" data-type="function(a,b) { return true }" tabindex="0">
-                                    <a class="translate" data-lang="default">default</a></li>
-                                <li class="model-sort-item" data-type="by type" tabindex="0">
-                                    <a class="translate" data-lang="by type">by type</a></li>
-                                <li class="model-sort-item" data-type="by device count" tabindex="0">
-                                    <a class="translate" data-lang="by device count">by device count</a></li>
-                                <li class="model-sort-item" data-type="by option count" tabindex="0">
-                                    <a class="translate" data-lang="by option count">by option count</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="col input-field" style="line-height: 24px;">
-                            <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">filter_list</i>
-                            <a id="model-filter-btn" class="dropdown-trigger btn" href="#" data-target="model-filter">all</a>
-                            <ul id="model-filter" class="dropdown-content" tabindex="0">
-                                <li class="model-filter-item" data-type="with options" tabindex="0"><a class="translate" data-lang="without options">without options</a></li>
-                                <li class="model-filter-item" data-type="without options" tabindex="0"><a class="translate" data-lang="with options">with options</a></li>
-                                <li class="model-filter-item" data-type="routers" tabindex="0"><a class="translate" data-lang="Routers">Routers</a></li>
-                                <li class="model-filter-item" data-type="end devices" tabindex="0"><a class="translate" data-lang="End Devices">End Devices</a></li>
-                                <li class="model-filter-item" data-type="groups" tabindex="0"><a class="translate" data-lang="Groups">Groups</a></li>
-                                <li class="model-filter-item" data-type="all" tabindex="0"><a class="translate" data-lang="all">all</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-        <div class="row">
-            <div id="tab-overrides-content" row>
-                Nothing to see yet.
+            <div class="navbar-fixed" style="height: 56px;">
+                <nav class="resposHeight" style="margin-left: -12px; line-height: 24px; width: calc(100% + 24px);">
+                    <ul id="nav-mobile-2" class="left">
+                        <li>
+                            <a id="refresh_models_btn" class="btn-floating waves-effect waves-light tooltipped center-align hoverable translateT" title="refresh data">
+                                <i class="material-icons large">refresh</i>
+                            </a>
+                        </li>
+                        <li>
+                            <div class="col main-toolbar-table-types-tools main-toolbar-table-filter input-field" style="line-height: 24px;">
+                                <i class="material-icons prefix" style="line-height: 24px;">search</i>
+                                <input id="model-search" class="filter-input translateP" placeholder="" readonly="readonly" onfocus="if (this.hasAttribute('readonly')) {this.removeAttribute('readonly'); this.blur(); this.focus();}" data-lang-placeholder="Sort">
+                                <a class="model-filter-clear btn-floating btn-very-small translateT red lighten-3" title="Очистить" data-lang-title="clear" style="display: none;"><i class="material-icons">clear</i></a>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="col input-field" style="line-height: 24px;">
+                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">sort</i>
+                                <a id="model-sort-btn" class="dropdown-trigger btn" href="#" data-target="model-sort">all</a>
+                                <ul id="model-sort" class="dropdown-content" tabindex="0">
+                                    <li class="model-sort-item" data-type="function(a,b) { return true }" tabindex="0">
+                                        <a class="translate" data-lang="default">default</a></li>
+                                    <li class="model-sort-item" data-type="by type" tabindex="0">
+                                        <a class="translate" data-lang="by type">by type</a></li>
+                                    <li class="model-sort-item" data-type="by device count" tabindex="0">
+                                        <a class="translate" data-lang="by device count">by device count</a></li>
+                                    <li class="model-sort-item" data-type="by option count" tabindex="0">
+                                        <a class="translate" data-lang="by option count">by option count</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="col input-field" style="line-height: 24px;">
+                                <i class="material-icons left" style="line-height: 24px; margin-top: 5px;">filter_list</i>
+                                <a id="model-filter-btn" class="dropdown-trigger btn" href="#" data-target="model-filter">all</a>
+                                <ul id="model-filter" class="dropdown-content" tabindex="0">
+                                    <li class="model-filter-item" data-type="with options" tabindex="0"><a class="translate" data-lang="without options">without options</a></li>
+                                    <li class="model-filter-item" data-type="without options" tabindex="0"><a class="translate" data-lang="with options">with options</a></li>
+                                    <li class="model-filter-item" data-type="routers" tabindex="0"><a class="translate" data-lang="Routers">Routers</a></li>
+                                    <li class="model-filter-item" data-type="end devices" tabindex="0"><a class="translate" data-lang="End Devices">End Devices</a></li>
+                                    <li class="model-filter-item" data-type="groups" tabindex="0"><a class="translate" data-lang="Groups">Groups</a></li>
+                                    <li class="model-filter-item" data-type="all" tabindex="0"><a class="translate" data-lang="all">all</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="row">
+                <div id="tab-overrides-content" row>
+                    Nothing to see yet.
+                </div>
             </div>
         </div>
     </div>
@@ -1650,25 +1575,6 @@
                         <input id="unbind_from_coordinator" type="checkbox" class="value"/>
                         <label class="translate" for="unbind_from_coordinator">Unbind remote from Coordinator (necessary
                             for some remotes like HUE Dimmer Switch)</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <a name="save" href="#!"
-               class="modal-action modal-close waves-effect waves-green btn green translate">Save</a>
-            <a href="#!" class="modal-action modal-close waves-effect waves-red btn-flat translate">Cancel</a>
-        </div>
-    </div>
-    <div id="excludemodaledit" class="modal">
-        <div class="modal-content">
-            <div class="row">
-                <h3 class="translate">Custom device configuration</h3>
-                <div class="row">
-                    <div class="col s9 input-field">
-                        <select id="exclude_target" class="icons">
-                        </select>
-                        <label for="exclude_target" class="translate">use legacy implementation for device</label>
                     </div>
                 </div>
             </div>

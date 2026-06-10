@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('node:path');
 const { tests } = require('@iobroker/testing');
 
 // Validate the package files

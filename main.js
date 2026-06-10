@@ -13,10 +13,17 @@ try {
 }
 const originalLogMethod = debug ? debug.log : undefined;
 
+// node components
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const util = require('node:util');
+const dns = require('node:dns');
+const net = require('node:net');
+
+// own components
 const safeJsonStringify = require('./lib/json');
-const fs = require('fs');
-const path = require('path');
-const utils = require('@iobroker/adapter-core'); // Get common adapter utils
+// plugins
 const SerialListPlugin = require('./lib/seriallist');
 const CommandsPlugin = require('./lib/commands');
 const GroupsPlugin = require('./lib/groups');
@@ -25,20 +32,24 @@ const DeveloperPlugin = require('./lib/developer');
 const BindingPlugin = require('./lib/binding');
 const OtaPlugin = require('./lib/ota');
 const BackupPlugin = require('./lib/backup');
+// libraries
+const utils = require('./lib/utils');
+const dmZigbee  = require('./lib/devicemgmt.js');
+const DeviceDebug = require('./lib/DeviceDebug');
+const localConfig = require('./lib/localConfig');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
-const ExcludePlugin = require('./lib/exclude');
+
+// ioroker components
+const adapterCore = require('@iobroker/adapter-core'); // Get common adapter utils
+
+
+
+// ZH / ZHC
 const zigbeeHerdsmanConverters = require('zigbee-herdsman-converters');
 const zigbeeHerdsmanConvertersPackage = require('zigbee-herdsman-converters/package.json')
 const zigbeeHerdsmanPackage = require('zigbee-herdsman/package.json')
-const vm = require('vm');
-const util = require('util');
-const dmZigbee  = require('./lib/devicemgmt.js');
-const DeviceDebug = require('./lib/DeviceDebug');
-const dns = require('dns');
-const net = require('net');
-const { entityData, deviceData, zigbeeMessageData, modelData, groupData, getNetAddress, zbIdorIeeetoAdId, adIdtoZbIdorIeee , removeFromArray } = require('./lib/utils');
-const localConfig = require('./lib/localConfig');
+
 
 const createByteArray = function (hexString) {
     const bytes = [];
@@ -64,12 +75,12 @@ function isFunction(functionToCheck) {
     return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
 }
 
-class Zigbee extends utils.Adapter {
+class Zigbee extends adapterCore.Adapter {
     /**
      * @param {Partial<ioBroker.AdapterOptions>} [options={}]
      */
     constructor(options) {
-        super(Object.assign(options || {}, {
+        super(Object.assign(options ?? {}, {
             dirname: __dirname.indexOf('node_modules') !== -1 ? undefined : __dirname,
             name: 'zigbee',
             systemConfig: true,
@@ -92,6 +103,7 @@ class Zigbee extends utils.Adapter {
         this.deviceDebug =  new DeviceDebug(this),
         this.deviceDebug.on('log', this.onLog.bind(this));
         this.debugActive = true;
+        this.onreadycount = 1;
 
         this.plugins = [
             new SerialListPlugin(this),
@@ -100,7 +112,6 @@ class Zigbee extends utils.Adapter {
             new NetworkMapPlugin(this),
             new DeveloperPlugin(this),
             new BindingPlugin(this),
-            new ExcludePlugin(this),
             new OtaPlugin(this),
             new BackupPlugin(this),
         ];
@@ -250,8 +261,9 @@ class Zigbee extends utils.Adapter {
 
         // elevated debug handling
         this.deviceDebug.start(this.stController, this.zbController);
+        this.reconnectDelay =  this.config.reconnectDelay || 10;
 
-        this.reconnectCounter = 1;
+        this.reconnectCounter = this.config.reconnectCount;
         if (this.config.autostart) {
             this.log.info('Autostart Zigbee subsystem');
             this.doConnect();
@@ -327,7 +339,6 @@ class Zigbee extends utils.Adapter {
 
     * getExternalDefinition() {
 
-
         if (this.config.external === undefined) {
             return;
         }
@@ -387,8 +398,8 @@ class Zigbee extends utils.Adapter {
                                 if (!item.icon.toLowerCase().startsWith('http') && !item.useadaptericon)
                                     item.icon = path.join(path.dirname(mN), item.icon);
                             }
-                            const rtz = removeFromArray(item.toZigbee);
-                            const rfz = removeFromArray(item.fromZigbee);
+                            const rtz = utils.removeFromArray(item.toZigbee);
+                            const rfz = utils.removeFromArray(item.fromZigbee);
                             const rtzfzmsg = [];
                             if (rtz) rtzfzmsg.push(`${rtz} unknown entr${rtz>1?'ies' : 'y'} in toZigbee`);
                             if (rfz) rtzfzmsg.push(`${rfz} unknown entr${rtz>1?'ies' : 'y'} in fromZigbee`);
@@ -449,6 +460,12 @@ class Zigbee extends utils.Adapter {
                 return response;
             }
             catch (error) {
+                try {
+                    await this.zbController.stopHerdsman();
+                }
+                catch {
+                    // intentionally empty
+                }
                 return { status:false, error };
             }
         }
@@ -506,35 +523,42 @@ class Zigbee extends utils.Adapter {
     }
 
     async onZigbeeAdapterDisconnected() {
-        this.reconnectCounter = 5;
+        this.reconnectCounter = this.config?.reconnectCount ?? 5;
+        this.reconnectDelay = this.config?.reconnectDelay ?? 10;
         this.log.error('Adapter disconnected, stopping');
         this.sendError('Adapter disconnected, stopping');
         this.setState('info.connection', false, true);
+        await this.zbController.stop();
         await this.callPluginMethod('stop');
+        this.log.warn('Adapter stopped');
         this.tryToReconnect();
     }
 
     async tryToReconnect() {
         this.reconnectTimer = setTimeout(async () => {
-            const result = await this.testConnection(this.config.port)
-            if (result.error) {
-                delete this.herdsman;
+            try {
+                const result = await this.testConnection(this.config.port)
+                if (result.error) {
+                    this.tryToReconnect();
+                    return;
+                }
+                if (this.config.port.includes('tcp://')) {
+                    // Controller connect though Wi-Fi.
+                    // Unlikely USB dongle, connection broken may only cause user unplugged the dongle,
+                    // Wi-Fi connected gateway is possible that device connection is broken caused by
+                    // AP issue or Zigbee gateway power is turned off unexpectedly.
+                    // So try to reconnect gateway every 10 seconds all the time.
+                    this.log.info(`Try to reconnect.`);
+                } else {
+                    this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
+                    this.reconnectCounter -= 1;
+                }
+                this.doConnect();
+            } catch (error) {
+                this.warn(`error ${error?.message ?? 'unknown'} in tryToReconnect`);
                 this.tryToReconnect();
-                return;
             }
-            if (this.config.port.includes('tcp://')) {
-                // Controller connect though Wi-Fi.
-                // Unlikely USB dongle, connection broken may only cause user unplugged the dongle,
-                // Wi-Fi connected gateway is possible that device connection is broken caused by
-                // AP issue or Zigbee gateway power is turned off unexpectedly.
-                // So try to reconnect gateway every 10 seconds all the time.
-                this.log.info(`Try to reconnect.`);
-            } else {
-                this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
-                this.reconnectCounter -= 1;
-            }
-            this.doConnect();
-        }, 10 * 1000); // every 10 seconds
+        }, this.reconnectDelay * 1000); // every 10 seconds
     }
 
 
@@ -549,7 +573,7 @@ class Zigbee extends utils.Adapter {
         const strMsg = '';
 
         if (address) {
-            const netAddress = getNetAddress(address);
+            const netAddress = utils.getNetAddress(address);
             if (netAddress && netAddress.host) {
                 const netConnectPromise = new Promise((resolve) => {
                     InteractivePairingMessage(`attempting dns lookup for ${netAddress.host}`, this);
@@ -687,7 +711,7 @@ class Zigbee extends utils.Adapter {
             const entity = await this.zbController.resolveEntity(device);
             if (entity) {
                 const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
-                this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
+                this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
                     this.stController.syncDevStates(device, model));
             }
             else (this.log.debug('resolveEntity returned no entity'));
@@ -697,7 +721,7 @@ class Zigbee extends utils.Adapter {
     }
 
     acknowledgeState(deviceId, model, stateDesc, value) {
-        const stateId = `${zbIdorIeeetoAdId(this, deviceId, true)}.${stateDesc.id}`;
+        const stateId = `${utils.zbIdorIeeetoAdId(this, deviceId, true)}.${stateDesc.id}`;
         /*const stateId = (model === 'group' ?
             `${this.namespace}.group_${deviceId}.${stateDesc.id}` :
             `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`); */
@@ -722,7 +746,7 @@ class Zigbee extends utils.Adapter {
 
         const device = entity.device;
         const model = (entity.mapped) ? entity.mapped.model : device.modelID;
-        this.log.debug(`New device event: ${safeJsonStringify(entityData(entity))}`);
+        this.log.debug(`New device event: ${safeJsonStringify(utils.entityData(entity))}`);
         if (!entity.mapped && !entity.device.interviewing) {
             const msg = `New device: '${device.ieeeAddr}' does not have a known model. please provide an external converter for '${device.modelID}'.`;
             this.log.warn(msg);
@@ -730,12 +754,12 @@ class Zigbee extends utils.Adapter {
         }
         await this.stController.AddModelFromHerdsman(entity.device, model)
         if (device) {
-            this.getObject(zbIdorIeeetoAdId(this, device.ieeeAddr, false), (err, obj) => {
+            this.getObject(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), (err, obj) => {
                 const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
                 if (this.debugActive) this.log.debug(`new device ${device.ieeeAddr} ${device.networkAddress} ${model} `);
 
                 if (!obj) this.logToPairing(`New device joined '${device.ieeeAddr}' model ${model}`, true);
-                this.stController.updateDev(zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
+                this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
                     this.stController.syncDevStates(device, model));
             });
         }
@@ -804,7 +828,7 @@ class Zigbee extends utils.Adapter {
     }
 
     getZigbeeOptions(overrideOptions) {
-        const override = (overrideOptions ? overrideOptions:{});
+        const override = overrideOptions ?? {};
         // file path for db
         const dbDir = this.expandFileName('');
 
@@ -885,7 +909,7 @@ class Zigbee extends utils.Adapter {
 
     getDataFolder() {
         const datapath=this.namespace.replace('.','_');
-        return path.join(utils.getAbsoluteInstanceDataDir(this).replace(this.namespace, datapath));
+        return path.join(adapterCore.getAbsoluteInstanceDataDir(this).replace(this.namespace, datapath));
     }
 
     onLog(level, msg, data) {
