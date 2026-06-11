@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.4.6 (2026-06-11)
 * Fix: Option meta_message
 * Fix: zigbee network on tcp connection loss
 * ZH 10.3

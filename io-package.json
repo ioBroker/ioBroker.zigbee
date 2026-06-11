@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.5",
+    "version": "3.4.6",
     "news": {
+      "3.4.6": {
+        "en": "Fix: Option meta_message\nFix: zigbee network on tcp connection loss\nZH 10.3\nZHC 26.63\nstate controlled OTA",
+        "de": "Fix: Option meta message\nFix: Zigbee-Netzwerk auf tcp-Verbindungsverlust\nZH 10.3\nZHC 26.63\nstaatlich kontrollierte OTA",
+        "ru": "Исправление: Вариант meta message\nИсправление: сеть Zigbee при потере соединения tcp\nZH 10.3\nZHC 26.63\nконтролируемое государством ОТА",
+        "pt": "Corrigir: Meta  mensagem de opção\nCorrigir: rede zigbee na perda de conexão tcp\nZH 10.3\nZHC 26.63\noTA controlada pelo estado",
+        "nl": "Fix: Optie meta message\nFix: zigbee netwerk op tcp verbinding verlies\nZH 10,3\nZHC 26,63\nstaat gecontroleerde OTA",
+        "fr": "Correction : Option méta message\nCorrection: réseau zigbee sur la perte de connexion tcp\nZH 10.3\nZHC 26.63\nétat contrôlé OTA",
+        "it": "Fisso: Opzione meta message\nFisso: rete zigbee sulla perdita di connessione tcp\nZH 10.3\nZHC 26.63\nstato controllato OTA",
+        "es": "Corrección: Opción meta message\nCorrección: red de zigbee en pérdida de conexión tcp\nZH 10.3\nZHC 26.63\nestado controlado OTA",
+        "pl": "Fix: opcja meta _ message\nFix: sieć zigbee na tcp utrata połączenia\nZH 10.3\nZHC 26.63\noTA kontrolowana przez państwo",
+        "uk": "Виправлення: Опція мета message\nВиправлення: zigbee мережа на tcp з'єднання втрат\nЗХ 10.3\nЗХК 26.63\nконтроль стану OTA",
+        "zh-cn": "修正: 选项元信息  message\n修复: tcp 连接丢失的 Zigbee 网络\nZH 10.3号公路\nZHC 26.63号机车\n状态控制 OTA"
+      },
       "3.4.5": {
         "en": "Bugfix\nWider Webkit scrollbars\n",
         "de": "Fehlerbehebung\nWider Webkit Scrollbars\n",
@@ -80,19 +93,6 @@
         "pl": "Bugfix - Błąd podczas uruchamiania z onEvent\nfix: send _ payload read with array of klaster\n",
         "uk": "Бугфікс - Помилка запуску від onEvent\nвиправити: send_payload читати з масивом кластера\n",
         "zh-cn": "Bugfix - 从 Event 启动时出错\n固定: 随集群数组一起读取的发送_ 有效载荷\n"
-      },
-      "3.3.4": {
-        "en": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin does not load com ports",
-        "de": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin lädt keine Com-Ports",
-        "ru": "ZHC 25.112.0\nZH 8.1.0\nИсправление: Admin не загружает порты com",
-        "pt": "ZHC 25.112.0\nZH 8.1.0\nCorrigir: o administrador não carrega as portas com",
-        "nl": "ZHC 25.112,0\nZH 81,0\nFix: Beheerder laadt geen com-poorten",
-        "fr": "ZHC 25.112.0\nZH 8.1.0\nCorrection: Admin ne charge pas les ports com",
-        "it": "ZHC 25.112.0\nZH 8.1.0\nFisso: Admin non carica porte com",
-        "es": "ZHC 25.112.0\nZH 8.1.0\nFijación: Admin no carga puertos com",
-        "pl": "ZHC 25.112.0\nZH 8.1.0\nFix: Admin nie ładuje portów com",
-        "uk": "ЗХК 25.112.0\nЗХ 8.1.0\nВиправлення: Адміністратор не завантажує порти",
-        "zh-cn": "ZHC 25.112.0\nZH 8.1.0 电话\n修正: 管理员不装入 com 端口"
       }
     },
     "titleLang": {
