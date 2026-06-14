@@ -100,7 +100,7 @@ class Zigbee extends adapterCore.Adapter {
         this.stController.on('acknowledge_state', this.acknowledgeState.bind(this));
 
         this.deviceManagement = new dmZigbee(this);
-        this.deviceDebug =  new DeviceDebug(this),
+        this.deviceDebug =  new DeviceDebug(this);
         this.deviceDebug.on('log', this.onLog.bind(this));
         this.debugActive = true;
         this.onreadycount = 1;
@@ -494,12 +494,7 @@ class Zigbee extends adapterCore.Adapter {
             this.log.info(`Starting Adapter ${debugversion}`);
 
             const obj = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
-            if (!obj && obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
-                const instFrom = obj.common.installedFrom;
-                gitVers = gitVers + instFrom.replace('tarball', 'commit');
-            } else {
-                gitVers = obj.common.installedFrom;
-            }
+            gitVers = (obj?.common?.installedFrom ?? 'unknown').replace('tarball', 'commint');
             if (noReconnect) this.logToPairing(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
             this.log.info(`Installed Version: ${gitVers} (Converters ${zigbeeHerdsmanConvertersPackage.version} Herdsman ${zigbeeHerdsmanPackage.version})`);
             const result = await this.zbController.start(noReconnect);
@@ -555,7 +550,7 @@ class Zigbee extends adapterCore.Adapter {
                 }
                 this.doConnect();
             } catch (error) {
-                this.warn(`error ${error?.message ?? 'unknown'} in tryToReconnect`);
+                this.log.warn(`error ${error?.message ?? 'unknown'} in tryToReconnect`);
                 this.tryToReconnect();
             }
         }, this.reconnectDelay * 1000); // every 10 seconds
