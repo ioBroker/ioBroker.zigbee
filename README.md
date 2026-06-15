@@ -141,10 +141,11 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+
 ### 3.4.7 (2026-06-15)
 * Fix: Controlling groups
 * Fix: Pairing battery powered devices
-*
 
 ### 3.4.6 (2026-06-11)
 * Fix: Option meta_message
@@ -156,7 +157,6 @@ You can thank the authors by these links:
 ### 3.4.5 (2026-05-17)
 * Bugfix
 * Wider Webkit scrollbars
-*
 
 ### 3.4.4 (2026-05-17)
 * ZH10 ZHC 26.51.0
@@ -164,12 +164,10 @@ You can thank the authors by these links:
 * Configurable read after binding trigger
 * Bugfix in binding creation
 * edit binding button on device tile
-*
 
 ### 3.4.3 (2026-05-08)
 * Dynamic IU setting (2 card sizes)
 * Bugfixes
-*
 
 ### 3.4.2 (2026-05-06)
 * Fix bug with color expose
@@ -188,7 +186,6 @@ You can thank the authors by these links:
 ### 3.3.5 (2026-01-30)
 * Bugfix - Error on startup from onEvent
 * fix: send_payload read with array of cluster
-*
 
 ### 3.3.4 (2026-01-26)
 * ZHC 25.112.0
@@ -199,13 +196,11 @@ You can thank the authors by these links:
 * Fix crash bug
 * getter for composite states V1
 * zhc
-*
 
 ### 3.3.2 (2026-01-04)
 * Fix sync brightness / state
 * Fix bug in expose
 * Fix rewrite state config
-*
 
 ### 3.3.1 (2025-12-31)
 * Update documentation
@@ -215,7 +210,6 @@ You can thank the authors by these links:
 * Object for complex exposes
 * POSSIBLY BREAKING: Complex exposes changed to 'channel / state' structure
 * Bugfixes
-*
 
 ### 3.3.0 (2025-12-08)
 * Fix: dynamic model assignment when exposes is function (PTVO, BuschJaeger)
