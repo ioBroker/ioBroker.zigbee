@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.6",
+    "version": "3.4.7",
     "news": {
+      "3.4.7": {
+        "en": "Fix: Controlling groups\nFix: Pairing battery powered devices\n",
+        "de": "Fix: Kontrollgruppen\nFix: batteriebetriebene Geräte koppeln\n",
+        "ru": "Исправление: Контрольные группы\nИсправление: сопряжение устройств с батарейным питанием\n",
+        "pt": "Corrigir: Controlando grupos\nCorrigir: Emparelhando dispositivos alimentados por bateria\n",
+        "nl": "Fix: Controlegroepen\nFix: koppelen van batterij aangedreven apparaten\n",
+        "fr": "Correction: Groupes de contrôle\nCorrection: Compilation des appareils alimentés par batterie\n",
+        "it": "Fisso: Gruppi di controllo\nFisso: accoppiamento di dispositivi alimentati a batteria\n",
+        "es": "Corrección: Grupos de control\nFijación: Combinar dispositivos alimentados con batería\n",
+        "pl": "Fix: Kontrolowanie grup\nFix: Urządzenia zasilane akumulatorem parowania\n",
+        "uk": "Фіксація: Контрольні групи\nФіксація: Паувальні акумуляторні пристрої\n",
+        "zh-cn": "修正: 控制组\n固定设备:配电电池\n"
+      },
       "3.4.6": {
         "en": "Fix: Option meta_message\nFix: zigbee network on tcp connection loss\nZH 10.3\nZHC 26.63\nstate controlled OTA",
         "de": "Fix: Option meta message\nFix: Zigbee-Netzwerk auf tcp-Verbindungsverlust\nZH 10.3\nZHC 26.63\nstaatlich kontrollierte OTA",
@@ -80,19 +93,6 @@
         "pl": "nowy Wiążący interfejs użytkownika\nnowy *model specyficzny* opcja 'meta _ state' - akceptuje listę stanów (.ie. 'state, blask') \ndefault- options",
         "uk": "новий Binding UI\n`meta state`` - приймає список станів (.ie. 'state,brightness')\nадаптер, визначений за замовчуванням",
         "zh-cn": "新装订的 UI\n新的 *模式 特定* 选项 `meta state' - 接受状态列表 (. e. 'state, braightness') \n适配器定义的默认选项"
-      },
-      "3.3.5": {
-        "en": "Bugfix - Error on startup from onEvent\nfix: send_payload read with array of cluster\n",
-        "de": "Bugfix - Fehler beim Start von onEvent\nfix: send_payload mit cluster-array gelesen\n",
-        "ru": "Bugfix - Ошибка при запуске с OnEvent\nисправить: send_payload read with array of cluster\n",
-        "pt": "Bugfix - Erro na inicialização do onEvent\ncorreção: send_payload lido com array de cluster\n",
-        "nl": "Bugfix - Fout bij opstarten van onEvent\nfix: send_payload gelezen met clusterreeks\n",
-        "fr": "Bugfix - Erreur au démarrage depuis onEvent\ncorrection : send_payload lu avec le tableau du cluster\n",
-        "it": "Bugfix - Errore all'avvio dall'evento\ncorrezione: send_payload letto con array di cluster\n",
-        "es": "Bugfix - Error en el inicio desde onEvent\nfix: send_payload read with array of cluster\n",
-        "pl": "Bugfix - Błąd podczas uruchamiania z onEvent\nfix: send _ payload read with array of klaster\n",
-        "uk": "Бугфікс - Помилка запуску від onEvent\nвиправити: send_payload читати з масивом кластера\n",
-        "zh-cn": "Bugfix - 从 Event 启动时出错\n固定: 随集群数组一起读取的发送_ 有效载荷\n"
       }
     },
     "titleLang": {
