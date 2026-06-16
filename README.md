@@ -142,6 +142,7 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### **WORK IN PROGRESS**
+* Bugfix - state publishing
 
 ### 3.4.7 (2026-06-15)
 * Fix: Controlling groups
