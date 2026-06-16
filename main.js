@@ -721,7 +721,9 @@ class Zigbee extends adapterCore.Adapter {
             `${this.namespace}.group_${deviceId}.${stateDesc.id}` :
             `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`); */
         if (value === undefined) try {
-            this.getState(stateId, (err, state) => { if (!err && state?.hasOwnProperty('val')) this.setState(stateId,  state.val, true)});
+            this.getState(stateId, (err, state) => {
+                if (!err && state?.hasOwnProperty('val')) this.setState(stateId,  state.val, true)
+            });
         }
         catch (error) {
             this.log.warn(`Error acknowledging ${stateId} without value: ${error && error.message ? error.message : 'no reason given'}`);
