@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.7",
+    "version": "3.4.8",
     "news": {
+      "3.4.8": {
+        "en": "Bugfix - state publishing",
+        "de": "Bugfix - staatliches Verlagswesen",
+        "ru": "Bugfix - государственное издательство",
+        "pt": "Bugfix - publicação de estado",
+        "nl": "Bugfix - state publishing",
+        "fr": "Bugfix - publication d'état",
+        "it": "Bugfix - Pubblicazione dello stato",
+        "es": "Bugfix - publicación estatal",
+        "pl": "Bugfix - publikacja państwowa",
+        "uk": "Бугфікс - державне видання",
+        "zh-cn": "Bugfix - 状态发布"
+      },
       "3.4.7": {
         "en": "Fix: Controlling groups\nFix: Pairing battery powered devices\n",
         "de": "Fix: Kontrollgruppen\nFix: batteriebetriebene Geräte koppeln\n",
@@ -80,19 +93,6 @@
         "pl": "Napraw błąd z odsłonięciem koloru\nusuń port szeregowy, axios, debugowanie zależności\nWskazówki dla kart\nróżne rozmiary kart (test)\nzmienione wizualizacje dla pól kontrolnych i radiowych",
         "uk": "Виправлення помилок з кольором\nприбрати послідовнийпорт, аксіос, відхилення залежності\nІнструмент для карток\nрізні розміри картки (test)\nзмінені візуальні карти для чекбоксів та радіобоксів",
         "zh-cn": "用颜色曝光修正错误\n删除序列port、 轴、 调试依赖性\n纸牌工具提示\n不同卡片大小( 测试)\n更改复选框和收音机框的视觉"
-      },
-      "3.4.1": {
-        "en": "new Binding UI\nnew *model specific* option `meta_state` - accepts a list of states (.ie. 'state,brightness')\nadapter defined default-options",
-        "de": "neue Binding UI\nneue *model specific* option `meta state` - akzeptiert eine liste von staaten (.d.h. 'state,brightness')\nadapter definierte standardoptionen",
-        "ru": "новый Binding UI\nновый *модель специфический* вариант \"meta state\" - принимает список состояний (т.е. \"состояние, яркость\")\nадаптер определяет варианты по умолчанию",
-        "pt": "nova interface de ligação\nnova opção *de modelo específico* `meta state` - aceita uma lista de estados (. ou seja, 'estado, brilho')\nopções padrão definidas pelo adaptador",
-        "nl": "nieuwe Binding UI\nnieuwe * modelspecifieke* optie \nadapter gedefinieerde standaardopties",
-        "fr": "nouvelle UI contraignante\nnouvelle option *model specific* `meta state` - accepte une liste d'états (.i.e. 'state, brightness')\noptions par défaut définies par l'adaptateur",
-        "it": "nuova interfaccia utente\nnuovo *model specific* opzione `meta state` - accetta una lista di stati (.ie. 'state, brightness')\nadattatore definito opzioni di default",
-        "es": "nueva interfaz de usuario\nnuevo *modelo específico* opción `meta state` - acepta una lista de estados (.ie. 'state,brightness')\nadaptador definido opción por defecto",
-        "pl": "nowy Wiążący interfejs użytkownika\nnowy *model specyficzny* opcja 'meta _ state' - akceptuje listę stanów (.ie. 'state, blask') \ndefault- options",
-        "uk": "новий Binding UI\n`meta state`` - приймає список станів (.ie. 'state,brightness')\nадаптер, визначений за замовчуванням",
-        "zh-cn": "新装订的 UI\n新的 *模式 特定* 选项 `meta state' - 接受状态列表 (. e. 'state, braightness') \n适配器定义的默认选项"
       }
     },
     "titleLang": {

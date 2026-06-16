@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.4.8 (2026-06-16)
 * Bugfix - state publishing
 
 ### 3.4.7 (2026-06-15)
