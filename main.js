@@ -530,7 +530,7 @@ class Zigbee extends adapterCore.Adapter {
     }
 
     async tryToReconnect() {
-        this.reconnectTimer = setTimeout(async () => {
+        this.reconnectTimer = this.setTimeout(async () => {
             try {
                 const result = await this.testConnection(this.config.port)
                 if (result.error) {
@@ -616,7 +616,7 @@ class Zigbee extends adapterCore.Adapter {
     }
 
     async onZigbeeAdapterReady() {
-        this.reconnectTimer && clearTimeout(this.reconnectTimer);
+        this.reconnectTimer && this.clearTimeout(this.reconnectTimer);
         this.log.info(`Zigbee started`);
         // https://github.com/ioBroker/ioBroker.zigbee/issues/668
         const extPanIdFix = this.config.extPanIdFix ? this.config.extPanIdFix : false;
