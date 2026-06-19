@@ -444,7 +444,7 @@ class Zigbee extends adapterCore.Adapter {
         const response = {};
         if (this.reconnectTimer) this.clearTimeout(this.reconnectTimer);
         this.reconnectTimer = null;
-        const zo = message.zigbeeOptions || {};
+        const zo = message?.zigbeeOptions ?? {};
         if (message.start) {
             try {
                 const keys = Object.keys(zo);
