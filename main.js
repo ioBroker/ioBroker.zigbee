@@ -693,29 +693,36 @@ class Zigbee extends adapterCore.Adapter {
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
+    async syncDeviceState(device, rebuild) {
+        if (rebuild) {
+            const hM = await zigbeeHerdsmanConverters.findByDevice(device);
+            await this.stController.AddModelFromHerdsman(device, hM ? hM.model : device.modelID);
+        }
+        // remove from the Adapter device list
+
+        // if it has a mapped model - update its states
+        const entity = await this.zbController.resolveEntity(device);
+        if (entity) {
+            const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
+            await this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), entity.name, model);
+            await this.stController.syncDevStates(device, model);
+        }
+        else (this.log.debug('resolveEntity returned no entity'));
+
+    }
+
     async syncAllDeviceStates(rebuildStates) {
         this.stController.CleanupRequired(false);
         if (rebuildStates) this.stController.clearModelDefinitions();
         const devicesFromObjects = (await this.getDevicesAsync()).filter(item => item.native.id.length ==16).map((item) => `0x${item.native.id}`);
         const devicesFromDB = this.zbController.getClientIterator(false);
+        const promises = [];
         for (const device of devicesFromDB) {
-            if (rebuildStates) {
-                const hM = await zigbeeHerdsmanConverters.findByDevice(device);
-                await this.stController.AddModelFromHerdsman(device, hM ? hM.model : device.modelID);
-            }
-            // remove from the Adapter device list
             const idx = devicesFromObjects.indexOf(device.ieeeAddr);
             if (idx > -1) devicesFromObjects.splice(idx, 1);
-
-            // if it has a mapped model - update its states
-            const entity = await this.zbController.resolveEntity(device);
-            if (entity) {
-                const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
-                await this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), entity.name, model);
-                await this.stController.syncDevStates(device, model);
-            }
-            else (this.log.debug('resolveEntity returned no entity'));
+            promises.push(this.syncDeviceState(device, rebuildStates));
         }
+        Promise.allSettled(promises);
         // return the devices in the adapter namespace which do not link to an active zigbee device.
         return devicesFromObjects;
     }
@@ -725,17 +732,23 @@ class Zigbee extends adapterCore.Adapter {
         /*const stateId = (model === 'group' ?
             `${this.namespace}.group_${deviceId}.${stateDesc.id}` :
             `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`); */
-        if (value === undefined) try {
-            this.getState(stateId, (err, state) => {
-                if (!err && state?.hasOwnProperty('val')) this.setState(stateId,  state.val, true)
-            });
+        if (value === undefined) {
+            try {
+                this.getState(stateId, (err, state) => {
+                    if (!err && state?.hasOwnProperty('val')) this.setState(stateId,  state.val, true)
+                });
+            }
+            catch (error) {
+                this.log.warn(`Error acknowledging ${stateId} without value: ${error && error.message ? error.message : 'no reason given'}`);
+            }
         }
-        catch (error) {
-            this.log.warn(`Error acknowledging ${stateId} without value: ${error && error.message ? error.message : 'no reason given'}`);
-        }
-        else try { this.setState(stateId, value, true); }
-        catch (error) {
-            this.log.warn(`Error acknowledging ${stateId} with value ${JSON.stringify(value)}: ${error && error.message ? error.message : 'no reason given'}`);
+        else {
+            try {
+                this.setState(stateId, value, true);
+            }
+            catch (error) {
+                this.log.warn(`Error acknowledging ${stateId} with value ${JSON.stringify(value)}: ${error && error.message ? error.message : 'no reason given'}`);
+            }
         }
     }
 
