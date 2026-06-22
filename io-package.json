@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.8",
+    "version": "3.4.9",
     "news": {
+      "3.4.9": {
+        "en": "Removed 'forced configure on start'\n- various bugfixes\n- updated versioning for adapter options",
+        "de": "„Erzwungene Konfiguration beim Start“ entfernt\n- diverse Fehlerbehebungen\n- aktualisierte Versionierung für Adapteroptionen",
+        "ru": "Удалена опция «принудительная настройка при запуске».\n- различные исправления ошибок\n— Обновлена версия параметров адаптера.",
+        "pt": "Removida a opção 'configuração forçada na inicialização'.\n- diversas correções de bugs\n- Atualização da versão para opções de adaptador",
+        "nl": "'Geforceerde configuratie bij opstarten' is verwijderd.\n- diverse bugfixes\n- Bijgewerkte versie voor adapteropties",
+        "fr": "Suppression de l'option « configuration forcée au démarrage ».\n- Corrections de bugs diverses\n- Mise à jour de la gestion des versions pour les options d'adaptateur",
+        "it": "Rimossa l'opzione 'configurazione forzata all'avvio'.\n- varie correzioni di bug\n- aggiornamento delle versioni per le opzioni dell'adattatore",
+        "es": "Se eliminó la opción \"configuración forzada al inicio\".\n- varias correcciones de errores\n- Versionado actualizado para las opciones del adaptador",
+        "pl": "Usunięto „wymuszoną konfigurację przy uruchomieniu”\n- różne poprawki błędów\n- zaktualizowano wersjonowanie opcji adaptera",
+        "uk": "Видалено «примусове налаштування під час запуску»\n- різні виправлення помилок\n- оновлено керування версіями для опцій адаптера",
+        "zh-cn": "已移除“启动时强制配置”\n- 修复了多个错误\n- 更新了适配器选项的版本控制"
+      },
       "3.4.8": {
         "en": "Bugfix - state publishing",
         "de": "Bugfix - staatliches Verlagswesen",
@@ -80,19 +93,6 @@
         "pl": "Dynamiczne ustawianie IU (2 rozmiary kart)\nKorekty błędów\n",
         "uk": "Динамічне налаштування IU (2 розміри карт)\nПомилки\n",
         "zh-cn": "动态 IU 设置(2张牌大小)\n错误修正\n"
-      },
-      "3.4.2": {
-        "en": "Fix bug with color expose\nremove serialport, axios, debug dependency\nTooltips for cards\ndifferent card sizes (test)\nchanged visuals for checkboxes and radio boxes",
-        "de": "Fehler beheben mit Farbbelichtung\nserialport, axios, debug abhängigency\nTooltips für Karten\nverschiedene kartengrößen (test)\ngeänderte visualisierungen für checkboxen und radioboxen",
-        "ru": "Исправьте баг с помощью цветной экспозиции\nудалить последовательный порт, аксиос, зависимость от отладки\nТултипы для карт\nразные размеры карт (тест)\nизменены визуальные эффекты для чекбоксов и радиобоксов",
-        "pt": "Corrigir erro com exposição a cores\nremover serialport, axios, dependência de depuração\nDicas para cartas\ndiferentes tamanhos de cartas (teste)\nvisual alterado para caixas de seleção e caixas de rádio",
-        "nl": "Fix bug met kleur bloot\nseriëleport, axio's, debug-afhankelijkheid verwijderen\nTooltips voor kaarten\nverschillende kaartgroottes (test)\ngewijzigde visuals voor vakjes en radioboxen",
-        "fr": "Correction d'un bug avec affichage de couleur\nsupprimer serialport, axios, dépendance de débogage\nOutils pour cartes\ndifférentes tailles de cartes (essai)\nmodification des visuels pour les cases à cocher et les cases radio",
-        "it": "Fisso bug con colore esporre\nrimuovere serialport, assios, debug dipendenza\nTooltips per carte\ndiverse dimensioni della carta (test)\nmodifiche visive per caselle di controllo e caselle radio",
-        "es": "Correr error con el color exponer\nremove serialport, axios, dependencia de depuración\nHerramientas para tarjetas\ndiferentes tamaños de tarjetas (prueba)\ncambio de visuales para casillas de verificación y cajas de radio",
-        "pl": "Napraw błąd z odsłonięciem koloru\nusuń port szeregowy, axios, debugowanie zależności\nWskazówki dla kart\nróżne rozmiary kart (test)\nzmienione wizualizacje dla pól kontrolnych i radiowych",
-        "uk": "Виправлення помилок з кольором\nприбрати послідовнийпорт, аксіос, відхилення залежності\nІнструмент для карток\nрізні розміри картки (test)\nзмінені візуальні карти для чекбоксів та радіобоксів",
-        "zh-cn": "用颜色曝光修正错误\n删除序列port、 轴、 调试依赖性\n纸牌工具提示\n不同卡片大小( 测试)\n更改复选框和收音机框的视觉"
       }
     },
     "titleLang": {
