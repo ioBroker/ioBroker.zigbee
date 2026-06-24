@@ -1102,6 +1102,7 @@ class Zigbee extends adapterCore.Adapter {
     }
 
     async fillInfo(device, entity, device_stateDefs, all_states, models) {
+        const reg = /\(.*\)/
         device.statesDef = (device_stateDefs || []).filter(stateDef => {
             const sid = stateDef._id.replace(this.namespace + '.', '');
             const names = sid.split('.');
@@ -1113,7 +1114,7 @@ class Zigbee extends adapterCore.Adapter {
             // replace state
             return {
                 id: stateDef._id,
-                name: typeof name === 'string' ? name.replace(devname, '') : name,
+                name: typeof name === 'string' ? name.replace(devname, '').replace(reg, '').trim() : name,
                 type: stateDef.common.type,
                 read: stateDef.common.read,
                 write: stateDef.common.write,
@@ -1121,6 +1122,8 @@ class Zigbee extends adapterCore.Adapter {
                 role: stateDef.common.role,
                 unit: stateDef.common.unit,
                 states: stateDef.common.states,
+                isAction: stateDef.native?.isAction ?? false,
+                isEvent: stateDef.common.isEvent ?? false,
             };
         });
 
