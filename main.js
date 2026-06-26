@@ -1066,7 +1066,7 @@ class Zigbee extends adapterCore.Adapter {
                     legacyIcon: modelDefinitions.getIconforLegacyModel(entity.mapped.model),
                     options:[],
                 }
-                rv.mapped.optionExposes = entity?.mapped?.options ?? {};
+                rv.mapped.optionExposes = entity?.mapped?.options ?? [];
                 for (const option of rv.mapped.optionExposes) {
                     if (option.name) {
                         rv.mapped.options.push(option.name);
@@ -1097,7 +1097,7 @@ class Zigbee extends adapterCore.Adapter {
             }
             const dev = entity ? entity.device || {} : {}
             const msg = entity ? `device ${entity.name} (${dev.ieeeAddr}, NWK ${dev.networkAddres}, ID: ${dev.ID})` : 'undefined device';
-            this.warn(`Error ${error && error.message ? error.message + ' ' : ''}building device info for ${msg}`);
+            this.log.warn(`Error ${error && error.message ? error.message + ' ' : ''}building device info for ${msg}`);
         }
         return rv;
     }
@@ -1114,7 +1114,7 @@ class Zigbee extends adapterCore.Adapter {
             // replace state
             return {
                 id: stateDef._id,
-                name: name.slice(0,32).replace(reg, ''),
+                name: name.slice(0,128).replace(reg, ''),
                 type: stateDef.common.type,
                 read: stateDef.common.read,
                 write: stateDef.common.write,
@@ -1156,7 +1156,7 @@ class Zigbee extends adapterCore.Adapter {
                 device.paired = true;
             } else device.paired = false;
         } catch (error) {
-            this.warn('error calling shouldConfigure: ' + error && error.message ? error.message : 'no error message');
+            this.log.warn('error calling shouldConfigure: ' + error && error.message ? error.message : 'no error message');
         }
     }
 
