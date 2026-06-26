@@ -42,7 +42,12 @@ const StatesController = require('./lib/statescontroller');
 
 // ioroker components
 const adapterCore = require('@iobroker/adapter-core'); // Get common adapter utils
-
+const disallowedDashStates = [
+    'link_quality', 'available', 'battery', 'groups', 'device_query',
+    'hue_move', 'color_temp_move', 'satuation_move', 'brightness_move', 'brightness_step', 'hue_calibration',
+    'msg_from_zigbee', 'send_payload',
+];
+const modelDefinitions = require('./lib/models.js');
 
 
 // ZH / ZHC
@@ -688,29 +693,36 @@ class Zigbee extends adapterCore.Adapter {
         await this.callPluginMethod('start', [this.zbController, this.stController]);
     }
 
+    async syncDeviceState(device, rebuild) {
+        if (rebuild) {
+            const hM = await zigbeeHerdsmanConverters.findByDevice(device);
+            await this.stController.AddModelFromHerdsman(device, hM ? hM.model : device.modelID);
+        }
+        // remove from the Adapter device list
+
+        // if it has a mapped model - update its states
+        const entity = await this.zbController.resolveEntity(device);
+        if (entity) {
+            const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
+            await this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), entity.name, model);
+            await this.stController.syncDevStates(device, model);
+        }
+        else (this.log.debug('resolveEntity returned no entity'));
+
+    }
+
     async syncAllDeviceStates(rebuildStates) {
         this.stController.CleanupRequired(false);
         if (rebuildStates) this.stController.clearModelDefinitions();
         const devicesFromObjects = (await this.getDevicesAsync()).filter(item => item.native.id.length ==16).map((item) => `0x${item.native.id}`);
         const devicesFromDB = this.zbController.getClientIterator(false);
+        const promises = [];
         for (const device of devicesFromDB) {
-            if (rebuildStates) {
-                const hM = await zigbeeHerdsmanConverters.findByDevice(device);
-                await this.stController.AddModelFromHerdsman(device, hM ? hM.model : device.modelID);
-            }
-            // remove from the Adapter device list
             const idx = devicesFromObjects.indexOf(device.ieeeAddr);
             if (idx > -1) devicesFromObjects.splice(idx, 1);
-
-            // if it has a mapped model - update its states
-            const entity = await this.zbController.resolveEntity(device);
-            if (entity) {
-                const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
-                this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
-                    this.stController.syncDevStates(device, model));
-            }
-            else (this.log.debug('resolveEntity returned no entity'));
+            promises.push(this.syncDeviceState(device, rebuildStates));
         }
+        Promise.allSettled(promises);
         // return the devices in the adapter namespace which do not link to an active zigbee device.
         return devicesFromObjects;
     }
@@ -720,17 +732,23 @@ class Zigbee extends adapterCore.Adapter {
         /*const stateId = (model === 'group' ?
             `${this.namespace}.group_${deviceId}.${stateDesc.id}` :
             `${this.namespace}.${deviceId.replace('0x', '')}.${stateDesc.id}`); */
-        if (value === undefined) try {
-            this.getState(stateId, (err, state) => {
-                if (!err && state?.hasOwnProperty('val')) this.setState(stateId,  state.val, true)
-            });
+        if (value === undefined) {
+            try {
+                this.getState(stateId, (err, state) => {
+                    if (!err && state?.hasOwnProperty('val')) this.setState(stateId,  state.val, true)
+                });
+            }
+            catch (error) {
+                this.log.warn(`Error acknowledging ${stateId} without value: ${error && error.message ? error.message : 'no reason given'}`);
+            }
         }
-        catch (error) {
-            this.log.warn(`Error acknowledging ${stateId} without value: ${error && error.message ? error.message : 'no reason given'}`);
-        }
-        else try { this.setState(stateId, value, true); }
-        catch (error) {
-            this.log.warn(`Error acknowledging ${stateId} with value ${JSON.stringify(value)}: ${error && error.message ? error.message : 'no reason given'}`);
+        else {
+            try {
+                this.setState(stateId, value, true);
+            }
+            catch (error) {
+                this.log.warn(`Error acknowledging ${stateId} with value ${JSON.stringify(value)}: ${error && error.message ? error.message : 'no reason given'}`);
+            }
         }
     }
 
@@ -751,14 +769,13 @@ class Zigbee extends adapterCore.Adapter {
         }
         await this.stController.AddModelFromHerdsman(entity.device, model)
         if (device) {
-            this.getObject(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), (err, obj) => {
-                const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
-                if (this.debugActive) this.log.debug(`new device ${device.ieeeAddr} ${device.networkAddress} ${model} `);
-
+            this.getObjectAsync(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), (_err, obj) => {
                 if (!obj) this.logToPairing(`New device joined '${device.ieeeAddr}' model ${model}`, true);
-                this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), model, model, () =>
-                    this.stController.syncDevStates(device, model));
             });
+            const model = (entity.mapped) ? entity.mapped.model : entity.device.modelID;
+            if (this.debugActive) this.log.debug(`new device ${device.ieeeAddr} ${device.networkAddress} ${model} `);
+            await this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), entity.name, model);
+            await this.stController.syncDevStates(device, model);
         }
     }
 
@@ -942,7 +959,394 @@ class Zigbee extends adapterCore.Adapter {
             }
         }
     }
+    async appendDevicesWithoutObjects(devices, client) {
+        const entity = await this.zbController.resolveEntity(client.ieeeAddr);
+        if (!entity || !entity.device) {
+            return;
+        }
+        const exists = devices.find((dev) => (dev._id && entity.device.ieeeAddr === utils.adIdtoZbIdorIeee(this, dev._id)));
+        if (!exists) {
+            const coordinatorData = {
+                _id : `${this.namespace}.${entity.device.ieeeAddr.substring(2)}`,
+                paired: true,
+                info: this.buildDeviceInfo(entity),
+                native: { id: entity.device.ieeeAddr.substring(2) },
+                mapped : { model: client.modelID || client.type || 'NotSet' },
+                statesDev: [],
+            };
+            if (entity.name === 'Coordinator') {
+                coordinatorData.icon = 'zigbee.png';
+                coordinatorData.common = { name: 'Coordinator', type: 'Coordinator'  };
+                coordinatorData.info.coordinatorData = await this.getCoordinatorInfo();
+            } else {
+                coordinatorData.common = { name: entity.mapped?.model || 'unknown', type: entity.type  };
+                coordinatorData.icon= 'img/unknown.png';
+            }
+            devices.push(coordinatorData);
+        }
+    }
+
+    buildDeviceInfo(entity) {
+        function getKey(object, value) {
+            try {
+                for (const key of Object.keys(object)) {
+                    if (object[key] == value) {
+                        return key;
+                    }
+                }
+            }
+            catch {
+                return undefined;
+            }
+            return undefined;
+
+        }
+
+        function haveBindableClusters(clusters) {
+            //const nonBindableClusters = [25,33, 4096];
+            const BindableClusters = [4,5,6,8,768];
+            if (Array.isArray(clusters)) {
+                return (clusters.filter((candidate) => BindableClusters.includes(candidate)).length > 0);
+            }
+            return false;
+        }
+        const rv = {};
+        try {
+            rv.device = {
+                modelZigbee:entity.device.modelID,
+                type:entity.device.type,
+                ieee:entity.device.ieeeAddr || entity.device.groupID,
+                nwk:entity.device.networkAddress || 0,
+                manuf_id:entity.device.maufacturerID,
+                manuf_name:entity.device.manufacturerName,
+                manufacturer:entity.mapped?.vendor,
+                power:entity.device.powerSource,
+                app_version:entity.device.applicationVersion,
+                hard_version:entity.device.hardwareVersion,
+                zcl_version:entity.device.zclVersion,
+                stack_version:entity.device.stack_version,
+                date_code:entity.device.dateCode,
+                build:entity.device.softwareBuildID,
+                interviewstate:entity.device.interviewState || 'UNKNOWN',
+                BindSource: false,
+                isGroupable: false,
+            }
+            rv.endpoints = [];
+            let dBindSource = false;
+            let disGroupable = false;
+            for (const ep_idx in entity.endpoints) {
+                const ep = entity.endpoints[ep_idx];
+                const bindable = haveBindableClusters(ep.outputClusters);
+                dBindSource |= bindable;
+                rv.endpoints.push({
+                    ID:ep.ID,
+                    epName: entity.mapped?.endpoint ? getKey(entity.mapped?.endpoint(entity.device), ep.ID) : ep.ID,
+                    profile:ep.profileID,
+                    input_clusters:ep.inputClusters,
+                    output_clusters:ep.outputClusters,
+                    BindSource: Boolean(bindable),
+                })
+                disGroupable |= ep.inputClusters.includes(4);
+            }
+            rv.device.isGroupable = Boolean(disGroupable);
+            rv.device.BindSource = Boolean(dBindSource);
+            if (entity.mapped) {
+                rv.mapped = {
+                    model:entity.mapped.model,
+                    readKeys: [],
+                    type:entity.device.type,
+                    description:entity.mapped.description,
+                    hasLegacyDef:modelDefinitions.hasLegacyDevice(entity.mapped.model),
+                    hasState:modelDefinitions.hasStateExpose(entity.mapped.model),
+                    //fingerprint:JSON.stringify(device.mapped.fingerprint),
+                    vendor:entity.mapped.vendor,
+                    hasOnEvent:entity.mapped.onEvent != undefined,
+                    hasConfigure:entity.mapped.configure != undefined,
+                    icon:`img/${entity.mapped.model.replace(/\//g, '-')}.png`,
+                    legacyIcon: modelDefinitions.getIconforLegacyModel(entity.mapped.model),
+                    options:[],
+                }
+                rv.mapped.optionExposes = entity?.mapped?.options ?? [];
+                for (const option of rv.mapped.optionExposes) {
+                    if (option.name) {
+                        rv.mapped.options.push(option.name);
+                    }
+                }
+                try {
+                    rv.mapped.readKeys = (typeof entity?.mapped?.exposes === 'function') ? entity.mapped.exposes(entity.device) : (entity?.mapped?.exposes || []).find((e) => e.type == 'light') != undefined;
+                }
+                catch {
+                    // no action
+                }
+            }
+            else {
+                rv.mapped = {
+                    model:entity.name,
+                    type: entity.device.type,
+                    description:entity.name,
+                    vendor:'not set',
+                    hasOnEvent: false,
+                    hasConfigure: false,
+                    options:[],
+                }
+            }
+        }
+        catch (error) {
+            if (entity && entity.name === 'Coordinator') {
+                return rv;
+            }
+            const dev = entity ? entity.device || {} : {}
+            const msg = entity ? `device ${entity.name} (${dev.ieeeAddr}, NWK ${dev.networkAddres}, ID: ${dev.ID})` : 'undefined device';
+            this.log.warn(`Error ${error && error.message ? error.message + ' ' : ''}building device info for ${msg}`);
+        }
+        return rv;
+    }
+
+    async fillInfo(device, entity, device_stateDefs, all_states, models) {
+        const reg = /\(.*\)/;
+        device.statesDef = (device_stateDefs || []).filter(stateDef => {
+            const sid = stateDef._id.replace(this.namespace + '.', '');
+            const names = sid.split('.');
+            if (stateDef.common.color || names.length > 2) return false;
+            return !disallowedDashStates.includes(names.pop());
+        }).map(stateDef => {
+            const name = (stateDef?.common?.name  ?? '').replace(device.common.name, '');
+            // replace state
+            return {
+                id: stateDef._id,
+                name: name.slice(0,128).replace(reg, ''),
+                type: stateDef.common.type,
+                read: stateDef.common.read,
+                write: stateDef.common.write,
+                val: all_states[stateDef._id] ? all_states[stateDef._id].val : undefined,
+                role: stateDef.common.role,
+                unit: stateDef.common.unit,
+                states: stateDef.common.states,
+                isAction: stateDef.native?.isAction ?? false,
+                isEvent: stateDef.common.isEvent ?? false,
+            };
+        });
+
+
+        device.info = this.buildDeviceInfo(entity);
+
+        const UID = models.UIDbyModel[device.info?.mapped?.model || 'unknown'] || `m_${Object.keys(models.UIDbyModel).length}`;
+        if (models.byUID.hasOwnProperty(UID)) {
+            models.byUID[UID].devices.push(device);
+        }
+        else {
+            models.byUID[UID] = {
+                model:device.info.mapped,
+                availableOptions : [...device.info?.mapped?.options || [], ...['use_legacy_model']],
+                setOptions: this.stController.localConfig.getByModel(device.info?.mapped?.model || 'unknown') || [],
+                devices: [device],
+            };
+            if (!models.byUID[UID].model.type)
+                models.byUID[UID].model.type = 'Group';
+            models.UIDbyModel[device.info?.mapped?.model || 'unknown'] = UID;
+        }
+        // check configuration
+        try {
+            if (device.info) {
+                const result = await this.zbController.callExtensionMethod(
+                    'shouldConfigure',
+                    [device.info.device, device.info.mapped],
+                );
+                if (result.length > 0) device.isConfigured = !result[0];
+                device.paired = true;
+            } else device.paired = false;
+        } catch (error) {
+            this.log.warn('error calling shouldConfigure: ' + error && error.message ? error.message : 'no error message');
+        }
+    }
+
+    async handleGroupforInfo(group, groups) {
+        group.icon = 'img/group_1.png';
+        group.vendor = 'ioBroker';
+        // get group members and store them
+        const match = /zigbee.\d.group_([0-9]+)/.exec(group._id);
+        if (match && match.length > 1) {
+            const groupID = Number(match[1]);
+            const groupmembers = await this.zbController.getGroupMembersFromController(groupID);
+            //this.debug(`group members for group ${groupID}: ${JSON.stringify(groupmembers)}`);
+            if (groupmembers && groupmembers.length > 0) {
+                const memberinfo = [];
+                for (const member of groupmembers) {
+                    if (member && typeof member.ieee === 'string') {
+                        const memberId = utils.zbIdorIeeetoAdId(this, member.ieee, false);
+                        const device = await this.getObjectAsync(utils.zbIdorIeeetoAdId(this, member.ieee, true));
+                        const item = groups[memberId] || { groups:[], gep: { }};
+                        const gep = item.gep[member.epid] || [];
+
+                        if (!item.groups.includes(groupID)) item.groups.push(groupID);
+                        if (!gep.includes(`${groupID}`)) gep.push(`${groupID}`);
+                        item.gep[member.epid] = gep;
+                        groups[memberId] = item;
+                        memberinfo.push({
+                            ieee:member.ieee,
+                            epid:member.epid,
+                            model:member.model,
+                            device:device? device.common.name:'unknown'
+                        });
+                    }
+                }
+                group.memberinfo = memberinfo;
+                this.log.debug(`memberinfo for ${match[1]}: ${JSON.stringify(group.memberinfo)}`);
+            }
+        }
+    }
+
+    async getDeviceInformation(id) {
+        const roomsEnum = await this.getEnumsAsync('enum.rooms') || {};
+        const deviceObjects = (id ? [await this.getObjectAsync(id)] : await this.getDevicesAsync());
+        const all_states = id ? await this.getStatesAsync(id + '.*') : await this.getStatesAsync('*');
+        const all_stateDefs = id ? await this.getStatesOfAsync(id) : await this.getStatesOfAsync();
+
+        const groups = {};
+        const PromiseChain = [];
+        const models = { byUID : {}, UIDbyModel: {} };
+        for (const deviceObject of deviceObjects) {
+            const id = utils.getZbId(deviceObject._id);
+            const entity = await this.zbController.resolveEntity(id);
+            if (deviceObject._id.indexOf('group') > -1) {
+                PromiseChain.push(this.handleGroupforInfo(deviceObject, groups));
+            }
+            else {
+                const modelDesc = await modelDefinitions.findModel(deviceObject.common.type, entity?.device?.ieeeAddr,entity?.mapped?.legacy);
+                deviceObject.icon = (modelDesc?.icon) ? modelDesc.icon : 'img/unknown.png';
+                if (modelDesc?.vendor) deviceObject.vendor = modelDesc.vendor;
+                const arr = (modelDesc?.states || []).filter((s) => Array.isArray(s.readKeys)).map((s)=> s.readKeys).flat();
+                if (arr.length > 0) deviceObject.readKeys = arr;
+                deviceObject.legacyIcon = modelDefinitions.getIconforLegacyModel(deviceObject.common.type);
+                const lq_state = all_states[`${deviceObject._id}.link_quality`];
+                deviceObject.link_quality = lq_state ? lq_state.val : -1;
+                deviceObject.link_quality_lc = lq_state ? lq_state.lc : undefined;
+                const battery_state = all_states[`${deviceObject._id}.battery`];
+                deviceObject.battery = battery_state ? battery_state.val : undefined;
+
+            }
+            deviceObject.rooms = [];
+            const rooms = roomsEnum['enum.rooms'] || {};
+            for (const room of Object.keys(rooms)) {
+                if (!rooms.hasOwnProperty(room) ||
+                    !rooms[room] ||
+                    !rooms[room].common ||
+                    !rooms[room].common.members
+                ) {
+                    continue;
+                }
+                if (rooms[room].common.members.includes(deviceObject._id)) {
+                    deviceObject.rooms.push(rooms[room].common.name);
+                }
+            }
+            PromiseChain.push(this.fillInfo(deviceObject, entity, all_stateDefs.filter(item => item._id.startsWith(deviceObject._id)),all_states, models));
+        }
+        if (!id) {
+            for (const client of this.zbController.getClientIterator(true)) {
+                PromiseChain.push(this.appendDevicesWithoutObjects(deviceObjects,client));
+            }
+        }
+
+        await Promise.all(PromiseChain);
+
+        for (const groupmember in groups) {
+            const device = deviceObjects.find(dev => (groupmember === dev.native.id));
+            if (device) {
+                device.groups = groups[groupmember].groups;
+                device.groups_by_ep = groups[groupmember].gep;
+            }
+        }
+
+
+        this.log.debug(`getDevices contains ${deviceObjects.length} Devices`);
+        return { deviceObjects, models };
+    }
+
+    async getCoordinatorInfo() {
+        const coordinatorinfo = {
+            installSource: 'IADefault_1',
+            channel: '-1',
+            port: 'Default_1',
+            installedVersion: 'Default_1',
+            type: 'Default_1',
+            revision: 'unknown',
+            version: 'unknown',
+            herdsman: this.zhversion,
+            converters: this.zhcversion,
+        };
+
+        const coordinatorVersion =  this.zbController && this.zbController.herdsmanStarted ? await this.zbController.herdsman.getCoordinatorVersion() : {};
+        const coordinatorCandidates = this.zbController && this.zbController.herdsmanStarted ? await this.zbController.herdsman?.getDevicesByType('Coordinator') ?? [] : [];
+        if (coordinatorCandidates.length == 0) coordinatorinfo.ieee = '0x0000000000000000';
+        else coordinatorinfo.ieee = coordinatorCandidates[0]?.ieeeAddr ?? '0xffffffffffffffff';
+
+        const obj = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
+        if (obj) {
+            if (obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
+                const instFrom = obj.common.installedFrom;
+                coordinatorinfo.installSource = instFrom.replace('tarball', 'commit');
+            } else {
+                coordinatorinfo.installSource = obj.common.installedFrom;
+            }
+        }
+        try {
+            coordinatorinfo.port = obj.native.port;
+            coordinatorinfo.type = obj.native.adapterType;
+            coordinatorinfo.channel = obj.native.channel;
+            coordinatorinfo.autostart = this.config.autostart;
+            coordinatorinfo.installedVersion = obj.common.version;
+            if (coordinatorVersion && coordinatorVersion.type && coordinatorVersion.meta) {
+                coordinatorinfo.type = coordinatorVersion.type;
+                const meta = coordinatorVersion.meta;
+                if (typeof meta == 'object') {
+                    if (meta.hasOwnProperty('revision')) {
+                        coordinatorinfo.revision = meta.revision;
+                    }
+                    let vt = 'x-';
+                    if (meta.hasOwnProperty('transportrev')) {
+                        vt = meta.transportrev + '-';
+                    }
+                    if (meta.hasOwnProperty('product')) {
+                        vt = vt + meta.product + '.';
+                    } else {
+                        vt = vt + 'x.';
+                    }
+                    if (meta.hasOwnProperty('majorrel')) {
+                        vt = vt + meta.majorrel + '.';
+                    } else {
+                        vt = vt + 'x.';
+                    }
+                    if (meta.hasOwnProperty('minorrel')) {
+                        vt = vt + meta.minorrel + '.';
+                    } else {
+                        vt = vt + 'x.';
+                    }
+                    if (meta.hasOwnProperty('maintrel')) {
+                        vt = vt + meta.maintrel + '.';
+                    } else {
+                        vt = vt + 'x.';
+                    }
+                    coordinatorinfo.version = vt;
+                }
+                else {
+                    coordinatorinfo.version = 'illegal data';
+                    coordinatorinfo.revision = 'illegal data';
+                }
+            }
+            else {
+                coordinatorinfo.version = this.adapter.config.autostart ? 'not connected' : 'autostart not set';
+                coordinatorinfo.revision = this.adapter.config.autostart ? 'not connected' : 'autostart not set';
+            }
+        } catch {
+            this.log.warn('exception raised in getCoordinatorInfo');
+        }
+
+        this.log.debug(`getCoordinatorInfo result: ${JSON.stringify(coordinatorinfo)}`);
+        this.stController.updateCoordinatorIEEE(coordinatorinfo.ieee);
+        return coordinatorinfo;
+    }
 }
+
 
 
 if (module && module.parent) {

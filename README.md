@@ -141,6 +141,14 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS
+* DM-Utils 3.x
+* improved device manager support
+* fixed Developer Tab
+* ZHC 26.70.0
+* ZH 10.4.0
+* default model options for BSD-2
+
 ### 3.4.9 (2026-06-22)
 * (asgothian) Removed 'forced configure on start'
 * (krobipd) - various bugfixes
