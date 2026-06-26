@@ -977,6 +977,7 @@ class Zigbee extends adapterCore.Adapter {
             if (entity.name === 'Coordinator') {
                 coordinatorData.icon = 'zigbee.png';
                 coordinatorData.common = { name: 'Coordinator', type: 'Coordinator'  };
+                coordinatorData.info.coordinatorData = await this.getCoordinatorInfo();
             } else {
                 coordinatorData.common = { name: entity.mapped?.model || 'unknown', type: entity.type  };
                 coordinatorData.icon= 'img/unknown.png';
@@ -1093,7 +1094,9 @@ class Zigbee extends adapterCore.Adapter {
             }
         }
         catch (error) {
-            if (entity && entity.name === 'Coordinator') return rv;
+            if (entity && entity.name === 'Coordinator') {
+                return rv;
+            }
             const dev = entity ? entity.device || {} : {}
             const msg = entity ? `device ${entity.name} (${dev.ieeeAddr}, NWK ${dev.networkAddres}, ID: ${dev.ID})` : 'undefined device';
             this.warn(`Error ${error && error.message ? error.message + ' ' : ''}building device info for ${msg}`);
@@ -1263,8 +1266,91 @@ class Zigbee extends adapterCore.Adapter {
         return { deviceObjects, models };
     }
 
+    async getCoordinatorInfo() {
+        const coordinatorinfo = {
+            installSource: 'IADefault_1',
+            channel: '-1',
+            port: 'Default_1',
+            installedVersion: 'Default_1',
+            type: 'Default_1',
+            revision: 'unknown',
+            version: 'unknown',
+            herdsman: this.zhversion,
+            converters: this.zhcversion,
+        };
 
+        const coordinatorVersion =  this.zbController && this.zbController.herdsmanStarted ? await this.zbController.herdsman.getCoordinatorVersion() : {};
+        const coordinatorCandidates = this.zbController && this.zbController.herdsmanStarted ? await this.zbController.herdsman?.getDevicesByType('Coordinator') ?? [] : [];
+        if (coordinatorCandidates.length == 0) coordinatorinfo.ieee = '0x0000000000000000';
+        else coordinatorinfo.ieee = coordinatorCandidates[0]?.ieeeAddr ?? '0xffffffffffffffff';
+
+        const obj = await this.getForeignObjectAsync(`system.adapter.${this.namespace}`);
+        if (obj) {
+            if (obj.common.installedFrom && obj.common.installedFrom.includes('://')) {
+                const instFrom = obj.common.installedFrom;
+                coordinatorinfo.installSource = instFrom.replace('tarball', 'commit');
+            } else {
+                coordinatorinfo.installSource = obj.common.installedFrom;
+            }
+        }
+        try {
+            coordinatorinfo.port = obj.native.port;
+            coordinatorinfo.type = obj.native.adapterType;
+            coordinatorinfo.channel = obj.native.channel;
+            coordinatorinfo.autostart = this.config.autostart;
+            coordinatorinfo.installedVersion = obj.common.version;
+            if (coordinatorVersion && coordinatorVersion.type && coordinatorVersion.meta) {
+                coordinatorinfo.type = coordinatorVersion.type;
+                const meta = coordinatorVersion.meta;
+                if (typeof meta == 'object') {
+                    if (meta.hasOwnProperty('revision')) {
+                        coordinatorinfo.revision = meta.revision;
+                    }
+                    let vt = 'x-';
+                    if (meta.hasOwnProperty('transportrev')) {
+                        vt = meta.transportrev + '-';
+                    }
+                    if (meta.hasOwnProperty('product')) {
+                        vt = vt + meta.product + '.';
+                    } else {
+                        vt = vt + 'x.';
+                    }
+                    if (meta.hasOwnProperty('majorrel')) {
+                        vt = vt + meta.majorrel + '.';
+                    } else {
+                        vt = vt + 'x.';
+                    }
+                    if (meta.hasOwnProperty('minorrel')) {
+                        vt = vt + meta.minorrel + '.';
+                    } else {
+                        vt = vt + 'x.';
+                    }
+                    if (meta.hasOwnProperty('maintrel')) {
+                        vt = vt + meta.maintrel + '.';
+                    } else {
+                        vt = vt + 'x.';
+                    }
+                    coordinatorinfo.version = vt;
+                }
+                else {
+                    coordinatorinfo.version = 'illegal data';
+                    coordinatorinfo.revision = 'illegal data';
+                }
+            }
+            else {
+                coordinatorinfo.version = this.adapter.config.autostart ? 'not connected' : 'autostart not set';
+                coordinatorinfo.revision = this.adapter.config.autostart ? 'not connected' : 'autostart not set';
+            }
+        } catch {
+            this.log.warn('exception raised in getCoordinatorInfo');
+        }
+
+        this.log.debug(`getCoordinatorInfo result: ${JSON.stringify(coordinatorinfo)}`);
+        this.stController.updateCoordinatorIEEE(coordinatorinfo.ieee);
+        return coordinatorinfo;
+    }
 }
+
 
 
 if (module && module.parent) {
