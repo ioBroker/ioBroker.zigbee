@@ -973,7 +973,7 @@ class Zigbee extends adapterCore.Adapter {
                 native: { id: entity.device.ieeeAddr.substring(2) },
                 mapped : { model: client.modelID || client.type || 'NotSet' },
                 statesDev: [],
-            }
+            };
             if (entity.name === 'Coordinator') {
                 coordinatorData.icon = 'zigbee.png';
                 coordinatorData.common = { name: 'Coordinator', type: 'Coordinator'  };
@@ -1003,8 +1003,8 @@ class Zigbee extends adapterCore.Adapter {
         }
 
         function haveBindableClusters(clusters) {
-            const nonBindableClusters = [25,33, 4096]
-            const BindableClusters = [4,5,6,8,768]
+            //const nonBindableClusters = [25,33, 4096];
+            const BindableClusters = [4,5,6,8,768];
             if (Array.isArray(clusters)) {
                 return (clusters.filter((candidate) => BindableClusters.includes(candidate)).length > 0);
             }
@@ -1066,12 +1066,10 @@ class Zigbee extends adapterCore.Adapter {
                     legacyIcon: modelDefinitions.getIconforLegacyModel(entity.mapped.model),
                     options:[],
                 }
-                if (entity.mapped.options && typeof (entity.mapped.options == 'object')) {
-                    rv.mapped.optionExposes = entity.mapped.options;
-                    for (const option of entity.mapped.options) {
-                        if (option.name) {
-                            rv.mapped.options.push(option.name);
-                        }
+                rv.mapped.optionExposes = entity?.mapped?.options ?? {};
+                for (const option of rv.mapped.optionExposes) {
+                    if (option.name) {
+                        rv.mapped.options.push(option.name);
                     }
                 }
                 try {
@@ -1105,19 +1103,18 @@ class Zigbee extends adapterCore.Adapter {
     }
 
     async fillInfo(device, entity, device_stateDefs, all_states, models) {
-        const reg = /\(.*\)/
+        const reg = /\(.*\)/;
         device.statesDef = (device_stateDefs || []).filter(stateDef => {
             const sid = stateDef._id.replace(this.namespace + '.', '');
             const names = sid.split('.');
             if (stateDef.common.color || names.length > 2) return false;
             return !disallowedDashStates.includes(names.pop());
         }).map(stateDef => {
-            const name = stateDef.common.name;
-            const devname = device.common.name;
+            const name = (stateDef?.common?.name  ?? '').replace(device.common.name, '');
             // replace state
             return {
                 id: stateDef._id,
-                name: typeof name === 'string' ? name.replace(devname, '').replace(reg, '').trim() : name,
+                name: name.slice(0,32).replace(reg, ''),
                 type: stateDef.common.type,
                 read: stateDef.common.read,
                 write: stateDef.common.write,
@@ -1205,7 +1202,6 @@ class Zigbee extends adapterCore.Adapter {
         const all_states = id ? await this.getStatesAsync(id + '.*') : await this.getStatesAsync('*');
         const all_stateDefs = id ? await this.getStatesOfAsync(id) : await this.getStatesOfAsync();
 
-        const illegalDevices = [];
         const groups = {};
         const PromiseChain = [];
         const models = { byUID : {}, UIDbyModel: {} };
@@ -1247,7 +1243,7 @@ class Zigbee extends adapterCore.Adapter {
         }
         if (!id) {
             for (const client of this.zbController.getClientIterator(true)) {
-                PromiseChain.push(this.appendDevicesWithoutObjects(deviceObjects,client))
+                PromiseChain.push(this.appendDevicesWithoutObjects(deviceObjects,client));
             }
         }
 
