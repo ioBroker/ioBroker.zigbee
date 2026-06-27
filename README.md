@@ -141,6 +141,11 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* Bugfix - boolean in native
+*
+
+
 ### 3.4.10 (2026-06-27)
 * DM-Utils 3.x
 * improved device manager support
