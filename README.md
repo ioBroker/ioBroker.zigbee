@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS
+### **WORK IN PROGRESS**
 * DM-Utils 3.x
 * improved device manager support
 * fixed Developer Tab
