@@ -1,4 +1,11 @@
 # Older changes
+## 3.4.6 (2026-06-11)
+* Fix: Option meta_message
+* Fix: zigbee network on tcp connection loss
+* ZH 10.3
+* ZHC 26.63
+* state controlled OTA
+
 ## 3.4.5 (2026-05-17)
 * Bugfix
 * Wider Webkit scrollbars

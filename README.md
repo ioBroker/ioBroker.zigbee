@@ -141,10 +141,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.4.11 (2026-06-27)
 * Bugfix - boolean in native
 *
-
 
 ### 3.4.10 (2026-06-27)
 * DM-Utils 3.x
@@ -166,13 +165,6 @@ You can thank the authors by these links:
 ### 3.4.7 (2026-06-15)
 * Fix: Controlling groups
 * Fix: Pairing battery powered devices
-
-### 3.4.6 (2026-06-11)
-* Fix: Option meta_message
-* Fix: zigbee network on tcp connection loss
-* ZH 10.3
-* ZHC 26.63
-* state controlled OTA
 
 ## License
 The MIT License (MIT)
