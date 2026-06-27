@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.4.10 (2026-06-27)
 * DM-Utils 3.x
 * improved device manager support
 * fixed Developer Tab
@@ -168,10 +168,6 @@ You can thank the authors by these links:
 * ZH 10.3
 * ZHC 26.63
 * state controlled OTA
-
-### 3.4.5 (2026-05-17)
-* Bugfix
-* Wider Webkit scrollbars
 
 ## License
 The MIT License (MIT)

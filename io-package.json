@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.4.9",
+    "version": "3.4.10",
     "news": {
+      "3.4.10": {
+        "en": "DM-Utils 3.x\nimproved device manager support\nfixed Developer Tab\nZHC 26.73.0\nZH 10.5.0\ndefault model options for BSD-2\nadditional role definitions",
+        "de": "DM-Utils 3.x\nverbesserte Unterstützung für Gerätemanager\nEntwickler-Tab repariert\nZHC 26.73.0\nZH 10.5.0\nStandardmodelloptionen für BSD-2\nzusätzliche Rollendefinitionen",
+        "ru": "DM-Utils 3.x\nулучшена поддержка диспетчера устройств\nИсправлена вкладка «Разработчик»\nZHC 26.73.0\nZH 10.5.0\nПараметры модели по умолчанию для BSD-2\nдополнительные определения ролей",
+        "pt": "DM-Utils 3.x\nSuporte aprimorado para gerenciadores de dispositivos\nguia Desenvolvedor corrigida\nZHC 26.73.0\nZH 10.5.0\nOpções de modelo padrão para BSD-2\ndefinições de funções adicionais",
+        "nl": "DM-Utils 3.x\nverbeterde ondersteuning voor apparaatbeheer\nVaste ontwikkelaarstab\nZHC 26.73.0\nZH 10.5.0\nstandaard modelopties voor BSD-2\naanvullende rolomschrijvingen",
+        "fr": "DM-Utils 3.x\nprise en charge améliorée du gestionnaire de périphériques\nOnglet Développeur corrigé\nZHC 26.73.0\nZH 10.5.0\nOptions de modèle par défaut pour BSD-2\ndéfinitions de rôles supplémentaires",
+        "it": "DM-Utils 3.x\nSupporto migliorato per la gestione dei dispositivi.\nScheda sviluppatore fissa\nZHC 26.73.0\nZH 10.5.0\nopzioni del modello predefinito per BSD-2\ndefinizioni di ruolo aggiuntive",
+        "es": "DM-Utils 3.x\nCompatibilidad mejorada con el administrador de dispositivos\nPestaña de desarrollador corregida\nZHC 26.73.0\nZH 10.5.0\nOpciones de modelo predeterminadas para BSD-2\ndefiniciones de roles adicionales",
+        "pl": "DM-Utils 3.x\nulepszona obsługa menedżera urządzeń\nnaprawiono kartę Deweloper\nZHC 26.73.0\nZH 10.5.0\ndomyślne opcje modelu dla BSD-2\ndodatkowe definicje ról",
+        "uk": "DM-Utils 3.x\nпокращена підтримка диспетчера пристроїв\nвиправлена вкладка розробника\nЖХК 26.73.0\nЖ 10.5.0\nпараметри моделі за замовчуванням для BSD-2\nдодаткові визначення ролей",
+        "zh-cn": "DM-Utils 3.x\n改进的设备管理器支持\n固定开发者选项卡\nZHC 26.73.0\nZH 10.5.0\nBSD-2 的默认模型选项\n附加角色定义"
+      },
       "3.4.9": {
         "en": "Removed 'forced configure on start'\n- various bugfixes\n- updated versioning for adapter options",
         "de": "„Erzwungene Konfiguration beim Start“ entfernt\n- diverse Fehlerbehebungen\n- aktualisierte Versionierung für Adapteroptionen",
@@ -80,19 +93,6 @@
         "pl": "ZH10 ZHC 26.51.0\nKonfiguracja dynamicznego interfejsu użytkownika\nKonfigurable odczyt po wywołaniu\nBugfix w tworzeniu wiążącym\nedytuj przycisk wiązania na płytce urządzenia\n",
         "uk": "ЗХ10 ЗХК 26.51.0\nКонфігуративний динамічний інтерфейс\nКонфігуративне зчитування після запору\nВиправлення помилок у створенні\nредагування кнопки ввімкнення на пристрої плитка\n",
         "zh-cn": "ZH10 ZHC 26.510\n可配置动态 UI\n可装订触发后读取\n绑定创建中的错误fix\n编辑设备瓦片上的绑定按钮\n"
-      },
-      "3.4.3": {
-        "en": "Dynamic IU setting (2 card sizes)\nBugfixes\n",
-        "de": "Dynamische IU-Einstellung (2 Kartengrößen)\nBugfixes\n",
-        "ru": "Динамическая настройка IU (2 размера карты)\nБагфиксы\n",
-        "pt": "Configuração dinâmica da UI (2 tamanhos de cartão)\nCorrecções de Erros\n",
-        "nl": "Dynamische IU instelling (2 kaartgroottes)\nBugfixes\n",
-        "fr": "Réglage dynamique de l'UI (2 tailles de cartes)\nFixes de bogue\n",
-        "it": "Regolazione dinamica IU (2 dimensioni scheda)\nBugfix\n",
-        "es": "Ajuste dinámico de UI (2 tamaños de tarjeta)\nBugfixes\n",
-        "pl": "Dynamiczne ustawianie IU (2 rozmiary kart)\nKorekty błędów\n",
-        "uk": "Динамічне налаштування IU (2 розміри карт)\nПомилки\n",
-        "zh-cn": "动态 IU 设置(2张牌大小)\n错误修正\n"
       }
     },
     "titleLang": {

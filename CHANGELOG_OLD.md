@@ -1,4 +1,8 @@
 # Older changes
+## 3.4.5 (2026-05-17)
+* Bugfix
+* Wider Webkit scrollbars
+
 ## 3.4.4 (2026-05-17)
 * ZH10 ZHC 26.51.0
 * Configurable dynamic UI
