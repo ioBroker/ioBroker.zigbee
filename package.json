@@ -27,7 +27,7 @@
   "dependencies": {
     "@iobroker/adapter-core": "^3.3.2",
     "@iobroker/dm-utils": "^3.0.17",
-    "humanize-duration": "^3.33.2",
+    "humanize-duration": "^3.34.0",
     "tar": "^7.5.2",
     "zigbee-herdsman": "^10.6.0",
     "zigbee-herdsman-converters": "^26.79.0"
