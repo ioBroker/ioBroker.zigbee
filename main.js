@@ -1229,16 +1229,36 @@ class Zigbee extends adapterCore.Adapter {
 
     async getDeviceInformation(id) {
         const roomsEnum = await this.getEnumsAsync('enum.rooms') || {};
-        const deviceObjects = (id ? [await this.getObjectAsync(id)] : await this.getDevicesAsync());
+        const objects = (id ? [await this.getObjectAsync(id)] : await this.getDevicesAsync());
         const all_states = id ? await this.getStatesAsync(id + '.*') : await this.getStatesAsync('*');
         const all_stateDefs = id ? await this.getStatesOfAsync(id) : await this.getStatesOfAsync();
 
         const groups = {};
         const PromiseChain = [];
         const models = { byUID : {}, UIDbyModel: {} };
-        for (const deviceObject of deviceObjects) {
-            const id = utils.getZbId(deviceObject._id);
-            const entity = await this.zbController.resolveEntity(id);
+        // Only objects which still have a device in the zigbee database are reported. The list is
+        // built from the ioBroker objects, so a device which just left the network is still in it:
+        // leaveDevice() deletes the object without awaiting it, and the device is gone from the
+        // database first. Such an object must not become a tile - the device is not part of the
+        // network any more. Nothing is stranded by leaving it out: the object is already being
+        // deleted, and anything left over from a failed delete is removed on the next start
+        // (onReady removes every object which no longer links to an active device).
+        const deviceObjects = [];
+        for (const deviceObject of objects) {
+            if (!deviceObject) {
+                // getObjectAsync returns null once the object is gone, which is the same race seen
+                // from the single device side: the admin asks for a device whose object has just
+                // been deleted.
+                this.log.debug(`no object for the requested device '${id}' - not listing it`);
+                continue;
+            }
+            const zbId = utils.getZbId(deviceObject._id);
+            const entity = await this.zbController.resolveEntity(zbId);
+            if (!entity) {
+                this.log.debug(`${deviceObject._id} has no device in the zigbee database - not listing it`);
+                continue;
+            }
+            deviceObjects.push(deviceObject);
             if (deviceObject._id.indexOf('group') > -1) {
                 PromiseChain.push(this.handleGroupforInfo(deviceObject, groups));
             }
