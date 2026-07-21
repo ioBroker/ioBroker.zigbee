@@ -255,6 +255,9 @@ class Zigbee extends adapterCore.Adapter {
         this.zbController.on('disconnect', this.onZigbeeAdapterDisconnected.bind(this));
         this.zbController.on('new', this.newDevice.bind(this));
         this.zbController.on('leave', this.stController.leaveDevice.bind(this.stController));
+        // the device manager serves its list from a 10 second cache, so drop it here - otherwise the
+        // tile of the departed device outlives its object by that much
+        this.zbController.on('leave', () => this.deviceManagement.invalidateDeviceCache());
         this.zbController.on('announce', this.stController.announceDevice.bind(this));
         this.zbController.on('pairing', this.onPairing.bind(this));
         this.zbController.on('event', this.stController.onZigbeeEvent.bind(this.stController));
