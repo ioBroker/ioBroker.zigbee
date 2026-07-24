@@ -29,8 +29,8 @@
     "@iobroker/dm-utils": "^3.0.17",
     "humanize-duration": "^3.33.2",
     "tar": "^7.5.2",
-    "zigbee-herdsman": "^10.6.0",
-    "zigbee-herdsman-converters": "^26.79.0"
+    "zigbee-herdsman": "^10.6.3",
+    "zigbee-herdsman-converters": "^26.86.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
