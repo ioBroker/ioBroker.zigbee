@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.5.3",
+    "version": "3.5.4",
     "news": {
+      "3.5.4": {
+        "en": "Bugfix on reversed extPanID\nBugfix on device query\nupdated documentation",
+        "de": "Bugfix auf reversed extPanID\nBugfix auf Geräteabfrage\naktualisierte dokumentation",
+        "ru": "Bugfix на обратной стороне extPanID\nBugfix на запрос устройства\nобновленная документация",
+        "pt": "Correcção de erros na extPanID invertida\nCorreção de erros na consulta do dispositivo\ndocumentação atualizada",
+        "nl": "Bugfix bij omgekeerde extPanID\nBugfix op apparaatquery\nbijgewerkte documentatie",
+        "fr": "Correction du bug sur extPanID inversé\nCorrection du bug sur la requête du périphérique\ndocumentation actualisée",
+        "it": "Bugfix su extPanID inverso\nBugfix su query del dispositivo\ndocumentazione aggiornata",
+        "es": "Bugfix on reversed extPanID\nBugfix en la consulta del dispositivo\ndocumentación actualizada",
+        "pl": "Bugfix na odwróconym extPanid\nBugfix na zapytanie urządzenia\nzaktualizowana dokumentacja",
+        "uk": "Виправлення помилок на зворотному відключенні ExtPanID\nВиправлення помилок на пристрої\nоновлена документація",
+        "zh-cn": "倒转的extPanID 上的错误修正\n设备查询中的错误fix\n更新的文件"
+      },
       "3.5.3": {
         "en": "Dependency updates",
         "de": "Updates der Abhängigkeit",
@@ -80,19 +93,6 @@
         "pl": "DM-Utils 3.x\nulepszona obsługa menedżera urządzeń\nnaprawiono kartę Deweloper\nZHC 26.73.0\nZH 10.5.0\ndomyślne opcje modelu dla BSD-2\ndodatkowe definicje ról",
         "uk": "DM-Utils 3.x\nпокращена підтримка диспетчера пристроїв\nвиправлена вкладка розробника\nЖХК 26.73.0\nЖ 10.5.0\nпараметри моделі за замовчуванням для BSD-2\nдодаткові визначення ролей",
         "zh-cn": "DM-Utils 3.x\n改进的设备管理器支持\n固定开发者选项卡\nZHC 26.73.0\nZH 10.5.0\nBSD-2 的默认模型选项\n附加角色定义"
-      },
-      "3.4.9": {
-        "en": "Removed 'forced configure on start'\n- various bugfixes\n- updated versioning for adapter options",
-        "de": "„Erzwungene Konfiguration beim Start“ entfernt\n- diverse Fehlerbehebungen\n- aktualisierte Versionierung für Adapteroptionen",
-        "ru": "Удалена опция «принудительная настройка при запуске».\n- различные исправления ошибок\n— Обновлена версия параметров адаптера.",
-        "pt": "Removida a opção 'configuração forçada na inicialização'.\n- diversas correções de bugs\n- Atualização da versão para opções de adaptador",
-        "nl": "'Geforceerde configuratie bij opstarten' is verwijderd.\n- diverse bugfixes\n- Bijgewerkte versie voor adapteropties",
-        "fr": "Suppression de l'option « configuration forcée au démarrage ».\n- Corrections de bugs diverses\n- Mise à jour de la gestion des versions pour les options d'adaptateur",
-        "it": "Rimossa l'opzione 'configurazione forzata all'avvio'.\n- varie correzioni di bug\n- aggiornamento delle versioni per le opzioni dell'adattatore",
-        "es": "Se eliminó la opción \"configuración forzada al inicio\".\n- varias correcciones de errores\n- Versionado actualizado para las opciones del adaptador",
-        "pl": "Usunięto „wymuszoną konfigurację przy uruchomieniu”\n- różne poprawki błędów\n- zaktualizowano wersjonowanie opcji adaptera",
-        "uk": "Видалено «примусове налаштування під час запуску»\n- різні виправлення помилок\n- оновлено керування версіями для опцій адаптера",
-        "zh-cn": "已移除“启动时强制配置”\n- 修复了多个错误\n- 更新了适配器选项的版本控制"
       }
     },
     "titleLang": {

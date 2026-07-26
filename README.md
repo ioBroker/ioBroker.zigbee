@@ -143,7 +143,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.5.4 (2026-07-26)
 * (asgothian) Bugfix on reversed extPanID
 * (krobipd) Bugfix on device query
 * (asgothian) updated documentation
@@ -166,10 +166,6 @@ You can thank the authors by these links:
 * (asgothian) ZH 10.6, ZHC 26.86
 * (asgothian) Additional UI / DevMgr options
 * (asgothian) Option to modify device Datapoint parameters
-
-### 3.4.11 (2026-06-27)
-* Bugfix - boolean in native
-*
 
 Older changelog entries can be found [here](CHANGELOG_OLD.md).
 

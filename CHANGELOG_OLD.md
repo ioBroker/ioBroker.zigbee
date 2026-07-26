@@ -1,4 +1,8 @@
 # Older changes
+## 3.4.11 (2026-06-27)
+* Bugfix - boolean in native
+*
+
 ## 3.4.10 (2026-06-27)
 * DM-Utils 3.x
 * improved device manager support
