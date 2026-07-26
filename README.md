@@ -141,6 +141,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* Dropping Node 20
+
 ### 3.5.0 (2026-07-26)
 * (kropipd) Device names in messages (#2735)
 * (asgothian) Bugfix - unknown cluster for new devices
