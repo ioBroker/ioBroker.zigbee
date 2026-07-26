@@ -141,6 +141,10 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS**
+* Dependency updates
+
+## Changelog
 ### 3.5.1 (2026-07-26)
 * Dropping Node 20
 
