@@ -19,7 +19,7 @@
     }
   ],
   "engines": {
-    "node": "22"
+    "node": ">= 22"
   },
   "optionalDependencies": {
     "serialport": "^13.0.0"
