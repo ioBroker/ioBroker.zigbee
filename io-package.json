@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.5.0",
+    "version": "3.5.1",
     "news": {
+      "3.5.1": {
+        "en": "Dropping Node 20",
+        "de": "Dropping Node 20",
+        "ru": "Скачать Node 20",
+        "pt": "Nó de Queda 20",
+        "nl": "Knooppunt 20 laten vallen",
+        "fr": "Nœud de chute 20",
+        "it": "Goccia Nodo 20",
+        "es": "Nodo 20",
+        "pl": "Węzeł zrzutu 20",
+        "uk": "Краплі Node 20",
+        "zh-cn": "丢弃节点 20"
+      },
       "3.5.0": {
         "en": "Device names in messages (#2735)\nBugfix - unknown cluster for new devices\nBugfix - Shelly gen4 Devices\nvarious bugfixes\ndevice manager updates\nZH 10.6, ZHC 26.86\nAdditional UI / DevMgr options\nOption to modify device Datapoint parameters",
         "de": "Gerätenamen in Nachrichten (#2735)\nBugfix - unbekanntes Cluster für neue Geräte\nBugfix - Shelly gen4 Geräte\nverschiedene bugfixes\ngerätemanager updates\nZH 10.6, ZHC 26.86\nZusätzliche UI / DevMgr Optionen\nOption zum Ändern von Gerätedatenpunktparametern",
@@ -80,19 +93,6 @@
         "pl": "Fix: Kontrolowanie grup\nFix: Urządzenia zasilane akumulatorem parowania\n",
         "uk": "Фіксація: Контрольні групи\nФіксація: Паувальні акумуляторні пристрої\n",
         "zh-cn": "修正: 控制组\n固定设备:配电电池\n"
-      },
-      "3.4.6": {
-        "en": "Fix: Option meta_message\nFix: zigbee network on tcp connection loss\nZH 10.3\nZHC 26.63\nstate controlled OTA",
-        "de": "Fix: Option meta message\nFix: Zigbee-Netzwerk auf tcp-Verbindungsverlust\nZH 10.3\nZHC 26.63\nstaatlich kontrollierte OTA",
-        "ru": "Исправление: Вариант meta message\nИсправление: сеть Zigbee при потере соединения tcp\nZH 10.3\nZHC 26.63\nконтролируемое государством ОТА",
-        "pt": "Corrigir: Meta  mensagem de opção\nCorrigir: rede zigbee na perda de conexão tcp\nZH 10.3\nZHC 26.63\noTA controlada pelo estado",
-        "nl": "Fix: Optie meta message\nFix: zigbee netwerk op tcp verbinding verlies\nZH 10,3\nZHC 26,63\nstaat gecontroleerde OTA",
-        "fr": "Correction : Option méta message\nCorrection: réseau zigbee sur la perte de connexion tcp\nZH 10.3\nZHC 26.63\nétat contrôlé OTA",
-        "it": "Fisso: Opzione meta message\nFisso: rete zigbee sulla perdita di connessione tcp\nZH 10.3\nZHC 26.63\nstato controllato OTA",
-        "es": "Corrección: Opción meta message\nCorrección: red de zigbee en pérdida de conexión tcp\nZH 10.3\nZHC 26.63\nestado controlado OTA",
-        "pl": "Fix: opcja meta _ message\nFix: sieć zigbee na tcp utrata połączenia\nZH 10.3\nZHC 26.63\noTA kontrolowana przez państwo",
-        "uk": "Виправлення: Опція мета message\nВиправлення: zigbee мережа на tcp з'єднання втрат\nЗХ 10.3\nЗХК 26.63\nконтроль стану OTA",
-        "zh-cn": "修正: 选项元信息  message\n修复: tcp 连接丢失的 Zigbee 网络\nZH 10.3号公路\nZHC 26.63号机车\n状态控制 OTA"
       }
     },
     "titleLang": {

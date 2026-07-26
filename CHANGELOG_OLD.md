@@ -1,4 +1,7 @@
 # Older changes
+## 3.4.8 (2026-06-16)
+* Bugfix - state publishing
+
 ## 3.4.7 (2026-06-15)
 * Fix: Controlling groups
 * Fix: Pairing battery powered devices

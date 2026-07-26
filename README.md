@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.5.1 (2026-07-26)
 * Dropping Node 20
 
 ### 3.5.0 (2026-07-26)
@@ -171,9 +171,6 @@ You can thank the authors by these links:
 * (asgothian) Removed 'forced configure on start'
 * (krobipd) - various bugfixes
 * (asgothian) - updated versioning for adapter options
-
-### 3.4.8 (2026-06-16)
-* Bugfix - state publishing
 
 Older changelog entries can be found [here](CHANGELOG_OLD.md).
 
