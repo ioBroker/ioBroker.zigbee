@@ -141,11 +141,10 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### 3.5.2 (2026-07-26)
+### 3.5.3 (2026-07-26)
 * Dependency updates
 
-## Changelog
-### **WORK IN PROGRESS**
+### 3.5.2 (2026-07-26)
 * Dependency updates
 
 ### 3.5.1 (2026-07-26)
@@ -164,15 +163,6 @@ You can thank the authors by these links:
 ### 3.4.11 (2026-06-27)
 * Bugfix - boolean in native
 *
-
-### 3.4.10 (2026-06-27)
-* DM-Utils 3.x
-* improved device manager support
-* fixed Developer Tab
-* ZHC 26.73.0
-* ZH 10.5.0
-* default model options for BSD-2
-* additional role definitions
 
 Older changelog entries can be found [here](CHANGELOG_OLD.md).
 

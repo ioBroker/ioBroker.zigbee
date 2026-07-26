@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.5.2",
+    "version": "3.5.3",
     "news": {
+      "3.5.3": {
+        "en": "Dependency updates",
+        "de": "Updates der Abhängigkeit",
+        "ru": "Обновления зависимостей",
+        "pt": "Atualizações de dependência",
+        "nl": "Afhankelijkheidsupdates",
+        "fr": "Mises à jour sur la dépendance",
+        "it": "Aggiornamenti di dipendenza",
+        "es": "Actualizaciones de dependencia",
+        "pl": "Aktualizacje zależności",
+        "uk": "Оновлення залежності",
+        "zh-cn": "依赖性更新"
+      },
       "3.5.2": {
         "en": "Dependency updates",
         "de": "Updates der Abhängigkeit",
@@ -80,19 +93,6 @@
         "pl": "Usunięto „wymuszoną konfigurację przy uruchomieniu”\n- różne poprawki błędów\n- zaktualizowano wersjonowanie opcji adaptera",
         "uk": "Видалено «примусове налаштування під час запуску»\n- різні виправлення помилок\n- оновлено керування версіями для опцій адаптера",
         "zh-cn": "已移除“启动时强制配置”\n- 修复了多个错误\n- 更新了适配器选项的版本控制"
-      },
-      "3.4.8": {
-        "en": "Bugfix - state publishing",
-        "de": "Bugfix - staatliches Verlagswesen",
-        "ru": "Bugfix - государственное издательство",
-        "pt": "Bugfix - publicação de estado",
-        "nl": "Bugfix - state publishing",
-        "fr": "Bugfix - publication d'état",
-        "it": "Bugfix - Pubblicazione dello stato",
-        "es": "Bugfix - publicación estatal",
-        "pl": "Bugfix - publikacja państwowa",
-        "uk": "Бугфікс - державне видання",
-        "zh-cn": "Bugfix - 状态发布"
       }
     },
     "titleLang": {
