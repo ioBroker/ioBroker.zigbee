@@ -95,7 +95,9 @@ Changes to this tab trigger an automatic restart of the adapter upon leaving the
 
 This tab offers the option to do model-level configuration for device behaviour. Currently, model Options, the default device name and the default device Icon can be set through this tab. Most of the advanced options from Z2M are made available for configuration here. It also offers the option to delete devices.
 
-Changes to this tab **do not** trigger an automatic restart of the adapter upon leaving the settings.
+Changes to this tab **do not** trigger an automatic restart of the adapter upon leaving the settings. Changing options **may** require an adapter restart to become active. This is especially valid for any option which affects the device states.
+
+A list of *adapter defined options* is available in the wiki. *Definition defined options* are listed in the device description on Zigbee2mqtt.io.
 
 ### DEVELOPER
 
