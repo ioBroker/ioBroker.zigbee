@@ -141,10 +141,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.5.2 (2026-07-26)
 * Dependency updates
 
-## Changelog
 ### 3.5.1 (2026-07-26)
 * Dropping Node 20
 
@@ -170,11 +169,6 @@ You can thank the authors by these links:
 * ZH 10.5.0
 * default model options for BSD-2
 * additional role definitions
-
-### 3.4.9 (2026-06-22)
-* (asgothian) Removed 'forced configure on start'
-* (krobipd) - various bugfixes
-* (asgothian) - updated versioning for adapter options
 
 Older changelog entries can be found [here](CHANGELOG_OLD.md).
 

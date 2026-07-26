@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.5.1",
+    "version": "3.5.2",
     "news": {
+      "3.5.2": {
+        "en": "Dependency updates",
+        "de": "Updates der Abhängigkeit",
+        "ru": "Обновления зависимостей",
+        "pt": "Atualizações de dependência",
+        "nl": "Afhankelijkheidsupdates",
+        "fr": "Mises à jour sur la dépendance",
+        "it": "Aggiornamenti di dipendenza",
+        "es": "Actualizaciones de dependencia",
+        "pl": "Aktualizacje zależności",
+        "uk": "Оновлення залежності",
+        "zh-cn": "依赖性更新"
+      },
       "3.5.1": {
         "en": "Dropping Node 20",
         "de": "Dropping Node 20",
@@ -80,19 +93,6 @@
         "pl": "Bugfix - publikacja państwowa",
         "uk": "Бугфікс - державне видання",
         "zh-cn": "Bugfix - 状态发布"
-      },
-      "3.4.7": {
-        "en": "Fix: Controlling groups\nFix: Pairing battery powered devices\n",
-        "de": "Fix: Kontrollgruppen\nFix: batteriebetriebene Geräte koppeln\n",
-        "ru": "Исправление: Контрольные группы\nИсправление: сопряжение устройств с батарейным питанием\n",
-        "pt": "Corrigir: Controlando grupos\nCorrigir: Emparelhando dispositivos alimentados por bateria\n",
-        "nl": "Fix: Controlegroepen\nFix: koppelen van batterij aangedreven apparaten\n",
-        "fr": "Correction: Groupes de contrôle\nCorrection: Compilation des appareils alimentés par batterie\n",
-        "it": "Fisso: Gruppi di controllo\nFisso: accoppiamento di dispositivi alimentati a batteria\n",
-        "es": "Corrección: Grupos de control\nFijación: Combinar dispositivos alimentados con batería\n",
-        "pl": "Fix: Kontrolowanie grup\nFix: Urządzenia zasilane akumulatorem parowania\n",
-        "uk": "Фіксація: Контрольні групи\nФіксація: Паувальні акумуляторні пристрої\n",
-        "zh-cn": "修正: 控制组\n固定设备:配电电池\n"
       }
     },
     "titleLang": {
