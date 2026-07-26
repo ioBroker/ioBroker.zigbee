@@ -141,7 +141,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.5.0 (2026-07-26)
 * (kropipd) Device names in messages (#2735)
 * (asgothian) Bugfix - unknown cluster for new devices
 * (krobipd) Bugfix - Shelly gen4 Devices
@@ -172,13 +172,8 @@ You can thank the authors by these links:
 ### 3.4.8 (2026-06-16)
 * Bugfix - state publishing
 
-### 3.4.7 (2026-06-15)
-* Fix: Controlling groups
-* Fix: Pairing battery powered devices
-
-
-
 Older changelog entries can be found [here](CHANGELOG_OLD.md).
+
 ## License
 The MIT License (MIT)
 

@@ -1,4 +1,8 @@
 # Older changes
+## 3.4.7 (2026-06-15)
+* Fix: Controlling groups
+* Fix: Pairing battery powered devices
+
 ## 3.4.6 (2026-06-11)
 * Fix: Option meta_message
 * Fix: zigbee network on tcp connection loss
