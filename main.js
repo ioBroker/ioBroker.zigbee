@@ -896,7 +896,7 @@ class Zigbee extends adapterCore.Adapter {
 
 
         const nvbackup = this.getNvBackup(dbDir);
-        if (this.config.extPanID.toLowerCase() == nvbackup.extended_pan_id) this.warn('possible reversed ExtPanID');
+        if (this.config.extPanID.toLowerCase() == nvbackup.extended_pan_id) this.log.warn('possible reversed ExtPanID');
 
         const panID = parseInt(override.panID ? override.panID : this.config.panID ? this.config.panID : 0x1a62);
         const channel =  parseInt(override.channel ? override.channel : this.config.channel ? this.config.channel : 11);
