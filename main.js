@@ -131,6 +131,12 @@ class Zigbee extends adapterCore.Adapter {
                         rv.error = e;
                     }
 
+                    // both sendPayload and the catch above can put an Error object here. It has no
+                    // enumerable properties, so the serialised reply would arrive as [object Object].
+                    if (rv.error) {
+                        rv.error = rv.error.message || String(rv.error);
+                    }
+
                     this.sendTo(obj.from, obj.command, rv, obj.callback);
                     break;
                 }
