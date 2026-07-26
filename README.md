@@ -143,6 +143,11 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK IN PROGRESS
+* (asgothian) Bugfix on reversed extPanID
+* (krobipd) Bugfix on device query
+* (asgothian) updated documentation
+
 ### 3.5.3 (2026-07-26)
 * Dependency updates
 
