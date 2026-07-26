@@ -147,8 +147,9 @@ You can thank the authors by these links:
 * (krobipd) Bugfix - Shelly gen4 Devices
 * (kropipd) various bugfixes
 * (asgothian) device manager updates
-* (asgothian) ZH 10.6, ZHC 26.79
+* (asgothian) ZH 10.6, ZHC 26.86
 * (asgothian) Additional UI / DevMgr options
+* (asgothian) Option to modify device Datapoint parameters
 
 ### 3.4.11 (2026-06-27)
 * Bugfix - boolean in native
