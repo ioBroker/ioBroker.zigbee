@@ -748,7 +748,7 @@ function getDeviceCard(devId) {
     if (devId.startsWith('0x')) {
         devId = devId.substr(2, devId.length);
     }
-    console.warn(`getting device card for ${devId}`);
+    //console.warn(`getting device card for ${devId}`);
     return $('#devices').find(`div[id='${namespace}.${devId}']`);
 }
 
@@ -882,7 +882,7 @@ function setDashStates(id, state) {
         const stateDef = dev.statesDef.find((stateDef) => stateDef.id == id);
         if (stateDef) {
             const sid = id.split('.').join('_');
-            if (stateDef.role === 'switch' && stateDef.write) {
+            if (stateDef.role.startsWith('switch') && stateDef.write) {
                 $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
             } else if (stateDef.role === 'level.dimmer' && stateDef.write) {
                 $(`#${sid}`).find('input[type=\'range\']').prop('value', state.val);
@@ -891,7 +891,7 @@ function setDashStates(id, state) {
             } else if (stateDef.states && stateDef.write) {
                 $(`#${sid}`).find(`select option[value=${state.val}]`).prop('selected', true);
             } else if (stateDef.type === 'boolean') {
-            //  $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
+                $(`#${sid}`).find('input[type=\'checkbox\']').prop('checked', state.val);
                 $(`#${sid}`).find('input[type=\'radio\']').prop('checked', state.val);
             } else {
                 $(`#${sid}`).find('.value').text(`${state.val} ${(stateDef.unit) ? stateDef.unit : ''}`);
@@ -1364,7 +1364,7 @@ function showDevices() {
         const dev_block = $(this).parents('div.devicecard');
         const devId = getDevId(dev_block);
         const device = devices.find((obj) => obj._id == devId);
-        console.warn(`dev id is  ${devId} device was ${device ? 'found' : 'not found'}`);
+        //console.warn(`dev id is  ${devId} device was ${device ? 'found' : 'not found'}`);
 
         addBindingDialog(device?.info?.device?.ieee);
     });
@@ -1526,7 +1526,7 @@ function updateLocalConfigItems(device, data, global) {
             if (msg && msg.hasOwnProperty.error) {
                 showMessage(msg.error, _('Error'));
             }
-            console.warn('update local config items called with global '+ global)
+            //console.warn('update local config items called with global '+ global)
             //getDevices();
         });
 }
@@ -2531,18 +2531,18 @@ function load(settings, onChange) {
 
         function new_tab_show_callback() {
 
-            console.warn(`shown UI is ${tabOrSettings ? 'tab' : 'settings'}`)
+            //console.warn(`shown UI is ${tabOrSettings ? 'tab' : 'settings'}`)
 
             tabShown = M.Tabs.getInstance($('.tabs')).index;
             if (tabShown === 1 && shownMap === 0 && tabOrSettings)  {
-                console.warn(`tabShown set to ${tabShown} - showing map for the first time`);
+                //console.warn(`tabShown set to ${tabShown} - showing map for the first time`);
                 showNetworkMap(devices, map);
             }
-            else console.warn(`tabShown set to ${tabShown}`);
+            //else console.warn(`tabShown set to ${tabShown}`);
         }
 
         tabOrSettings = ($('#tab-dev').length) ? 0 : 1;
-        console.warn(`showing ${tabOrSettings ? 'tab' : 'settings'}`);
+        //console.warn(`showing ${tabOrSettings ? 'tab' : 'settings'}`);
 
         Materialize.Tabs.init($('.tabs'), {duration: 600, onShow: new_tab_show_callback});
         $('#device-search').keyup(function (event) {
@@ -3169,7 +3169,7 @@ function showNetworkMap(devices, map) {
         };
 
         if (tabOrSettings) {
-            console.warn(`building network`);
+            //console.warn(`building network`);
             network = new vis.Network(container, data, networkOptions);
         }
 
@@ -3930,7 +3930,7 @@ function prepareBindingDialog(bind_src) {
 
     $('#bind_source').unbind('change')
     $('#bind_source').change(function () {
-        console.warn(`selected Index is ${this.selectedIndex}`);
+        //console.warn(`selected Index is ${this.selectedIndex}`);
         if (this.selectedIndex <= 0) {
             return;
         }
@@ -4307,7 +4307,7 @@ function showHerdsmanBinding(searchentry) {
             const t_epName = t_ep ? t_ep.epName : binding.endpoint;
             const src_id = source.endpoint > 0 ? `${source.address}.${s_epName}` : `group_${source.address}`;
             const dst_id = binding.endpoint > 0 ? `${binding.address}.${t_epName}` : `group_${binding.address}`;
-            console.warn(`going through bindings with ${src_id} ->${dst_id} `)
+            //console.warn(`going through bindings with ${src_id} ->${dst_id} `)
             cardParts.push(`<div id="SID_${source.address}_EP${source.endpoint}_TID_${binding.address}_EP${binding.endpoint}" class="binding"><div class="card binding">`);
             cardParts.push(`<div class="card-title truncate">${source_dev?.common?.name}${source.endpoint> 0 ? ' Endpoint ' + s_epName : ''} <i class="small material-icons bottom">forward</i> ${target_dev?.common?.name}${binding.endpoint> 0 ? ' Endpoint ' + t_epName : ''}</div>`)
             cardParts.push(`<div class="card-content">`)
