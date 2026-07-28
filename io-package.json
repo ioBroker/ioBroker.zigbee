@@ -44,7 +44,7 @@
       },
       "3.5.1": {
         "en": "Dropping Node 20",
-        "de": "Dropping Node 20",
+        "de": "Unterstützung für Node 20 entfernt",
         "ru": "Скачать Node 20",
         "pt": "Nó de Queda 20",
         "nl": "Knooppunt 20 laten vallen",
@@ -73,7 +73,7 @@
         "de": "Bugfix – Boolescher Wert in nativer Implementierung\n",
         "ru": "Исправлена ошибка — логическое значение в нативных настройках.\n",
         "pt": "Correção de bug - booleano em nativo\n",
-        "nl": "Bugfix - boolean in native\n",
+        "nl": "Bugfix - booleaanse waarde in native\n",
         "fr": "Correction de bug - booléen dans natif\n",
         "it": "Correzione di bug - booleano in nativo\n",
         "es": "Corrección de errores: booleano en nativo\n",
