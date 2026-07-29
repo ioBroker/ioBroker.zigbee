@@ -143,21 +143,15 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### **WORK_IN_PROGRESS**
+* (kropipd) Improved handling for device configuration
+* (bueste) Respond to unsolicited OTA messages
+
 ### 3.5.4 (2026-07-26)
 * (asgothian) Bugfix on reversed extPanID
 * (krobipd) Bugfix on device query
 * (asgothian) updated documentation
-
-### 3.5.3 (2026-07-26)
-* Dependency updates
-
-### 3.5.2 (2026-07-26)
-* Dependency updates
-
-### 3.5.1 (2026-07-26)
 * Dropping Node 20
-
-### 3.5.0 (2026-07-26)
 * (kropipd) Device names in messages (#2735)
 * (asgothian) Bugfix - unknown cluster for new devices
 * (krobipd) Bugfix - Shelly gen4 Devices
