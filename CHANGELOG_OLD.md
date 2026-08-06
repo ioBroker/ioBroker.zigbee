@@ -1,22 +1,4 @@
 # Older changes
-## 3.4.11 (2026-06-27)
-* Bugfix - boolean in native
-*
-
-## 3.4.10 (2026-06-27)
-* DM-Utils 3.x
-* improved device manager support
-* fixed Developer Tab
-* ZHC 26.73.0
-* ZH 10.5.0
-* default model options for BSD-2
-* additional role definitions
-
-## 3.4.9 (2026-06-22)
-* (asgothian) Removed 'forced configure on start'
-* (krobipd) - various bugfixes
-* (asgothian) - updated versioning for adapter options
-
 ## 3.4.8 (2026-06-16)
 * Bugfix - state publishing
 
