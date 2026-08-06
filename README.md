@@ -143,7 +143,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### ***WORK IN PROGRESS***
+### **WORK IN PROGRESS**
 * (kropipd) Improved handling for device configuration
 * (bueste) Respond to unsolicited OTA messages
 * (asgothian) ZH 10.8, ZHC 26.92.0 or newer
