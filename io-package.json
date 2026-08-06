@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.5.4",
+    "version": "3.5.5-alpha.0",
     "news": {
+      "3.5.5-alpha.0": {
+        "en": "Improved handling for device configuration\nRespond to unsolicited OTA messages\nZH 10.8, ZHC 26.92.0 or newer",
+        "de": "Verbesserte Handhabung der Gerätekonfiguration\nAuf unerwünschte OTA-Nachrichten antworten\nZH 10.8, ZHC 26.92.0 oder neuer",
+        "ru": "Улучшена обработка настроек устройства.\nОтвечайте на незапрошенные сообщения OTA.\nZH 10.8, ZHC 26.92.0 или более новые версии",
+        "pt": "Melhorias no manuseio da configuração do dispositivo.\nResponder a mensagens OTA não solicitadas\nZH 10.8, ZHC 26.92.0 ou mais recente",
+        "nl": "Verbeterde afhandeling voor apparaatconfiguratie\nReageer op ongevraagde OTA-berichten.\nZH 10.8, ZHC 26.92.0 of nieuwer",
+        "fr": "Gestion améliorée de la configuration des périphériques\nRépondre aux messages OTA non sollicités\nZH 10.8, ZHC 26.92.0 ou version plus récente",
+        "it": "Gestione migliorata della configurazione del dispositivo\nRispondere ai messaggi OTA non richiesti\nZH 10.8, ZHC 26.92.0 o versioni successive",
+        "es": "Manejo mejorado para la configuración del dispositivo\nResponda a los mensajes OTA no solicitados\nZH 10.8, ZHC 26.92.0 o posterior",
+        "pl": "Ulepszona obsługa konfiguracji urządzenia\nOdpowiadaj na niechciane wiadomości OTA\nZH 10.8, ZHC 26.92.0 lub nowszy",
+        "uk": "Покращена обробка конфігурації пристрою\nВідповідь на небажані повідомлення OTA\nZH 10.8, ZHC 26.92.0 або новіша версія",
+        "zh-cn": "改进了设备配置的处理\n回应未经请求的OTA消息\nZH 10.8、ZHC 26.92.0 或更新版本"
+      },
       "3.5.4": {
         "en": "Bugfix on reversed extPanID\nBugfix on device query\nupdated documentation",
         "de": "Bugfix auf reversed extPanID\nBugfix auf Geräteabfrage\naktualisierte dokumentation",
