@@ -146,6 +146,7 @@ You can thank the authors by these links:
 ### **WORK_IN_PROGRESS**
 * (kropipd) Improved handling for device configuration
 * (bueste) Respond to unsolicited OTA messages
+* (asgothian) ZH 10.8, ZHC 26.92.0 or newer
 
 ### 3.5.4 (2026-07-26)
 * (asgothian) Bugfix on reversed extPanID
