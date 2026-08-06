@@ -1,0 +1,5 @@
+chore: release v3.5.5
+
+* (kropipd) Improved handling for device configuration
+* (bueste) Respond to unsolicited OTA messages
+* (asgothian) ZH 10.8, ZHC 26.92.0 or newer
