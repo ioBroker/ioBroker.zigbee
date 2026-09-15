@@ -1520,6 +1520,91 @@ async function toggleDebugDevice(id) {
     });
 }
 
+// ---- join blocklist (Local Data tab): IEEE addresses the adapter refuses when they try to join ----
+let joinBlocklistData = { blocklist: [], seen: [] };
+
+// device names and model ids come from the objects and from the devices themselves - never raw into HTML
+function escapeHtml(text) {
+    return String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function loadJoinBlocklist() {
+    sendToWrapper(namespace, 'getJoinBlocklist', {}, function (msg) {
+        applyJoinBlocklist(msg, false);
+    });
+}
+
+function updateJoinBlocklist(change) {
+    sendToWrapper(namespace, 'updateJoinBlocklist', change, function (msg) {
+        applyJoinBlocklist(msg, true);
+    });
+}
+
+function applyJoinBlocklist(msg, reportError) {
+    if (msg && msg.error && reportError) showMessage(msg.error, _('Error'));
+    if (msg && Array.isArray(msg.blocklist)) {
+        joinBlocklistData = { blocklist: msg.blocklist, seen: Array.isArray(msg.seen) ? msg.seen : [] };
+    }
+    showJoinBlocklist();
+}
+
+function addToJoinBlocklist() {
+    const ieee = ($('#join-blocklist-ieee').val() || '').trim();
+    if (!/^(0x)?[0-9a-fA-F]{16}$/.test(ieee)) {
+        showMessage(_('Not an IEEE address'), _('Error'));
+        return;
+    }
+    $('#join-blocklist-ieee').val('');
+    updateJoinBlocklist({ add: ieee });
+}
+
+// name (from the device list), model and rejected joins of a seen device
+function seenDeviceLabel(seen) {
+    const parts = [];
+    try {
+        const dev = getDeviceByIEEE(seen.ieee);
+        if (dev && dev.common && dev.common.name) parts.push(dev.common.name);
+    } catch (e) {
+        // no device list yet
+    }
+    if (seen.model) parts.push(seen.model);
+    if (seen.rejected) parts.push(`${_('Rejected joins')}: ${seen.rejected}`);
+    return parts.join(', ');
+}
+
+function showJoinBlocklist() {
+    const seenByIeee = {};
+    for (const seen of joinBlocklistData.seen) seenByIeee[seen.ieee] = seen;
+    const rows = [];
+    for (const ieee of joinBlocklistData.blocklist) {
+        const info = seenByIeee[ieee] ? escapeHtml(seenDeviceLabel(seenByIeee[ieee])) : '';
+        rows.push(`<tr><td><code>${escapeHtml(ieee)}</code></td><td>${info}</td><td width="10%">${btnParam(`join-blocklist-remove-${ieee}`, _('Remove from blocklist'), 'delete', 'red')}</td></tr>`);
+    }
+    if (rows.length === 0) rows.push(`<tr><td colspan="3">${escapeHtml(_('No devices on the blocklist.'))}</td></tr>`);
+    $('#join-blocklist-table tbody').html(rows.join(''));
+    for (const ieee of joinBlocklistData.blocklist) {
+        $(`#join-blocklist-remove-${ieee}`).click(function () {
+            updateJoinBlocklist({ remove: ieee });
+        });
+    }
+    // the seen devices that are not on the list yet, unpaired ones first
+    const options = [`<option value="" disabled selected>${escapeHtml(_('Select a seen device or enter an address'))}</option>`];
+    for (const group of [{ paired: false, label: _('Unpaired devices') }, { paired: true, label: _('Paired devices') }]) {
+        const entries = joinBlocklistData.seen.filter(seen => seen.paired === group.paired && !joinBlocklistData.blocklist.includes(seen.ieee));
+        if (entries.length === 0) continue;
+        options.push(`<optgroup label="${escapeHtml(group.label)}">`);
+        for (const seen of entries) {
+            const label = escapeHtml(seenDeviceLabel(seen));
+            const ieee = escapeHtml(seen.ieee);
+            options.push(`<option value="${ieee}">${ieee}${label ? ` (${label})` : ''}</option>`);
+        }
+        options.push('</optgroup>');
+    }
+    const select = $('#join-blocklist-seen');
+    select.html(options.join(''));
+    select.select();
+}
+
 function updateLocalConfigItems(device, data, global) {
     if (data != {})
         sendToWrapper(namespace, 'updateLocalConfigItems', {target: device, data:data, global:global}, function(msg) {
@@ -2144,6 +2229,7 @@ function getDevices() {
             if (msg.hasOwnProperty('by_id') && msg.hasOwnProperty('by_model'))
                 localConfigData = msg;
         })
+        loadJoinBlocklist();
         sendToWrapper(namespace, 'getDevices', {}, function (msg) {
             if (msg) {
                 /*msg.adapterOptions.forEach((o) => {
@@ -2602,6 +2688,16 @@ function load(settings, onChange) {
         });
         $('#refresh_models_btn').click(function () {
             getDevices();
+        });
+        $('#join-blocklist-seen').on('change', function () {
+            $('#join-blocklist-ieee').val($(this).val());
+            Materialize.updateTextFields();
+        });
+        $('#join-blocklist-add').click(function () {
+            addToJoinBlocklist();
+        });
+        $('#join-blocklist-ieee').on('keypress', function (e) {
+            if (e.which === 13) addToJoinBlocklist();
         });
         $('#model-filter a').click(function () {
             const t = $(this).text();
