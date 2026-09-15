@@ -99,6 +99,8 @@ Changes to this tab **do not** trigger an automatic restart of the adapter upon 
 
 A list of *adapter defined options* is available in the wiki. *Definition defined options* are listed in the device description on Zigbee2mqtt.io.
 
+**Join blocklist:** a list of IEEE addresses the adapter refuses when they try to join the network. Such a device is sent away before any interview, and no object is created for it. Pick an address from the devices seen since the start (paired or not) or enter it, and remove it with the delete button. The list is stored with the local data (`LocalOverrides.json` in the instance data folder), so it survives a deletion of the objects; changes take effect immediately. A device that is already in the network is not removed by the list - delete it in the device list.
+
 ### DEVELOPER
 
 The developer tab offers the option to communicate directly with the device based on ZCL Clusters and attributes. Proper use of this requires access to the cluster definition as well as additional device specific documentation. The results generated through this help with generating an external converter for a currently unknown device.
