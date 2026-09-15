@@ -798,7 +798,7 @@ class Zigbee extends adapterCore.Adapter {
         const device = entity.device;
         const model = (entity.mapped) ? entity.mapped.model : device.modelID;
         this.log.debug(`New device event: ${safeJsonStringify(utils.entityData(entity))}`);
-        if (!entity.mapped && !entity.device.interviewing) {
+        if (!entity.mapped && device.interviewState !== 'IN_PROGRESS') {
             const msg = `New device: '${devLabel(this, device.ieeeAddr, model)}' does not have a known model. please provide an external converter for '${device.modelID}'.`;
             this.log.warn(msg);
             this.logToPairing(msg, true);
