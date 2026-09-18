@@ -10,5 +10,4 @@ debugidentify.js
 .dev-server/
 .devcontainer
 .commitinfo
-shepherd.db
-zigbee_0/
+.devconenvironment
