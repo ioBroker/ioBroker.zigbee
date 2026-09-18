@@ -5,19 +5,10 @@
  */
 'use strict';
 
-let debug;
-try {
-    debug = require('zigbee-herdsman/node_modules/debug');
-} catch (e) {
-    debug = undefined;
-}
-const originalLogMethod = debug ? debug.log : undefined;
-
 // node components
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const util = require('node:util');
 const dns = require('node:dns');
 const net = require('node:net');
 
@@ -223,26 +214,11 @@ class Zigbee extends adapterCore.Adapter {
         }
     }
 
-    debugLog(data, ...args) {
-        const message = (args) ? util.format(data, ...args) : data;
-        if (this.debugActive) this.log.debug(message.slice(message.indexOf('zigbee-herdsman')));
-    }
-
     async onReady() {
 
         const dbActive = await this.getForeignState(`system.adapter.${this.namespace}.logLevel`);
         this.debugActive = (dbActive && dbActive.val === 'debug');
         this.log.info('Adapter ready - starting subsystems. Adapter is running in '+(dbActive?.val ?? 'unknown')+ ' mode.');
-        if (this.config.debugHerdsman) {
-            if (debug) {
-                this.log.warn('Activating zigbee-herdsman debug connection - successful');
-                debug.log = this.debugLog.bind(this);
-                debug.enable('zigbee-herdsman*');
-            }
-            else {
-                this.log.warn('Activating zigbee-herdsman debug connection - failed: debug library not available');
-            }
-        }
         // external converters
         this.applyExternalConverters();
 
@@ -713,21 +689,27 @@ class Zigbee extends adapterCore.Adapter {
     }
 
     async syncDeviceState(device, rebuild) {
-        if (rebuild) {
-            const hM = await zigbeeHerdsmanConverters.findByDevice(device);
-            await this.stController.AddModelFromHerdsman(device, hM ? hM.model : device.modelID);
-        }
-        // remove from the Adapter device list
+        try {
+            if (rebuild) {
+                const hM = await zigbeeHerdsmanConverters.findByDevice(device);
+                await this.stController.AddModelFromHerdsman(device, hM ? hM.model : device.modelID);
+            }
+            // remove from the Adapter device list
 
-        // if it has a mapped model - update its states
-        const entity = await this.zbController.resolveEntity(device);
-        if (entity) {
-            const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
-            await this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), entity.name, model);
-            await this.stController.syncDevStates(device, model);
+            // if it has a mapped model - update its states
+            const entity = await this.zbController.resolveEntity(device);
+            if (entity) {
+                const model = entity.mapped ? entity.mapped.model : entity.device.modelID;
+                await this.stController.updateDev(utils.zbIdorIeeetoAdId(this, device.ieeeAddr, false), entity.name, model);
+                await this.stController.syncDevStates(device, model);
+            }
+            else (this.log.debug('resolveEntity returned no entity'));
         }
-        else (this.log.debug('resolveEntity returned no entity'));
-
+        finally {
+            // after a rebuild the model was registered here - messages of the device are processed again,
+            // whether it succeeded or not (the plain sync registers nothing, newDevice() does that)
+            if (rebuild && device?.ieeeAddr) this.stController.deviceRegistered(device.ieeeAddr);
+        }
     }
 
     async syncAllDeviceStates(rebuildStates) {
@@ -776,12 +758,23 @@ class Zigbee extends adapterCore.Adapter {
     }
 
 
+    // Registers a device (model definition, device and state objects). Messages the device sends in the
+    // meantime are dropped in onZigbeeEvent() until this is through - so the release must happen in every case.
     async newDevice(entity, fromInterview) {
+        try {
+            await this.registerDevice(entity, fromInterview);
+        }
+        finally {
+            if (entity?.device?.ieeeAddr) this.stController.deviceRegistered(entity.device.ieeeAddr);
+        }
+    }
+
+    async registerDevice(entity, fromInterview) {
 
         const device = entity.device;
         const model = (entity.mapped) ? entity.mapped.model : device.modelID;
         this.log.debug(`New device event: ${safeJsonStringify(utils.entityData(entity))}`);
-        if (!entity.mapped && !entity.device.interviewing) {
+        if (!entity.mapped && device.interviewState !== 'IN_PROGRESS') {
             const msg = `New device: '${devLabel(this, device.ieeeAddr, model)}' does not have a known model. please provide an external converter for '${device.modelID}'.`;
             this.log.warn(msg);
             this.logToPairing(msg, true);
@@ -843,12 +836,6 @@ class Zigbee extends adapterCore.Adapter {
             this.log.info(`Halting zigbee adapter. Restart delay is at least ${this.ioPack.common.stopTimeout / 1000} seconds.`)
             this.setState('info.connection', false, true);
             const chain = [];
-            if (this.config.debugHerdsman) {
-                if (debug) {
-                    debug.disable();
-                    debug.log = originalLogMethod;
-                }
-            }
             this.log.info('cleaning everything up');
             await this.callPluginMethod('stop');
             if (this.stController) chain.push(this.stController.stop());
