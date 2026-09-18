@@ -5,19 +5,10 @@
  */
 'use strict';
 
-let debug;
-try {
-    debug = require('zigbee-herdsman/node_modules/debug');
-} catch (e) {
-    debug = undefined;
-}
-const originalLogMethod = debug ? debug.log : undefined;
-
 // node components
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const util = require('node:util');
 const dns = require('node:dns');
 const net = require('node:net');
 
@@ -223,26 +214,11 @@ class Zigbee extends adapterCore.Adapter {
         }
     }
 
-    debugLog(data, ...args) {
-        const message = (args) ? util.format(data, ...args) : data;
-        if (this.debugActive) this.log.debug(message.slice(message.indexOf('zigbee-herdsman')));
-    }
-
     async onReady() {
 
         const dbActive = await this.getForeignState(`system.adapter.${this.namespace}.logLevel`);
         this.debugActive = (dbActive && dbActive.val === 'debug');
         this.log.info('Adapter ready - starting subsystems. Adapter is running in '+(dbActive?.val ?? 'unknown')+ ' mode.');
-        if (this.config.debugHerdsman) {
-            if (debug) {
-                this.log.warn('Activating zigbee-herdsman debug connection - successful');
-                debug.log = this.debugLog.bind(this);
-                debug.enable('zigbee-herdsman*');
-            }
-            else {
-                this.log.warn('Activating zigbee-herdsman debug connection - failed: debug library not available');
-            }
-        }
         // external converters
         this.applyExternalConverters();
 
@@ -860,12 +836,6 @@ class Zigbee extends adapterCore.Adapter {
             this.log.info(`Halting zigbee adapter. Restart delay is at least ${this.ioPack.common.stopTimeout / 1000} seconds.`)
             this.setState('info.connection', false, true);
             const chain = [];
-            if (this.config.debugHerdsman) {
-                if (debug) {
-                    debug.disable();
-                    debug.log = originalLogMethod;
-                }
-            }
             this.log.info('cleaning everything up');
             await this.callPluginMethod('stop');
             if (this.stController) chain.push(this.stController.stop());
