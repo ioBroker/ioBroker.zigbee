@@ -145,6 +145,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### Unreleased
+* (reloxx13) Report group membership failures and await group synchronization before replying.
+
 ### 3.5.5 (2026-08-06)
 * (kropipd) Improved handling for device configuration
 * (bueste) Respond to unsolicited OTA messages

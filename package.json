@@ -79,7 +79,7 @@
     "test": "npm run test:package && npm run test:unit",
     "docgen": "node support/docgen.js",
     "test:package": "mocha test/package --exit",
-    "test:unit": "mocha test/unit --exit",
+    "test:unit": "mocha test/unit --exit && node --test test/*.test.js",
     "test:integration": "mocha test/integration --exit",
     "test:js": "mocha --opts test/mocha.custom.opts",
     "lint": "eslint .",
