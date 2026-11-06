@@ -292,6 +292,7 @@
     "autostart": false,
     "readAllAtStart": false,
     "readAtAnnounce": true,
+    "restoreGroupsOnRejoin": false,
     "startReadDelay": 1,
     "pingTimeout": 300,
     "pingCluster": "",

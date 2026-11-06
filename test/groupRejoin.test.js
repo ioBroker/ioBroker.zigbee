@@ -7,7 +7,7 @@ const ZigbeeController = require('../lib/zigbeecontroller');
 function fixture() {
     const warnings = [];
     const adapter = {
-        config: {}, localConfig: {},
+        config: { restoreGroupsOnRejoin: true }, localConfig: {}, sendError() {},
         log: { debug() {}, info() {}, warn(message) { warnings.push(message); }, error() {} },
         stController: { verifyDeviceName() { return 'Lamp'; }, checkDebugDevice() { return false; } },
     };
@@ -28,7 +28,8 @@ function fixture() {
         async addToGroup(group) { added.push(group.groupID); present.add(group.groupID); },
     };
     const device = { ieeeAddr: '0x00124b0000000001', interviewState: 'SUCCESSFUL', endpoints: [endpoint] };
-    const group = { groupID: 1, hasMember(ep) { return ep === endpoint; } };
+    endpoint.getDevice = () => device;
+    const group = { groupID: 1, members: [endpoint], hasMember(ep) { return ep === endpoint; } };
     const groups = [group];
     controller.herdsman = {
         getPermitJoin() { return false; },
@@ -39,41 +40,17 @@ function fixture() {
     return { controller, device, endpoint, group, groups, present, queries, added, warnings };
 }
 
-test('announce repairs missing lamp-side membership while retaining the existing group', async () => {
-    const f = fixture();
-    await f.controller.handleDeviceAnnounce({ device: f.device });
-    assert.deepEqual(f.added, [1]);
-    assert.deepEqual(f.queries, [{ cluster: 'genGroups', command: 'getMembership', payload: { groupcount: 0, grouplist: [] } }]);
-    assert.strictEqual(f.groups[0], f.group);
-    await f.controller.handleDeviceAnnounce({ device: f.device });
-    assert.deepEqual(f.added, [1], 'existing lamp membership is not added twice');
-});
-
-test('existing device join restores groups without requiring a new interview', async () => {
-    const f = fixture();
-    await f.controller.handleDeviceJoined({ device: f.device });
-    assert.deepEqual(f.added, [1]);
-});
-
-test('successful interview restores groups too', async () => {
-    const f = fixture();
-    await f.controller.handleDeviceInterview({ device: f.device, status: 'successful' });
-    assert.deepEqual(f.added, [1]);
-});
-
-test('devices without saved groups produce no group commands', async () => {
-    const f = fixture();
-    f.groups.length = 0;
-    await f.controller.handleDeviceAnnounce({ device: f.device });
-    assert.deepEqual(f.queries, []);
-    assert.deepEqual(f.added, []);
-});
-
-test('incomplete interview does not trigger restoration', async () => {
-    const f = fixture();
-    f.device.interviewState = 'IN_PROGRESS';
-    await f.controller.handleDeviceJoined({ device: f.device });
-    assert.deepEqual(f.queries, []);
+test('ineligible devices cause no group queries', async () => {
+    for (const scenario of ['no saved groups', 'incomplete interview', 'no groups input cluster']) {
+        const f = fixture();
+        if (scenario === 'no saved groups') f.groups.length = 0;
+        if (scenario === 'incomplete interview') f.device.interviewState = 'IN_PROGRESS';
+        if (scenario === 'no groups input cluster') f.endpoint.inputClusters = [];
+        await f.controller.handleDeviceJoined({ device: f.device });
+        await new Promise(resolve => setImmediate(resolve));
+        assert.deepEqual(f.queries, [], scenario);
+        assert.deepEqual(f.warnings, [], scenario);
+    }
 });
 
 test('membership query failures and malformed replies do not guess or delete memberships', async () => {
@@ -81,6 +58,7 @@ test('membership query failures and malformed replies do not guess or delete mem
         const f = fixture();
         f.endpoint.command = async () => { if (reply instanceof Error) throw reply; return reply; };
         await f.controller.handleDeviceAnnounce({ device: f.device });
+        await new Promise(resolve => setImmediate(resolve));
         assert.deepEqual(f.added, []);
         assert.equal(f.groups.length, 1);
         assert.equal(f.warnings.length, 1);
@@ -90,14 +68,19 @@ test('membership query failures and malformed replies do not guess or delete mem
 test('overlapping announcements share one reconciliation and can retry after failure', async () => {
     const f = fixture();
     let release;
-    f.endpoint.command = () => new Promise(resolve => { release = resolve; });
+    let queries = 0;
+    f.endpoint.command = () => { queries++; return new Promise(resolve => { release = resolve; }); };
     const first = f.controller.handleDeviceAnnounce({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
     await f.controller.handleDeviceAnnounce({ device: f.device });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(queries, 1, 'overlapping events must share the pending query');
     release(undefined);
     await first;
+    await new Promise(resolve => setImmediate(resolve));
     f.endpoint.command = async () => ({ grouplist: [] });
     await f.controller.handleDeviceAnnounce({ device: f.device });
+    await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, [1]);
 });
 
@@ -105,26 +88,23 @@ test('a group removed during the membership query is not resurrected', async () 
     const f = fixture();
     f.endpoint.command = async () => { f.groups.length = 0; return { grouplist: [] }; };
     await f.controller.handleDeviceAnnounce({ device: f.device });
+    await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, []);
 });
-
-test('shutdown during the membership query prevents further radio writes', async () => {
-    const f = fixture();
-    f.endpoint.command = async () => { f.controller.herdsmanStarted = false; return { grouplist: [] }; };
-    await f.controller.handleDeviceAnnounce({ device: f.device });
-    assert.deepEqual(f.added, []);
-});
-
 
 test('restores only saved groups and leaves additional device groups alone', async () => {
     const f = fixture();
     f.present.add(17);
-    f.groups.push({ groupID: 2, hasMember(ep) { return ep === f.endpoint; } });
-    f.groups.push({ groupID: 3, hasMember() { return false; } });
+    f.groups.push({ groupID: 2, members: [f.endpoint], hasMember(ep) { return ep === f.endpoint; } });
+    f.groups.push({ groupID: 3, members: [], hasMember() { return false; } });
     await f.controller.handleDeviceAnnounce({ device: f.device });
+    await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, [1, 2]);
     assert.deepEqual([...f.present], [17, 1, 2]);
     assert.equal(f.queries.length, 1);
+    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.deepEqual(f.added, [1, 2], 'existing memberships are not added again');
 });
 
 test('failed addition is reported and retried on a later announce', async () => {
@@ -132,9 +112,81 @@ test('failed addition is reported and retried on a later announce', async () => 
     const add = f.endpoint.addToGroup;
     f.endpoint.addToGroup = async () => { throw new Error('ZCL failure'); };
     await f.controller.handleDeviceAnnounce({ device: f.device });
+    await new Promise(resolve => setImmediate(resolve));
     assert.equal(f.warnings.length, 1);
     assert.deepEqual(f.added, []);
     f.endpoint.addToGroup = add;
     await f.controller.handleDeviceAnnounce({ device: f.device });
+    await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, [1]);
+});
+
+test('restoration is opt-in, including configurations from older installations', async () => {
+    for (const enabled of [false, undefined]) {
+        const f = fixture();
+        f.controller.adapter.config.restoreGroupsOnRejoin = enabled;
+        let scans = 0;
+        f.controller.herdsman.getGroupsIterator = function* () { scans++; yield* f.groups; };
+        await f.controller.handleDeviceJoined({ device: f.device });
+        await f.controller.handleDeviceAnnounce({ device: f.device });
+        await f.controller.handleDeviceInterview({ device: f.device, status: 'successful' });
+        assert.equal(scans, 0);
+        assert.deepEqual(f.queries, []);
+        assert.deepEqual(f.warnings, []);
+    }
+});
+
+test('event handlers finish while a membership query is still pending', async () => {
+    for (const event of ['handleDeviceJoined', 'handleDeviceAnnounce', 'handleDeviceInterview']) {
+        const f = fixture();
+        let release;
+        f.endpoint.command = () => new Promise(resolve => { release = resolve; });
+        const handled = f.controller[event]({ device: f.device, status: 'successful' });
+        const finished = await Promise.race([handled.then(() => true), new Promise(resolve => setImmediate(() => resolve(false)))]);
+        release({ grouplist: [] });
+        await handled;
+        await new Promise(resolve => setImmediate(resolve));
+        assert.equal(finished, true, event);
+        assert.deepEqual(f.added, [1]);
+    }
+});
+
+test('repeated events and ungrouped devices do not rescan the network groups', async () => {
+    const f = fixture();
+    let scans = 0;
+    f.controller.herdsman.getGroupsIterator = function* () { scans++; yield* f.groups; };
+    for (const device of [f.device, f.device, { ...f.device, ieeeAddr: '0x002' }]) {
+        await f.controller.handleDeviceJoined({ device });
+        await new Promise(resolve => setImmediate(resolve));
+    }
+    assert.equal(scans, 1);
+    assert.equal(f.queries.length, 2);
+});
+
+test('adding a membership after the index was built makes it eligible for restoration', async () => {
+    const f = fixture();
+    await f.controller.restoreDeviceGroups(f.device);
+    const group = { groupID: 2, members: [], hasMember(ep) { return this.members.includes(ep); } };
+    f.groups.push(group);
+    f.controller.getGroupMembersFromController = async () => [];
+    f.controller.resolveEntity = async id => id === 2 ? { mapped: group } : { endpoint: f.endpoint };
+    const add = f.endpoint.addToGroup;
+    f.endpoint.addToGroup = async group => { await add(group); if (!group.hasMember(f.endpoint)) group.members.push(f.endpoint); };
+    assert.deepEqual(await f.controller.addDevToGroup(f.device.ieeeAddr, 2), {});
+    f.present.clear();
+    f.added.length = 0;
+    await f.controller.restoreDeviceGroups(f.device);
+    assert.deepEqual(f.added, [1, 2]);
+});
+
+test('shutdown stops queries for the remaining endpoints', async () => {
+    const f = fixture();
+    const second = { ...f.endpoint, ID: 2, command() { assert.fail('query after shutdown'); } };
+    f.device.endpoints.push(second);
+    f.group.members.push(second);
+    f.group.hasMember = ep => f.group.members.includes(ep);
+    f.endpoint.command = async () => { f.controller.herdsmanStarted = false; return { grouplist: [] }; };
+    await f.controller.restoreDeviceGroups(f.device);
+    assert.deepEqual(f.added, []);
+    assert.deepEqual(f.warnings, []);
 });
