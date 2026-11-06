@@ -148,8 +148,7 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### Unreleased
-* (reloxx13) Report group membership failures and await group synchronization before replying.
-* (reloxx13) Optionally restore missing device-side group memberships in the background after a rejoin or successful interview without recreating groups (disabled by default).
+* (reloxx13) Add optional group membership restoration after rejoin or successful interview (disabled by default), and report membership update failures after synchronization.
 
 ### 3.5.5 (2026-08-06)
 * (kropipd) Improved handling for device configuration
