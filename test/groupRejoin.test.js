@@ -3,14 +3,29 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const ZigbeeController = require('../lib/zigbeecontroller');
+const Module = require('node:module');
+const originalLoad = Module._load;
+let LocalConfig;
+try {
+    // LocalConfig uses no adapter-core API here; avoid requiring a real controller sandbox.
+    Module._load = function (request, ...args) {
+        if (request === '@iobroker/adapter-core') return {};
+        return originalLoad.call(this, request, ...args);
+    };
+    LocalConfig = require('../lib/localConfig');
+} finally {
+    Module._load = originalLoad;
+}
 
 function fixture() {
     const warnings = [];
     const adapter = {
-        config: { restoreGroupsOnRejoin: true }, localConfig: {}, sendError() {},
+        config: { restoreGroupsOnRejoin: true }, localConfig: {}, on() {}, sendError() {},
         log: { debug() {}, info() {}, warn(message) { warnings.push(message); }, error() {} },
         stController: { verifyDeviceName() { return 'Lamp'; }, checkDebugDevice() { return false; } },
     };
+    adapter.localConfig = new LocalConfig(adapter);
+    adapter.localConfig.localData.by_model.Lamp = { options: { restoreGroupsOnRejoin: true } };
     const controller = new ZigbeeController(adapter);
     controller.on('log', (level, message) => { if (level === 'warn') warnings.push(message); });
     controller.debugActive = false;
@@ -36,7 +51,7 @@ function fixture() {
         *getGroupsIterator() { yield* groups; },
         getGroupByID(id) { return groups.find(g => g.groupID === id); },
     };
-    controller.resolveEntity = async () => ({ device, name: device.ieeeAddr, mapped: { model: 'Lamp' }, options: {} });
+    controller.resolveEntity = async () => ({ device, name: device.ieeeAddr, mapped: { model: 'Lamp' }, options: adapter.localConfig.getOptions(device.ieeeAddr, 'Lamp') });
     return { controller, device, endpoint, group, groups, present, queries, added, warnings };
 }
 
@@ -168,7 +183,7 @@ test('adding a membership after the index was built makes it eligible for restor
     const group = { groupID: 2, members: [], hasMember(ep) { return this.members.includes(ep); } };
     f.groups.push(group);
     f.controller.getGroupMembersFromController = async () => [];
-    f.controller.resolveEntity = async id => id === 2 ? { mapped: group } : { endpoint: f.endpoint };
+    f.controller.resolveEntity = async id => id === 2 ? { mapped: group } : { device: f.device, endpoint: f.endpoint, options: { restoreGroupsOnRejoin: true } };
     const add = f.endpoint.addToGroup;
     f.endpoint.addToGroup = async group => { await add(group); if (!group.hasMember(f.endpoint)) group.members.push(f.endpoint); };
     assert.deepEqual(await f.controller.addDevToGroup(f.device.ieeeAddr, 2), {});
@@ -201,4 +216,99 @@ test('announcements retain normal state reads without querying or restoring grou
     assert.equal(reads, 1);
     assert.deepEqual(f.queries, []);
     assert.deepEqual(f.added, []);
+});
+
+
+test('device and model options gate restoration before any group scan', async () => {
+    for (const [model, device, enabled] of [
+        [undefined, undefined, false], [true, undefined, true],
+        [true, false, false], [false, true, true], [undefined, true, true],
+    ]) {
+        const f = fixture();
+        f.controller.localConfig.localData.by_model.Lamp.options = { restoreGroupsOnRejoin: model };
+        f.controller.localConfig.localData.by_id[f.device.ieeeAddr.slice(2)] = { options: { restoreGroupsOnRejoin: device } };
+        // Missing values must be absent, as in saved user options.
+        if (device === undefined) delete f.controller.localConfig.localData.by_id[f.device.ieeeAddr.slice(2)].options.restoreGroupsOnRejoin;
+        let scans = 0;
+        f.controller.herdsman.getGroupsIterator = function* () { scans++; yield* f.groups; };
+        await f.controller.restoreDeviceGroups(f.device);
+        assert.equal(scans, enabled ? 1 : 0);
+        assert.equal(f.queries.length, enabled ? 1 : 0);
+        assert.deepEqual(f.warnings, []);
+    }
+    const option = LocalConfig.AdapterOptions.find(option => option.name === 'restoreGroupsOnRejoin');
+    assert.equal(option.byDevice, true);
+    assert.equal(option.byModel, true);
+    assert.equal(option.type, 'binary');
+});
+
+test('listing groups and removing unrelated devices preserve the existing index', async () => {
+    const f = fixture();
+    await f.controller.restoreDeviceGroups(f.device);
+    const index = f.controller.deviceGroups;
+    const endpoints = index.get(f.device.ieeeAddr);
+    f.controller.getGroupMembersFromController = async () => [];
+    await f.controller.getGroups();
+    f.controller.herdsman.getDeviceByIeeeAddr = () => undefined;
+    await f.controller.remove('0x002', false);
+    await f.controller.handleDeviceLeave({ ieeeAddr: '0x003' });
+    assert.equal(f.controller.deviceGroups, index);
+    assert.equal(index.get(f.device.ieeeAddr), endpoints);
+    f.controller.herdsman.getGroupsIterator = () => { assert.fail('unnecessary index rebuild'); };
+    await f.controller.restoreDeviceGroups(f.device);
+    assert.equal(f.queries.length, 2);
+});
+
+test('removing a grouped device deletes only its cached memberships', async () => {
+    const f = fixture();
+    await f.controller.restoreDeviceGroups(f.device);
+    const index = f.controller.deviceGroups;
+    const other = new Map();
+    index.set('0x002', other);
+    let removed = false;
+    f.device.removeFromNetwork = async () => {};
+    f.device.removeFromDatabase = () => { removed = true; };
+    f.controller.herdsman.getDeviceByIeeeAddr = () => removed ? undefined : f.device;
+    await f.controller.remove(f.device.ieeeAddr, false);
+    assert.equal(removed, true);
+    assert.equal(index.has(f.device.ieeeAddr), false);
+    assert.equal(index.get('0x002'), other);
+    assert.equal(f.controller.deviceGroups, index);
+    index.set(f.device.ieeeAddr, new Map());
+    await f.controller.handleDeviceLeave({ ieeeAddr: f.device.ieeeAddr });
+    assert.equal(index.has(f.device.ieeeAddr), false);
+    assert.equal(index.get('0x002'), other);
+});
+
+test('group deletion prunes only removed groups and retains failed removals', async () => {
+    for (const fail of [false, true]) {
+        const f = fixture();
+        const retained = { groupID: 2, members: [f.endpoint], hasMember: ep => ep === f.endpoint };
+        f.groups.push(retained);
+        await f.controller.restoreDeviceGroups(f.device);
+        const index = f.controller.deviceGroups;
+        f.group.removeFromNetwork = async () => {
+            if (fail) throw new Error('timeout');
+            f.groups.splice(0, 1);
+        };
+        await f.controller.removeGroupById(1);
+        assert.equal(f.controller.deviceGroups, index);
+        assert.deepEqual(index.get(f.device.ieeeAddr).get(1), fail ? [f.group, retained] : [retained]);
+        assert.deepEqual(f.warnings, []);
+    }
+});
+
+test('membership removal refreshes only the affected device', async () => {
+    const f = fixture();
+    await f.controller.restoreDeviceGroups(f.device);
+    const index = f.controller.deviceGroups;
+    const other = new Map();
+    index.set('0x002', other);
+    f.group.hasMember = ep => f.group.members.includes(ep);
+    f.endpoint.removeFromGroup = async () => { f.group.members.length = 0; };
+    f.controller.resolveEntity = async id => id === 1 ? { mapped: f.group } : { device: f.device, endpoint: f.endpoint };
+    assert.deepEqual(await f.controller.removeDevFromGroup('zigbee.0.' + f.device.ieeeAddr.slice(2), 1), {});
+    assert.equal(f.controller.deviceGroups, index);
+    assert.equal(index.get('0x002'), other);
+    assert.equal(index.get(f.device.ieeeAddr).size, 0);
 });
