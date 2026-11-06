@@ -73,7 +73,7 @@ The adapter configuration is done completely and solely through the instance set
 
 This tab contains the general adapter settings. Most of the adapter behaviour is configured on this tab.
 
-Enable **Restore group memberships after device rejoin** in the adapter settings to repair saved memberships that a device has forgotten. This option is disabled by default. Only devices with saved memberships receive group queries; join, announce and interview handling does not wait for the radio replies.
+Enable **Restore group memberships after device rejoin** in the adapter settings to repair saved memberships that a device has forgotten. This option is disabled by default. Only devices with saved memberships receive group queries; restoration runs on join and successful interview without waiting for the radio replies. Announcements do not trigger group restoration.
 
 It also include the setting for external converters, which currently read relative to 2 folders:
 - The adapters Data folder, i.e. the folder where the `sheperd.db`, `nvbackup.json` and `LocalOverrides.json` are located
@@ -149,7 +149,7 @@ You can thank the authors by these links:
 ## Changelog
 ### Unreleased
 * (reloxx13) Report group membership failures and await group synchronization before replying.
-* (reloxx13) Optionally restore missing device-side group memberships in the background after a rejoin, announcement or successful interview without recreating groups (disabled by default).
+* (reloxx13) Optionally restore missing device-side group memberships in the background after a rejoin or successful interview without recreating groups (disabled by default).
 
 ### 3.5.5 (2026-08-06)
 * (kropipd) Improved handling for device configuration

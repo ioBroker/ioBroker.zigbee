@@ -57,7 +57,7 @@ test('membership query failures and malformed replies do not guess or delete mem
     for (const reply of [undefined, { grouplist: 'invalid' }, { grouplist: [NaN] }, new Error('timeout')]) {
         const f = fixture();
         f.endpoint.command = async () => { if (reply instanceof Error) throw reply; return reply; };
-        await f.controller.handleDeviceAnnounce({ device: f.device });
+        await f.controller.handleDeviceJoined({ device: f.device });
         await new Promise(resolve => setImmediate(resolve));
         assert.deepEqual(f.added, []);
         assert.equal(f.groups.length, 1);
@@ -65,21 +65,21 @@ test('membership query failures and malformed replies do not guess or delete mem
     }
 });
 
-test('overlapping announcements share one reconciliation and can retry after failure', async () => {
+test('overlapping joins share one reconciliation and can retry after failure', async () => {
     const f = fixture();
     let release;
     let queries = 0;
     f.endpoint.command = () => { queries++; return new Promise(resolve => { release = resolve; }); };
-    const first = f.controller.handleDeviceAnnounce({ device: f.device });
+    const first = f.controller.handleDeviceJoined({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
-    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await f.controller.handleDeviceJoined({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
     assert.equal(queries, 1, 'overlapping events must share the pending query');
     release(undefined);
     await first;
     await new Promise(resolve => setImmediate(resolve));
     f.endpoint.command = async () => ({ grouplist: [] });
-    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await f.controller.handleDeviceJoined({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, [1]);
 });
@@ -87,7 +87,7 @@ test('overlapping announcements share one reconciliation and can retry after fai
 test('a group removed during the membership query is not resurrected', async () => {
     const f = fixture();
     f.endpoint.command = async () => { f.groups.length = 0; return { grouplist: [] }; };
-    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await f.controller.handleDeviceJoined({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, []);
 });
@@ -97,26 +97,26 @@ test('restores only saved groups and leaves additional device groups alone', asy
     f.present.add(17);
     f.groups.push({ groupID: 2, members: [f.endpoint], hasMember(ep) { return ep === f.endpoint; } });
     f.groups.push({ groupID: 3, members: [], hasMember() { return false; } });
-    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await f.controller.handleDeviceJoined({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, [1, 2]);
     assert.deepEqual([...f.present], [17, 1, 2]);
     assert.equal(f.queries.length, 1);
-    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await f.controller.handleDeviceJoined({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, [1, 2], 'existing memberships are not added again');
 });
 
-test('failed addition is reported and retried on a later announce', async () => {
+test('failed addition is reported and retried on a later join', async () => {
     const f = fixture();
     const add = f.endpoint.addToGroup;
     f.endpoint.addToGroup = async () => { throw new Error('ZCL failure'); };
-    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await f.controller.handleDeviceJoined({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
     assert.equal(f.warnings.length, 1);
     assert.deepEqual(f.added, []);
     f.endpoint.addToGroup = add;
-    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await f.controller.handleDeviceJoined({ device: f.device });
     await new Promise(resolve => setImmediate(resolve));
     assert.deepEqual(f.added, [1]);
 });
@@ -128,7 +128,6 @@ test('restoration is opt-in, including configurations from older installations',
         let scans = 0;
         f.controller.herdsman.getGroupsIterator = function* () { scans++; yield* f.groups; };
         await f.controller.handleDeviceJoined({ device: f.device });
-        await f.controller.handleDeviceAnnounce({ device: f.device });
         await f.controller.handleDeviceInterview({ device: f.device, status: 'successful' });
         assert.equal(scans, 0);
         assert.deepEqual(f.queries, []);
@@ -137,7 +136,7 @@ test('restoration is opt-in, including configurations from older installations',
 });
 
 test('event handlers finish while a membership query is still pending', async () => {
-    for (const event of ['handleDeviceJoined', 'handleDeviceAnnounce', 'handleDeviceInterview']) {
+    for (const event of ['handleDeviceJoined', 'handleDeviceInterview']) {
         const f = fixture();
         let release;
         f.endpoint.command = () => new Promise(resolve => { release = resolve; });
@@ -189,4 +188,17 @@ test('shutdown stops queries for the remaining endpoints', async () => {
     await f.controller.restoreDeviceGroups(f.device);
     assert.deepEqual(f.added, []);
     assert.deepEqual(f.warnings, []);
+});
+
+
+test('announcements retain normal state reads without querying or restoring groups', async () => {
+    const f = fixture();
+    f.controller.readAtAnnounce = true;
+    let reads = 0;
+    f.controller.doDeviceQuery = async () => { reads++; };
+    await f.controller.handleDeviceAnnounce({ device: f.device });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(reads, 1);
+    assert.deepEqual(f.queries, []);
+    assert.deepEqual(f.added, []);
 });
