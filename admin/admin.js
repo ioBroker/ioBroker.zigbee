@@ -46,6 +46,7 @@ let devices = [],
     dynamicUI = true,
     tilesingleaction = true,
     isHerdsmanRunning = false;
+let networkFrameTimer = null;
 const dbgMsgfilter = new Set();
 const dbgMsghide = new Set();
 const updateCardInterval = setInterval(updateCardTimer, 6000);
@@ -3236,45 +3237,42 @@ function showNetworkMap(devices, map) {
     updateMapFilter();
 
 
-    // functions to animate:
+    // functions to animate: one timer and one draw handler, however often the map is shown again
     networkEvents = [];
-    setInterval(updateFrameTimer, 60);
+    if (networkFrameTimer) clearInterval(networkFrameTimer);
+    networkFrameTimer = setInterval(updateFrameTimer, 60);
+    network.off('beforeDrawing', drawNetworkEvents);
+    network.on('beforeDrawing', drawNetworkEvents);
+}
 
-    function updateFrameTimer() {
-        if (networkEvents.length > 0) {
-            network.redraw();
-            const toDelete = [];
-            networkEvents.forEach((event, index) => {
-                if (event.radius >= 1) {
-                    toDelete.push(index);
-                } else {
-                    event.radius += 0.08;
-                }
-            });
-            toDelete.forEach((index) => {
-                networkEvents.splice(index, 1);
-            });
+// advances the event circles drawn around map nodes and drops the finished ones
+function updateFrameTimer() {
+    if (network && networkEvents.length > 0) {
+        network.redraw();
+        for (const event of networkEvents) {
+            if (event.radius < 1) event.radius += 0.08;
+        }
+        networkEvents = networkEvents.filter((event) => event.radius < 1);
+    }
+}
+
+// draws the event circles around map nodes (vis-network 'beforeDrawing' handler)
+function drawNetworkEvents(ctx) {
+    if (networkEvents.length > 0) {
+        const nodePositions = network.getPositions();
+        for (const event of networkEvents) {
+            const nodePosition = nodePositions[event.node];
+            if (!nodePosition) continue;
+            const radius = Math.min(event.radius, 1);
+            const cap = Math.cos(radius * Math.PI / 2);
+            const color = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.circle(nodePosition.x, nodePosition.y, Math.abs(100 * Math.sin(radius)));
+            ctx.fill();
+            ctx.stroke();
         }
     }
-
-    network.on('beforeDrawing', function (ctx) {
-        if (networkEvents.length > 0) {
-            networkEvents.forEach((event) => {
-                const inode = event.node;
-                const nodePosition = network.getPositions();
-                event.radius = (event.radius > 1) ? 1 : event.radius;
-                const cap = Math.cos(event.radius * Math.PI / 2);
-                const colorCircle = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
-                const colorBorder = `rgba(0, 255, 255, ${cap.toFixed(2)})`;
-                ctx.strokeStyle = colorCircle;
-                ctx.fillStyle = colorBorder;
-                const radius = Math.abs(100 * Math.sin(event.radius));
-                ctx.circle(nodePosition[inode].x, nodePosition[inode].y, radius);
-                ctx.fill();
-                ctx.stroke();
-            });
-        }
-    });
 }
 
 function redrawMap() {
