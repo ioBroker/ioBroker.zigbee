@@ -49,9 +49,6 @@ const zigbeeHerdsmanPackage = require('zigbee-herdsman/package.json')
 
 
 
-// pause between the connection test and the real connection to a network coordinator (#3020)
-const RECONNECT_PROBE_SETTLE_DELAY = 500;
-
 const E_INFO  = 1;
 const E_DEBUG = 2;
 const E_WARN  = 3;
@@ -551,11 +548,12 @@ class Zigbee extends adapterCore.Adapter {
                     this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
                     this.reconnectCounter -= 1;
                 }
-                if (utils.getNetAddress(this.config.port).host) {
-                    // @KI_HINWEIS: testConnection() has just opened and closed a probe socket. Some network
-                    // coordinators (XZG / cod.m CZC firmware) ignore a connection that arrives within a few ms
-                    // after a closed one, so zigbee-herdsman would wait for a ping that never comes (#3020).
-                    await this.delay(RECONNECT_PROBE_SETTLE_DELAY);
+                const probePause = Number(this.config.reconnectProbeDelay) || 0;
+                if (probePause > 0 && utils.getNetAddress(this.config.port).host) {
+                    // testConnection() has just opened and closed a probe socket. Some network coordinators
+                    // (XZG / cod.m CZC firmware) ignore a connection that arrives within a few ms after a
+                    // closed one, so zigbee-herdsman would wait for a ping that never comes (#3020).
+                    await this.delay(Math.min(probePause, 5000));
                 }
                 this.doConnect();
             } catch (error) {

@@ -57,6 +57,7 @@
     "PanID": "潘ID",
     "PanIDText": "Pan ID是一些简化的ID（在可能的情况下，Zigbee使用它而不是ExtPanID）。这也应该是唯一的。注意：如果Zigbee网络检测到ID冲突，则可能会选择与此处指定的Pan ID不同的Pan ID。",
     "Parent/Child/Unknown": "父设备/子设备/未知设备",
+    "Pause before reconnect (ms)": "重新连接前的暂停（毫秒）",
     "Please contribute your discoveries": "请贡献你的发现",
     "Previous Parents": "前父设备",
     "Read Firmware": "读取固件",
