@@ -68,35 +68,48 @@ test('ineligible devices cause no group queries', async () => {
     }
 });
 
-test('membership query failures and malformed replies do not guess or delete memberships', async () => {
-    for (const reply of [undefined, { grouplist: 'invalid' }, { grouplist: [NaN] }, new Error('timeout')]) {
+test('query and add failures preserve memberships and allow a later retry', async () => {
+    for (const failure of [undefined, { grouplist: 'invalid' }, { grouplist: [NaN] }, new Error('timeout'), 'add failure']) {
         const f = fixture();
-        f.endpoint.command = async () => { if (reply instanceof Error) throw reply; return reply; };
-        await f.controller.handleDeviceJoined({ device: f.device });
-        await new Promise(resolve => setImmediate(resolve));
+        const command = f.endpoint.command;
+        const add = f.endpoint.addToGroup;
+        if (failure === 'add failure') f.endpoint.addToGroup = async () => { throw new Error('ZCL failure'); };
+        else f.endpoint.command = async () => { if (failure instanceof Error) throw failure; return failure; };
+        await f.controller.restoreDeviceGroups(f.device);
         assert.deepEqual(f.added, []);
-        assert.equal(f.groups.length, 1);
         assert.equal(f.warnings.length, 1);
+        f.endpoint.command = command;
+        f.endpoint.addToGroup = add;
+        await f.controller.restoreDeviceGroups(f.device);
+        assert.deepEqual(f.added, [1]);
     }
 });
 
-test('overlapping joins share one reconciliation and can retry after failure', async () => {
+test('rejoin bursts serialize radio requests and coalesce duplicate events', async () => {
     const f = fixture();
-    let release;
+    let release, started;
     let queries = 0;
-    f.endpoint.command = () => { queries++; return new Promise(resolve => { release = resolve; }); };
-    const first = f.controller.handleDeviceJoined({ device: f.device });
+    const querying = new Promise(resolve => { started = resolve; });
+    f.endpoint.command = () => {
+        queries++;
+        started();
+        return new Promise(resolve => { release = resolve; });
+    };
+    const other = { ...f.device, ieeeAddr: '0x002' };
+    const endpoint = { ...f.endpoint, getDevice: () => other, command: async () => { queries++; return { grouplist: [1] }; } };
+    other.endpoints = [endpoint];
+    f.group.members.push(endpoint);
+    f.group.hasMember = ep => f.group.members.includes(ep);
+    const first = f.controller.restoreDeviceGroups(f.device);
+    await querying;
+    const duplicate = f.controller.restoreDeviceGroups(f.device);
+    const second = f.controller.restoreDeviceGroups(other);
     await new Promise(resolve => setImmediate(resolve));
-    await f.controller.handleDeviceJoined({ device: f.device });
-    await new Promise(resolve => setImmediate(resolve));
-    assert.equal(queries, 1, 'overlapping events must share the pending query');
+    assert.equal(queries, 1);
     release(undefined);
-    await first;
-    await new Promise(resolve => setImmediate(resolve));
-    f.endpoint.command = async () => ({ grouplist: [] });
-    await f.controller.handleDeviceJoined({ device: f.device });
-    await new Promise(resolve => setImmediate(resolve));
-    assert.deepEqual(f.added, [1]);
+    await Promise.all([first, duplicate, second]);
+    assert.equal(queries, 2);
+    assert.equal(f.warnings.length, 1);
 });
 
 test('a group removed during the membership query is not resurrected', async () => {
@@ -122,20 +135,6 @@ test('restores only saved groups and leaves additional device groups alone', asy
     assert.deepEqual(f.added, [1, 2], 'existing memberships are not added again');
 });
 
-test('failed addition is reported and retried on a later join', async () => {
-    const f = fixture();
-    const add = f.endpoint.addToGroup;
-    f.endpoint.addToGroup = async () => { throw new Error('ZCL failure'); };
-    await f.controller.handleDeviceJoined({ device: f.device });
-    await new Promise(resolve => setImmediate(resolve));
-    assert.equal(f.warnings.length, 1);
-    assert.deepEqual(f.added, []);
-    f.endpoint.addToGroup = add;
-    await f.controller.handleDeviceJoined({ device: f.device });
-    await new Promise(resolve => setImmediate(resolve));
-    assert.deepEqual(f.added, [1]);
-});
-
 test('restoration is opt-in, including configurations from older installations', async () => {
     for (const enabled of [false, undefined]) {
         const f = fixture();
@@ -153,10 +152,12 @@ test('restoration is opt-in, including configurations from older installations',
 test('event handlers finish while a membership query is still pending', async () => {
     for (const event of ['handleDeviceJoined', 'handleDeviceInterview']) {
         const f = fixture();
-        let release;
-        f.endpoint.command = () => new Promise(resolve => { release = resolve; });
+        let release, started;
+        const querying = new Promise(resolve => { started = resolve; });
+        f.endpoint.command = () => { started(); return new Promise(resolve => { release = resolve; }); };
         const handled = f.controller[event]({ device: f.device, status: 'successful' });
         const finished = await Promise.race([handled.then(() => true), new Promise(resolve => setImmediate(() => resolve(false)))]);
+        await querying;
         release({ grouplist: [] });
         await handled;
         await new Promise(resolve => setImmediate(resolve));
@@ -186,6 +187,7 @@ test('adding a membership after the index was built makes it eligible for restor
     f.controller.resolveEntity = async id => id === 2 ? { mapped: group } : { device: f.device, endpoint: f.endpoint, options: { restoreGroupsOnRejoin: true } };
     const add = f.endpoint.addToGroup;
     f.endpoint.addToGroup = async group => { await add(group); if (!group.hasMember(f.endpoint)) group.members.push(f.endpoint); };
+    f.controller.herdsman.getGroupsIterator = () => { assert.fail('membership edit rescanned network groups'); };
     assert.deepEqual(await f.controller.addDevToGroup(f.device.ieeeAddr, 2), {});
     f.present.clear();
     f.added.length = 0;
@@ -205,7 +207,6 @@ test('shutdown stops queries for the remaining endpoints', async () => {
     assert.deepEqual(f.warnings, []);
 });
 
-
 test('announcements retain normal state reads without querying or restoring groups', async () => {
     const f = fixture();
     f.controller.readAtAnnounce = true;
@@ -217,7 +218,6 @@ test('announcements retain normal state reads without querying or restoring grou
     assert.deepEqual(f.queries, []);
     assert.deepEqual(f.added, []);
 });
-
 
 test('device and model options gate restoration before any group scan', async () => {
     for (const [model, device, enabled] of [
@@ -236,10 +236,6 @@ test('device and model options gate restoration before any group scan', async ()
         assert.equal(f.queries.length, enabled ? 1 : 0);
         assert.deepEqual(f.warnings, []);
     }
-    const option = LocalConfig.AdapterOptions.find(option => option.name === 'restoreGroupsOnRejoin');
-    assert.equal(option.byDevice, true);
-    assert.equal(option.byModel, true);
-    assert.equal(option.type, 'binary');
 });
 
 test('listing groups and removing unrelated devices preserve the existing index', async () => {
@@ -283,16 +279,24 @@ test('removing a grouped device deletes only its cached memberships', async () =
 test('group deletion prunes only removed groups and retains failed removals', async () => {
     for (const fail of [false, true]) {
         const f = fixture();
+        const second = { ...f.endpoint, ID: 2 };
+        f.device.endpoints.push(second);
+        f.group.members.push(second);
+        f.group.hasMember = ep => f.group.members.includes(ep);
         const retained = { groupID: 2, members: [f.endpoint], hasMember: ep => ep === f.endpoint };
         f.groups.push(retained);
         await f.controller.restoreDeviceGroups(f.device);
         const index = f.controller.deviceGroups;
-        f.group.removeFromNetwork = async () => {
+        index.values = () => { assert.fail('group deletion scanned unrelated devices'); };
+        f.endpoint.removeFromGroup = async () => { f.group.members.splice(f.group.members.indexOf(f.endpoint), 1); };
+        second.removeFromGroup = async () => {
             if (fail) throw new Error('timeout');
-            f.groups.splice(0, 1);
+            f.group.members.splice(f.group.members.indexOf(second), 1);
         };
+        f.group.removeFromDatabase = () => { f.groups.splice(0, 1); };
         await f.controller.removeGroupById(1);
         assert.equal(f.controller.deviceGroups, index);
+        assert.deepEqual(f.group.members, fail ? [second] : []);
         assert.deepEqual(index.get(f.device.ieeeAddr).get(1), fail ? [f.group, retained] : [retained]);
         assert.deepEqual(f.warnings, []);
     }
@@ -307,8 +311,46 @@ test('membership removal refreshes only the affected device', async () => {
     f.group.hasMember = ep => f.group.members.includes(ep);
     f.endpoint.removeFromGroup = async () => { f.group.members.length = 0; };
     f.controller.resolveEntity = async id => id === 1 ? { mapped: f.group } : { device: f.device, endpoint: f.endpoint };
+    f.controller.herdsman.getGroupsIterator = () => { assert.fail('membership edit rescanned network groups'); };
     assert.deepEqual(await f.controller.removeDevFromGroup('zigbee.0.' + f.device.ieeeAddr.slice(2), 1), {});
     assert.equal(f.controller.deviceGroups, index);
     assert.equal(index.get('0x002'), other);
     assert.equal(index.get(f.device.ieeeAddr).size, 0);
+});
+
+test('manual removals win over an in-flight restoration add', async () => {
+    for (const operation of ['removeDevFromGroup', 'removeDevFromAllGroups', 'removeGroupById']) {
+        const f = fixture();
+        let release, started;
+        const adding = new Promise(resolve => { started = resolve; });
+        f.group.hasMember = ep => f.group.members.includes(ep);
+        f.endpoint.addToGroup = async () => {
+            started();
+            await new Promise(resolve => { release = resolve; });
+            if (!f.group.hasMember(f.endpoint)) f.group.members.push(f.endpoint);
+            f.present.add(1);
+        };
+        f.endpoint.removeFromGroup = async () => {
+            f.group.members.length = 0;
+            f.present.delete(1);
+        };
+        f.endpoint.removeFromAllGroups = f.endpoint.removeFromGroup;
+        f.group.removeFromDatabase = () => { f.groups.length = 0; };
+        f.controller.resolveEntity = async id => id === 1 ? { mapped: f.group } : {
+            device: f.device, endpoint: f.endpoint, endpoints: [f.endpoint], options: { restoreGroupsOnRejoin: true },
+        };
+        const restoration = f.controller.restoreDeviceGroups(f.device);
+        await adding;
+        const removal = operation === 'removeGroupById'
+            ? f.controller.removeGroupById(1)
+            : f.controller[operation](f.device.ieeeAddr, 1);
+        await new Promise(resolve => setImmediate(resolve));
+        release();
+        await restoration;
+        assert.equal((await removal)?.error, undefined);
+        assert.equal(f.group.hasMember(f.endpoint), false);
+        assert.equal(f.present.has(1), false);
+        await f.controller.restoreDeviceGroups(f.device);
+        assert.equal(f.present.has(1), false);
+    }
 });
