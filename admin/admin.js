@@ -2240,40 +2240,44 @@ function getNamedColors() {
 }
 
 let map_errors = [];
+let mapBlock = 0;
 function getMap(rebuild) {
-    if (rebuild) $('#refresh').addClass('disabled');
-    if (isHerdsmanRunning || !rebuild) {
-        sendToWrapper(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
-            $('#refresh').removeClass('disabled');
-            if (msg) {
-                if (!msg.hasMap) $('#refresh').removeClass('hide');
-                else {
-                    $('#refresh').addClass('hide');
-                    if (msg.error) {
-                        //errorData.push(msg.error);
-                        isHerdsmanRunning = false;
-                        updateStartButton();
-                    } else {
-                        isHerdsmanRunning = true;
-                        updateStartButton();
-                        if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
-                            $('#map_errors_btn').removeClass('hide');
-                            $('#map_errors_btn').unbind('click');
-                            map_errors=msg.errors;
-                            $('#map_errors_btn').click(() => {
-                                showMessage(map_errors.join('<br>'), 'Map generation messages');
-                                $('#map_errors_btn').addClass('hide');
-                            })
-                        }
-                        if (map?.timestamp != msg?.timestamp)
-                            map = msg;
-                        if (rebuild) showNetworkMap(devices, map);
+    //$('#refresh').addClass('disabled');
+    const now = Date.now();
+    if (now-mapBlock < 1000) return;
+    mapBlock = now;
+    sendTo(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
+        $('#refresh').removeClass('disabled');
+        if (msg) {
+            if (!msg.hasMap) $('#refresh').addClass('hide');
+            else {
+                $('#refresh').removeClass('hide');
+                /*
+                if (msg.error) {
+                    //errorData.push(msg.error);
+                    isHerdsmanRunning = false;
+                    updateStartButton();
+                } else
+                */
+                {
+                    isHerdsmanRunning = true;
+                    updateStartButton();
+                    if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
+                        $('#map_errors_btn').removeClass('hide');
+                        $('#map_errors_btn').unbind('click');
+                        map_errors=msg.errors;
+                        $('#map_errors_btn').click(() => {
+                            showMessage(map_errors.join('<br>'), 'Map generation messages');
+                            $('#map_errors_btn').addClass('hide');
+                        })
                     }
+                    if (map?.timestamp != msg?.timestamp)
+                        map = msg;
+                    showNetworkMap(devices, map);
                 }
             }
-        });
-    }
-    else showMessage('Unable to generate map, the zigbee subsystem is inactive', 'Map generation error');
+        }
+    });
 }
 
 
@@ -2475,7 +2479,7 @@ function load(settings, onChange) {
     });
 
     $('#refresh').click(function () {
-        getMap(true);
+        getMap(false);
     });
     $('#regenerate').click(function () {
         getMap(true);
@@ -2840,97 +2844,103 @@ socket.on('stateChange', function (id, state) {
     // only watch our own states
     if (id.substring(0, namespaceLen) !== namespace) return;
     if (state) {
-        if (id.match(/\.info\.pairingMode$/)) {
-            if (state.val) {
-                $('#pairing').addClass('pulse');
-            } else {
-                $('#pairing').removeClass('pulse');
-            }
-        } else if (id.match(/\.info\.pairingCountdown$/)) {
-            const blank_btn = '<i class="material-icons">leak_add</i>';
-            if (state.val == 0) {
-                $('#pairing').html(blank_btn);
-                $('#progress_line').css('width', `0%`);
-            } else {
-                $('#pairing').addClass('pulse');
-                $('#pairing').html(state.val);
-                const percent = 100 - 100 * state.val / ($('#countDown').val() || 60);
-                $('#progress_line').css('width', `${percent}%`);
-            }
-        } else if (id.match(/\.info\.pairingMessage$/)) {
-            if (state.val == 'NewDebugMessage') {
-                getDebugMessages();
-            }
-            else {
-                messages.push(state.val);
-                showMessages();
-                if (state.val.startsWith('Zigbee-Herdsman started successfully')) {
-                    isHerdsmanRunning = true;
-                    updateStartButton();
+        const match = id.match(/\.info\.(\w+)$/);
+        if (match) switch (match[1]) {
+            case `paringMode`:
+                if (state.val) {
+                    $('#pairing').addClass('pulse');
+                } else {
+                    $('#pairing').removeClass('pulse');
                 }
-                if (state.val.startsWith('herdsman stopped') || state.val.startsWith('Error herdsman')) {
-                    isHerdsmanRunning = false;
-                    updateStartButton();
+                break;
+            case `pairingCountdown`:
+                if (state.val == 0) {
+                    $('#pairing').html('<i class="material-icons">leak_add</i>');
+                    $('#progress_line').css('width', `0%`);
+                } else {
+                    $('#pairing').addClass('pulse');
+                    $('#pairing').html(state.val);
+                    const percent = 100 - 100 * state.val / ($('#countDown').val() || 60);
+                    $('#progress_line').css('width', `${percent}%`);
                 }
-                if (state.val === 'Closing network.') {
-                    getDevices();
+                break;
+            case `pairingMessage` :
+                switch (state.val) {
+                    case 'NewDebugMessage': getDebugMessages();
+                        break;
+                    case 'Map generation complete': getMap(false);
+                        break;
+                    default:
+                        messages.push(state.val);
+                        showMessages();
+                        if (state.val.startsWith('Zigbee-Herdsman started successfully')) {
+                            isHerdsmanRunning = true;
+                            updateStartButton();
+                        }
+                        if (state.val.startsWith('herdsman stopped') || state.val.startsWith('Error herdsman')) {
+                            isHerdsmanRunning = false;
+                            updateStartButton();
+                        }
+                        if (state.val === 'Closing network.') {
+                            getDevices();
+                        }
+                        if (state.val.startsWith('Map')) {
+                            if (state.val === 'Map invalidated.') {
+                                $('#refresh').removeClass('hide');
+                                return;
+                            }
+                            const numDev = Number(state.val.split(':').pop()) || 0;
+                            if (numDev > 0) {
+                                $(`#map_generating_btn`).removeClass('hide');
+                                $(`#map_generating_btn`).html(`<i class="material-icons large">${borderArr[numDev%4]}</i>`);
+                            }
+                            else {
+                                $('#map_generating_btn').addClass('hide');
+                            }
+                        }
+                        break;
                 }
-                if (state.val.startsWith('Map')) {
-                    if (state.val === 'Map invalidated.') {
-                        $('#refresh').removeClass('hide');
-                        return;
+                break;
+            case `lasterror`:
+                try {
+                    const errobj = JSON.parse(state.val);
+                    let changed = false;
+                    if (errobj.error) {
+                        errorData.errors[errobj.error] = errobj.data;
+                        changed = true;
                     }
-                    const numDev = Number(state.val.split(':').pop()) || 0;
-                    if (numDev > 0) {
-                        $(`#map_generating_btn`).removeClass('hide');
-                        $(`#map_generating_btn`).html(`<i class="material-icons large">${borderArr[numDev%4]}</i>`);
+                    if (errobj.model) {
+                        errorData.unknownModels[errobj.model] = errobj.data;
+                        changed = true;
                     }
-                    else {
-                        $('#map_generating_btn').addClass('hide');
+                    errorData.hasData |= changed;
+                    if (changed) {
+                        $('#show_errors_btn').removeClass('hide');
                     }
                 }
-            }
-        } else if (id.match(/\.info\.lasterror$/)) {
-            try {
-                //console.warn(`lasterror is ${JSON.stringify(state)}`)
-                const errobj = JSON.parse(state.val);
-                let changed = false;
-                if (errobj.error) {
-                    errorData.errors[errobj.error] = errobj.data;
-                    changed = true;
-                }
-                if (errobj.model) {
-                    errorData.unknownModels[errobj.model] = errobj.data;
-                    changed = true;
-                }
-                errorData.hasData |= changed;
-                if (changed) {
-                    $('#show_errors_btn').removeClass('hide');
-                }
-            }
-            catch { console.error('JSON didnt parse') }
+                catch { console.error('JSON didnt parse') }
+                break;
 
-        } else {
-            const devId = extractDevId(id);
-            putEventToNode(devId);
-            const rid = id.split('.').join('_');
-            if (id.match(/\.link_quality$/)) {
-                // update link_quality
-                $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getLQICls(state.val));
-                $(`#${rid}`).text(state.val);
-                const dev = getDeviceByID(devId);
-                if (dev) {
-                    dev.link_quality_lc = state.lc;
-                }
-            }
-            if (id.match(/\.battery$/)) {
-                // update battery
-                $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
-                $(`#${rid}`).text(state.val);
-            }
-            // set other states
-            setDashStates(id, state);
         }
+        const devId = extractDevId(id);
+        putEventToNode(devId);
+        const rid = id.split('.').join('_');
+        if (id.match(/\.link_quality$/)) {
+            // update link_quality
+            $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getLQICls(state.val));
+            $(`#${rid}`).text(state.val);
+            const dev = getDeviceByID(devId);
+            if (dev) {
+                dev.link_quality_lc = state.lc;
+            }
+        }
+        if (id.match(/\.battery$/)) {
+            // update battery
+            $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
+            $(`#${rid}`).text(state.val);
+        }
+        // set other states
+        setDashStates(id, state);
     }
 });
 

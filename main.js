@@ -54,12 +54,14 @@ const E_DEBUG = 2;
 const E_WARN  = 3;
 const E_ERROR = 4;
 
+/*
 const errorCodes = {
     9999: {severity: E_INFO, message: 'No response'},
     233: {severity: E_DEBUG, message: 'MAC NO ACK'},
     205: {severity: E_WARN, message: 'No network route'},
     134: {severity: E_WARN, message: 'Unsupported Attribute'},
 };
+*/
 
 function isFunction(functionToCheck) {
     return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
@@ -169,49 +171,11 @@ class Zigbee extends adapterCore.Adapter {
     // by the states controller instead of flooding the log: the first one is logged as an
     // error, the repeats only update the counter shown in the errors view of the admin
     // tab and in info.lasterror. The caller clears the key once the cause is resolved.
-    logFilteredError(stashKey, text) {
+    logFilteredError(stashKey, text, error, timeout) {
         if (stashKey && this.stController) {
-            this.stController.stashErrors(stashKey, `${text} - repeats are counted, not logged (errors view in the admin tab)`, true);
+            this.stController.stashErrors(stashKey, text, error, timeout);
         } else {
             this.log.error(text);
-        }
-    }
-
-    filterError(errormessage, message, error, stashKey) {
-        if (error != null && error.code == undefined) {
-            let em = error.stack.match(/failed \((.+?)\) at/);
-            em = em || error.stack.match(/failed \((.+?)\)/);
-            this.logFilteredError(stashKey, `${message} no error code (${(em ? em[1] : 'undefined')})`);
-            this.sendError(error, `${message} no error code`);
-            if (this.debugActive) this.log.debug(`Stack trace for ${em}: ${error.stack}`);
-            return;
-        }
-
-        const ecode = errorCodes[error.code];
-        if (ecode === undefined) {
-            this.logFilteredError(stashKey, errormessage);
-            this.sendError(error, errormessage);
-            return;
-        }
-
-        switch (ecode.severity) {
-            case E_INFO:
-                this.log.info(`${message}: Code ${error.code} (${ecode.message})`);
-                break;
-            case E_DEBUG:
-                if (this.debugActive) this.log.debug(`${message}: Code ${error.code} (${ecode.message})`);
-                break;
-            case E_WARN:
-                this.log.warn(`${message}: Code ${error.code} (${ecode.message})`);
-                break;
-            case E_ERROR:
-                this.logFilteredError(stashKey, `${message}: Code ${error.code} (${ecode.message})`);
-                this.sendError(error, `${message}: Code ${error.code} (${ecode.message})`);
-                break;
-            default:
-                this.logFilteredError(stashKey, `${message}: Code ${error.code} (malformed error)`);
-                this.sendError(error, `${message}: Code ${error.code} (malformed error)`);
-                break;
         }
     }
 
