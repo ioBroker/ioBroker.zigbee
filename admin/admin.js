@@ -92,16 +92,12 @@ const connectionStatus = {
 
 function keepAlive(callback) {
     const responseTimeout = setTimeout(function() {
-        UpdateAdapterAlive(false); }, 500);
+        UpdateAdapterAlive(false); }, 100);
     sendTo(namespace, 'aliveCheck', {}, function(msg) {
         clearTimeout(responseTimeout);
         UpdateAdapterAlive(true);
         if (callback) callback();
     });
-}
-
-function startKeepalive() {
-    return setInterval(() => UpdateAdapterAlive(false), 120000);
 }
 
 function UpdateAdapterAlive(state) {
@@ -118,6 +114,11 @@ function UpdateAdapterAlive(state) {
         $('#download_icons_btn').removeClass('disabled');
         $('#rebuild_states_btn').removeClass('disabled');
         $('#pairing').removeClass('disabled');
+        getDevices();
+        getDebugMessages();
+        getMap(false);
+        getNamedColors();
+        readNVRamBackup(false);
     }
     else {
         $('#adapterStopped_btn').removeClass('hide');
@@ -141,9 +142,11 @@ function UpdateAdapterAlive(state) {
 //
 ////
 function sendToWrapper(target,command,msg,callback) {
-    if (connectionStatus.connected)
-        sendTo(target,command,msg,callback);
-    else if (callback) callback({error:'Cannot execute command - adapter is not running'});
+    keepAlive(() => {
+        if (connectionStatus.connected)
+            sendTo(target,command,msg,callback);
+        else if (callback) callback({error:'Cannot execute command - adapter is not running'});
+    })
 }
 
 function getDeviceByID(ID) {
@@ -226,125 +229,68 @@ function updateFoldModel(model, devices, options) {
     return m;
 }
 
+function getModelCard(key, model) {
+    //const key = model.model.model;
+    //console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
+    const numOptions = Object.keys(model.setOptions).length + ((typeof model.setOptions.options === 'object' && model.setOptions.options != null) ? Object.keys(model.setOptions.options).length-1 : 0);
+    const legacy = model.setOptions?.options?.legacy ? 'Legacy' : 'Exposed'
+    // const devtxt = (model.devices.length) ? `${model.model.type}${model.devices.length > 1 ? 's' : ''}` : '';
 
-function getModelData(data, models, keys) {
-    const Html = [];
-    const s = new Set();
-    for (const k of keys) {
-        const model = models[k];
-        const key = model.model.model;
-        //console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
-        const numOptions = Object.keys(model.setOptions).length + ((typeof model.setOptions.options === 'object' && model.setOptions.options != null) ? Object.keys(model.setOptions.options).length-1 : 0);
-        const foldData = updateFoldModel(key, undefined, undefined);
-        let numrows = 1;
-        if (foldData.devices) numrows +=  model.devices.length;
-        if (numOptions > 0) numrows += 1;
-        if (foldData.options) numrows += numOptions;
-        const d_btn_name = `d_toggle_${k}`;
-        const e_btn_name = `m_edit_${k}`;
-        const d_btn_tip = `fold / unfold devices of ${key}`;
-        const e_btn_tip = `edit model ${key}`;
-        const d_btn = btnParam(d_btn_name, d_btn_tip, foldData.devices ? 'expand_less' : 'expand_more', false);
-        const e_btn = btnParam(e_btn_name, e_btn_tip, 'edit', 'green', false)
-        const legacy = model.setOptions?.options?.legacy ? 'Legacy' : 'Exposed'
+    const cardBody = [];
+    const cardHeader = `<div id="model_card_${key}" class="model_overeride"><div id="model_card_${key}" class="card model_override">`;
+    cardBody.push(`<div class="card-title truncate">${legacy} model ${model.model.model}</div>`)
+    cardBody.push(`<div class="card-content"></div><div class="row"><table style="width:100%"><tr><td rowspan=2 style="width:130px">`)
+    if (model?.setOptions?.icon) {
+        cardBody.push(`<img src="${model.setOptions.icon}" width="128px">`);
+    }
+    else cardBody.push(`<img src="${model.model.icon}" width="128px">`);
 
-        LocalDataDisplayValues.buttonSet.add(d_btn_name);
-        LocalDataDisplayValues.buttonSet.add(e_btn_name);
-        const devtxt = (model.devices.length) ? `${model.devices.length} ${model.model.type}${model.devices.length > 1 ? 's' : ''}` : '';
-        Html.push(`<tr id="datarowodd">
-            <td rowspan="${numrows}" width="10%"><img src=${model.model.icon} class="dev_list"></td>
-            <td rowspan="${numrows}" width="15%">${legacy} model<br>${key}</td>
-            <td colspan="3">${devtxt}</td>
-            <td>${d_btn}&nbsp;${numOptions == 0 ? e_btn : ''}</td></tr>`)
-        let cnt = 0;
-        if (foldData.devices) {
-            let isOdd = false;
-            for (const dev of model.devices) {
-                let devieee = dev._id.replace(`${namespace}.`, '');
+    cardBody.push('</td><td style="width:auto"><i class="material-icons small">devices</i></td><td><ul>');
 
-                if (devieee == undefined) devieee = 'unknown' + cnt++;
-                //LocalDataDisplayValues.buttonSet.add(`d_delete_${devieee}`);
-                LocalDataDisplayValues.buttonSet.add(`d_delall_${k}-${devieee}`);
-                LocalDataDisplayValues.buttonSet.add(`d_disen_${k}-${devieee}`);
+    for (const dev of model.devices) {
+        const name = dev?.native?.id ?? '0000000000000000';
 
-                //const bn = btnParam(`d_delete_${devieee}`, `delete device ${devieee}`, 'delete', 'red darken-4', false);
-                const bna = btnParam(`d_delall_${k}-${devieee}`, `completely delete device ${devieee}`, 'delete_forever', 'red accent-4', false);
-                const bta = !dev.common.deactivated ? btnParam(`d_disen_${k}-${devieee}`, `disable device ${devieee}`, 'power_settings_new', 'green accent-4', false) : btnParam(`d_disen_${k}-${devieee}`, `enable device ${devieee}`, 'power_settings_new', 'red accent-4', false);
-                Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}${dev.common.deactivated ? '_red' : ''}"><td width="1%"><i class="material-icons small">devices</i></td><td>${devieee}</td><td>${dev.common.name}</td><td width="10%">${bna}${bta}</td></tr>`)
-                isOdd = !isOdd;
-            }
-        }
-        if (numOptions > 0) {
-            const o_btn_name = `o_toggle_${k}`;
-            const o_btn_tip = `fold / unfold options for Model ${key}`;
-            LocalDataDisplayValues.buttonSet.add(o_btn_name);
-            const opttxt = (numOptions > 0) ? `${numOptions} global option${numOptions > 1 ? 's' : ''}` :''
-            Html.push(`<tr id="datarowodd">
-                <td colspan="3">${opttxt}</td>
-                <td>${btnParam(o_btn_name, o_btn_tip, foldData.options ? 'expand_less' : 'expand_more')}&nbsp;${numOptions > 0 ? e_btn : ''}</td></tr>`);
-            if (foldData.options) {
-                let isOdd = false;
-                for (const key of Object.keys(model.setOptions)) {
-                    if (typeof model.setOptions[key] === 'object') {
-                        const oo = model.setOptions[key];
-                        for (const ok of Object.keys(oo)) {
-                            LocalDataDisplayValues.buttonSet.add(`o_delete_${k}-${ok}`);
-                            const btn = btnParam(`o_delete_${k}-${ok}`, `delete option ${ok}`, 'delete', 'red darken-4', false);
-                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${ok}</td><td${oo[ok] === undefined ? 'id="datared">"not set on model"' : '>'+oo[ok]}</td><td width="10%">${btn}</td></tr>`)
-                            isOdd = !isOdd;
-                        }
-                    }
-                    else {
-                        LocalDataDisplayValues.buttonSet.add(`l_delete_${k}-${key}`);
-                        const btn = btnParam(`l_delete_${k}-${key}`, `delete option ${key}`, 'delete', 'red darken-4', false);
-                        if (key==='icon') {
-                            const icontext = model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : `>${model.setOptions[key]}`;
-                            const icon = model.setOptions[key]=== undefined ? '' : `<img src=${model.setOptions[key]} height="32px" class="sml_list">`;
-                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${key}</td><td valign="middle" ${icontext}</td><td width="10%">${btn}${icon}</td></tr>`)
-                        }
-                        else
-                            Html.push(`<tr id="datarow${isOdd ? 'opt':'even'}"><td width="1%"><i class="material-icons small">blur_circular</i></td><td>${key}</td><td ${model.setOptions[key] === undefined ? 'id="datared">"not set on model"' : '>'+model.setOptions[key]}</td><td>${btn}</td></tr>`)
-                        isOdd = !isOdd;
-                    }
+        cardBody.push(`<li><span class="optionlabel">${dev?.common?.name}</span>${name.startsWith('group') ? name : `0x${name}`}</li>`)
+    }
+
+    cardBody.push(`</ul></td><td rowspan="2" style="width:130px">`);
+    if (model?.setOptions?.icon)
+        cardBody.push(`<img src="${model.model.icon}" width="128px">`);
+    else
+        cardBody.push('&nbsp;');
+    cardBody.push(`</td></tr><tr><td  style="width:auto"><i class="material-icons small">blur_circular</i></td><td><ul>`);
+
+    if (numOptions) {
+        for (const oKey of Object.keys(model.setOptions)) {
+            if (typeof model.setOptions[oKey] === 'object') {
+                const oo = model.setOptions[oKey];
+                for (const ok of Object.keys(oo)) {
+                    cardBody.push(`<li><span class="optionlabel">${ok}</span>${oo[ok] === undefined ? 'not set on model' : oo[ok]}</li>`)
                 }
+            }
+            else {
+                cardBody.push(`<li><span class="optionlabel">${oKey}</span>${model.setOptions[oKey] === undefined ? 'not set on model' : model.setOptions[oKey]}</li>`)
             }
         }
 
     }
-    return Html;
+    cardBody.push('</ul></td></tr></table></div>');
+    cardBody.push(`<div class="card-action"><div class="card-reveal-buttons zcard"><button name="edit_devices" class="right btn-flat btn-small">
+                                <i class="material-icons icon-black">devices</i><i class="material-icons icon-black">edit</i>
+                            </button>
+                            <button name="edit_options" class="right btn-flat btn-small">
+                                <i class="material-icons icon-black">blur_circular</i><i class="material-icons icon-black">edit</i>
+                            </button>
+                 </div></div>`);
+    const cardFooter = `</div></div>`
+    return [cardHeader, cardBody.join(''), cardFooter];
 }
+
 
 function btnParam(id, tooltip, icon, color, disabled) {
     return `<a id="${id}" class="btn-floating waves-effect waves-light right ${color ? color : 'blue'} ${disabled ? 'disabled ' : ''}tooltipped center-align hoverable translateT" title="${tooltip}"><i class="material-icons large">${icon}</i></a>`;
 }
 
-
-function getDeviceData(deviceList, withIcon) {
-    const Html = [];
-    return Html;
-    /*for (const dev of deviceList) {
-        const rowspan = dev.options ? Object.keys(dev.options).length + 2 : 2;
-        const iconLink = `<img src=${dev.common.icon} class="dev_list">`;
-        const devieee = dev._id.replace(`${namespace}.`, '');
-        const o_btn_name = `do_toggle_${devieee}`;
-        const o_btn_tip = `fold / unfold options for ${devieee}`;
-        LocalDataDisplayValues.buttonSet.add(o_btn_name);
-        const bn = `f_edit_${devieee}`
-        LocalDataDisplayValues.buttonSet.add(bn);
-
-        Html.push(`<tr id="datarowodd"><td rowspan="${rowspan}">${iconLink}</td><td colspan="2">${dev.common.name} (${devieee})</td><td>${btnParam(o_btn_name, o_btn_tip, LocalDataDisplayValues.unfoldedDevices ? 'do_not_disturb' : 'add_circle')}</td></tr>`);
-        Html.push(`<tr id="dataroweven"><td colspan="2">Device flags</td><td>${btnParam(bn, 'edit flags','edit')}</td></tr>`);
-        //console.warn(`dev is ${JSON.stringify(dev)}`);
-        if (dev.options && LocalDataDisplayValues.unfoldedDevices[devieee]) {
-            for (const o of dev.options) {
-                const bn = `o_edit_${devieee}.${o.key}`
-                LocalDataDisplayValues.buttonSet.add(bn);
-                Html.push(`<tr id="datarowopt"><td>${o.key}></td><td>${o.value}</td><td>${btnParam(bn, 'edit flags','edit')}</td></tr>`);
-            }
-        }
-    }
-    return Html;*/
-}
 
 function sortAndFilter(filter, sort) {
     const fFun = filter || LocalDataDisplayValues.filterMethod;
@@ -375,115 +321,39 @@ function sortAndFilter(filter, sort) {
 
 function showLocalData() {
     if (tabOrSettings) return;
-    LocalDataDisplayValues.buttonSet.clear();
-    ;
-    const ModelHtml = getModelData(devices, models, sortAndFilter(undefined, undefined));
-    const DeviceHtml = getDeviceData(devices);
-    const sm = LocalDataDisplayValues.showModels;
-    //const dmtoggle = btnParam('t_all_models', 'Refresh models', 'developer_board');
+    const element = $('#tab-overrides-content');
+    element.find('.model_override').remove();
 
-    const RowSpan = sm ? ModelHtml.length +2 : DeviceHtml.length + 2;
-    const Html = [];
-
-    if (sm) {
-        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}" width="10px">&nbsp;</th><th colspan=5></th><th></th><th rowspan="${RowSpan}" width="10px"">&nbsp;</th></tr>`);
-        Html.push(ModelHtml.join(''));
+    // implement sorting and filtering
+    for (const key of sortAndFilter(models)) {
+        element.append(getModelCard(key, models[key]).join(''));
     }
-    /*else {
-        Html.push(`<table style="width:100%"><tr id="datatable"><th rowspan="${RowSpan}">&nbsp;</th><th colspan=4>Device Data</th><th>${dmtoggle}</th><th rowspan="${RowSpan}">&nbsp;</th></tr>`)
-        Html.push(DeviceHtml.join(''));
-    }*/
-    Html.push(`<tr id="datatable"><td colspan="5"></td></tr>`)
-    Html.push('</table>');
-    //Html.push('</div></div>');
-    $('#tab-overrides-content').html(Html.join(''));
+    rebindLocalDataButtons();
 
-    /*$('#t_all_models').click(function () {
-        //LocalDataDisplayValues.showModels = !LocalDataDisplayValues.showModels;
-        getDevices();
-    });*/
-
-    //console.warn(`lddv is ${JSON.stringify(LocalDataDisplayValues)}`)
-    for (const item of LocalDataDisplayValues.buttonSet) {
-        if (item.startsWith('d_toggle_')) $(`#${item}`).click(function () {
-            const key = item.replace('d_toggle_',  '');
-            //console.warn(`clicked ${item}`);
-            updateFoldModel(models[key].model.model, true, false)
-            showLocalData();
-        });
-        if (item.startsWith('o_toggle_')) $(`#${item}`).click(function () {
-            //console.warn(`clicked ${item}`);
-            const key = item.substring(9);
-            updateFoldModel(models[key].model.model, false, true)
-            showLocalData();
-        })
-        if (item.startsWith('do_toggle_')) $(`#${item}`).click(function () {
-            //console.warn(`clicked ${item}`);
-            const key = item.substring(10);
-            if (LocalDataDisplayValues.unfoldedDevices.hasOwnProperty(key))
-                LocalDataDisplayValues.unfoldedDevices[key] =! LocalDataDisplayValues.unfoldedDevices[key];
-            else
-                LocalDataDisplayValues.unfoldedDevices[key] = true;
-            showLocalData();
-        })
-        if (item.startsWith('m_edit_')) $(`#${item}`).click(function () {
-            //console.warn(`clicked ${item}`);
-            const key = item.substring(7);
-            editDeviceOptions(models[key], true);
-        })
-        if (item.startsWith('o_delete_'))  {
-            //console.warn(`adding click to ${item}`)
-            $(`#${item}`).click(function () {
-                //console.warn(`clicked ${item}`);
-                const keys = item.replace('o_delete_', '').split('-');
-                const model = models[keys[0]]?.model.model;
-                const option = keys[1];
-                const sOptions = models[keys[0]]?.setOptions || {};
-                const options = models[keys[0]]?.setOptions?.options || {};
-                //options[option] = '##REMOVE##';
-                //console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
-                delete options[option];
-                updateLocalConfigItems(model, sOptions || {}, true);
-                showLocalData();
-            })
+}
+function rebindLocalDataButtons() {
+    $('#tab-overrides-content button[name=\'edit_devices\']').unbind('click');
+    $('#tab-overrides-content button[name=\'edit_options\']').unbind('click');
+    $('#tab-overrides-content button[name=\'edit_devices\']').click(function () {
+    });
+    $('#tab-overrides-content button[name=\'edit_options\']').click(function () {
+        const uiCard = $(this).parents('.model_override')[0];
+        const target = (uiCard?.id ?? '').replace('model_card_', '');
+        if (models[target])  {
+            editDeviceOptions(models[target], true, { target:target, uiCard:uiCard });
         }
-        if (item.startsWith('l_delete_'))  $(`#${item}`).click(function () {
-            const keys = item.replace('l_delete_', '').split('-');
-            const model = models[keys[0]]?.model.model;
-            const option = keys[1];
-            const options = models[keys[0]].setOptions;
-            options[option] = '##REMOVE##';
-            //console.warn(`clicked ${item} - options are ${JSON.stringify(options)}`);
-            updateLocalConfigItems(model, options || {}, true)
-            delete options[option];
-            showLocalData();
-        })
-        if (item.startsWith('d_disen_'))  {
-            //console.warn(`adding click to ${item}`)
-            $(`#${item}`).click(function () {
-                //console.warn(`clicked ${item}`);
-                const keys = item.replace('d_disen_', '').split('-');
-                const model = models[keys[0]];
-                const device = model.devices.find( (d) => d.native.id === keys[1]);
-                swapActive(keys[1]);
-                device.common.deactivated = !device.common.deactivated
-                showLocalData();
+    });
+
+}
+
+function updateCardContent(id) {
+    const dev = devices.find((d) => d._id === id);
 
 
-            });
-        }
-        if (item.startsWith('d_delall_')) {
-            //console.warn(`adding click to ${item}`)
-            $(`#${item}`).click(function () {
-                //console.warn(`clicked ${item}`);
-                const keys = item.replace('d_delall_', '').split('-');
-                const model = models[keys[0]];
-                const device = model.devices.find( (d) => d.native.id === keys[1]);
-                //console.warn(`setting delete confirmation with ${keys[1]} ${models[keys[0]].devices?.length} ${models[keys[0]]?.model.model} `);
-                deleteConfirmation(keys[1], device.common.name, keys[1], models[keys[0]]?.devices?.length <=1 ? models[keys[0]]?.model?.model : undefined);
-            });
-        }
-    }
+}
+
+function updateCardImage(id) {
+
 }
 
 
@@ -553,25 +423,24 @@ function getCard(dev) {
             : ``;
 
     const dashCard = getDashCard(dev, dci.text, height);
-    const card = `<div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
+    const header = `<div id="${id}" class="device_${height} devicecard"><div id="${sanitizeID(id)}"><div class="card hoverable flipable  ${isActive ? '' : 'bg_red'}">
                     <div class="front face">${dashCard}</div>
-                    <div class="back face">
-                        <div class="card-content zcard">
+                    <div class="back face" id="${sanitizeID(id)}-content">`;
+    const card = `       <div class="card-content zcard">
                             <div class="flip" style="cursor: pointer">
-                            <span class="top right small" style="border-radius: 50%">
+                                <span class="top right small" style="border-radius: 50%">
                                 ${NoInterviewIcon}
                                 ${battery}
                                 <!--${lq}-->
                                 ${status}
-                            </span>
-                            <!--/a--!>
-                            <span id="dName" class="card-title truncate frontname">${title}</span><!--${paired}--!>
+                                </span>
+                                <span id="dName" class="card-title truncate frontname">${title}</span>
                             </div>
-                            <i class="left">${image}</i>
+                            <i class="left cardimage">${image}</i>
                             ${info}
                             <div class="footer right-align"></div>
-                        </div>
-                        <div class="card-action">
+                        </div>`;
+    const footer = `    <div class="card-action">
                             <div class="card-reveal-buttons">
                                 ${infoBtn}
                                 <span class="left fw_info"></span>
@@ -589,8 +458,8 @@ function getCard(dev) {
                             </div>
                         </div>
                     </div>
-                  </div>`;
-    return `<div id="${id}" class="device_${height} devicecard"><div id="${sanitizeID(id)}">${card}</div></div>`;
+                  </div></div></div>`;
+    return [header, card, footer];
 }
 
 function getCoordinatorCard(dev) {
@@ -615,11 +484,11 @@ function getCoordinatorCard(dev) {
                 </div>`,
         permitJoinBtn = '<div class="col tool"><button name="joinCard" class="waves-effect btn-small btn-flat right hoverable green tooltipped" title="open network"><i class="material-icons icon-green">leak_add</i></button></div>',
         //permitJoinBtn = `<div class="col tool"><button name="join" class="btn-floating-sml waves-effect waves-light right hoverable green><i class="material-icons">leak_add</i></button></div>`,
-        card = `<div id="${id}" class="device_200 devicecard">
+        header = `<div id="${id}" class="device_200 devicecard">
                   <div class="card hoverable flipable">
                     <div class="front face">
-                        <div class="card-content zcard">
-                          <div class="flip" style="cursor: pointer">
+                        <div class="card-content zcard">`,
+        card = `          <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
                                 ${lq}
                                 ${status}
@@ -633,8 +502,8 @@ function getCoordinatorCard(dev) {
                           <div class="footer right-align">
                             <div class="flip" style="cursor: pointer"><i class="material-icons">rotate_left</i></div>
                           </div>
-                        </div>
-                    </div>
+                        </div>`,
+        footer=`</div>
                     <div class="back face">
                         <div class="card-content zcard">
                           <div class="flip" style="cursor: pointer">
@@ -663,7 +532,7 @@ function getCoordinatorCard(dev) {
                     </div>
                   </div>
                 </div>`;
-    return card;
+    return [header, card, footer];
 }
 
 function getGroupCard(dev) {
@@ -684,7 +553,7 @@ function getGroupCard(dev) {
     const roomInfo = rooms.length ? `<li><span class="labelinfo">rooms:</span><span>${rooms.join(',') || ''}</span></li>` : '';
     const room = rooms.join(',') || '&nbsp';
     let memberCount = 0;
-    const info = [`<div style="min-height:88px; font-size: 0.8em; height: 90px; width: 220px; overflow-y: auto" class="truncate"><ul>`];
+    const info = [`<div style="min-height:88px; font-size: 0.8em; height: 90px; width: 220px; overflow-y: auto" class="truncate"><ul class="groupmembers">`];
     info.push(`<li><span class="labelinfo">Group ${numid}</span></li>`);
     if (dev.memberinfo === undefined) {
         info.push(`<li><span class="labelinfo">No devices in group</span></li>`);
@@ -700,24 +569,25 @@ function getGroupCard(dev) {
     const infoBtn = `<button name="info" class="left btn-flat btn-small"><i class="material-icons icon-blue">info</i></button>`;
     const image = `<img src="${dev.common.icon}" width="64px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
     //const dashCard = getDashCard(dev, dev.common.icon, memberCount > 0);
-    const card = `<div id="${id}" class="device_200 group devicecard">
+    const header = `<div id="${id}" class="device_200 group devicecard">
                   <div class="card hoverable flipable">
                     <div class="front face">${getDashCard(dev, getDashCardInfoAndHeight(dev.statesDef).text, 200, dev.common.icon, memberCount > 0)}</div>
                     <div class="back face">
-                        <div class="card-content zcard">
-                            <div class="flip" style="cursor: pointer">
+                        <div class="card-content zcard">`;
+
+    const card = `       <div class="flip" style="cursor: pointer">
                             <span class="top right small" style="border-radius: 50%">
                                 ${lq}
                             </span>
                             <!--/a--!>
                             <span id="dName" class="card-title truncate">${title}</span><!----!>
                             </div>
-                            <i class="left">${image}</i>
+                            <i class="left" id="cardimage">${image}</i>
                             ${info.join('')}
-
                             <div class="footer right-align"></div>
-                        </div>
-                        <div class="card-action">
+                        </div>`;
+
+    const footer = `    <div class="card-action">
                             <div class="card-reveal-buttons">
                                 ${infoBtn}
                                 <button name="deletegrp" class="right btn-flat btn-small tooltipped" title="delete group">
@@ -734,7 +604,7 @@ function getGroupCard(dev) {
                     </div>
                   </div>
                 </div>`;
-    return card;
+    return [header, card, footer];
 }
 
 function getDeviceCards() {
@@ -860,7 +730,7 @@ function getDashCard(dev, info, height, groupImage, groupstatus) {
              <span id="mName" class="card-title truncate dashname">${title}</span>
             </div>
             </div>
-            <i class="left">${image}</i>
+            <i class="left cardimage">${image}</i>
             <div style="min-height:88px; font-size: 0.8em; height: ${height - 70}px; width: 220px; overflow-y: auto" class="truncate">
                 <ul>
                     ${(isActive ? info : 'Device deactivated')}
@@ -873,7 +743,7 @@ function getDashCard(dev, info, height, groupImage, groupstatus) {
 }
 
 function setDashStates(id, state) {
-    const devId = getDevId(id);
+    const devId = extractDevId(id);
     const dev = getDeviceByID(devId);
     if (dev) {
         const stateDef = dev.statesDef.find((stateDef) => stateDef.id == id);
@@ -916,12 +786,102 @@ function hookControls() {
         sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
         });
     });
+
+
     $('.state select').on('change', function () {
         const val = $(this).val();
         const id = $(this).parents('.state').attr('oid');
         sendToWrapper(namespace, 'setState', {id: id, val: val}, function (data) {
         });
     });
+
+    $('.card-reveal-buttons button[name=\'delete\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        deleteConfirmation(getDevIdfromUI(dev_block), getDevNamefromUI(dev_block));
+    });
+    $('.card-reveal-buttons button[name=\'deletegrp\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        const id = dev_block.attr('id').replace(namespace + '.group_', '');
+        deleteGroupConfirmation(id, getDevNamefromUI(dev_block));
+    });
+    $('.card-reveal-buttons button[name=\'edit\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        const id = getDevIdfromUI(dev_block);
+        const name = getDevNamefromUI(dev_block);
+        editGroupMembers(id, name);
+    });
+    $('.card-reveal-buttons button[name=\'swapdebug\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        const id = getDevIdfromUI(dev_block);
+        const name = getDevNamefromUI(dev_block);
+        toggleDebugDevice(id, name);
+    });
+
+    $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        const id = getDevIdfromUI(dev_block);
+        editDeviceOptions(id, false, { target: id, uiCard:dev_block });
+    });
+
+    $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        const id = dev_block.attr('id').replace(namespace + '.group_', '');
+        const name = getDevNamefromUI(dev_block);
+        editGroup(id, name, false);
+    });
+    $('button[name=\'joinCard\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        if (!$('#pairing').hasClass('pulse')) {
+            joinProcess(getDevIdfromUI(dev_block));
+        }
+        showPairingProcess();
+    });
+    $('button[name=\'deviceQuery\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        sendTo(namespace, 'setState', {id: `${getDevIdfromUI(dev_block)}.device_query`, val: true}, function (data) {
+        });    });
+    $('.card-reveal-buttons button[name=\'info\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        showDevInfo(getDevIdfromUI(dev_block));
+    });
+    $('.card-reveal-buttons button[name=\'reconfigure\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        reconfigureConfirmation(getDevIdfromUI(dev_block));
+    });
+    $('.card-reveal-buttons button[name=\'swapactive\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        swapActive(getDevIdfromUI(dev_block));
+    });
+    $('.card-reveal-buttons button[name=\'binding_btn\']').click(function () {
+        const dev_block = $(this).parents('div.devicecard');
+        const devId = getDevIdfromUI(dev_block);
+        const device = devices.find((obj) => obj._id == devId);
+        //console.warn(`dev id is  ${devId} device was ${device ? 'found' : 'not found'}`);
+
+        addBindingDialog(device?.info?.device?.ieee);
+    });
+
+}
+
+function unhookControls() {
+    $('input[type=\'checkbox\']').unlink('change');
+    $('input[type=\'radio\']').unlink('change');
+    $('input[type=\'range\']').unlink('change');
+    $('.state select').unlink('on');
+
+    $('.card-reveal-buttons button[name=\'delete\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'deletegrp\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'edit\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'swapdebug\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'swapimage\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'editgrp\']').unlink('click');
+    $('button[name=\'joinCard\']').unlink('click');
+    $('button[name=\'deviceQuery\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'info\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'reconfigure\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'swapactive\']').unlink('click');
+    $('.card-reveal-buttons button[name=\'binding_btn\']').unlink('click');
+
 }
 
 function getIdleTime(value) {
@@ -1192,64 +1152,55 @@ function sanitizeID(id) {
 
 function updateCard(id, dev) {
     const device = dev ?? devices.find((d) => d._id == id);
+    //const card = getCard(dev);
+    const dev_block = $(sanitizeID(`#zigbee.0.${id}`));
+    const img = `<img src="${dev.common.icon || dev.icon}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
+
+    $(`#${sanitizeID(id)} span[id="dName"]`).text(dev.common.name);
+    $(`#${sanitizeID(id)} span[id="mName"]`).text(dev.common.name);
+    setDevImageinUI(dev_block, img);
+
     if (device) {
+
         const title1 = $(`#${sanitizeID(id)} span[id="dName"]`).text();
-        const title = $(`#${sanitizeID(id)} span[id="mName  "]`).text();
+        const title = $(`#${sanitizeID(id)} span[id="mName"]`).text();
         const button = $(`#${sanitizeID(id)} button[name="swapdebug"]`).html();
         console.warn(title)
     }
 }
+
+function getDevNamefromUI(dev_block) {
+    return dev_block.find('#dName').text();
+};
+function setDevNameinUI(dev_block, identifier, name) {
+    dev_block.find(identifier).text(name);
+}
+function setDevImageinUI(dev_block, img) {
+    dev_block.find(`cardimage`).html(img);
+}
+function getDevIdfromUI(dev_block) {
+    return dev_block.attr('id');
+};
+
 
 function showDevices() {
     if (tabOrSettings == 0) return; // tab
     let html = '';
     let hasCoordinator = false;
     const lang = systemLang || 'en';
-    // sort by rooms
-/*
-    devices.sort((a, b) => {
-        const roomsA = [], roomsB = [];
-        for (const r in a.rooms) {
-            if (a.rooms[r].hasOwnProperty(lang)) {
-                roomsA.push(a.rooms[r][lang]);
-            } else {
-                roomsA.push(a.rooms[r]);
-            }
-        }
-        const nameA = roomsA.join(',');
-        for (const r in b.rooms) {
-            if (b.rooms[r].hasOwnProperty(lang)) {
-                roomsB.push(b.rooms[r][lang]);
-            } else {
-                roomsB.push(b.rooms[r]);
-            }
-        }
-        const nameB = roomsB.join(',');
-
-        if (nameB < nameB) {
-            return -1;
-        }
-        if (nameA > nameB) {
-            return 1;
-        }
-        return 0;
-    });
-*/
     for (let i = 0; i < devices.length; i++) {
         const d = devices[i];
         if (d.common && d.common.type == 'group') {
             const card = getGroupCard(d);
-            html += card;
+            html += card.join('');
             continue;
         };
         if (d.info && d.info.device && d.info.device.type == 'Coordinator') {
             hasCoordinator=true;
             const card = getCoordinatorCard(d);
-            html += card;
+            html += card.join('');
         } else {
-            //if (d.groups && d.info && d.info.device.type == "Router") {
             if (d.groups) {
-                //devGroups[d._id] = d.groups;
                 if (typeof d.groups.map == 'function') {
                     d.groupNames = d.groups.map(item => {
                         return groups[item] || '';
@@ -1259,46 +1210,18 @@ function showDevices() {
                 }
             }
             const card = getCard(d);
-            html += card;
+            html += card.join('');
         }
     }
-    if (!hasCoordinator) html += getCoordinatorCard();
+    if (!hasCoordinator) html += getCoordinatorCard().join('');
 
     $('#devices').html(html);
     hookControls();
 
-    // update rooms filter
-/*
-    const allRooms = new Set(devices.map((item) => item.rooms).flat().map((room) => {
-        if (room && room.hasOwnProperty(lang)) {
-            return room[lang];
-        } else {
-            return room;
-        }
-    }).filter((item) => item != undefined));
-    //console.warn(`rooms is ${JSON.stringify(allRooms)}`);
-    const roomSelector = $('#room-filter');
-    roomSelector.empty();
-    roomSelector.append(`<li class="device-order-item" data-type="All" tabindex="0"><a class="translate" data-lang="All">All</a></li>`);
-    Array.from(allRooms)
-        .sort()
-        .forEach((item) => {
-            roomSelector.append(`<li class="device-order-item" data-type="${item}" tabindex="0"><a class="translate" data-lang="${item}">${item}</a></li>`);
-        });
-    $('#room-filter a').click(function () {
-        $('#room-filter-btn').text($(this).text());
-        doFilter();
-    });
-*/
     $('.flip').click(function () {
         const card = $(this).parents('.card');
         card.toggleClass('flipped');
     });
-/*
-    $('#rotate_btn').click(function () {
-        $('.card.flipable').toggleClass('flipped');
-    });
-*/
     const element = $('#devices');
 
     if ($('tab-main')) try {
@@ -1311,88 +1234,6 @@ function showDevices() {
     } catch {
         // empty.
     }
-
-    const getDevName = function (dev_block) {
-        return dev_block.find('#dName').text();
-    };
-    const getDevId = function (dev_block) {
-        return dev_block.attr('id');
-    };
-    $('.card-reveal-buttons button[name=\'delete\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        deleteConfirmation(getDevId(dev_block), getDevName(dev_block));
-    });
-    $('.card-reveal-buttons button[name=\'deletegrp\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        const id = dev_block.attr('id').replace(namespace + '.group_', '');
-        deleteGroupConfirmation(id, getDevName(dev_block));
-    });
-    $('.card-reveal-buttons button[name=\'edit\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        const id = getDevId(dev_block);
-        const name = getDevName(dev_block);
-        editGroupMembers(id, name);
-    });
-    $('.card-reveal-buttons button[name=\'swapdebug\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        const id = getDevId(dev_block);
-        const name = getDevName(dev_block);
-        toggleDebugDevice(id, name);
-    });
-
-    $('.card-reveal-buttons button[name=\'swapimage\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        const id = getDevId(dev_block);
-        editDeviceOptions(id, false);
-    });
-
-    $('.card-reveal-buttons button[name=\'editgrp\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        const id = dev_block.attr('id').replace(namespace + '.group_', '');
-        const name = getDevName(dev_block);
-        editGroup(id, name, false);
-    });
-    $('button[name=\'joinCard\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        if (!$('#pairing').hasClass('pulse')) {
-            joinProcess(getDevId(dev_block));
-        }
-        showPairingProcess();
-    });
-    $('button[name=\'deviceQuery\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        sendTo(namespace, 'setState', {id: `${getDevId(dev_block)}.device_query`, val: true}, function (data) {
-            //console.log(data);
-        });    });
-    $('.card-reveal-buttons button[name=\'info\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        showDevInfo(getDevId(dev_block));
-    });
-/*
-    $('a.btn[name=\'done\']').click((e) => {
-        const dev_block = $(this).parents('div.devicecard');
-        closeReval(e, getDevId(dev_block), getDevName(dev_block));
-    });
-    $('a.btn-flat[name=\'close\']').click((e) => {
-        closeReval(e);
-    });
-*/
-    $('.card-reveal-buttons button[name=\'reconfigure\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        reconfigureConfirmation(getDevId(dev_block));
-    });
-    $('.card-reveal-buttons button[name=\'swapactive\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        swapActive(getDevId(dev_block));
-    });
-    $('.card-reveal-buttons button[name=\'binding_btn\']').click(function () {
-        const dev_block = $(this).parents('div.devicecard');
-        const devId = getDevId(dev_block);
-        const device = devices.find((obj) => obj._id == devId);
-        //console.warn(`dev id is  ${devId} device was ${device ? 'found' : 'not found'}`);
-
-        addBindingDialog(device?.info?.device?.ieee);
-    });
 
     showNetworkMap(devices, map);
     translateAll();
@@ -1424,7 +1265,7 @@ function checkFwUpdate() {
             const deviceCard = getDeviceCard(msg.device);
             const fwInfoNode = getFwInfoNode(deviceCard);
             if (msg.status == 'available') {
-                const devId = getDevId(deviceCard.attr('id'));
+                const devId = extractDevId(deviceCard.attr('id'));
                 fwInfoNode.html(createBtn('system_update', 'Click to start firmware update', false));
                 $(fwInfoNode).find('button[name=\'fw_update\']').click(() => {
                     fwInfoNode.html(createBtn('check_circle', 'Firmware update started, check progress in logs.', true, 'icon-blue'));
@@ -1447,7 +1288,7 @@ function checkFwUpdate() {
         if (!devIdAttr) {
             continue;
         }
-        const devId = getDevId(devIdAttr);
+        const devId = extractDevId(devIdAttr);
         getFwInfoNode(deviceCard).html('<span class="left" style="padding-top:8px">checking...</span>');
         sendToWrapper(namespace, 'checkOtaAvail', {devId: devId}, callback);
     }
@@ -1644,7 +1485,7 @@ function updateLocalConfigItems(device, data, global) {
         });
 }
 
-async function editDeviceOptions(id, isModel) {
+async function editDeviceOptions(id, isModel, uiData) {
     //console.warn(`selectImageOverride on ${JSON.stringify(id)}`);
 
     // start local functions
@@ -1814,7 +1655,7 @@ async function editDeviceOptions(id, isModel) {
                 continue;
             }
             //console.warn(`_legal Keys: ${key}, ${_do[k].key}`)
-            if (_do[k].expose?.type === 'binary') {
+            if (OptionTypes[_do[k].key] === 'binary') {
                 _do[k].value = $(`#option_value_${k}`).html();
             }
             else
@@ -1872,7 +1713,6 @@ async function editDeviceOptions(id, isModel) {
 
     const dialogData = {};
 
-
     if (isModel) {
         const model = id.model;
         dialogData.model = model;
@@ -1897,6 +1737,14 @@ async function editDeviceOptions(id, isModel) {
         dialogData.icon = dev.common.icon || dev.icon;
         dialogData.defaultIcon = (dev.common.type === 'group' ? dev.common.modelIcon : `img/${dev.common.type.replace(/\//g, '-')}.png`);
         dialogData.legacyIcon = dev.legacyIcon;
+    }
+
+    const OptionTypes = {};
+    for (const option of (dialogData?.model?.optionExposes ?? [])) {
+        OptionTypes[option.name] = option.type;
+    }
+    for (const option of adapterDefinedOptions) {
+        OptionTypes[option.name] = option.type;
     }
 
     const imghtml = `<img src="${dialogData.icon}" width="80px">`;
@@ -1927,6 +1775,34 @@ async function editDeviceOptions(id, isModel) {
                 if (changedOptions != undefined) data.options = changedOptions;
 
                 updateLocalConfigItems(id, data, isModel);
+                if (uiData?.uiCard && uiData?.target) {
+                    if (isModel) {
+                        const so = models[uiData.target].setOptions
+                        if (data.options)
+                            so.options = data.options;
+                        if (data.icon) {
+                            if (data.icon == 'none') delete so.icon;
+                            else if (data.icon != 'current') so.icon = data.icon;
+                        }
+                        if (data.name != undefined) {
+                            if (data.name == '') delete so.name;
+                            else if (data.name != 'unset') so.name = data.name;
+                        }
+
+                        const modelCard = getModelCard(uiData.target, models[uiData.target])[1]
+                        uiData.uiCard.innerHTML=modelCard;
+                        rebindLocalDataButtons();
+                    }
+                    /*else if (id.includes('group')) {
+                        const dev = devices.find((d) => d._id === id);
+                        if (data.name != dev.common.name)
+                            if (data.name == '')
+                                setDevNameinUI(uiData.uiCard, '#dName', `Group ${dev.info.device.id}`);
+                            else
+                                setDevNameinUI(uiData.uiCard, '#dName', data.name);
+                    }
+                            */
+                }
             });
             sendToWrapper(namespace, 'getLocalConfigItems', { target:id, global:isModel, key:'options' }, function (msg) {
                 if (msg) {
@@ -2364,39 +2240,31 @@ function getNamedColors() {
 
 let map_errors = [];
 function getMap(rebuild) {
-    if (rebuild) $('#refresh').addClass('disabled');
-    if (isHerdsmanRunning || !rebuild) {
-        sendToWrapper(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
-            $('#refresh').removeClass('disabled');
-            if (msg) {
-                if (!msg.hasMap) $('#refresh').removeClass('hide');
-                else {
-                    $('#refresh').addClass('hide');
-                    if (msg.error) {
-                        //errorData.push(msg.error);
-                        isHerdsmanRunning = false;
-                        updateStartButton();
-                    } else {
-                        isHerdsmanRunning = true;
-                        updateStartButton();
-                        if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
-                            $('#map_errors_btn').removeClass('hide');
-                            $('#map_errors_btn').unbind('click');
-                            map_errors=msg.errors;
-                            $('#map_errors_btn').click(() => {
-                                showMessage(map_errors.join('<br>'), 'Map generation messages');
-                                $('#map_errors_btn').addClass('hide');
-                            })
-                        }
-                        if (map?.timestamp != msg?.timestamp)
-                            map = msg;
-                        if (rebuild) showNetworkMap(devices, map);
-                    }
+    //$('#refresh').addClass('disabled');
+    const command = { rebuild: false };
+    if (rebuild) command.rebuild = true;
+
+    sendTo(namespace, 'getMap', command , function (msg) {
+        $('#refresh').removeClass('disabled');
+        if (msg) {
+            {
+                isHerdsmanRunning = true;
+                updateStartButton();
+                if (msg?.errors?.length > 0 && $('#errorCollectionOn').is(':checked')) {
+                    $('#map_errors_btn').removeClass('hide');
+                    $('#map_errors_btn').unbind('click');
+                    map_errors=msg.errors;
+                    $('#map_errors_btn').click(() => {
+                        showMessage(map_errors.join('<br>'), 'Map generation messages');
+                        $('#map_errors_btn').addClass('hide');
+                    });
                 }
+                if (map?.timestamp != msg?.timestamp)
+                    map = msg;
+                showNetworkMap(devices, map);
             }
-        });
-    }
-    else showMessage('Unable to generate map, the zigbee subsystem is inactive', 'Map generation error');
+        }
+    });
 }
 
 
@@ -2477,20 +2345,21 @@ function load(settings, onChange) {
 
     //dialog = new MatDialog({EndingTop: '50%'});
     //const keepAliveHandle = startKeepalive();
-    keepAlive(() => {
-        getDevices();
-        getMap(false);
-        getNamedColors();
-        readNVRamBackup(false);
-        sendToWrapper(namespace, 'getGroups', {}, function (data) {
-            groups = data.groups || {};
-        //showGroups();
-        });
-        sendToWrapper(namespace, 'getLibData', {key: 'cidList'}, function (data) {
-            cidList = data.list;
-        });
+    keepAlive();
 
-    })
+    getDevices();
+    getDebugMessages();
+    getMap(false);
+    getNamedColors();
+    readNVRamBackup(false);
+    sendToWrapper(namespace, 'getGroups', {}, function (data) {
+        groups = data.groups || {};
+    //showGroups();
+    });
+    sendToWrapper(namespace, 'getLibData', {key: 'cidList'}, function (data) {
+        cidList = data.list;
+    });
+
 
     //getDebugMessages();
     //getMap();
@@ -2907,7 +2776,7 @@ function save(callback) {
 }
 
 
-function getDevId(adapterDevId) {
+function extractDevId(adapterDevId) {
     return adapterDevId.split('.').slice(0, 3).join('.');
 }
 
@@ -2962,97 +2831,103 @@ socket.on('stateChange', function (id, state) {
     // only watch our own states
     if (id.substring(0, namespaceLen) !== namespace) return;
     if (state) {
-        if (id.match(/\.info\.pairingMode$/)) {
-            if (state.val) {
-                $('#pairing').addClass('pulse');
-            } else {
-                $('#pairing').removeClass('pulse');
-            }
-        } else if (id.match(/\.info\.pairingCountdown$/)) {
-            const blank_btn = '<i class="material-icons">leak_add</i>';
-            if (state.val == 0) {
-                $('#pairing').html(blank_btn);
-                $('#progress_line').css('width', `0%`);
-            } else {
-                $('#pairing').addClass('pulse');
-                $('#pairing').html(state.val);
-                const percent = 100 - 100 * state.val / ($('#countDown').val() || 60);
-                $('#progress_line').css('width', `${percent}%`);
-            }
-        } else if (id.match(/\.info\.pairingMessage$/)) {
-            if (state.val == 'NewDebugMessage') {
-                getDebugMessages();
-            }
-            else {
-                messages.push(state.val);
-                showMessages();
-                if (state.val.startsWith('Zigbee-Herdsman started successfully')) {
-                    isHerdsmanRunning = true;
-                    updateStartButton();
+        const match = id.match(/\.info\.(\w+)$/);
+        if (match) switch (match[1]) {
+            case `paringMode`:
+                if (state.val) {
+                    $('#pairing').addClass('pulse');
+                } else {
+                    $('#pairing').removeClass('pulse');
                 }
-                if (state.val.startsWith('herdsman stopped') || state.val.startsWith('Error herdsman')) {
-                    isHerdsmanRunning = false;
-                    updateStartButton();
+                break;
+            case `pairingCountdown`:
+                if (state.val == 0) {
+                    $('#pairing').html('<i class="material-icons">leak_add</i>');
+                    $('#progress_line').css('width', `0%`);
+                } else {
+                    $('#pairing').addClass('pulse');
+                    $('#pairing').html(state.val);
+                    const percent = 100 - 100 * state.val / ($('#countDown').val() || 60);
+                    $('#progress_line').css('width', `${percent}%`);
                 }
-                if (state.val === 'Closing network.') {
-                    getDevices();
+                break;
+            case `pairingMessage` :
+                switch (state.val) {
+                    case 'NewDebugMessage': getDebugMessages();
+                        break;
+                    case 'Map generation complete.': getMap(false);
+                        break;
+                    default:
+                        messages.push(state.val);
+                        showMessages();
+                        if (state.val.startsWith('Zigbee-Herdsman started successfully')) {
+                            isHerdsmanRunning = true;
+                            updateStartButton();
+                        }
+                        if (state.val.startsWith('herdsman stopped') || state.val.startsWith('Error herdsman')) {
+                            isHerdsmanRunning = false;
+                            updateStartButton();
+                        }
+                        if (state.val === 'Closing network.') {
+                            getDevices();
+                        }
+                        if (state.val.startsWith('Map')) {
+                            if (state.val === 'Map invalidated.') {
+                                $('#refresh').removeClass('hide');
+                                return;
+                            }
+                            const numDev = Number(state.val.split(':').pop()) || 0;
+                            if (numDev > 0) {
+                                $(`#map_generating_btn`).removeClass('hide');
+                                $(`#map_generating_btn`).html(`<i class="material-icons large">${borderArr[numDev%4]}</i>`);
+                            }
+                            else {
+                                $('#map_generating_btn').addClass('hide');
+                            }
+                        }
+                        break;
                 }
-                if (state.val.startsWith('Map')) {
-                    if (state.val === 'Map invalidated.') {
-                        $('#refresh').removeClass('hide');
-                        return;
+                break;
+            case `lasterror`:
+                try {
+                    const errobj = JSON.parse(state.val);
+                    let changed = false;
+                    if (errobj.error) {
+                        errorData.errors[errobj.error] = errobj.data;
+                        changed = true;
                     }
-                    const numDev = Number(state.val.split(':').pop()) || 0;
-                    if (numDev > 0) {
-                        $(`#map_generating_btn`).removeClass('hide');
-                        $(`#map_generating_btn`).html(`<i class="material-icons large">${borderArr[numDev%4]}</i>`);
+                    if (errobj.model) {
+                        errorData.unknownModels[errobj.model] = errobj.data;
+                        changed = true;
                     }
-                    else {
-                        $('#map_generating_btn').addClass('hide');
+                    errorData.hasData |= changed;
+                    if (changed) {
+                        $('#show_errors_btn').removeClass('hide');
                     }
                 }
-            }
-        } else if (id.match(/\.info\.lasterror$/)) {
-            try {
-                //console.warn(`lasterror is ${JSON.stringify(state)}`)
-                const errobj = JSON.parse(state.val);
-                let changed = false;
-                if (errobj.error) {
-                    errorData.errors[errobj.error] = errobj.data;
-                    changed = true;
-                }
-                if (errobj.model) {
-                    errorData.unknownModels[errobj.model] = errobj.data;
-                    changed = true;
-                }
-                errorData.hasData |= changed;
-                if (changed) {
-                    $('#show_errors_btn').removeClass('hide');
-                }
-            }
-            catch { console.error('JSON didnt parse') }
+                catch { console.error('JSON didnt parse'); }
+                break;
 
-        } else {
-            const devId = getDevId(id);
-            putEventToNode(devId);
-            const rid = id.split('.').join('_');
-            if (id.match(/\.link_quality$/)) {
-                // update link_quality
-                $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getLQICls(state.val));
-                $(`#${rid}`).text(state.val);
-                const dev = getDeviceByID(devId);
-                if (dev) {
-                    dev.link_quality_lc = state.lc;
-                }
-            }
-            if (id.match(/\.battery$/)) {
-                // update battery
-                $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
-                $(`#${rid}`).text(state.val);
-            }
-            // set other states
-            setDashStates(id, state);
         }
+        const devId = extractDevId(id);
+        putEventToNode(devId);
+        const rid = id.split('.').join('_');
+        if (id.match(/\.link_quality$/)) {
+            // update link_quality
+            $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getLQICls(state.val));
+            $(`#${rid}`).text(state.val);
+            const dev = getDeviceByID(devId);
+            if (dev) {
+                dev.link_quality_lc = state.lc;
+            }
+        }
+        if (id.match(/\.battery$/)) {
+            // update battery
+            $(`#${rid}_icon`).removeClass('icon-red icon-orange').addClass(getBatteryCls(state.val));
+            $(`#${rid}`).text(state.val);
+        }
+        // set other states
+        setDashStates(id, state);
     }
 });
 
@@ -3122,7 +2997,8 @@ function showNetworkMap(devices, map) {
 
     console.log(`showNetwork Map (previous: ${shownMap} - new: ${map.timestamp} for ${devices.length} devices.`);
     if (devices.length == 0) return;
-    if (shownMap != map.timestamp) {
+    // if (shownMap != map.timestamp)
+    {
         shownMap = map.timestamp;
 
         const createNode = function (dev, mapEntry) {
@@ -3963,7 +3839,7 @@ function updateDev(id, newName, newGroups) {
                 showMessage(msg.error, _('Error'));
             } else {
                 // save dev-groups on success
-                getDevices();
+                // getDevices();
             }
         });
         showWaitingDialog('Updating group memberships', 10);
