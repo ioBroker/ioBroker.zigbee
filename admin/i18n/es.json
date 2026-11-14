@@ -53,6 +53,7 @@
     "PanID": "Pan ID",
     "PanIDText": "Pan ID es una identificación simplificada (es utilizada por Zigbee en lugar de ExtPanID siempre que sea posible). Esto también debería ser único. Nota: La red Zigbee puede elegir un ID de Pan diferente al que especificó aquí en caso de que detecte conflictos de ID.",
     "Parent/Child/Unknown": "Padre/Hijo/Desconocido",
+    "Pause before reconnect (ms)": "Pausa antes de reconectar (ms)",
     "Please contribute your discoveries": "Contribuya con sus descubrimientos",
     "Previous Parents": "Padres anteriores",
     "Read Firmware": "Leer firmware",

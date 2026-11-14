@@ -315,6 +315,7 @@
     "dynamicUI": false,
     "reconnectCount": 5,
     "reconnectDelay": 10,
+    "reconnectProbeDelay": 0,
     "tilesingleaction": true,
     "devmgrsingleaction": false
   },
