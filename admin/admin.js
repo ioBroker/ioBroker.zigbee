@@ -2173,7 +2173,9 @@ function getDevices() {
                     $('#room-filter-btn').text($(this).text());
                     doFilter();
                 });
-                $('#rotate_btn').click(function () {
+                // getDevices() runs after every change - replace the handler instead of adding one more,
+                // with an even number of handlers each click flipped the cards twice
+                $('#rotate_btn').off('click').on('click', function () {
                     $('.card.flipable').toggleClass('flipped');
                 });
 
