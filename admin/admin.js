@@ -233,9 +233,8 @@ function getModelCard(key, model) {
     //const key = model.model.model;
     //console.warn(`getmodeldata: model is ${key}, sO: ${JSON.stringify(model.setOptions)}`);
     const numOptions = Object.keys(model.setOptions).length + ((typeof model.setOptions.options === 'object' && model.setOptions.options != null) ? Object.keys(model.setOptions.options).length-1 : 0);
-    const numDevices = model.devices.length;
     const legacy = model.setOptions?.options?.legacy ? 'Legacy' : 'Exposed'
-    const devtxt = (model.devices.length) ? `${model.model.type}${model.devices.length > 1 ? 's' : ''}` : '';
+    // const devtxt = (model.devices.length) ? `${model.model.type}${model.devices.length > 1 ? 's' : ''}` : '';
 
     const cardBody = [];
     const cardHeader = `<div id="model_card_${key}" class="model_overeride"><div id="model_card_${key}" class="card model_override">`;
@@ -1153,7 +1152,7 @@ function sanitizeID(id) {
 
 function updateCard(id, dev) {
     const device = dev ?? devices.find((d) => d._id == id);
-    const card = getCard(dev);
+    //const card = getCard(dev);
     const dev_block = $(sanitizeID(`#zigbee.0.${id}`));
     const img = `<img src="${dev.common.icon || dev.icon}" width="80px" onerror="this.onerror=null;this.src='img/unavailable.png';">`;
 
@@ -1742,7 +1741,7 @@ async function editDeviceOptions(id, isModel, uiData) {
 
     const OptionTypes = {};
     for (const option of (dialogData?.model?.optionExposes ?? [])) {
-        OptionTypes[option.name] == option.type;
+        OptionTypes[option.name] = option.type;
     }
     for (const option of adapterDefinedOptions) {
         OptionTypes[option.name] = option.type;
@@ -2240,41 +2239,29 @@ function getNamedColors() {
 }
 
 let map_errors = [];
-let mapBlock = 0;
 function getMap(rebuild) {
     //$('#refresh').addClass('disabled');
-    const now = Date.now();
-    if (now-mapBlock < 1000) return;
-    mapBlock = now;
-    sendTo(namespace, 'getMap', { forcebuild:rebuild}, function (msg) {
+    const command = { rebuild: false };
+    if (rebuild) command.rebuild = true;
+
+    sendTo(namespace, 'getMap', command , function (msg) {
         $('#refresh').removeClass('disabled');
         if (msg) {
-            if (!msg.hasMap) $('#refresh').addClass('hide');
-            else {
-                $('#refresh').removeClass('hide');
-                /*
-                if (msg.error) {
-                    //errorData.push(msg.error);
-                    isHerdsmanRunning = false;
-                    updateStartButton();
-                } else
-                */
-                {
-                    isHerdsmanRunning = true;
-                    updateStartButton();
-                    if (msg.errors.length > 0 && $('#errorCollectionOn').is(':checked')) {
-                        $('#map_errors_btn').removeClass('hide');
-                        $('#map_errors_btn').unbind('click');
-                        map_errors=msg.errors;
-                        $('#map_errors_btn').click(() => {
-                            showMessage(map_errors.join('<br>'), 'Map generation messages');
-                            $('#map_errors_btn').addClass('hide');
-                        })
-                    }
-                    if (map?.timestamp != msg?.timestamp)
-                        map = msg;
-                    showNetworkMap(devices, map);
+            {
+                isHerdsmanRunning = true;
+                updateStartButton();
+                if (msg?.errors?.length > 0 && $('#errorCollectionOn').is(':checked')) {
+                    $('#map_errors_btn').removeClass('hide');
+                    $('#map_errors_btn').unbind('click');
+                    map_errors=msg.errors;
+                    $('#map_errors_btn').click(() => {
+                        showMessage(map_errors.join('<br>'), 'Map generation messages');
+                        $('#map_errors_btn').addClass('hide');
+                    });
                 }
+                if (map?.timestamp != msg?.timestamp)
+                    map = msg;
+                showNetworkMap(devices, map);
             }
         }
     });
@@ -2358,7 +2345,7 @@ function load(settings, onChange) {
 
     //dialog = new MatDialog({EndingTop: '50%'});
     //const keepAliveHandle = startKeepalive();
-    keepAlive()
+    keepAlive();
 
     getDevices();
     getDebugMessages();
@@ -2479,7 +2466,7 @@ function load(settings, onChange) {
     });
 
     $('#refresh').click(function () {
-        getMap(false);
+        getMap(true);
     });
     $('#regenerate').click(function () {
         getMap(true);
@@ -2868,7 +2855,7 @@ socket.on('stateChange', function (id, state) {
                 switch (state.val) {
                     case 'NewDebugMessage': getDebugMessages();
                         break;
-                    case 'Map generation complete': getMap(false);
+                    case 'Map generation complete.': getMap(false);
                         break;
                     default:
                         messages.push(state.val);
@@ -2918,7 +2905,7 @@ socket.on('stateChange', function (id, state) {
                         $('#show_errors_btn').removeClass('hide');
                     }
                 }
-                catch { console.error('JSON didnt parse') }
+                catch { console.error('JSON didnt parse'); }
                 break;
 
         }
@@ -3010,7 +2997,8 @@ function showNetworkMap(devices, map) {
 
     console.log(`showNetwork Map (previous: ${shownMap} - new: ${map.timestamp} for ${devices.length} devices.`);
     if (devices.length == 0) return;
-    if (shownMap != map.timestamp) {
+    // if (shownMap != map.timestamp)
+    {
         shownMap = map.timestamp;
 
         const createNode = function (dev, mapEntry) {

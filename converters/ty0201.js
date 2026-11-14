@@ -2,7 +2,7 @@ import * as fz from "../converters/fromZigbee";
 import * as exposes from "../lib/exposes";
 import * as tuya from "../lib/tuya";
 
-const NS = "zhc:tuya";
+//const NS = "zhc:tuya";
 
 const e = exposes.presets;
 const fzLocal = {
