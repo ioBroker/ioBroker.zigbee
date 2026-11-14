@@ -57,6 +57,7 @@
     "PanID": "ID de casserole",
     "PanIDText": "Pan ID est un identifiant simplifié (utilisé par Zigbee au lieu d'ExtPanID dans la mesure du possible). Cela devrait également être unique. Remarque : le réseau Zigbee peut choisir un ID de panoramique différent de celui que vous avez spécifié ici au cas où il détecte des conflits d'ID.",
     "Parent/Child/Unknown": "Parent/Enfant/Inconnu",
+    "Pause before reconnect (ms)": "Pause avant la reconnexion (ms)",
     "Please contribute your discoveries": "Merci de contribuer vos découvertes",
     "Previous Parents": "Parents précédents",
     "Read Firmware": "Lire le micrologiciel",

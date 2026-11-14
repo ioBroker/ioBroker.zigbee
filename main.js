@@ -519,6 +519,13 @@ class Zigbee extends adapterCore.Adapter {
                     this.log.info(`Try to reconnect. ${this.reconnectCounter} attempts left`);
                     this.reconnectCounter -= 1;
                 }
+                const probePause = Number(this.config.reconnectProbeDelay) || 0;
+                if (probePause > 0 && utils.getNetAddress(this.config.port).host) {
+                    // testConnection() has just opened and closed a probe socket. Some network coordinators
+                    // (XZG / cod.m CZC firmware) ignore a connection that arrives within a few ms after a
+                    // closed one, so zigbee-herdsman would wait for a ping that never comes (#3020).
+                    await this.delay(Math.min(probePause, 5000));
+                }
                 this.doConnect();
             } catch (error) {
                 this.log.warn(`error ${error?.message ?? 'unknown'} in tryToReconnect`);
@@ -546,6 +553,7 @@ class Zigbee extends adapterCore.Adapter {
                     dns.lookup(netAddress.host, (err, ip, _) => {
                         if (err) {
                             resolve({error:`Unable to resolve name: ${err && err.message ? err.message : 'no message'}`});
+                            return;
                         }
                         InteractivePairingMessage(`dns lookup for ${address} produced ${ip}`, this );
                         const client = new net.Socket();
@@ -571,6 +579,7 @@ class Zigbee extends adapterCore.Adapter {
                         fs.access(port, fs.constants.R_OK | fs.constants.W_OK, (error) => {
                             if (error) {
                                 resolve({error:`unable to access ${port} : ${error && error.message ? error.message : 'no message given'}`});
+                                return;
                             }
                             InteractivePairingMessage(`read and write access available for ${port}`, this);
                             resolve({});
