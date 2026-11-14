@@ -15,19 +15,19 @@ const net = require('node:net');
 // own components
 const safeJsonStringify = require('./lib/json');
 // plugins
-const SerialListPlugin = require('./lib/seriallist');
-const CommandsPlugin = require('./lib/commands');
-const GroupsPlugin = require('./lib/groups');
-const NetworkMapPlugin = require('./lib/networkmap');
-const DeveloperPlugin = require('./lib/developer');
-const BindingPlugin = require('./lib/binding');
-const OtaPlugin = require('./lib/ota');
-const BackupPlugin = require('./lib/backup');
+const SerialListPlugin = require('./lib/pluginSeriallist');
+const CommandsPlugin = require('./lib/pluginCommands');
+const GroupsPlugin = require('./lib/pluginGroups');
+const NetworkMapPlugin = require('./lib/pluginNetworkMap');
+const DeveloperPlugin = require('./lib/pluginDeveloper');
+const BindingPlugin = require('./lib/pluginBinding');
+const OtaPlugin = require('./lib/pluginOta');
+const BackupPlugin = require('./lib/pluginBackup');
+const DeviceDebug = require('./lib/pluginDeviceDebug');
 // libraries
 const utils = require('./lib/utils');
 const { devLabel } = require('./lib/deviceLabel');
 const dmZigbee  = require('./lib/devicemgmt.js');
-const DeviceDebug = require('./lib/DeviceDebug');
 const localConfig = require('./lib/localConfig');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
@@ -54,12 +54,14 @@ const E_DEBUG = 2;
 const E_WARN  = 3;
 const E_ERROR = 4;
 
+/*
 const errorCodes = {
     9999: {severity: E_INFO, message: 'No response'},
     233: {severity: E_DEBUG, message: 'MAC NO ACK'},
     205: {severity: E_WARN, message: 'No network route'},
     134: {severity: E_WARN, message: 'Unsupported Attribute'},
 };
+*/
 
 function isFunction(functionToCheck) {
     return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
@@ -90,12 +92,13 @@ class Zigbee extends adapterCore.Adapter {
         this.stController.on('acknowledge_state', this.acknowledgeState.bind(this));
 
         this.deviceManagement = new dmZigbee(this);
-        this.deviceDebug =  new DeviceDebug(this);
-        this.deviceDebug.on('log', this.onLog.bind(this));
+        //this.deviceDebug = new DeviceDebug(this);
         this.debugActive = true;
         this.onreadycount = 1;
 
         this.plugins = [
+            //this.deviceDebug,
+            new DeviceDebug(this),
             new SerialListPlugin(this),
             new CommandsPlugin(this),
             new GroupsPlugin(this),
@@ -168,49 +171,11 @@ class Zigbee extends adapterCore.Adapter {
     // by the states controller instead of flooding the log: the first one is logged as an
     // error, the repeats only update the counter shown in the errors view of the admin
     // tab and in info.lasterror. The caller clears the key once the cause is resolved.
-    logFilteredError(stashKey, text) {
+    logFilteredError(stashKey, text, error, timeout) {
         if (stashKey && this.stController) {
-            this.stController.stashErrors(stashKey, `${text} - repeats are counted, not logged (errors view in the admin tab)`, true);
+            this.stController.stashErrors(stashKey, text, error, timeout);
         } else {
             this.log.error(text);
-        }
-    }
-
-    filterError(errormessage, message, error, stashKey) {
-        if (error != null && error.code == undefined) {
-            let em = error.stack.match(/failed \((.+?)\) at/);
-            em = em || error.stack.match(/failed \((.+?)\)/);
-            this.logFilteredError(stashKey, `${message} no error code (${(em ? em[1] : 'undefined')})`);
-            this.sendError(error, `${message} no error code`);
-            if (this.debugActive) this.log.debug(`Stack trace for ${em}: ${error.stack}`);
-            return;
-        }
-
-        const ecode = errorCodes[error.code];
-        if (ecode === undefined) {
-            this.logFilteredError(stashKey, errormessage);
-            this.sendError(error, errormessage);
-            return;
-        }
-
-        switch (ecode.severity) {
-            case E_INFO:
-                this.log.info(`${message}: Code ${error.code} (${ecode.message})`);
-                break;
-            case E_DEBUG:
-                if (this.debugActive) this.log.debug(`${message}: Code ${error.code} (${ecode.message})`);
-                break;
-            case E_WARN:
-                this.log.warn(`${message}: Code ${error.code} (${ecode.message})`);
-                break;
-            case E_ERROR:
-                this.logFilteredError(stashKey, `${message}: Code ${error.code} (${ecode.message})`);
-                this.sendError(error, `${message}: Code ${error.code} (${ecode.message})`);
-                break;
-            default:
-                this.logFilteredError(stashKey, `${message}: Code ${error.code} (malformed error)`);
-                this.sendError(error, `${message}: Code ${error.code} (malformed error)`);
-                break;
         }
     }
 
@@ -236,9 +201,15 @@ class Zigbee extends adapterCore.Adapter {
         this.zbController.on('ready', this.onZigbeeAdapterReady.bind(this));
         this.zbController.on('disconnect', this.onZigbeeAdapterDisconnected.bind(this));
         this.zbController.on('new', this.newDevice.bind(this));
+        //
+        // !!AE: on a new device, we want to update the DM cache without needing a full getDevices
+        //
         this.zbController.on('leave', this.stController.leaveDevice.bind(this.stController));
         // the device manager serves its list from a 10 second cache, so drop it here - otherwise the
         // tile of the departed device outlives its object by that much
+        //
+        // !!AE: This needs fixing  - we do not want to invalidate the cache, we want to remove the device.
+        //
         this.zbController.on('leave', () => this.deviceManagement.invalidateDeviceCache());
         this.zbController.on('announce', this.stController.announceDevice.bind(this));
         this.zbController.on('pairing', this.onPairing.bind(this));
@@ -260,7 +231,7 @@ class Zigbee extends adapterCore.Adapter {
         await this.callPluginMethod('configure', [zigbeeOptions]);
 
         // elevated debug handling
-        this.deviceDebug.start(this.stController, this.zbController);
+        // this.deviceDebug.start(this.stController, this.zbController);
         this.reconnectDelay =  this.config.reconnectDelay || 10;
 
         this.reconnectCounter = this.config.reconnectCount;
