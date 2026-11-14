@@ -1154,7 +1154,7 @@ class Zigbee extends adapterCore.Adapter {
                 device.paired = true;
             } else device.paired = false;
         } catch (error) {
-            this.log.warn('error calling shouldConfigure: ' + error && error.message ? error.message : 'no error message');
+            this.log.warn(`error calling shouldConfigure: ${error?.message ?? 'no error message'}`);
         }
     }
 
@@ -1162,7 +1162,7 @@ class Zigbee extends adapterCore.Adapter {
         group.icon = 'img/group_1.png';
         group.vendor = 'ioBroker';
         // get group members and store them
-        const match = /zigbee.\d.group_([0-9]+)/.exec(group._id);
+        const match = /zigbee\.\d+\.group_([0-9]+)/.exec(group._id);
         if (match && match.length > 1) {
             const groupID = Number(match[1]);
             const groupmembers = await this.zbController.getGroupMembersFromController(groupID);
