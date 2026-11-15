@@ -1361,11 +1361,11 @@ class Zigbee extends adapterCore.Adapter {
                 }
             }
             else {
-                coordinatorinfo.version = this.adapter.config.autostart ? 'not connected' : 'autostart not set';
-                coordinatorinfo.revision = this.adapter.config.autostart ? 'not connected' : 'autostart not set';
+                coordinatorinfo.version = this.config.autostart ? 'not connected' : 'autostart not set';
+                coordinatorinfo.revision = this.config.autostart ? 'not connected' : 'autostart not set';
             }
-        } catch {
-            this.log.warn('exception raised in getCoordinatorInfo');
+        } catch (error) {
+            this.log.warn(`exception raised in getCoordinatorInfo: ${error?.message ?? error}`);
         }
 
         this.log.debug(`getCoordinatorInfo result: ${JSON.stringify(coordinatorinfo)}`);
