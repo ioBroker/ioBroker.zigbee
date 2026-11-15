@@ -35,17 +35,6 @@ const converter = [
         toZigbee: [],
         exposes: [e.battery(), e.temperature(), e.humidity(), e.battery_voltage()],
         configure: tuya.configureMagicPacket,
-        meta: {
-            battery: {
-                // These sensors do send a Battery Percentage Remaining (0x0021)
-                // value, but is usually incorrect. For example, a coin battery tested
-                // with a load tester may show 80%, but report 2.5V / 1%. This voltage
-                // calculation matches what ZHA does by default.
-                // https://github.com/Koenkk/zigbee2mqtt/discussions/17337
-                // https://github.com/zigpy/zha-device-handlers/blob/c6ed94a52a469e72b32ece2a92d528060c7fd034/zhaquirks/__init__.py#L195-L228
-                voltageToPercentage: "3V_1500_2800",
-            },
-        },
     }
 ]
 
