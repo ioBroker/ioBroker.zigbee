@@ -73,6 +73,8 @@ The adapter configuration is done completely and solely through the instance set
 
 This tab contains the general adapter settings. Most of the adapter behaviour is configured on this tab.
 
+Enable **Restore group memberships after device rejoin** in the adapter settings to repair saved memberships that a device has forgotten. This global switch is disabled by default. Also enable the same option for each affected device or model in its options dialog. Device options override model options, so an explicit false disables restoration for that device. Devices without an enabled device/model option do not scan or query groups. Only enabled devices with saved memberships receive group queries; restoration runs on join and successful interview without waiting for the radio replies. Announcements do not trigger group restoration.
+
 It also include the setting for external converters, which currently read relative to 2 folders:
 - The adapters Data folder, i.e. the folder where the `sheperd.db`, `nvbackup.json` and `LocalOverrides.json` are located
 - The adapters internal storage of external converters, i.e. `iobroker.zigbee/converters`.
@@ -145,6 +147,9 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
+### Unreleased
+* (reloxx13) Add optional group membership restoration after rejoin or successful interview (disabled by default), and report membership update failures after synchronization.
+
 ### 3.5.5 (2026-08-06)
 * (kropipd) Improved handling for device configuration
 * (bueste) Respond to unsolicited OTA messages
