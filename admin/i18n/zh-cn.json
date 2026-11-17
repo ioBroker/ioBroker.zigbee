@@ -82,6 +82,8 @@
     "Send Functional command": "发送功能命令",
     "Send data to Zigbee": "发送数据到Zigbee",
     "Settings": "设置",
+    "Firmware updates (OTA)": "固件更新 (OTA)",
+    "Own firmware list (file or URL, optional)": "自定义固件列表（文件或 URL，可选）",
     "SettingsExclude": "強制啟動配置不一致的適配器（不建議這樣做）。請盡快將適配器更新到相容的韌體版本並重新建立網路。",
     "Show full mesh": "显示全网格",
     "Show parent": "显示父母",

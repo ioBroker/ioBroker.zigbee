@@ -82,6 +82,8 @@
     "Send Functional command": "Stuur Functioneel commando",
     "Send data to Zigbee": "Stuur gegevens naar Zigbee",
     "Settings": "instellingen",
+    "Firmware updates (OTA)": "Firmware-updates (OTA)",
+    "Own firmware list (file or URL, optional)": "Eigen firmwarelijst (bestand of URL, optioneel)",
     "SettingsExclude": "Forceer de adapter met een inconsistente configuratie (niet aanbevolen). Update de adapter naar compatibele firmware en maak uw netwerk zo snel mogelijk opnieuw aan.",
     "Show full mesh": "Laat volledige mesh zien",
     "Show parent": "Toon bovenliggende",

@@ -78,6 +78,8 @@
     "Send Functional command": "Enviar comando funcional",
     "Send data to Zigbee": "Enviar datos a Zigbee",
     "Settings": "Ajustes",
+    "Firmware updates (OTA)": "Actualizaciones de firmware (OTA)",
+    "Own firmware list (file or URL, optional)": "Lista de firmware propia (archivo o URL, opcional)",
     "Show full mesh": "Mostrar malla completa",
     "Show parent": "Mostrar padre",
     "Show previous parents": "Mostrar padres anteriores",

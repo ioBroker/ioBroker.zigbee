@@ -298,6 +298,7 @@
     "disablePing": false,
     "disableBackup": false,
     "external": "",
+    "otaOverrideIndex": "",
     "startWithInconsistent": false,
     "warnOnDeviceAnnouncement": true,
     "baudRate": 115200,
