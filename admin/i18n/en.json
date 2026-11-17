@@ -83,6 +83,8 @@
     "Send Functional command": "Send Functional command",
     "Send data to Zigbee": "Send data to Zigbee",
     "Settings": "Settings",
+    "Firmware updates (OTA)": "Firmware updates (OTA)",
+    "Own firmware list (file or URL, optional)": "Own firmware list (file or URL, optional)",
     "SettingsExclude": "Force start adapter with inconsistent configuration (not recommended). Please update the adapter to compatible firmware and recreate your network as soon as possible.",
     "Show full mesh": "Show full mesh",
     "Show parent": "Show parent",

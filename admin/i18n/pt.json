@@ -84,6 +84,8 @@
     "Send Functional command": "Enviar comando funcional",
     "Send data to Zigbee": "Envie dados para Zigbee",
     "Settings": "Configurações",
+    "Firmware updates (OTA)": "Atualizações de firmware (OTA)",
+    "Own firmware list (file or URL, optional)": "Lista de firmware própria (arquivo ou URL, opcional)",
     "SettingsExclude": "Forçar o início do adaptador com configuração inconsistente (não recomendado). Atualize o adaptador para um firmware compatível e recrie sua rede o mais rápido possível.",
     "Show full mesh": "Mostrar malha completa",
     "Show parent": "Mostrar pai",

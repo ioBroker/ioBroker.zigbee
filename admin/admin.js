@@ -70,7 +70,7 @@ const networkOptions = {
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower','useNewCompositeStates',
-    'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
+    'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'otaOverrideIndex', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
     'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster',
     'availableUpdateTime', 'readBrightnessAndState', 'dynamicUI', 'reconnectCount','reconnectDelay', 'reconnectProbeDelay', 'tilesingleaction', 'devmgrsingleaction'
 ];
