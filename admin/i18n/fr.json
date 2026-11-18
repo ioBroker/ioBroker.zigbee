@@ -20,6 +20,7 @@
     "Countdown": "Compte à rebours entre 0 et 255 sec pendant l'assemblage de nouveaux composants Zigbee avec le coordinateur.",
     "Delete confirmation": "Confirmer la suppression",
     "Developer": "Développeur",
+    "Save the time of the last message per device (last_seen)": "Enregistrer l'heure du dernier message par appareil (last_seen)",
     "Device": "Dispositif",
     "Device details": "Détails du dispositif",
     "Device information": "Informations sur le dispositif",

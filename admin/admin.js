@@ -72,7 +72,7 @@ const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower','useNewCompositeStates',
     'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'otaOverrideIndex', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
     'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster',
-    'availableUpdateTime', 'readBrightnessAndState', 'dynamicUI', 'reconnectCount','reconnectDelay', 'reconnectProbeDelay', 'tilesingleaction', 'devmgrsingleaction'
+    'availableUpdateTime', 'readBrightnessAndState', 'dynamicUI', 'reconnectCount','reconnectDelay', 'reconnectProbeDelay', 'tilesingleaction', 'devmgrsingleaction', 'lastSeen'
 ];
 const lockout = {
     timeoutid:undefined,

@@ -20,6 +20,7 @@
     "Countdown": "倒计时(0-255秒)",
     "Delete confirmation": "确认删除?",
     "Developer": "开发者页面",
+    "Save the time of the last message per device (last_seen)": "保存每个设备最后一条消息的时间 (last_seen)",
     "Device": "设备",
     "Device details": "设备详情",
     "Device information": "设备信息",

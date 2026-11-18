@@ -21,6 +21,7 @@
     "Countdown": "Zeit für die das Netzwerk geöffnet wird - muss zwischen 10 und 240 sekunden betragen!",
     "Delete confirmation": "Löschen bestätigen",
     "Developer": "Entwickler",
+    "Save the time of the last message per device (last_seen)": "Zeitpunkt der letzten Nachricht je Gerät speichern (last_seen)",
     "Device": "Gerät",
     "Device details": "Gerätedetails",
     "Device information": "Geräteinformation",

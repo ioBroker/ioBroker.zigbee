@@ -20,6 +20,7 @@
     "Countdown": "Aftellen tussen 0 en 255 sec tijdens het pairen van nieuwe Zigbee componenten met de coördinator.",
     "Delete confirmation": "Bevestig verwijderen",
     "Developer": "Ontwikkelaar",
+    "Save the time of the last message per device (last_seen)": "Tijdstip van het laatste bericht per apparaat opslaan (last_seen)",
     "Device": "Apparaat",
     "Device details": "Apparaat details",
     "Device information": "Apparaat informatie",

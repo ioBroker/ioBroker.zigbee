@@ -20,6 +20,7 @@
     "Countdown": "Обратный отсчет от 0 до 255 секунд во время сопряжения новых компонентов Zigbee с координатором.",
     "Delete confirmation": "Подтвердите удаление",
     "Developer": "Разработчику",
+    "Save the time of the last message per device (last_seen)": "Сохранять время последнего сообщения для каждого устройства (last_seen)",
     "Device": "Устройство",
     "Device details": "Детали устройства",
     "Device information": "Информация об устройстве",

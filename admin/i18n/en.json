@@ -21,6 +21,7 @@
     "Countdown": "Countdown between 10 and 240 sec during the pairing",
     "Delete confirmation": "Delete confirmation",
     "Developer": "Developer",
+    "Save the time of the last message per device (last_seen)": "Save the time of the last message per device (last_seen)",
     "Device": "Device",
     "Device details": "Device details",
     "Device information": "Device information",

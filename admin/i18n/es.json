@@ -20,6 +20,7 @@
     "Countdown": "Cuenta atrás entre 0 y 255 seg.",
     "Delete confirmation": "Eliminar confirmación",
     "Developer": "Desarrollador",
+    "Save the time of the last message per device (last_seen)": "Guardar la hora del último mensaje por dispositivo (last_seen)",
     "Device": "Dispositivo",
     "Device details": "Detalles del dispositivo",
     "Device information": "Información del dispositivo",

@@ -20,6 +20,7 @@
     "Countdown": "Countdown między 10 a 240 sekundem podczas łączenia",
     "Delete confirmation": "Usuń potwierdzenie",
     "Developer": "Developer",
+    "Save the time of the last message per device (last_seen)": "Zapisuj czas ostatniej wiadomości dla każdego urządzenia (last_seen)",
     "Device": "Urządzenie",
     "Device details": "Urządzenia",
     "Device information": "Informacje o urządzeniu",

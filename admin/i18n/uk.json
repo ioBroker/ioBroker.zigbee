@@ -20,6 +20,7 @@
     "Countdown": "Зворотний відлік від 0 до 255 секунд під час підʼєднання нових компонентів Zigbee до координатора.",
     "Delete confirmation": "Підтвердження видалення",
     "Developer": "Розробник",
+    "Save the time of the last message per device (last_seen)": "Зберігати час останнього повідомлення для кожного пристрою (last_seen)",
     "Device": "Пристрій",
     "Device details": "Деталі пристрою",
     "Device information": "Інформація про пристрій",

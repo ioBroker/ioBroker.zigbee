@@ -20,6 +20,7 @@
     "Countdown": "Contagem regressiva entre 0 e 255 seg",
     "Delete confirmation": "Excluir confirmação",
     "Developer": "Developer",
+    "Save the time of the last message per device (last_seen)": "Guardar a hora da última mensagem por dispositivo (last_seen)",
     "Device": "Dispositivo",
     "Device details": "Device details",
     "Device information": "Informação de dispositivo",
