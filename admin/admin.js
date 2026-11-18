@@ -70,7 +70,7 @@ const networkOptions = {
 
 const savedSettings = [
     'port', 'panID', 'channel', 'disableLed', 'countDown', 'groups', 'extPanID', 'precfgkey', 'transmitPower','useNewCompositeStates',
-    'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'otaOverrideIndex', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
+    'adapterType', 'debugHerdsman', 'disableBackup', 'external', 'restoreGroupsOnRejoin', 'otaOverrideIndex', 'startWithInconsistent','pingTimeout','listDevicesAtStart',
     'warnOnDeviceAnnouncement', 'baudRate', 'flowCTRL', 'autostart', 'readAtAnnounce', 'startReadDelay', 'readAllAtStart','pingCluster',
     'availableUpdateTime', 'readBrightnessAndState', 'dynamicUI', 'reconnectCount','reconnectDelay', 'reconnectProbeDelay', 'tilesingleaction', 'devmgrsingleaction'
 ];
@@ -557,7 +557,7 @@ function getGroupCard(dev) {
     const info = [`<div style="min-height:88px; font-size: 0.8em; height: 90px; width: 220px; overflow-y: auto" class="truncate"><ul class="groupmembers">`];
     info.push(`<li><span class="labelinfo">Group ${numid}</span></li>`);
     if (dev.memberinfo === undefined) {
-        info.push(`<li><span class="labelinfo">No devices in group</span></li>`);
+        info.push(`<li><span class="labelinfo">${_('No devices in group')}</span></li>`);
     } else {
         for (let m = 0; m < dev.memberinfo.length; m++) {
             info.push(`<li><span align:"left">${dev.memberinfo[m].device}.${dev.memberinfo[m].epid}</span><span align:"right"> ...${dev.memberinfo[m].ieee.slice(-4)}</span></li>`);
@@ -1535,14 +1535,14 @@ async function editDeviceOptions(id, isModel, uiData) {
             const optionType = expose.type;
             switch (expose.type) {
                 case 'numeric':
-                    html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+                    html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">${_('Option')}</label></div>`)
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="number"${expose.value_min != undefined ? ' min="'+expose.value_min+'"' : ''}${expose.value_max != undefined ? ' max="'+expose.value_max+'"' : ''}${expose.value_step != undefined ? ' step="'+expose.value_step+'"' : ''} class="value" /><label>${expose.label ? expose.label : 'Value'}</label></div>`)
                     break;
                 case 'binary':
                 case 'boolean': {
                     html_options.push(`<div class="input-field col s5 m5 l5">
                         <input ${disabled}id="option_key_${k}" type="text" class="value" />
-                        <label for="option_key_${k}">Option</label></div>`);
+                        <label for="option_key_${k}">${_('Option')}</label></div>`);
                     const dok = device_options[k];
                     if (dok.vOn=== undefined) dok.vOn = (expose.value_on === undefined ? 'true' : String(expose.value_on));
                     if (dok.vOff=== undefined) dok.vOff = (expose.value_off === undefined ? 'false' : String(expose.value_off));
@@ -1555,7 +1555,7 @@ async function editDeviceOptions(id, isModel, uiData) {
                     const dos = device_options[k];
                     html_options.push(`<div class="input-field col s5 m5 l5">
                         <input ${disabled}id="option_key_${k}" type="text" class="value" />
-                        <label for="option_key_${k}">Option</label></div>`);
+                        <label for="option_key_${k}">${_('Option')}</label></div>`);
                     html_options.push(`<div class="col s5">
                     <div class="input-field members" id="option_value_${k}"><ul>`);
                     for (const m of ['state','brightness']) {//dos.options) {
@@ -1573,7 +1573,7 @@ async function editDeviceOptions(id, isModel, uiData) {
                     break;
                 }
                 default:
-                    html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">Option</label></div>`)
+                    html_options.push(`<div class="input-field  col s5 m5 l5"><input ${disabled}id="option_key_${k}" type="text" class="value" /><label for="option_key_${k}">${_('Option')}</label></div>`)
                     html_options.push(`<div class="input-field  col s5 m5 l5"><input id="option_value_${k}" type="text" class="value" /><label for="option_value_${k}">${expose.label ? expose.label : 'Value'}</label></div>`)
                     break;
             }
@@ -4472,7 +4472,7 @@ function genDevInfo(device) {
     const dev = (device && device.info) ? device.info.device : undefined;
     const mapped = (device && device.info) ? device.info.mapped : undefined;
     const endpoints = (device && device.info) ? device.info.endpoints : [];
-    if (!dev) return `<div class="truncate">No info</div>`;
+    if (!dev) return `<div class="truncate">${_('No info')}</div>`;
     const genRow = function (name, value, refresh) {
         if (value === undefined) {
             return '';
