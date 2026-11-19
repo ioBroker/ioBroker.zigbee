@@ -125,6 +125,10 @@ The devices tab shows the device tiles, which offer access to a subset of states
 
 The network map shows **a Snapshot** of the mesh network. The accuracy of the snapshot relies heavily on the stability of the network and the willingness of the included devices to respond to LQI and Routing requests. After the adapter is started, the map is inactive and incomplete. It must first be generated using the button on the map background or from the map settings. Once a map was generated, it is available in any openend browser window or tab without regeneration. Generating the map can take several minutes to complete, during which time an additional button will appear in the title bar to show the progress.
 
+## Messages for scripts and AI agents
+
+`sendTo('zigbee.0', 'help', {})` answers a description of all messages of the adapter for AI agents (e.g. pi-agent) and script authors: `{ help, commands }`, where `commands` lists every message with `write: true` if it changes something.
+
 ## Additional info
 
 There is a [friendly project](https://github.com/koenkk/zigbee2mqtt) with similar functionality which is based on the same technology. It uses the same base libraries for hardware communication and device integration. Any device listed as compatible in this project is likely to be compatible with the ioBroker.zigbee Adapter. Note that there is a delay between device integration into zigbee2mqtt.io and the Zigbee-Adapter, as compatibility with the hardware libraries requires verification before the adapter can move to the latest version.
@@ -148,6 +152,7 @@ You can thank the authors by these links:
 -----------------------------------------------------------------------------------------------------
 ## Changelog
 ### Unreleased
+* (@GermanBluefox) Added the message "help": a description of all messages for AI agents (e.g. pi-agent), and common.supportedMessages.help
 * (reloxx13) Add optional group membership restoration after rejoin or successful interview (disabled by default), and report membership update failures after synchronization.
 
 ### 3.5.5 (2026-08-06)
