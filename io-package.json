@@ -139,7 +139,8 @@
     "loglevel": "info",
     "type": "hardware",
     "supportedMessages": {
-      "deviceManager": true
+      "deviceManager": true,
+      "help": true
     },
     "adminUI": {
       "config": "materialize",

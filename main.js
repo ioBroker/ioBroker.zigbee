@@ -31,6 +31,7 @@ const dmZigbee  = require('./lib/devicemgmt.js');
 const localConfig = require('./lib/localConfig');
 const ZigbeeController = require('./lib/zigbeecontroller');
 const StatesController = require('./lib/statescontroller');
+const { HELP, COMMANDS } = require('./lib/help');
 
 // ioroker components
 const adapterCore = require('@iobroker/adapter-core'); // Get common adapter utils
@@ -113,6 +114,9 @@ class Zigbee extends adapterCore.Adapter {
     async onMessage(obj) {
         if (typeof obj === 'object' && obj.command) {
             switch (obj.command) {
+                case 'help':
+                    if (obj.callback) this.sendTo(obj.from, obj.command, { help: HELP, commands: COMMANDS }, obj.callback);
+                    break;
                 case 'SendToDevice': {
                     let rv = {
                         success: false,
