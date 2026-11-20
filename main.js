@@ -222,7 +222,8 @@ class Zigbee extends adapterCore.Adapter {
         this.zbController.on('resend_states', this.stController.handleStateResend.bind(this.stController));
         this.stController.on('device_query', this.zbController.deviceQuery.bind(this.zbController));
         this.zbController.on('acknowledge_state', this.acknowledgeState.bind(this));
-        this.zbController.on('stash_error', this.stController.stashErrors.bind(this.stController));
+        //this.zbController.on('stash_error', this.stController.stashErrors.bind(this.stController));
+        //this.zbController.on('unstash_error', this.stController.stashErrors.bind(this.stController));
         this.zbController.on('stash_unknown_model', this.stController.stashUnknownModel.bind(this.stController));
 
         this.zbController.configure(zigbeeOptions);

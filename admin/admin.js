@@ -2404,11 +2404,11 @@ function load(settings, onChange) {
         const errMsgTable = [];
         //console.warn(JSON.stringify(errorData));
         if (Object.keys(errorData.errors).length > 0) {
-            errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>first seen</th><th>last seen</th></tr>`)
+            errMsgTable.push(`<table><tr><th>Message</th><th>#</th><th>first seen</th><th>last seen</th><th>suppression</th></tr>`)
             for (const err of Object.values(errorData.errors))
                 if (err && err.ts && err.count) {
                     const erridx = err.ts.length > 1 ? 1 : 0
-                    errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[erridx]).toLocaleTimeString()}</td></tr>`)
+                    errMsgTable.push(`<tr><td>${err.message}</td><td>${err.count}</td><td>${new Date(err.ts[0]).toLocaleTimeString()}</td><td>${new Date(err.ts[erridx]).toLocaleTimeString()}</td><td>${err.timeout ?? 'not set'}</tr>`)
                 }
             errMsgTable.push('</table>');
         }
