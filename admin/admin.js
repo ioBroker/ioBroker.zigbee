@@ -4772,7 +4772,6 @@ function updateDevice(id) {
                             const target = devs.find((d) => d._id === devices[idx]._id);
                             if (target) devices[idx] = target;
                         }
-//                        removeDevice(id);
                         devs.forEach(dev => {
                             if (!devices.find((d) => d._id === dev._id)) devices.push(dev)
                         });
