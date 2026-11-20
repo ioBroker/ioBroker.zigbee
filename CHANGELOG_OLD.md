@@ -1,4 +1,9 @@
 # Older changes
+## 3.4.9 (2026-06-22)
+* (asgothian) Removed 'forced configure on start'
+* (krobipd) - various bugfixes
+* (asgothian) - updated versioning for adapter options
+
 ## 3.4.8 (2026-06-16)
 * Bugfix - state publishing
 

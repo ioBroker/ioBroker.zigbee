@@ -147,7 +147,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK IN PROGRESS**
+### 3.6.1 (2026-11-20)
 * (reloxx13) Add optional group membership restoration after rejoin or successful interview (disabled by default), and report membership update failures after synchronization.
 * (asgothian) cleanup, ZH11. ZHC 26.133
 * (schimi1983) performance tweaks
@@ -185,11 +185,6 @@ You can thank the authors by these links:
 * ZH 10.5.0
 * default model options for BSD-2
 * additional role definitions
-
-### 3.4.9 (2026-06-22)
-* (asgothian) Removed 'forced configure on start'
-* (krobipd) - various bugfixes
-* (asgothian) - updated versioning for adapter options
 
 Older changelog entries can be found [here](CHANGELOG_OLD.md).
 
