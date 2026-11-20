@@ -147,7 +147,7 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### **WORK_IN_PROGRESS**
+### **WORK IN PROGRESS**
 * (reloxx13) Add optional group membership restoration after rejoin or successful interview (disabled by default), and report membership update failures after synchronization.
 * (asgothian) cleanup, ZH11. ZHC 26.133
 * (schimi1983) performance tweaks
