@@ -19,7 +19,7 @@
     }
   ],
   "engines": {
-    "node": ">=22.12.0"
+    "node": "^22.2.0 || ^24 || <=26.2"
   },
   "optionalDependencies": {
     "serialport": "^13.0.0"
@@ -29,8 +29,8 @@
     "@iobroker/dm-utils": "^3.0.17",
     "humanize-duration": "^3.33.2",
     "tar": "^7.5.2",
-    "zigbee-herdsman": "^10.9.1",
-    "zigbee-herdsman-converters": "^26.111.0"
+    "zigbee-herdsman": "^11.2.0",
+    "zigbee-herdsman-converters": "^26.133.0"
   },
   "description": "Zigbee devices",
   "devDependencies": {
@@ -38,7 +38,7 @@
     "@alcalzone/release-script-plugin-iobroker": "^5.2.0",
     "@alcalzone/release-script-plugin-license": "^5.2.2",
     "@alcalzone/release-script-plugin-manual-review": "^5.2.0",
-    "@iobroker/testing": "^6.1.0",
+    "@iobroker/testing": "^6.2.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.5.4",

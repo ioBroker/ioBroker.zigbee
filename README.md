@@ -147,8 +147,12 @@ You can thank the authors by these links:
 
 -----------------------------------------------------------------------------------------------------
 ## Changelog
-### Unreleased
+### **WORK_IN_PROGRESS**
 * (reloxx13) Add optional group membership restoration after rejoin or successful interview (disabled by default), and report membership update failures after synchronization.
+* (asgothian) cleanup, ZH11. ZHC 26.133
+* (schimi1983) performance tweaks
+* (schimi1983) Updated documentation
+* (schimi1983) Use custom firmware files
 
 ### 3.5.5 (2026-08-06)
 * (kropipd) Improved handling for device configuration
