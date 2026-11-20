@@ -1,6 +1,15 @@
 # ioBroker Adapter für Zigbee-Geräte
 Mit Hilfe eines Koordinators für ZigBee-Netzwerke wird ein eigenes ZigBee-Netz erschaffen, dem ZigBee-Geräte (Lampen, Dimmer, Sensoren, …) beitreten können. Dank der direkten Interaktion mit dem Koordinator erlaubt der ZigBee-Adapter die Steuerung der Geräte ohne jegliche Gateways/Bridges der Hersteller (Xiaomi/Tradfri/Hue). Zusätzliche Informationen zu ZigBee kann man hier [hier nachlesen (Englisch)](https://github.com/Koenkk/zigbee2mqtt/wiki/ZigBee-network).
 
+## Schnellstart in 5 Schritten
+Für alle, die einfach loslegen wollen. Ausführliche Erklärungen stehen weiter unten unter [Installation](#installation).
+
+1. **Koordinator anschließen.** USB-Stick einstecken oder Netzwerk-Koordinator ins Netzwerk bringen. Läuft ioBroker in Docker oder einer VM, muss der USB-Stick an den Container/die VM durchgereicht werden.
+2. **Adapter installieren** (ioBroker Admin → Adapter → „Zigbee“) und die Konfiguration öffnen.
+3. **Reiter „Hardware“: Port eintragen.** USB: Gerät aus der Liste wählen (z. B. `/dev/ttyUSB0` oder `/dev/serial/by-id/...`). Netzwerk-Koordinator: `tcp://IP-Adresse:Port`. Den Koordinator-Typ passend zur Firmware wählen. PAN-ID, Extended PAN-ID und Kanal sind bereits sinnvoll vorbelegt – nach dem ersten Start **nicht mehr ändern**.
+4. **Testen:** Mit dem Knopf „Zigbee-Netzwerk zum Testen manuell starten oder stoppen“ (Reiter „Hardware“) starten und im Log prüfen, ob „Zigbee started“ erscheint. Klappt es, auf dem Reiter „Einstellungen“ den Haken **„Zigbee-Netzwerk automatisch starten“** setzen und speichern.
+5. **Geräte koppeln:** Auf der Adapterseite den grünen Knopf „Kopplung jetzt starten!“ drücken und das Gerät in den Kopplungsmodus bringen (meist zurücksetzen, siehe Anleitung des Geräts). Danach erscheint es als Kachel, die Datenpunkte liegen unter `zigbee.0.<Geräte-ID>`.
+
 ## Die Hardware
 Für den Koordinator (siehe oben) ist eine zusätzliche Hardware erforderlich, welche die Umsetzung zwischen USB und ZigBee-Funksignalen ermöglicht. Es gibt 3 Arten von Koordinatoren:
 
@@ -128,6 +137,24 @@ In Beiden Fällen ist es hinreichend den Adapter neu zu starten - die entspreche
 | ![](img/reconfigure.png) | Das Gerät konfigurieren. <br> Mit dieser Schaltfläche ist es Möglich für das Gerät erneut zu konfigurieren. Dabei wird der *Converter* Angewiesen die Aktionen durchzufuehren die zur Konfiguration vorgesehen sind. Ueblicherweise werden damit verscheidene Cluster / Attribute an den Koordinator gebunden, um dafuer zu sorgen das das Gerät Informationen *Event* getriggert an den Koordinator sendet.<br>Damit dieses erfolgreich ist muss das Gerät aktiv sein. Insbesondere bei Batterie-betriebenen Geräten ist das of nut kurz nach einer Aktivierung der Fall.<br>Bei einer erfolgreichen Konfiguration verschwindet der Dialog ohne weitere Meldung, und es wird eine Info Meldung im Log platziert. Nur wenn die Konfiguration nicht erfolgreich war gibt es eine Meldung. Dabei sind 2 Arten von Meldungen zu unterscheiden - eine allgemeine Zeitüberschreitung (The device did not repond in time to the configuration request. Another attempt will be made when the device is awake.) oder eine echte Fehlermeldung. Im Falle der Zeitüberschreitung wird das Gerät in eine Liste eingetragen und bei der naechsten Kontaktaufnahme konfiguriert. Im Fehlerfall unterbleibt die Konfiguration. |
 | ![](img/edit_grp.png) | Name / Gruppen editieren <br> Über diese Schaltfläche lässt sich die Zuordnung des Gerätes zu einer oder mehreren Gruppen anpassen. Der Button ist nur bei Geräten verfügbar die sich auch gruppieren lassen. Hinweis: Fernbedienungen werden den Gruppen nicht hinzugefügt - statt dessen müssen diese via 'binding' an die Gruppe gebunden werden.  |
 | ![](img/delete.png) | Gerät löschen <br> Started den Löschvorgang für dieses Gerät.  |
+
+## Häufige Probleme und Lösungen
+| Problem | Lösung |
+|---|---|
+| Adapter startet nicht, im Log „No such file“, „ENOENT“ oder „Cannot open port“ | Port prüfen (Reiter „Hardware“). Bei Docker/VM: USB-Gerät an Container/VM durchreichen. Der Port darf nicht von einem anderen Programm (z. B. Zigbee2MQTT) belegt sein. |
+| Zeitüberschreitung („timeout“) beim Start | Erneut starten – oft reicht das. Bei Netzwerk-Koordinatoren IP-Adresse und Port prüfen und kurz warten, falls der Koordinator gerade neu startet. |
+| „Inkonsistente Konfiguration“ beim Start | Die Einstellungen passen nicht zur Netzwerk-Sicherung im Koordinator. Am besten mit „Netzwerk-Sicherung aus dem Koordinator lesen“ die Werte übernehmen. **Achtung:** „Gespeicherte Netzwerk-Sicherungsdatei löschen“ baut ein neues Netzwerk auf – alle Geräte müssen danach neu gekoppelt werden. |
+| Gerät lässt sich nicht koppeln | Gerät näher an den Koordinator oder einen Router (netzbetriebenes Gerät, z. B. Lampe) bringen, Gerät vorher auf Werkseinstellungen zurücksetzen, Kopplung erneut starten. |
+| Gerät wird als „nicht unterstützt“ angezeigt | Siehe [Pairing von bisher unbekannten ZigBee-Geräten](#pairing-von-bisher-unbekannten-zigbee-geräten). |
+| Gerät reagiert unzuverlässig, schlechter Empfang | Mehr netzbetriebene Geräte (Router) im Netz verteilen. Abstand des Koordinators zu USB-3-Anschlüssen und WLAN-Routern vergrößern (USB-Verlängerung). |
+
+## Eigene Firmware-Liste (OTA)
+Firmware-Updates für Geräte kommen normalerweise aus der öffentlichen Liste von [Zigbee2MQTT](https://github.com/Koenkk/zigbee-OTA). Wer eine Firmware nutzen möchte, die dort (noch) nicht enthalten ist, kann auf dem Reiter „Einstellungen“ unter „Firmware-Updates (OTA)“ eine **eigene Firmware-Liste** angeben:
+- einen Dateinamen – die Datei liegt dann im Datenordner des Adapters (z. B. `iobroker-data/zigbee_0/meine-liste.json`),
+- einen vollständigen Pfad oder
+- eine Web-Adresse (URL).
+
+Einträge der eigenen Liste haben Vorrang vor der öffentlichen Liste. Der Aufbau entspricht dem von Zigbee2MQTT ([Beschreibung](https://www.zigbee2mqtt.io/guide/usage/ota_updates.html)); zum Erstellen eignet sich der [Zigbee OTA File Editor](https://nerivec.github.io/zigbee-ota-file-editor/). Feld leer lassen = nur die öffentliche Liste.
 
 ## Zusätzliche Informationen
 Der Zigbee Adapter teilt sich die Bibliortheken mit dem [Projekt](https://www.zigbee2mqtt.io/) Zigbee2mqtt. Dieses erlaubt die Steuerung von Zigbee-Geräten über MQTT oder über einen eigenen ioBroker [Adapter](https://github.com/arteck/ioBroker.zigbee2mqtt) Durch die verwendung der gleichen Bibliotheken wird jedes Gerät das unter zigbee2mqtt läuft auch im Zigbee Adapter laufen. Allerdings kann es dabei zu Verzögerungen kommen da wir die Kompatibilität der Bibliotheken mit dem Adapter verifizieren müssen. Durch eröffnen eines *issues* bei Github könnt Ihr diesen Prozess anstossen und/oder beschleunigen. Oft bekommt Ihr da auch Hilfe das Gerät ohne Aktualiserung des Adapters nutzbar zu machen.<br>

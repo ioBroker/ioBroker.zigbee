@@ -1,6 +1,15 @@
 # ioBroker Adapter for ZigBee Devices
 Using a ZigBee network coordinator, a dedicated ZigBee network is created, to which ZigBee devices (lights, dimmers, sensors, etc.) can join. Thanks to direct interaction with the coordinator, the ZigBee adapter allows the devices to be controlled without any gateways/bridges from the manufacturers (Xiaomi/Tradfri/Hue). Additional information about ZigBee can be found [here](https://github.com/Koenkk/zigbee2mqtt/wiki/ZigBee-network).
 
+## Quick start in 5 steps
+For everyone who just wants to get going. Detailed explanations follow below under [Installation](#installation).
+
+1. **Connect the coordinator.** Plug in the USB stick or connect the network coordinator to your network. If ioBroker runs in Docker or a VM, the USB stick has to be passed through to the container/VM.
+2. **Install the adapter** (ioBroker Admin → Adapters → "Zigbee") and open its configuration.
+3. **Tab "Hardware": enter the port.** USB: pick the device from the list (e.g. `/dev/ttyUSB0` or `/dev/serial/by-id/...`). Network coordinator: `tcp://ip-address:port`. Select the coordinator type that matches its firmware. PAN ID, Extended PAN ID and channel are already filled with sensible values – **do not change them** after the first start.
+4. **Test:** Start with the button "Start or stop the Zigbee network manually for a test" (tab "Hardware") and check the log for "Zigbee started". If it works, tick **"start the Zigbee network automatically"** on the "Settings" tab and save.
+5. **Pair devices:** On the adapter page press the green button "Let's pairing!" and put the device into pairing mode (usually a reset, see the device manual). It then appears as a tile, its states are under `zigbee.0.<device id>`.
+
 ## Hardware
 The coordinator (see above) requires additional hardware that enables the conversion between USB and ZigBee wireless signals. There are three types of coordinators:
 
@@ -125,6 +134,24 @@ In both cases, restarting the adapter is sufficient – ​​the adapter's corr
 | ![](../de/img/edit_image.png) | Assign image/name <br> This button allows you to Assign a name, an icon or options for a specific device. Note that this assignment is **solely** on device level. model-level assingment is done via the settings. Settings made in this way are retained even if the device is deleted. |
 | ![](../de/img/edit_grp.png) | Edit name/groups <br> This button can be used change the devices associationw ith one or more groups. This button is only available on devices which can be assigned to groups. Note: Remotes are not added to the groups - they need to be bound to the group using the 'binding' tab. |
 | ![](../de/img/delete.png) | Delete device <br> Starts the deletion process for this device. |
+## Common problems and solutions
+| Problem | Solution |
+|---|---|
+| Adapter does not start, log shows "No such file", "ENOENT" or "Cannot open port" | Check the port (tab "Hardware"). Docker/VM: pass the USB device through to the container/VM. The port must not be used by another program (e.g. Zigbee2MQTT). |
+| Timeout at start | Start again – often that is enough. Network coordinators: check IP address and port, wait a moment if the coordinator is restarting. |
+| "Inconsistent configuration" at start | The settings do not match the network backup in the coordinator. Best: take over the values with "Read the network backup from the coordinator". **Caution:** "Delete the saved network backup file" creates a new network – all devices must be paired again afterwards. |
+| Device does not pair | Move the device closer to the coordinator or a router (mains-powered device, e.g. a light), reset the device to factory settings, start pairing again. |
+| Device is shown as "not supported" | See [Pairing of unknown ZigBee devices so far](#pairing-of-unknown-zigbee-devices-so-far). |
+| Device reacts unreliably, poor reception | Add more mains-powered devices (routers) around the house. Keep the coordinator away from USB 3 ports and Wi-Fi routers (USB extension cable). |
+
+## Own firmware list (OTA)
+Firmware updates for devices normally come from the public list of [Zigbee2MQTT](https://github.com/Koenkk/zigbee-OTA). To use a firmware that is not (yet) in that list, enter an **own firmware list** on the "Settings" tab under "Firmware updates (OTA)":
+- a file name – the file is then expected in the adapter's data folder (e.g. `iobroker-data/zigbee_0/my-list.json`),
+- a full path or
+- a web address (URL).
+
+Entries of the own list take precedence over the public list. The format is the same as for Zigbee2MQTT ([description](https://www.zigbee2mqtt.io/guide/usage/ota_updates.html)); the [Zigbee OTA File Editor](https://nerivec.github.io/zigbee-ota-file-editor/) helps to create it. Leave the field empty to use only the public list.
+
 ## Additional information
 The Zigbee-Adapter shares the same libraries (zigbee-herdsman, zigbee-herdsman-converters) asn the [Zigbee2mqtt](https://www.zigbee2mqtt.io/) Project ([Github Link](https://github.com/Koenkk/zigbee2mqtt)). It is possible to use zigbee2mqtt.io directly with ioBroker using MQTT or its own [Adapter](https://github.com/arteck/ioBroker.zigbee2mqtt).<br>
 As the libraries are shared, any device supported in zigbee2mqtt.io will in time also be supported in the Zigbee Adapter. Due to the need for compatibility-checks, this can occur with a delay of a few days or weeks. Generating an issue describing the device and its zigbee2mqtt.io integration usually leads to either a temporary solution or an adapter update to include the support in the zigbee Adapter.<br>
