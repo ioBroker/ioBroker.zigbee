@@ -1,20 +1,20 @@
 {
   "common": {
     "name": "zigbee",
-    "version": "3.6.0",
+    "version": "3.6.1",
     "news": {
-      "3.6.0": {
-        "en": "Improved handling for device configuration\nRespond to unsolicited OTA messages\nZH 10.8, ZHC 26.92.0 or newer",
-        "de": "Verbesserte Handhabung der Gerätekonfiguration\nAuf unerwünschte OTA-Nachrichten antworten\nZH 10.8, ZHC 26.92.0 oder neuer",
-        "ru": "Улучшена обработка настроек устройства.\nОтвечайте на незапрошенные сообщения OTA.\nZH 10.8, ZHC 26.92.0 или более новые версии",
-        "pt": "Melhorias no manuseio da configuração do dispositivo.\nResponder a mensagens OTA não solicitadas\nZH 10.8, ZHC 26.92.0 ou mais recente",
-        "nl": "Verbeterde afhandeling voor apparaatconfiguratie\nReageer op ongevraagde OTA-berichten.\nZH 10.8, ZHC 26.92.0 of nieuwer",
-        "fr": "Gestion améliorée de la configuration des périphériques\nRépondre aux messages OTA non sollicités\nZH 10.8, ZHC 26.92.0 ou version plus récente",
-        "it": "Gestione migliorata della configurazione del dispositivo\nRispondere ai messaggi OTA non richiesti\nZH 10.8, ZHC 26.92.0 o versioni successive",
-        "es": "Manejo mejorado para la configuración del dispositivo\nResponda a los mensajes OTA no solicitados\nZH 10.8, ZHC 26.92.0 o posterior",
-        "pl": "Ulepszona obsługa konfiguracji urządzenia\nOdpowiadaj na niechciane wiadomości OTA\nZH 10.8, ZHC 26.92.0 lub nowszy",
-        "uk": "Покращена обробка конфігурації пристрою\nВідповідь на небажані повідомлення OTA\nZH 10.8, ZHC 26.92.0 або новіша версія",
-        "zh-cn": "改进了设备配置的处理方式\n回应未经请求的OTA消息\nZH 10.8、ZHC 26.92.0 或更新版本"
+      "3.6.1": {
+        "en": "Add optional group membership restoration after rejoin or successful interview (disabled by default), and report membership update failures after synchronization.\ncleanup, ZH11. ZHC 26.133\nperformance tweaks\nUpdated documentation\nUse custom firmware files",
+        "de": "Fügen Sie die Gruppe nach Wiederbeitritt oder Interview optional wieder hinzu (standardmäßig deaktiviert) und melden Sie Fehler nach der Synchronisation.\nAufräumen, ZH11. ZHC 26,13\nLeistungsoptimierungen\nAktualisierte Unterlagen\nEigene Firmware verwenden",
+        "ru": "Добавьте опциональное восстановление членства в группе после повторного присоединения или успешного собеседования (по умолчанию отключено) и сообщайте об ошибках обновления членства после синхронизации.\nочистка, ZH11. ZHC 26.133\nнастройки производительности\nОбновленная документация\nИспользуйте пользовательские файлы прошивки",
+        "pt": "Adicione a opção de restaurar a adesão ao grupo após a reentrada ou a entrevista bem-sucedida (desativada por padrão) e relate falhas após a sincronização.\nlimpeza, ZH11. ZHC 26,13\najustes de desempenho\nDocumentação atual\nUse firmwares personalizados",
+        "nl": "Voeg optioneel herstel van het groepslidmaatschap toe na opnieuw deelnemen of een succesvol interview (standaard uitgeschakeld), en rapporteer fouten bij het bijwerken van het lidmaatschap na synchronisatie.\nopruimen, ZH11. ZHC 26.133\naanpassingen in de prestaties\nBijgewerkte documentatie\nAangepaste firmwarebestanden gebruiken",
+        "fr": "Ajoutez le rétablissement de l'adhésion au groupe après un retour ou un entretien réussi (désactivé par défaut), et signalez les échecs de mise à jour des membres après la synchronisation.\nnettoyage, ZH11. 26.133 ZHC\nréglages de performance\nDocumentation mise à jour\nUtiliser un firmware personnalisé",
+        "it": "Aggiunga il ripristino opzionale dell'iscrizione al gruppo dopo il rientro o il colloquio (disabilitato di default) e segnala errori dopo la sincronizzazione.\npulizia, ZH11 ZHC 26,13\nritocchi prestazionali\nDocumenti aggiornati\nUsare firmware custom",
+        "es": "Añada la restauración opcional de la pertenencia al grupo tras volver a unirse o a la entrevista (desactivada por defecto) e informar de los errores de actualización tras la sincronización.\nlimpieza, ZH11. ZHC 26.133\najustes de rendimiento\nDocumentación actualizada\nUsar firmware personalizado",
+        "pl": "Dodaj opcjonalne przywracanie członkostwa w grupie po ponownym dołączeniu lub udanym rozmowie kwalifikacyjnej (domyślnie wyłączone) i zgłaszaj błędy aktualizacji członkostwa po synchronizacji.\nsprzątanie, ZH11. ZHC 26.133\npoprawki wydajności\nZaktualizowana dokumentacja\nUżywaj niestandardowych plików oprogramowania układowego",
+        "uk": "Додайте необов'язкове відновлення членства в групі після повторного приєднання або успішного співбесіди (вимкнено за замовчуванням) та повідомте про помилки оновлення членства після синхронізації.\nочищення, Ж11. ЖЦ 26.133\nналаштування продуктивності\nОновлена документація\nВикористання користувацьких файлів прошивки",
+        "zh-cn": "在重新加入或成功面试后添加可选的群组成员资格恢复（默认禁用），并在同步后报告成员资格更新失败。\n清理，ZH11。ZHC 26.133\n性能调整\n更新的文档\n使用自定义固件文件"
       },
       "3.5.5": {
         "en": "Improved handling for device configuration\nRespond to unsolicited OTA messages\nZH 10.8, ZHC 26.92.0 or newer",
